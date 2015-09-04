@@ -1,4 +1,4 @@
-/* $Id: time.cpp 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: time.cpp 101690 2015-07-18 18:55:25Z bird $ */
 /** @file
  * IPRT - Time.
  */
@@ -706,7 +706,7 @@ RTDECL(char *) RTTimeToString(PCRTTIME pTime, char *psz, size_t cb)
             offUTCHour = -offUTCHour;
         }
         cch = RTStrPrintf(psz, cb,
-                          "%RI32-%02u-%02uT%02u:%02u:%02u.%09RU32%c%02%02",
+                          "%RI32-%02u-%02uT%02u:%02u:%02u.%09RU32%c%02d%02d",
                           pTime->i32Year, pTime->u8Month, pTime->u8MonthDay,
                           pTime->u8Hour, pTime->u8Minute, pTime->u8Second, pTime->u32Nanosecond,
                           chSign, offUTCHour, offUTCMinute);

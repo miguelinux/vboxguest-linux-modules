@@ -1,4 +1,4 @@
-/* $Id: assert-r0drv-linux.c 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: assert-r0drv-linux.c 102031 2015-08-11 14:39:19Z bird $ */
 /** @file
  * IPRT -  Assertion Workers, Ring-0 Drivers, Linux.
  */
@@ -42,23 +42,27 @@
 
 DECLHIDDEN(void) rtR0AssertNativeMsg1(const char *pszExpr, unsigned uLine, const char *pszFile, const char *pszFunction)
 {
+    IPRT_LINUX_SAVE_EFL_AC();
     printk(KERN_EMERG
            "\r\n!!Assertion Failed!!\r\n"
            "Expression: %s\r\n"
            "Location  : %s(%d) %s\r\n",
            pszExpr, pszFile, uLine, pszFunction);
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
 
 
 DECLHIDDEN(void) rtR0AssertNativeMsg2V(bool fInitial, const char *pszFormat, va_list va)
 {
     char szMsg[256];
+    IPRT_LINUX_SAVE_EFL_AC();
 
     RTStrPrintfV(szMsg, sizeof(szMsg) - 1, pszFormat, va);
     szMsg[sizeof(szMsg) - 1] = '\0';
     printk(KERN_EMERG "%s", szMsg);
 
     NOREF(fInitial);
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
 
 

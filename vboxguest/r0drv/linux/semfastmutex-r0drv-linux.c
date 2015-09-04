@@ -1,4 +1,4 @@
-/* $Id: semfastmutex-r0drv-linux.c 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: semfastmutex-r0drv-linux.c 102031 2015-08-11 14:39:19Z bird $ */
 /** @file
  * IPRT - Fast Mutex Semaphores, Ring-0 Driver, Linux.
  */
@@ -63,6 +63,8 @@ typedef struct RTSEMFASTMUTEXINTERNAL
 
 RTDECL(int)  RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx)
 {
+    IPRT_LINUX_SAVE_EFL_AC();
+
     /*
      * Allocate.
      */
@@ -81,6 +83,7 @@ RTDECL(int)  RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx)
 #endif
 
     *phFastMtx = pThis;
+    IPRT_LINUX_RESTORE_EFL_AC();
     return VINF_SUCCESS;
 }
 RT_EXPORT_SYMBOL(RTSemFastMutexCreate);
@@ -106,6 +109,8 @@ RT_EXPORT_SYMBOL(RTSemFastMutexDestroy);
 
 RTDECL(int)  RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx)
 {
+    IPRT_LINUX_SAVE_EFL_AC();
+
     /*
      * Validate.
      */
@@ -120,6 +125,8 @@ RTDECL(int)  RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx)
     AssertRelease(pThis->Owner == NIL_RTNATIVETHREAD);
     ASMAtomicUoWriteSize(&pThis->Owner, RTThreadNativeSelf());
 #endif
+
+    IPRT_LINUX_RESTORE_EFL_ONLY_AC();
     return VINF_SUCCESS;
 }
 RT_EXPORT_SYMBOL(RTSemFastMutexRequest);
@@ -127,6 +134,8 @@ RT_EXPORT_SYMBOL(RTSemFastMutexRequest);
 
 RTDECL(int)  RTSemFastMutexRelease(RTSEMFASTMUTEX hFastMtx)
 {
+    IPRT_LINUX_SAVE_EFL_AC();
+
     /*
      * Validate.
      */
@@ -140,6 +149,8 @@ RTDECL(int)  RTSemFastMutexRelease(RTSEMFASTMUTEX hFastMtx)
 #endif
     up(&pThis->Semaphore);
     IPRT_DEBUG_SEMS_STATE(pThis, 'u');
+
+    IPRT_LINUX_RESTORE_EFL_ONLY_AC();
     return VINF_SUCCESS;
 }
 RT_EXPORT_SYMBOL(RTSemFastMutexRelease);

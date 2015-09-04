@@ -1,4 +1,4 @@
-/* $Id: thread2-r0drv-linux.c 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: thread2-r0drv-linux.c 102031 2015-08-11 14:39:19Z bird $ */
 /** @file
  * IPRT - Threads (Part 2), Ring-0 Driver, Linux.
  */
@@ -137,16 +137,20 @@ DECLHIDDEN(int) rtThreadNativeCreate(PRTTHREADINT pThreadInt, PRTNATIVETHREAD pN
 {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 4)
     struct task_struct *NativeThread;
+    IPRT_LINUX_SAVE_EFL_AC();
 
     RT_ASSERT_PREEMPTIBLE();
 
     NativeThread = kthread_run(rtThreadNativeMain, pThreadInt, "iprt-%s", pThreadInt->szName);
 
-    if (IS_ERR(NativeThread))
-        return VERR_GENERAL_FAILURE;
-
-    *pNativeThread = (RTNATIVETHREAD)NativeThread;
-    return VINF_SUCCESS;
+    if (!IS_ERR(NativeThread))
+    {
+        *pNativeThread = (RTNATIVETHREAD)NativeThread;
+        IPRT_LINUX_RESTORE_EFL_AC();
+        return VINF_SUCCESS;
+    }
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return VERR_GENERAL_FAILURE;
 #else
     return VERR_NOT_IMPLEMENTED;
 #endif
