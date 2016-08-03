@@ -1,4 +1,4 @@
-/* $Id: memobj-r0drv-linux.c 102031 2015-08-11 14:39:19Z bird $ */
+/* $Id: memobj-r0drv-linux.c 106545 2016-04-12 13:27:21Z fmehnert $ */
 /** @file
  * IPRT - Ring-0 Memory Objects, Linux.
  */
@@ -25,9 +25,9 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #include "the-linux-kernel.h"
 
 #include <iprt/memobj.h>
@@ -39,9 +39,9 @@
 #include "internal/memobj.h"
 
 
-/*******************************************************************************
-*   Defined Constants And Macros                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Defined Constants And Macros                                                                                                 *
+*********************************************************************************************************************************/
 /* early 2.6 kernels */
 #ifndef PAGE_SHARED_EXEC
 # define PAGE_SHARED_EXEC PAGE_SHARED
@@ -66,9 +66,9 @@
 #endif
 
 
-/*******************************************************************************
-*   Structures and Typedefs                                                    *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Structures and Typedefs                                                                                                      *
+*********************************************************************************************************************************/
 /**
  * The Darwin version of the memory object structure.
  */
@@ -372,11 +372,17 @@ static int rtR0MemObjLinuxAllocPages(PRTR0MEMOBJLNX *ppMemLnx, RTR0MEMOBJTYPE en
 #endif /* < 2.4.22 */
     pMemLnx->fContiguous = fContiguous;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0)
     /*
      * Reserve the pages.
+     * 
+     * Linux >= 4.5 with CONFIG_DEBUG_VM panics when setting PG_reserved on compound
+     * pages. According to Michal Hocko this shouldn't be necessary anyway because
+     * as pages which are not on the LRU list are never evictable.
      */
     for (iPage = 0; iPage < cPages; iPage++)
         SetPageReserved(pMemLnx->apPages[iPage]);
+#endif
 
     /*
      * Note that the physical address of memory allocated with alloc_pages(flags, order)
@@ -423,7 +429,12 @@ static void rtR0MemObjLinuxFreePages(PRTR0MEMOBJLNX pMemLnx)
          */
         while (iPage-- > 0)
         {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0)
+            /*
+             * See SetPageReserved() in rtR0MemObjLinuxAllocPages()
+             */
             ClearPageReserved(pMemLnx->apPages[iPage]);
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 4, 22)
 #else
             MY_SET_PAGES_NOEXEC(pMemLnx->apPages[iPage], 1);
@@ -578,7 +589,11 @@ DECLHIDDEN(int) rtR0MemObjNativeFree(RTR0MEMOBJ pMem)
                 {
                     if (!PageReserved(pMemLnx->apPages[iPage]))
                         SetPageDirty(pMemLnx->apPages[iPage]);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+                    put_page(pMemLnx->apPages[iPage]);
+#else
                     page_cache_release(pMemLnx->apPages[iPage]);
+#endif
                 }
 
                 if (pTask && pTask->mm)
@@ -755,7 +770,7 @@ DECLHIDDEN(int) rtR0MemObjNativeAllocCont(PPRTR0MEMOBJINTERNAL ppMem, size_t cb,
 /**
  * Worker for rtR0MemObjLinuxAllocPhysSub that tries one allocation strategy.
  *
- * @returns IPRT status.
+ * @returns IPRT status code.
  * @param   ppMemLnx    Where to
  * @param   enmType     The object type.
  * @param   cb          The size of the allocation.
@@ -807,7 +822,7 @@ static int rtR0MemObjLinuxAllocPhysSub2(PPRTR0MEMOBJINTERNAL ppMem, RTR0MEMOBJTY
 /**
  * Worker for rtR0MemObjNativeAllocPhys and rtR0MemObjNativeAllocPhysNC.
  *
- * @returns IPRT status.
+ * @returns IPRT status code.
  * @param   ppMem       Where to store the memory object pointer on success.
  * @param   enmType     The object type.
  * @param   cb          The size of the allocation.
@@ -1029,14 +1044,38 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser(PPRTR0MEMOBJINTERNAL ppMem, RTR3PTR R3P
         /*
          * Get user pages.
          */
-        rc = get_user_pages(pTask,                  /* Task for fault accounting. */
-                            pTask->mm,              /* Whose pages. */
-                            R3Ptr,                  /* Where from. */
-                            cPages,                 /* How many pages. */
-                            fWrite,                 /* Write to memory. */
-                            fWrite,                 /* force write access. */
-                            &pMemLnx->apPages[0],   /* Page array. */
-                            papVMAs);               /* vmas */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+        if (R0Process == RTR0ProcHandleSelf())
+            rc = get_user_pages(R3Ptr,                  /* Where from. */
+                                cPages,                 /* How many pages. */
+                                fWrite,                 /* Write to memory. */
+                                fWrite,                 /* force write access. */
+                                &pMemLnx->apPages[0],   /* Page array. */
+                                papVMAs);               /* vmas */
+        /*
+         * Actually this should not happen at the moment as call this function
+         * only for our own process.
+         */
+        else
+            rc = get_user_pages_remote(
+                                pTask,                  /* Task for fault accounting. */
+                                pTask->mm,              /* Whose pages. */
+                                R3Ptr,                  /* Where from. */
+                                cPages,                 /* How many pages. */
+                                fWrite,                 /* Write to memory. */
+                                fWrite,                 /* force write access. */
+                                &pMemLnx->apPages[0],   /* Page array. */
+                                papVMAs);               /* vmas */
+#else /* LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0) */
+            rc = get_user_pages(pTask,                  /* Task for fault accounting. */
+                                pTask->mm,              /* Whose pages. */
+                                R3Ptr,                  /* Where from. */
+                                cPages,                 /* How many pages. */
+                                fWrite,                 /* Write to memory. */
+                                fWrite,                 /* force write access. */
+                                &pMemLnx->apPages[0],   /* Page array. */
+                                papVMAs);               /* vmas */
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0) */
         if (rc == cPages)
         {
             /*
@@ -1081,7 +1120,11 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser(PPRTR0MEMOBJINTERNAL ppMem, RTR3PTR R3P
         {
             if (!PageReserved(pMemLnx->apPages[rc]))
                 SetPageDirty(pMemLnx->apPages[rc]);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+            put_page(pMemLnx->apPages[rc]);
+#else
             page_cache_release(pMemLnx->apPages[rc]);
+#endif
         }
 
         up_read(&pTask->mm->mmap_sem);

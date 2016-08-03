@@ -1,4 +1,4 @@
-/* $Id: log-vbox.cpp 101284 2015-06-25 21:57:41Z aeichner $ */
+/* $Id: log-vbox.cpp 105968 2016-03-11 16:23:59Z aleksey $ */
 /** @file
  * VirtualBox Runtime - Logging configuration.
  */
@@ -72,7 +72,7 @@
  *
  *
  *
- * @section sec_logging_destination     The Group Specifier.
+ * @section sec_logging_group           The Group Specifier.
  *
  * The {logger-env-base} environment variable can be used to specify which
  * logger groups to enable and which to disable. By default all groups are
@@ -123,9 +123,9 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #ifdef IN_RING3
 # if defined(RT_OS_WINDOWS)
 #  include <Windows.h>
@@ -168,9 +168,9 @@
 #endif
 
 
-/*******************************************************************************
-*   Global Variables                                                           *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Global Variables                                                                                                             *
+*********************************************************************************************************************************/
 /** The default logger. */
 static PRTLOGGER                    g_pLogger = NULL;
 /** The default logger groups.
@@ -477,7 +477,8 @@ RTDECL(PRTLOGGER) RTLogDefaultInit(void)
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER;
 # endif
 # if defined(DEBUG_aleksey)  /* Guest ring-0 as well */
-        RTLogGroupSettings(pLogger, "net_flt_drv.e.l.f.l3.l4.l5 +net_adp_drv.e.l.f.l3.l4.l5");
+        //RTLogGroupSettings(pLogger, "net_flt_drv.e.l.f.l3.l4.l5 +net_adp_drv.e.l.f.l3.l4.l5");
+        RTLogGroupSettings(pLogger, "net_flt_drv.e.l.f.l3.l4.l5.l6");
         RTLogFlags(pLogger, "enabled unbuffered");
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER | RTLOGDEST_STDOUT;
 # endif
@@ -491,7 +492,7 @@ RTDECL(PRTLOGGER) RTLogDefaultInit(void)
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER;
 # endif
 # if defined(DEBUG_michael) && defined(IN_GUEST)
-        RTLogGroupSettings(pLogger, "+all.e.l.f");
+        RTLogGroupSettings(pLogger, "+vga.e.l.f");
         RTLogFlags(pLogger, "enabled unbuffered");
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER | RTLOGDEST_STDOUT;
 # endif

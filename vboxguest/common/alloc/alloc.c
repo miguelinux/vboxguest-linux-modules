@@ -1,4 +1,4 @@
-/* $Id: alloc.cpp 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: alloc.cpp 102197 2015-08-18 14:57:46Z bird $ */
 /** @file
  * IPRT - Memory Allocation.
  */
@@ -25,9 +25,9 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #ifndef RTMEM_NO_WRAP_TO_EF_APIS
 # define RTMEM_NO_WRAP_TO_EF_APIS
 #endif
@@ -39,7 +39,7 @@
 
 
 
-RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb, const char *pszTag) RT_NO_THROW
+RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb, const char *pszTag) RT_NO_THROW_DEF
 {
     void *pvDst = RTMemAllocTag(cb, pszTag);
     if (pvDst)
@@ -49,7 +49,7 @@ RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb, const char *pszTag) RT_
 RT_EXPORT_SYMBOL(RTMemDupTag);
 
 
-RTDECL(void *) RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra, const char *pszTag) RT_NO_THROW
+RTDECL(void *) RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra, const char *pszTag) RT_NO_THROW_DEF
 {
     void *pvDst = RTMemAllocTag(cbSrc + cbExtra, pszTag);
     if (pvDst)

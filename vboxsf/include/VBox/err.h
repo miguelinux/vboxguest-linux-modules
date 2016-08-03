@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -30,7 +30,7 @@
 #include <iprt/err.h>
 
 
-/** @defgroup grp_err       Error Codes
+/** @defgroup grp_err       VBox Error Codes
  * @{
  */
 
@@ -117,6 +117,8 @@
  * EM will first send this to the debugger, and if the issue isn't
  * resolved there it will enter guru meditation. */
 #define VINF_EM_DBG_HYPER_ASSERTION         1103
+/** Generic debug event, suspend the VM for debugging. */
+#define VINF_EM_DBG_EVENT                   1104
 /** Indicating that the VM should be suspended for debugging because
  * the developer wants to inspect the VM state. */
 #define VINF_EM_DBG_STOP                    1105
@@ -246,6 +248,8 @@
 #define VERR_EM_CANNOT_EXEC_GUEST           (-1156)
 /** Reason for leaving RC: Inject a TRPM event. */
 #define VINF_EM_RAW_INJECT_TRPM_EVENT       1157
+/** Guest tried to trigger a CPU hang.  The guest is probably up to no good. */
+#define VERR_EM_GUEST_CPU_HANG              (-1158)
 /** @} */
 
 
@@ -491,7 +495,7 @@
 #define VINF_PGM_PHYS_TLB_CATCH_WRITE           1635
 /** Catch write access and route it thru PGM. */
 #define VERR_PGM_PHYS_TLB_CATCH_WRITE           (-1635)
-/** No CR3 root shadow page table.. */
+/** No CR3 root shadow page table. */
 #define VERR_PGM_NO_CR3_SHADOW_ROOT             (-1636)
 /** Trying to free a page with an invalid Page ID. */
 #define VERR_PGM_PHYS_INVALID_PAGE_ID           (-1637)
@@ -639,6 +643,8 @@
 #define VERR_CPUM_INVALID_XSAVE_HDR             (-1764)
 /** The loaded XCR0 register value is not valid. */
 #define VERR_CPUM_INVALID_XCR0                  (-1765)
+/** Indicates that we modified the host CR0 (FPU related). */
+#define VINF_CPUM_HOST_CR0_MODIFIED             (1766)
 /** @} */
 
 
@@ -1104,12 +1110,20 @@
 #define VINF_IOM_R3_IOPORT_READ             2620
 /** Reason for leaving RZ: I/O port write. */
 #define VINF_IOM_R3_IOPORT_WRITE            2621
+/** Reason for leaving RZ: Pending I/O port write.  Since there is also
+ * VMCPU_FF_IOM for this condition, it's ok to drop this status code for
+ * some other VINF_EM_XXX statuses. */
+#define VINF_IOM_R3_IOPORT_COMMIT_WRITE     2622
 /** Reason for leaving RZ: MMIO read. */
 #define VINF_IOM_R3_MMIO_READ               2623
 /** Reason for leaving RZ: MMIO write. */
 #define VINF_IOM_R3_MMIO_WRITE              2624
 /** Reason for leaving RZ: MMIO read/write. */
 #define VINF_IOM_R3_MMIO_READ_WRITE         2625
+/** Reason for leaving RZ: Pending MMIO write.   Since there is also
+ * VMCPU_FF_IOM for this condition, it's ok to drop this status code for
+ * some other VINF_EM_XXX statuses. */
+#define VINF_IOM_R3_MMIO_COMMIT_WRITE       2626
 
 /** IOMGCIOPortHandler was given an unexpected opcode. */
 #define VERR_IOM_IOPORT_UNKNOWN_OPCODE      (-2630)
@@ -1127,6 +1141,8 @@
 #define VERR_IOM_MMIO_IPE_3                 (-2636)
 /** Got into a part of IOM that is not used when HM (VT-x/AMD-V) is enabled. */
 #define VERR_IOM_HM_IPE                     (-2637)
+/** Internal processing error while merging status codes. */
+#define VERR_IOM_FF_STATUS_IPE              (-2638)
 /** @} */
 
 
@@ -1143,8 +1159,8 @@
 #define VERR_VMM_RING3_CALL_DISABLED        (-2703)
 /** The VMMR0.r0 module version does not match VBoxVMM.dll/so/dylib.
  * If you just upgraded VirtualBox, please terminate all VMs and make sure
- * VBoxNetDHCP is not running.  Then try again.  If this error persists, try
- * re-installing VirtualBox. */
+ * that neither VBoxNetDHCP nor VBoxNetNAT is running.  Then try again.
+ * If this error persists, try re-installing VirtualBox. */
 #define VERR_VMM_R0_VERSION_MISMATCH        (-2704)
 /** The VMMRC.rc module version does not match VBoxVMM.dll/so/dylib.
  * Re-install if you are a user.  Developers should make sure the build is
@@ -1457,6 +1473,20 @@
 #define VERR_PDM_NOT_PCI_BUS_MASTER                 (-2891)
 /** Got into a part of PDM that is not used when HM (VT-x/AMD-V) is enabled. */
 #define VERR_PDM_HM_IPE                             (-2892)
+/** The I/O request was canceled. */
+#define VERR_PDM_MEDIAEX_IOREQ_CANCELED             (-2893)
+/** There is not enough room to store the data. */
+#define VERR_PDM_MEDIAEX_IOBUF_OVERFLOW             (-2894)
+/** There is not enough data to satisfy the request. */
+#define VERR_PDM_MEDIAEX_IOBUF_UNDERRUN             (-2895)
+/** The I/O request ID is already existing. */
+#define VERR_PDM_MEDIAEX_IOREQID_CONFLICT           (-2896)
+/** The I/O request ID was not found. */
+#define VERR_PDM_MEDIAEX_IOREQID_NOT_FOUND          (-2897)
+/** The I/O request is in progress. */
+#define VINF_PDM_MEDIAEX_IOREQ_IN_PROGRESS          2898
+/** The I/O request is in an invalid state for this operation. */
+#define VERR_PDM_MEDIAEX_IOREQ_INVALID_STATE        (-2899)
 /** @} */
 
 
@@ -2358,7 +2388,7 @@
 #define VINF_DBGC_BP_NO_COMMAND                     5406
 /** Generic debugger command failure. */
 #define VERR_DBGC_COMMAND_FAILED                    (-5407)
-/** Logic bug in the DBGC code.. */
+/** Logic bug in the DBGC code. */
 #define VERR_DBGC_IPE                               (-5408)
 
 /** The lowest parse status code.   */
@@ -2640,6 +2670,10 @@
 #define VERR_GSTCTL_GUEST_ERROR                     (-6200)
 /** A guest control object has changed its overall status. */
 #define VWRN_GSTCTL_OBJECTSTATE_CHANGED             6220
+/** Guest process is in a wrong state. */
+#define VERR_GSTCTL_PROCESS_WRONG_STATE             (-6221)
+/** Started guest process terminated with an exit code <> 0. */
+#define VWRN_GSTCTL_PROCESS_EXIT_CODE               6221
 /** @} */
 
 
@@ -2670,7 +2704,22 @@
 #define VERR_GIM_DEVICE_NOT_REGISTERED              (-6310)
 /** Hypercall cannot be enabled/performed due to access/permissions/CPL. */
 #define VERR_GIM_HYPERCALL_ACCESS_DENIED            (-6311)
+/** Failed to read to a memory region while performing a hypercall. */
+#define VERR_GIM_HYPERCALL_MEMORY_READ_FAILED       (-6312)
+/** Failed to write to a memory region while performing a hypercall. */
+#define VERR_GIM_HYPERCALL_MEMORY_WRITE_FAILED      (-6313)
+/** Generic hypercall operation failure. */
+#define VERR_GIM_HYPERCALL_FAILED                   (-6314)
+/** No debug connection configured. */
+#define VERR_GIM_NO_DEBUG_CONNECTION                (-6315)
+/** Return to ring-3 to perform the hypercall there. */
+#define VINF_GIM_R3_HYPERCALL                       6316
+/** Continuing hypercall at the same RIP, continue guest execution. */
+#define VINF_GIM_HYPERCALL_CONTINUING               6317
+/** Instruction that triggers the hypercall is invalid/unrecognized. */
+#define VERR_GIM_INVALID_HYPERCALL_INSTR            (-6318)
 /** @} */
+
 
 /** @name Main API Status Codes
  * @{
@@ -2683,6 +2732,7 @@
 #define VERR_MAIN_CONFIG_CONSTRUCTOR_IPE            (-6401)
 /** @} */
 
+
 /** @name VBox Drag and Drop Status Codes
  * @{
  */
@@ -2690,6 +2740,33 @@
 #define VERR_GSTDND_GUEST_ERROR                     (-6500)
 /** @} */
 
+
+/** @name Audio Status Codes
+ * @{
+ */
+/** Host backend couldn't be initialized.  Happen if the audio server is not
+ *  reachable, audio hardware is not available or similar.  We should use the
+ *  NULL audio driver. */
+#define VERR_AUDIO_BACKEND_INIT_FAILED              (-6600)
+/** No free input streams.  */
+#define VERR_AUDIO_NO_FREE_INPUT_STREAMS            (-6601)
+/** No free output streams.  */
+#define VERR_AUDIO_NO_FREE_OUTPUT_STREAMS           (-6602)
+/** Pending stream disable operation in progress.  */
+#define VERR_AUDIO_STREAM_PENDING_DISABLE           (-6603)
+/** @} */
+
+
+/** @name APIC Status Codes
+ * @{
+ */
+/** No pending interrupt. */
+#define VERR_APIC_INTR_NOT_PENDING                  (-6700)
+/** Pending interrupt is masked by TPR. */
+#define VERR_APIC_INTR_MASKED_BY_TPR                (-6701)
+/** APIC did not accept the interrupt. */
+#define VERR_APIC_INTR_DISCARDED                    (-6702)
+/** @} */
 
 /* SED-END */
 

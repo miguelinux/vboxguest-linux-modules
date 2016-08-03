@@ -1,4 +1,4 @@
-/* $Id: initterm-r0drv.cpp 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: initterm-r0drv.cpp 103459 2015-10-15 18:29:21Z bird $ */
 /** @file
  * IPRT - Initialization & Termination, R0 Driver, Common.
  */
@@ -25,9 +25,9 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #include <iprt/initterm.h>
 #include "internal/iprt.h"
 
@@ -42,12 +42,13 @@
 #endif
 
 #include "internal/initterm.h"
+#include "internal/mem.h"
 #include "internal/thread.h"
 
 
-/*******************************************************************************
-*   Global Variables                                                           *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Global Variables                                                                                                             *
+*********************************************************************************************************************************/
 /** Count of current IPRT users.
  * In ring-0 several drivers / kmods / kexts / wossnames may share the
  * same runtime code. So, we need to keep count in order not to terminate
@@ -87,6 +88,9 @@ RTR0DECL(int) RTR0Init(unsigned fReserved)
     rc = rtR0InitNative();
     if (RT_SUCCESS(rc))
     {
+#ifdef RTR0MEM_WITH_EF_APIS
+        rtR0MemEfInit();
+#endif
         rc = rtThreadInit();
         if (RT_SUCCESS(rc))
         {
@@ -105,6 +109,9 @@ RTR0DECL(int) RTR0Init(unsigned fReserved)
 #endif
             rtThreadTerm();
         }
+#ifdef RTR0MEM_WITH_EF_APIS
+        rtR0MemEfTerm();
+#endif
         rtR0TermNative();
     }
     return rc;
@@ -118,6 +125,9 @@ static void rtR0Term(void)
 #ifndef IN_GUEST /* play safe for now */
     rtR0PowerNotificationTerm();
     rtR0MpNotificationTerm();
+#endif
+#ifdef RTR0MEM_WITH_EF_APIS
+    rtR0MemEfTerm();
 #endif
     rtR0TermNative();
 }

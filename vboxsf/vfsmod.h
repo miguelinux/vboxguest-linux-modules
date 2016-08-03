@@ -19,15 +19,13 @@
 
 #define LOG_GROUP LOG_GROUP_SHARED_FOLDERS
 #include "the-linux-kernel.h"
-#include "version-generated.h"
-#include "product-generated.h"
 #include <VBox/log.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
 # include <linux/backing-dev.h>
 #endif
 
-#include "VBoxGuestR0LibSharedFolders.h"
+#include <VBox/VBoxGuestLibSharedFolders.h>
 #include "vbsfmount.h"
 
 #define DIR_BUFFER_SIZE (16*_1K)
@@ -35,7 +33,7 @@
 /* per-shared folder information */
 struct sf_glob_info
 {
-    VBSFMAP map;
+    VBGLSFMAP map;
     struct nls_table *nls;
     int ttl;
     int uid;
@@ -85,7 +83,7 @@ struct sf_reg_info
 };
 
 /* globals */
-extern VBSFCLIENT client_handle;
+extern VBGLSFCLIENT client_handle;
 
 /* forward declarations */
 extern struct inode_operations         sf_dir_iops;

@@ -1,4 +1,4 @@
-/* $Id: RTSemEventWaitNoResume-2-ex-generic.cpp 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: RTSemEventWaitNoResume-2-ex-generic.cpp 102121 2015-08-14 15:16:38Z bird $ */
 /** @file
  * IPRT - RTSemEventWaitNoResume, generic implementation based
  *        on RTSemEventWaitEx.
@@ -26,9 +26,9 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #define LOG_GROUP RTLOGGROUP_SEM
 #define RTSEMEVENT_WITHOUT_REMAPPING
 #include <iprt/semaphore.h>

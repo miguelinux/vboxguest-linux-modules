@@ -1,4 +1,4 @@
-/* $Id: log.cpp 101195 2015-06-20 20:37:10Z bird $ */
+/* $Id: log.cpp 107095 2016-05-08 16:46:20Z bird $ */
 /** @file
  * Runtime VBox - Logger.
  */
@@ -25,9 +25,9 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #include <iprt/log.h>
 #include "internal/iprt.h"
 
@@ -62,9 +62,9 @@
 #endif
 
 
-/*******************************************************************************
-*   Defined Constants And Macros                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Defined Constants And Macros                                                                                                 *
+*********************************************************************************************************************************/
 /** @def RTLOG_RINGBUF_DEFAULT_SIZE
  * The default ring buffer size. */
 /** @def RTLOG_RINGBUF_MAX_SIZE
@@ -89,9 +89,9 @@ AssertCompile(sizeof(RTLOG_RINGBUF_EYE_CATCHER) == 16);
 AssertCompile(sizeof(RTLOG_RINGBUF_EYE_CATCHER_END) == 16);
 
 
-/*******************************************************************************
-*   Structures and Typedefs                                                    *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Structures and Typedefs                                                                                                      *
+*********************************************************************************************************************************/
 /**
  * Arguments passed to the output function.
  */
@@ -216,9 +216,9 @@ AssertCompileMemberAlignment(RTLOGGERINTERNAL, cbRingBufUnflushed, sizeof(uint64
 #endif /* !IN_RC */
 
 
-/*******************************************************************************
-*   Internal Functions                                                         *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Internal Functions                                                                                                           *
+*********************************************************************************************************************************/
 #ifndef IN_RC
 static unsigned rtlogGroupFlags(const char *psz);
 #endif
@@ -242,9 +242,9 @@ static void rtlogLoggerExFLocked(PRTLOGGER pLogger, unsigned fFlags, unsigned iG
 #endif
 
 
-/*******************************************************************************
-*   Global Variables                                                           *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Global Variables                                                                                                             *
+*********************************************************************************************************************************/
 #ifdef IN_RC
 /** Default logger instance. Make it weak because our RC module loader does not
  *  necessarily resolve this symbol and the compiler _must_ check if this is
@@ -343,7 +343,7 @@ static struct
     const char *pszInstr;               /**< The name. */
     size_t      cchInstr;               /**< The size of the name. */
     uint32_t    fFlag;                  /**< The corresponding destination flag. */
-} const s_aLogDst[] =
+} const g_aLogDst[] =
 {
     { RT_STR_TUPLE("file"),         RTLOGDEST_FILE },       /* Must be 1st! */
     { RT_STR_TUPLE("dir"),          RTLOGDEST_FILE },       /* Must be 2nd! */
@@ -2201,6 +2201,49 @@ RT_EXPORT_SYMBOL(RTLogGetFlags);
 
 
 /**
+ * Finds the end of a destination value.
+ *
+ * The value ends when we counter a ';' or a free standing word (space on both
+ * from the g_aLogDst table.  (If this is problematic for someone, we could
+ * always do quoting and escaping.)
+ *
+ * @returns Value length in chars.
+ * @param   pszValue            The first char after '=' or ':'.
+ */
+static size_t rtLogDestFindValueLength(const char *pszValue)
+{
+    size_t off = 0;
+    char   ch;
+    while ((ch = pszValue[off]) != '\0' && ch != ';')
+    {
+        if (!RT_C_IS_SPACE(ch))
+            off++;
+        else
+        {
+            unsigned i;
+            size_t   cchThusFar = off;
+            do
+                off++;
+            while ((ch = pszValue[off]) != '\0' && RT_C_IS_SPACE(ch));
+            if (ch == ';')
+                return cchThusFar;
+
+            if (ch == 'n' && pszValue[off + 1] == 'o')
+                off += 2;
+            for (i = 0; i < RT_ELEMENTS(g_aLogDst); i++)
+                if (!strncmp(&pszValue[off], g_aLogDst[i].pszInstr, g_aLogDst[i].cchInstr))
+                {
+                    ch = pszValue[off + g_aLogDst[i].cchInstr];
+                    if (ch == '\0' || RT_C_IS_SPACE(ch) || ch == '=' || ch == ':' || ch == ';')
+                        return cchThusFar;
+                }
+        }
+    }
+    return off;
+}
+
+
+/**
  * Updates the logger destination using the specified string.
  *
  * @returns VINF_SUCCESS or VERR_BUFFER_OVERFLOW.
@@ -2242,15 +2285,15 @@ RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue)
         }
 
         /* instruction. */
-        for (i = 0; i < RT_ELEMENTS(s_aLogDst); i++)
+        for (i = 0; i < RT_ELEMENTS(g_aLogDst); i++)
         {
-            size_t cchInstr = strlen(s_aLogDst[i].pszInstr);
-            if (!strncmp(pszValue, s_aLogDst[i].pszInstr, cchInstr))
+            size_t cchInstr = strlen(g_aLogDst[i].pszInstr);
+            if (!strncmp(pszValue, g_aLogDst[i].pszInstr, cchInstr))
             {
                 if (!fNo)
-                    pLogger->fDestFlags |= s_aLogDst[i].fFlag;
+                    pLogger->fDestFlags |= g_aLogDst[i].fFlag;
                 else
-                    pLogger->fDestFlags &= ~s_aLogDst[i].fFlag;
+                    pLogger->fDestFlags &= ~g_aLogDst[i].fFlag;
                 pszValue += cchInstr;
 
                 /* check for value. */
@@ -2258,13 +2301,10 @@ RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue)
                     pszValue++;
                 if (*pszValue == '=' || *pszValue == ':')
                 {
-                    const char *pszEnd;
-
                     pszValue++;
-                    pszEnd = strchr(pszValue, ';');
-                    if (!pszEnd)
-                        pszEnd = strchr(pszValue, '\0');
-                    size_t cch = pszEnd - pszValue;
+                    size_t cch = rtLogDestFindValueLength(pszValue);
+                    const char *pszEnd = pszValue + cch;
+
 # ifdef IN_RING3
                     char szTmp[sizeof(pLogger->pInt->szFilename)];
 # else
@@ -2365,7 +2405,7 @@ RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue)
                     }
                     else
                         AssertMsgFailedReturn(("Invalid destination value! %s%s doesn't take a value!\n",
-                                               fNo ? "no" : "", s_aLogDst[i].pszInstr),
+                                               fNo ? "no" : "", g_aLogDst[i].pszInstr),
                                               VERR_INVALID_PARAMETER);
 
                     pszValue = pszEnd + (*pszEnd != '\0');
@@ -2381,7 +2421,7 @@ RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue)
         }
 
         /* assert known instruction */
-        AssertMsgReturn(i < RT_ELEMENTS(s_aLogDst),
+        AssertMsgReturn(i < RT_ELEMENTS(g_aLogDst),
                         ("Invalid destination value! unknown instruction %.20s\n", pszValue),
                         VERR_INVALID_PARAMETER);
 
@@ -2428,8 +2468,8 @@ RTDECL(int) RTLogGetDestinations(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf)
      * Add the flags in the list.
      */
     fDestFlags = pLogger->fDestFlags;
-    for (i = 6; i < RT_ELEMENTS(s_aLogDst); i++)
-        if (s_aLogDst[i].fFlag & fDestFlags)
+    for (i = 6; i < RT_ELEMENTS(g_aLogDst); i++)
+        if (g_aLogDst[i].fFlag & fDestFlags)
         {
             if (fNotFirst)
             {
@@ -2437,7 +2477,7 @@ RTDECL(int) RTLogGetDestinations(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf)
                 if (RT_FAILURE(rc))
                     return rc;
             }
-            rc = RTStrCopyP(&pszBuf, &cchBuf, s_aLogDst[i].pszInstr);
+            rc = RTStrCopyP(&pszBuf, &cchBuf, g_aLogDst[i].pszInstr);
             if (RT_FAILURE(rc))
                 return rc;
             fNotFirst = true;
@@ -3065,13 +3105,13 @@ static void rtR0LogLoggerExFallback(uint32_t fDestFlags, uint32_t fFlags, PRTLOG
  * vprintf like function for writing to the default log.
  *
  * @param   pszFormat   Printf like format string.
- * @param   args        Optional arguments as specified in pszFormat.
+ * @param   va          Optional arguments as specified in pszFormat.
  *
  * @remark The API doesn't support formatting of floating point numbers at the moment.
  */
-RTDECL(void) RTLogPrintfV(const char *pszFormat, va_list args)
+RTDECL(void) RTLogPrintfV(const char *pszFormat, va_list va)
 {
-    RTLogLoggerV(NULL, pszFormat, args);
+    RTLogLoggerV(NULL, pszFormat, va);
 }
 RT_EXPORT_SYMBOL(RTLogPrintfV);
 
@@ -3145,7 +3185,7 @@ static int rtlogFileOpen(PRTLOGGER pLogger, char *pszErrorMsg, size_t cchErrorMs
  * Used by the rtlogFlush() function as well as RTLogCreateExV.
  *
  * @param   pLogger     The logger instance to update. NULL is not allowed!
- * @param   uTimeSlit   Current time slot (for tikme based rotation).
+ * @param   uTimeSlot   Current time slot (for tikme based rotation).
  * @param   fFirst      Flag whether this is the beginning of logging, i.e.
  *                      called from RTLogCreateExV.  Prevents pfnPhase from
  *                      being called.

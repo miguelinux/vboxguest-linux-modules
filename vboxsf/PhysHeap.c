@@ -1,4 +1,4 @@
-/* $Id: PhysHeap.cpp 100879 2015-06-09 14:26:20Z bird $ */
+/* $Id: PhysHeap.cpp 103262 2015-10-09 15:07:17Z bird $ */
 /** @file
  * VBoxGuestLibR0 - Physical memory heap.
  */
@@ -512,7 +512,7 @@ DECLVBGL(uint32_t) VbglPhysHeapGetPhysAddr (void *p)
     return physAddr;
 }
 
-DECLVBGL(void) VbglPhysHeapFree (void *p)
+DECLVBGL(void) VbglPhysHeapFree(void *p)
 {
     VBGLPHYSHEAPBLOCK *pBlock;
     VBGLPHYSHEAPBLOCK *pNeighbour;

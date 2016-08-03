@@ -1,4 +1,4 @@
-/* $Id: memobj-r0drv.cpp 100874 2015-06-09 14:01:31Z bird $ */
+/* $Id: memobj-r0drv.cpp 106071 2016-03-17 14:04:35Z fmehnert $ */
 /** @file
  * IPRT - Ring-0 Memory Objects, Common Code.
  */
@@ -25,10 +25,11 @@
  */
 
 
-/*******************************************************************************
-*   Header Files                                                               *
-*******************************************************************************/
+/*********************************************************************************************************************************
+*   Header Files                                                                                                                 *
+*********************************************************************************************************************************/
 #define LOG_GROUP RTLOGGROUP_DEFAULT ///@todo RTLOGGROUP_MEM
+#define RTMEM_NO_WRAP_TO_EF_APIS /* circular dependency otherwise. */
 #include <iprt/memobj.h>
 #include "internal/iprt.h"
 
@@ -265,10 +266,8 @@ RT_EXPORT_SYMBOL(RTR0MemObjSize);
  * @param   iPage   The page number within the object.
  */
 /* Work around gcc bug 55940 */
-#if defined(__GNUC__) && defined(RT_ARCH_X86)
-# if (__GNUC__ * 100 + __GNUC_MINOR__) == 407
+#if defined(__GNUC__) && defined(RT_ARCH_X86) && (__GNUC__ * 100 + __GNUC_MINOR__) == 407
  __attribute__((__optimize__ ("no-shrink-wrap")))
-# endif
 #endif
 RTR0DECL(RTHCPHYS) RTR0MemObjGetPagePhysAddr(RTR0MEMOBJ MemObj, size_t iPage)
 {
