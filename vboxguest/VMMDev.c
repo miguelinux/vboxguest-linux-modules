@@ -1,10 +1,10 @@
-/* $Id: VMMDev.cpp 103262 2015-10-09 15:07:17Z bird $ */
+/* $Id: VMMDev.cpp 109079 2016-07-22 19:16:33Z bird $ */
 /** @file
  * VBoxGuestLibR0 - VMMDev device related functions.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

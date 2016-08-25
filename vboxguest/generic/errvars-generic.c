@@ -1,10 +1,10 @@
-/* $Id: errvars-generic.cpp 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: errvars-generic.cpp 109136 2016-07-26 15:20:12Z bird $ */
 /** @file
  * IPRT - Save and Restore Error Variables, generic stub implementation.
  */
 
 /*
- * Copyright (C) 2011-2015 Oracle Corporation
+ * Copyright (C) 2011-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -46,6 +46,7 @@ RTDECL(PRTERRVARS) RTErrVarsSave(PRTERRVARS pVars)
 RTDECL(void) RTErrVarsRestore(PCRTERRVARS pVars)
 {
     Assert(pVars->ai32Vars[0] == RTERRVARS_MAGIC);
+    RT_NOREF_PV(pVars);
 }
 
 
@@ -61,6 +62,7 @@ RTDECL(bool) RTErrVarsAreEqual(PCRTERRVARS pVars1, PCRTERRVARS pVars2)
 RTDECL(bool) RTErrVarsHaveChanged(PCRTERRVARS pVars)
 {
     Assert(pVars->ai32Vars[0] == RTERRVARS_MAGIC);
+    RT_NOREF_PV(pVars);
     return false;
 }
 

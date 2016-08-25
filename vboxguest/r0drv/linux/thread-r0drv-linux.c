@@ -1,10 +1,10 @@
-/* $Id: thread-r0drv-linux.c 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: thread-r0drv-linux.c 109136 2016-07-26 15:20:12Z bird $ */
 /** @file
  * IPRT - Threads, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -104,7 +104,7 @@ RT_EXPORT_SYMBOL(RTThreadYield);
 RTDECL(bool) RTThreadPreemptIsEnabled(RTTHREAD hThread)
 {
 #ifdef CONFIG_PREEMPT
-    Assert(hThread == NIL_RTTHREAD);
+    Assert(hThread == NIL_RTTHREAD); RT_NOREF_PV(hThread);
 # ifdef preemptible
     return preemptible();
 # else
@@ -137,7 +137,7 @@ RT_EXPORT_SYMBOL(RTThreadPreemptIsEnabled);
 
 RTDECL(bool) RTThreadPreemptIsPending(RTTHREAD hThread)
 {
-    Assert(hThread == NIL_RTTHREAD);
+    Assert(hThread == NIL_RTTHREAD); RT_NOREF_PV(hThread);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 4)
     return !!test_tsk_thread_flag(current, TIF_NEED_RESCHED);
 

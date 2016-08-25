@@ -1,10 +1,10 @@
-/* $Id: spinlock-r0drv-linux.c 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: spinlock-r0drv-linux.c 109135 2016-07-26 15:16:41Z bird $ */
 /** @file
  * IPRT - Spinlocks, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -76,6 +76,7 @@ RTDECL(int)  RTSpinlockCreate(PRTSPINLOCK pSpinlock, uint32_t fFlags, const char
     IPRT_LINUX_SAVE_EFL_AC();
     PRTSPINLOCKINTERNAL pThis;
     AssertReturn(fFlags == RTSPINLOCK_FLAGS_INTERRUPT_SAFE || fFlags == RTSPINLOCK_FLAGS_INTERRUPT_UNSAFE, VERR_INVALID_PARAMETER);
+    RT_NOREF_PV(pszName);
 
     /*
      * Allocate.

@@ -1,10 +1,10 @@
-/* $Id: strformat.cpp 108670 2016-07-11 15:31:57Z klaus $ */
+/* $Id: strformat.cpp 110216 2016-08-16 14:02:22Z bird $ */
 /** @file
  * IPRT - String Formatter.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -554,7 +554,7 @@ RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, PFNSTRF
                             cchWidth -= cchStr;
                             while (cchStr-- > 0)
                             {
-/**@todo \#ifndef IN_RC*/
+/** @todo \#ifndef IN_RC*/
 #ifdef IN_RING3
                                 RTUNICP Cp;
                                 RTUtf16GetCpEx(&pwszStr, &Cp);
@@ -588,7 +588,7 @@ RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, PFNSTRF
                             cchWidth -= cchStr;
                             while (cchStr-- > 0)
                             {
-/**@todo \#ifndef IN_RC*/
+/** @todo \#ifndef IN_RC*/
 #ifdef IN_RING3
                                 char *pszEnd = RTStrPutCp(szTmp, *puszStr++);
                                 cch += pfnOutput(pvArgOutput, szTmp, pszEnd - szTmp);

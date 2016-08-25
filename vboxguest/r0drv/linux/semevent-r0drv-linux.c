@@ -1,10 +1,10 @@
-/* $Id: semevent-r0drv-linux.c 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: semevent-r0drv-linux.c 109135 2016-07-26 15:16:41Z bird $ */
 /** @file
  * IPRT - Single Release Event Semaphores, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -73,6 +73,7 @@ RTDECL(int)  RTSemEventCreateEx(PRTSEMEVENT phEventSem, uint32_t fFlags, RTLOCKV
 {
     PRTSEMEVENTINTERNAL pThis;
     IPRT_LINUX_SAVE_EFL_AC();
+    RT_NOREF_PV(hClass); RT_NOREF_PV(pszNameFmt);
 
     AssertReturn(!(fFlags & ~(RTSEMEVENT_FLAGS_NO_LOCK_VAL | RTSEMEVENT_FLAGS_BOOTSTRAP_HACK)), VERR_INVALID_PARAMETER);
     Assert(!(fFlags & RTSEMEVENT_FLAGS_BOOTSTRAP_HACK) || (fFlags & RTSEMEVENT_FLAGS_NO_LOCK_VAL));
@@ -183,6 +184,7 @@ static int rtR0SemEventLnxWait(PRTSEMEVENTINTERNAL pThis, uint32_t fFlags, uint6
                                PCRTLOCKVALSRCPOS pSrcPos)
 {
     int rc;
+    RT_NOREF_PV(pSrcPos);
 
     /*
      * Validate the input.

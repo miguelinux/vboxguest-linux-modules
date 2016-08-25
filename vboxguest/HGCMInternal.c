@@ -1,10 +1,10 @@
-/* $Id: HGCMInternal.cpp 103297 2015-10-12 13:46:16Z bird $ */
+/* $Id: HGCMInternal.cpp 109438 2016-08-01 17:25:25Z bird $ */
 /** @file
  * VBoxGuestLib - Host-Guest Communication Manager internal functions, implemented by VBoxGuest
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -489,7 +489,10 @@ static void vbglR0HGCMInternalInitCall(VMMDevHGCMCall *pHGCMCall, VBoxGuestHGCMC
     uint32_t    offExtra = (uint32_t)((uintptr_t)(pDstParm + cParms) - (uintptr_t)pHGCMCall);
     uint32_t    iLockBuf = 0;
     uint32_t    iParm;
-
+    RT_NOREF1(cbCallInfo);
+#ifndef USE_BOUNCE_BUFFERS
+    RT_NOREF1(fIsUser);
+#endif
 
     /*
      * The call request headers.
@@ -768,6 +771,10 @@ static int vbglR0HGCMInternalCopyBackResult(VBoxGuestHGCMCallInfo *pCallInfo, VM
     uint32_t    iLockBuf = 0;
 #endif
     uint32_t    iParm;
+    RT_NOREF1(pParmInfo);
+#ifndef USE_BOUNCE_BUFFERS
+    RT_NOREF1(fIsUser);
+#endif
 
     /*
      * The call result.

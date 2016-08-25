@@ -1,10 +1,10 @@
-/* $Id: alloc-r0drv-linux.c 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: alloc-r0drv-linux.c 109135 2016-07-26 15:16:41Z bird $ */
 /** @file
  * IPRT - Memory Allocation, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -142,6 +142,7 @@ RTR0DECL(int) RTR0MemExecDonate(void *pvMemory, size_t cb)
     }
     return rc;
 #else
+    RT_NOREF_PV(pvMemory); RT_NOREF_PV(cb);
     return VERR_NOT_SUPPORTED;
 #endif
 }

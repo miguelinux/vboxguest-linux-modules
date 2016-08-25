@@ -1,10 +1,10 @@
-/* $Id: HGSMIMemAlloc.cpp 92327 2014-02-17 16:02:08Z sunlover $ */
+/* $Id: HGSMIMemAlloc.cpp 109050 2016-07-22 18:42:47Z bird $ */
 /** @file
  * VBox Host Guest Shared Memory Interface (HGSMI) - Memory allocator.
  */
 
 /*
- * Copyright (C) 2014 Oracle Corporation
+ * Copyright (C) 2014-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

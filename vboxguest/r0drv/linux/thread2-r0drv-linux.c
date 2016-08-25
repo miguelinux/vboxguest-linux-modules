@@ -1,10 +1,10 @@
-/* $Id: thread2-r0drv-linux.c 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: thread2-r0drv-linux.c 109135 2016-07-26 15:16:41Z bird $ */
 /** @file
  * IPRT - Threads (Part 2), Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -90,7 +90,10 @@ DECLHIDDEN(int) rtThreadNativeSetPriority(PRTTHREADINT pThread, RTTHREADTYPE enm
     }
 
     sched_setscheduler(current, iSchedClass, &Param);
+#else
+    RT_NOREF_PV(enmType);
 #endif
+    RT_NOREF_PV(pThread);
 
     return VINF_SUCCESS;
 }
@@ -98,6 +101,7 @@ DECLHIDDEN(int) rtThreadNativeSetPriority(PRTTHREADINT pThread, RTTHREADTYPE enm
 
 DECLHIDDEN(int) rtThreadNativeAdopt(PRTTHREADINT pThread)
 {
+    RT_NOREF_PV(pThread);
     return VERR_NOT_IMPLEMENTED;
 }
 

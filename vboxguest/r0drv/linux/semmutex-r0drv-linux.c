@@ -1,10 +1,10 @@
-/* $Id: semmutex-r0drv-linux.c 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: semmutex-r0drv-linux.c 109135 2016-07-26 15:16:41Z bird $ */
 /** @file
  * IPRT - Mutex Semaphores, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -323,6 +323,7 @@ RT_EXPORT_SYMBOL(RTSemMutexRequest);
 
 RTDECL(int) RTSemMutexRequestDebug(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL)
 {
+    RT_NOREF_PV(uId); RT_SRC_POS_NOREF();
     return RTSemMutexRequest(hMutexSem, cMillies);
 }
 RT_EXPORT_SYMBOL(RTSemMutexRequestDebug);
@@ -337,6 +338,7 @@ RT_EXPORT_SYMBOL(RTSemMutexRequestNoResume);
 
 RTDECL(int) RTSemMutexRequestNoResumeDebug(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL)
 {
+    RT_NOREF_PV(uId); RT_SRC_POS_NOREF();
     return RTSemMutexRequestNoResume(hMutexSem, cMillies);
 }
 RT_EXPORT_SYMBOL(RTSemMutexRequestNoResumeDebug);

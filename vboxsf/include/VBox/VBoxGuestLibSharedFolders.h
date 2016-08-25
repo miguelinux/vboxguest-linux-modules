@@ -1,10 +1,10 @@
-/* $Id: VBoxGuestLibSharedFolders.h 103319 2015-10-12 16:10:11Z bird $ */
+/* $Id: VBoxGuestLibSharedFolders.h 109032 2016-07-22 18:23:50Z bird $ */
 /** @file
  * VBoxGuestLib - Central calls header.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

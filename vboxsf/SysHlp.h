@@ -1,10 +1,10 @@
-/* $Id: SysHlp.h 103262 2015-10-09 15:07:17Z bird $ */
+/* $Id: SysHlp.h 109258 2016-07-29 13:18:33Z bird $ */
 /** @file
  * VBoxGuestLibR0 - System dependent helpers internal header.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -32,26 +32,7 @@
 #ifdef RT_OS_WINDOWS
 # undef PAGE_SIZE
 # undef PAGE_SHIFT
-# if (_MSC_VER >= 1400) && !defined(VBOX_WITH_PATCHED_DDK)
-#  include <iprt/asm.h>
-#  define _InterlockedExchange           _InterlockedExchange_StupidDDKVsCompilerCrap
-#  define _InterlockedExchangeAdd        _InterlockedExchangeAdd_StupidDDKVsCompilerCrap
-#  define _InterlockedCompareExchange    _InterlockedCompareExchange_StupidDDKVsCompilerCrap
-#  define _InterlockedAddLargeStatistic  _InterlockedAddLargeStatistic_StupidDDKVsCompilerCrap
-#  pragma warning(disable : 4163)
-RT_C_DECLS_BEGIN
-#  include <ntddk.h>
-RT_C_DECLS_END
-#  pragma warning(default : 4163)
-#  undef  _InterlockedExchange
-#  undef  _InterlockedExchangeAdd
-#  undef  _InterlockedCompareExchange
-#  undef  _InterlockedAddLargeStatistic
-# else
-RT_C_DECLS_BEGIN
-#  include <ntddk.h>
-RT_C_DECLS_END
-# endif
+# include <iprt/nt/ntddk.h>
 /* XP DDK #defines ExFreePool to ExFreePoolWithTag. The latter does not exist on NT4, so...
  * The same for ExAllocatePool.
  */

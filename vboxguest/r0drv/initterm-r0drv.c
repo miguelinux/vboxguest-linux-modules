@@ -1,10 +1,10 @@
-/* $Id: initterm-r0drv.cpp 103459 2015-10-15 18:29:21Z bird $ */
+/* $Id: initterm-r0drv.cpp 109136 2016-07-26 15:20:12Z bird $ */
 /** @file
  * IPRT - Initialization & Termination, R0 Driver, Common.
  */
 
 /*
- * Copyright (C) 2006-2015 Oracle Corporation
+ * Copyright (C) 2006-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -66,7 +66,7 @@ RTR0DECL(int) RTR0Init(unsigned fReserved)
 {
     int rc;
     uint32_t cNewUsers;
-    Assert(fReserved == 0);
+    Assert(fReserved == 0); RT_NOREF_PV(fReserved);
 #ifndef RT_OS_SOLARIS       /* On Solaris our thread preemption information is only obtained in rtR0InitNative().*/
     RT_ASSERT_PREEMPTIBLE();
 #endif

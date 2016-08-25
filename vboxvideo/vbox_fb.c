@@ -1,10 +1,10 @@
-/* $Id: vbox_fb.c 107944 2016-06-09 07:13:44Z fmehnert $ */
+/* $Id: vbox_fb.c 109119 2016-07-25 18:32:58Z michael $ */
 /** @file
  * VirtualBox Additions Linux kernel video driver
  */
 
 /*
- * Copyright (C) 2013 Oracle Corporation
+ * Copyright (C) 2013-2016 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -497,5 +497,5 @@ void vbox_fbdev_set_base(struct vbox_private *vbox, unsigned long gpu_addr)
         vbox->fbdev->helper.fbdev->fix.smem_start =
                 vbox->fbdev->helper.fbdev->apertures->ranges[0].base +
                 gpu_addr;
-        vbox->fbdev->helper.fbdev->fix.smem_len = vbox->vram_size - gpu_addr;
+        vbox->fbdev->helper.fbdev->fix.smem_len = vbox->available_vram_size - gpu_addr;
 }
