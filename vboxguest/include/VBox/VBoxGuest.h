@@ -34,7 +34,6 @@
 #include <VBox/VMMDev2.h>
 #include <VBox/VBoxGuest2.h>
 
-
 /** @defgroup grp_vboxguest  VirtualBox Guest Additions Device Driver
  *
  * Also know as VBoxGuest.
@@ -87,7 +86,7 @@
 
 #ifdef RT_OS_DARWIN
 /** Cookie used to fend off some unwanted clients to the IOService. */
-# define VBOXGUEST_DARWIN_IOSERVICE_COOKIE      UINT32_C(0x56426f78) /* 'VBox' */
+# define VBOXGUEST_DARWIN_IOSERVICE_COOKIE      UINT32_C(0x56426f78)	/* 'VBox' */
 #endif
 
 #if !defined(IN_RC) && !defined(IN_RING0_AGNOSTIC) && !defined(IPRT_NO_CRT)
@@ -137,16 +136,15 @@
  * This is necessary because the ioctl number scheme on many Unixy OSes (esp. Solaris)
  * only allows a relatively small size to be encoded into the request. So, for big
  * request this generic form is used instead. */
-typedef struct VBGLBIGREQ
-{
+typedef struct VBGLBIGREQ {
     /** Magic value (VBGLBIGREQ_MAGIC). */
-    uint32_t    u32Magic;
+	uint32_t u32Magic;
     /** The size of the data buffer. */
-    uint32_t    cbData;
+	uint32_t cbData;
     /** The user address of the data buffer. */
-    RTR3PTR     pvDataR3;
+	RTR3PTR pvDataR3;
 #if HC_ARCH_BITS == 32
-    uint32_t    u32Padding;
+	uint32_t u32Padding;
 #endif
 /** @todo r=bird: We need a 'rc' field for passing VBox status codes. Reused
  *        some input field as rc on output. */
@@ -158,7 +156,6 @@ typedef const VBGLBIGREQ *PCVBGLBIGREQ;
 
 /** The VBGLBIGREQ::u32Magic value (Ryuu Murakami). */
 #define VBGLBIGREQ_MAGIC                            0x19520219
-
 
 #if defined(RT_OS_WINDOWS)
 /** @todo Remove IOCTL_CODE later! Integrate it in VBOXGUEST_IOCTL_CODE below. */
@@ -221,19 +218,15 @@ typedef const VBGLBIGREQ *PCVBGLBIGREQ;
 # define VBOXGUEST_IOCTL_CODE_FAST_32(Function)     VBOXGUEST_IOCTL_CODE_FAST_(Function)
 #endif /* RT_ARCH_AMD64 */
 
-
-
 /** IOCTL to VBoxGuest to query the VMMDev IO port region start.
  * @remarks Ring-0 only. */
 #define VBOXGUEST_IOCTL_GETVMMDEVPORT               VBOXGUEST_IOCTL_CODE(1, sizeof(VBoxGuestPortInfo))
 
 #pragma pack(4)
-typedef struct VBoxGuestPortInfo
-{
-    uint32_t portAddress;
-    struct VMMDevMemory *pVMMDevMemory;
+typedef struct VBoxGuestPortInfo {
+	uint32_t portAddress;
+	struct VMMDevMemory *pVMMDevMemory;
 } VBoxGuestPortInfo;
-
 
 /** IOCTL to VBoxGuest to wait for a VMMDev host notification */
 #define VBOXGUEST_IOCTL_WAITEVENT                   VBOXGUEST_IOCTL_CODE_(2, sizeof(VBoxGuestWaitEventInfo))
@@ -252,34 +245,30 @@ typedef struct VBoxGuestPortInfo
 /** @} */
 
 /** Input and output buffers layout of the IOCTL_VBOXGUEST_WAITEVENT */
-typedef struct VBoxGuestWaitEventInfo
-{
+typedef struct VBoxGuestWaitEventInfo {
     /** timeout in milliseconds */
-    uint32_t u32TimeoutIn;
+	uint32_t u32TimeoutIn;
     /** events to wait for */
-    uint32_t u32EventMaskIn;
+	uint32_t u32EventMaskIn;
     /** result code */
-    uint32_t u32Result;
+	uint32_t u32Result;
     /** events occurred */
-    uint32_t u32EventFlagsOut;
+	uint32_t u32EventFlagsOut;
 } VBoxGuestWaitEventInfo;
 AssertCompileSize(VBoxGuestWaitEventInfo, 16);
-
 
 /** IOCTL to VBoxGuest to perform a VMM request
  * @remark  The data buffer for this IOCtl has an variable size, keep this in mind
  *          on systems where this matters. */
 #define VBOXGUEST_IOCTL_VMMREQUEST(Size)            VBOXGUEST_IOCTL_CODE_(3, (Size))
 
-
 /** IOCTL to VBoxGuest to control event filter mask. */
 #define VBOXGUEST_IOCTL_CTL_FILTER_MASK             VBOXGUEST_IOCTL_CODE_(4, sizeof(VBoxGuestFilterMaskInfo))
 
 /** Input and output buffer layout of the IOCTL_VBOXGUEST_CTL_FILTER_MASK. */
-typedef struct VBoxGuestFilterMaskInfo
-{
-    uint32_t u32OrMask;
-    uint32_t u32NotMask;
+typedef struct VBoxGuestFilterMaskInfo {
+	uint32_t u32OrMask;
+	uint32_t u32NotMask;
 } VBoxGuestFilterMaskInfo;
 AssertCompileSize(VBoxGuestFilterMaskInfo, 8);
 #pragma pack()
@@ -300,16 +289,14 @@ AssertCompileSize(VBoxGuestFilterMaskInfo, 8);
 #define VBOXGUEST_IOCTL_CHECK_BALLOON               VBOXGUEST_IOCTL_CODE_(7, sizeof(VBoxGuestCheckBalloonInfo))
 
 /** Output buffer layout of the VBOXGUEST_IOCTL_CHECK_BALLOON. */
-typedef struct VBoxGuestCheckBalloonInfo
-{
+typedef struct VBoxGuestCheckBalloonInfo {
     /** The size of the balloon in chunks of 1MB. */
-    uint32_t cBalloonChunks;
+	uint32_t cBalloonChunks;
     /** false = handled in R0, no further action required.
      *   true = allocate balloon memory in R3. */
-    uint32_t fHandleInR3;
+	uint32_t fHandleInR3;
 } VBoxGuestCheckBalloonInfo;
 AssertCompileSize(VBoxGuestCheckBalloonInfo, 8);
-
 
 /** IOCTL to VBoxGuest to supply or revoke one chunk for ballooning.
  * The guest kernel module / device driver will lock down supplied memory or
@@ -319,14 +306,13 @@ AssertCompileSize(VBoxGuestCheckBalloonInfo, 8);
 
 /** Input buffer layout of the VBOXGUEST_IOCTL_CHANGE_BALLOON request.
  * Information about a memory chunk used to inflate or deflate the balloon. */
-typedef struct VBoxGuestChangeBalloonInfo
-{
+typedef struct VBoxGuestChangeBalloonInfo {
     /** Address of the chunk. */
-    uint64_t u64ChunkAddr;
+	uint64_t u64ChunkAddr;
     /** true = inflate, false = deflate. */
-    uint32_t fInflate;
+	uint32_t fInflate;
     /** Alignment padding. */
-    uint32_t u32Align;
+	uint32_t u32Align;
 } VBoxGuestChangeBalloonInfo;
 AssertCompileSize(VBoxGuestChangeBalloonInfo, 16);
 
@@ -335,10 +321,9 @@ AssertCompileSize(VBoxGuestChangeBalloonInfo, 16);
 
 /** Input and output buffer layout of the VBOXGUEST_IOCTL_WRITE_CORE
  *  request. */
-typedef struct VBoxGuestWriteCoreDump
-{
+typedef struct VBoxGuestWriteCoreDump {
     /** Flags (reserved, MBZ). */
-    uint32_t fFlags;
+	uint32_t fFlags;
 } VBoxGuestWriteCoreDump;
 AssertCompileSize(VBoxGuestWriteCoreDump, 4);
 
@@ -374,7 +359,7 @@ AssertCompileSize(VBoxGuestWriteCoreDump, 4);
 #  define VBOXGUEST_IOCTL_HGCM_CALL_32(Size)        VBOXGUEST_IOCTL_CODE_32(18, (Size))
 #  define VBOXGUEST_IOCTL_HGCM_CALL_TIMED_32(Size)  VBOXGUEST_IOCTL_CODE_32(20, (Size))
 /** @} */
-# endif /* RT_ARCH_AMD64 */
+# endif	/* RT_ARCH_AMD64 */
 
 /** Get the pointer to the first HGCM parameter.  */
 # define VBOXGUEST_HGCM_CALL_PARMS(a)             ( (HGCMFunctionParameter   *)((uint8_t *)(a) + sizeof(VBoxGuestHGCMCallInfo)) )
@@ -398,45 +383,41 @@ typedef DECLCALLBACK(void) FNVBOXGUESTMOUSENOTIFY(void *pfnUser);
 typedef FNVBOXGUESTMOUSENOTIFY *PFNVBOXGUESTMOUSENOTIFY;
 
 /** Input buffer for VBOXGUEST_IOCTL_INTERNAL_SET_MOUSE_NOTIFY_CALLBACK. */
-typedef struct VBoxGuestMouseSetNotifyCallback
-{
+typedef struct VBoxGuestMouseSetNotifyCallback {
     /**
      * Mouse notification callback.
      *
      * @param   pvUser      The callback argument.
      */
-    PFNVBOXGUESTMOUSENOTIFY      pfnNotify;
+	PFNVBOXGUESTMOUSENOTIFY pfnNotify;
     /** The callback argument*/
-    void                       *pvUser;
+	void *pvUser;
 } VBoxGuestMouseSetNotifyCallback;
 
-
-typedef enum VBOXGUESTCAPSACQUIRE_FLAGS
-{
-    VBOXGUESTCAPSACQUIRE_FLAGS_NONE = 0,
-    /* configures VBoxGuest to use the specified caps in Acquire mode, w/o making any caps acquisition/release.
-     * so far it is only possible to set acquire mode for caps, but not clear it,
-     * so u32NotMask is ignored for this request */
-    VBOXGUESTCAPSACQUIRE_FLAGS_CONFIG_ACQUIRE_MODE,
-    /* to ensure enum is 32bit*/
-    VBOXGUESTCAPSACQUIRE_FLAGS_32bit = 0x7fffffff
+typedef enum VBOXGUESTCAPSACQUIRE_FLAGS {
+	VBOXGUESTCAPSACQUIRE_FLAGS_NONE = 0,
+	/* configures VBoxGuest to use the specified caps in Acquire mode, w/o making any caps acquisition/release.
+	 * so far it is only possible to set acquire mode for caps, but not clear it,
+	 * so u32NotMask is ignored for this request */
+	VBOXGUESTCAPSACQUIRE_FLAGS_CONFIG_ACQUIRE_MODE,
+	/* to ensure enum is 32bit */
+	VBOXGUESTCAPSACQUIRE_FLAGS_32bit = 0x7fffffff
 } VBOXGUESTCAPSACQUIRE_FLAGS;
 
-typedef struct VBoxGuestCapsAquire
-{
-    /* result status
-     * VINF_SUCCESS - on success
-     * VERR_RESOURCE_BUSY    - some caps in the u32OrMask are acquired by some other VBoxGuest connection.
-     *                         NOTE: no u32NotMask caps are cleaned in this case, i.e. no modifications are done on failure
-     * VER_INVALID_PARAMETER - invalid Caps are specified with either u32OrMask or u32NotMask. No modifications are done on failure.
-     */
-    int32_t rc;
-    /* Acquire command */
-    VBOXGUESTCAPSACQUIRE_FLAGS enmFlags;
-    /* caps to acquire, OR-ed VMMDEV_GUEST_SUPPORTS_XXX flags */
-    uint32_t u32OrMask;
-    /* caps to release, OR-ed VMMDEV_GUEST_SUPPORTS_XXX flags */
-    uint32_t u32NotMask;
+typedef struct VBoxGuestCapsAquire {
+	/* result status
+	 * VINF_SUCCESS - on success
+	 * VERR_RESOURCE_BUSY    - some caps in the u32OrMask are acquired by some other VBoxGuest connection.
+	 *                         NOTE: no u32NotMask caps are cleaned in this case, i.e. no modifications are done on failure
+	 * VER_INVALID_PARAMETER - invalid Caps are specified with either u32OrMask or u32NotMask. No modifications are done on failure.
+	 */
+	int32_t rc;
+	/* Acquire command */
+	VBOXGUESTCAPSACQUIRE_FLAGS enmFlags;
+	/* caps to acquire, OR-ed VMMDEV_GUEST_SUPPORTS_XXX flags */
+	uint32_t u32OrMask;
+	/* caps to release, OR-ed VMMDEV_GUEST_SUPPORTS_XXX flags */
+	uint32_t u32NotMask;
 } VBoxGuestCapsAquire;
 
 /** IOCTL to for Acquiring/Releasing Guest Caps
@@ -456,13 +437,11 @@ typedef struct VBoxGuestCapsAquire
 
 /** Input and output buffer layout of the VBOXGUEST_IOCTL_SET_GUEST_CAPABILITIES
  *  IOCtl. */
-typedef struct VBoxGuestSetCapabilitiesInfo
-{
-    uint32_t u32OrMask;
-    uint32_t u32NotMask;
+typedef struct VBoxGuestSetCapabilitiesInfo {
+	uint32_t u32OrMask;
+	uint32_t u32NotMask;
 } VBoxGuestSetCapabilitiesInfo;
 AssertCompileSize(VBoxGuestSetCapabilitiesInfo, 8);
-
 
 #ifdef RT_OS_OS2
 
@@ -472,12 +451,11 @@ AssertCompileSize(VBoxGuestSetCapabilitiesInfo, 8);
  * @remark  This is defined in multiple 16-bit headers / sources.
  *          Some places it's called VBGOS2IDC to short things a bit.
  */
-typedef struct VBOXGUESTOS2IDCCONNECT
-{
+typedef struct VBOXGUESTOS2IDCCONNECT {
     /** VMMDEV_VERSION. */
-    uint32_t u32Version;
+	uint32_t u32Version;
     /** Opaque session handle. */
-    uint32_t u32Session;
+	uint32_t u32Session;
 
     /**
      * The 32-bit service entry point.
@@ -493,7 +471,10 @@ typedef struct VBOXGUESTOS2IDCCONNECT
      * @param   pcbDataReturned     Where to store the amount of data that's returned.
      *                              This can be NULL if pvData is NULL.
      */
-    DECLCALLBACKMEMBER(int, pfnServiceEP)(uint32_t u32Session, unsigned iFunction, void *pvData, size_t cbData, size_t *pcbDataReturned);
+	 DECLCALLBACKMEMBER(int, pfnServiceEP) (uint32_t u32Session,
+						unsigned iFunction,
+						void *pvData, size_t cbData,
+						size_t * pcbDataReturned);
 
     /** The 16-bit service entry point for C code (cdecl).
      *
@@ -506,7 +487,7 @@ typedef struct VBOXGUESTOS2IDCCONNECT
      *                          void far *fpvData, uint16_t cbData, uint16_t far *pcbDataReturned);
      * @endcode
      */
-    RTFAR16 fpfnServiceEP;
+	RTFAR16 fpfnServiceEP;
 
     /** The 16-bit service entry point for Assembly code (register).
      *
@@ -520,7 +501,7 @@ typedef struct VBOXGUESTOS2IDCCONNECT
      * @param   pvData              es:bx - The input/output data buffer.
      * @param   cbData              cx    - The size of the data buffer.
      */
-    RTFAR16 fpfnServiceAsmEP;
+	RTFAR16 fpfnServiceAsmEP;
 } VBOXGUESTOS2IDCCONNECT;
 /** Pointer to VBOXGUESTOS2IDCCONNECT buffer. */
 typedef VBOXGUESTOS2IDCCONNECT *PVBOXGUESTOS2IDCCONNECT;
@@ -562,4 +543,3 @@ typedef VBOXGUESTOS2IDCCONNECT *PVBOXGUESTOS2IDCCONNECT;
 
 /** @} */
 #endif
-

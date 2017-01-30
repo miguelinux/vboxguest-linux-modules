@@ -30,12 +30,10 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_memobj     RTMemObj - Memory Object Manipulation (Ring-0)
  * @ingroup grp_rt
  * @{
  */
-
 /** @def RTMEM_TAG
  * The default allocation tag used by the RTMem allocation APIs.
  *
@@ -46,9 +44,7 @@ RT_C_DECLS_BEGIN
 #ifndef RTMEM_TAG
 # define RTMEM_TAG   (__FILE__)
 #endif
-
 #ifdef IN_RING0
-
 /**
  * Checks if this is mapping or not.
  *
@@ -140,7 +136,8 @@ RTR0DECL(int) RTR0MemObjFree(RTR0MEMOBJ MemObj, bool fFreeMappings);
  * @param   fExecutable     Flag indicating whether it should be permitted to executed code in the memory object.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjAllocPageTag(PRTR0MEMOBJ pMemObj, size_t cb, bool fExecutable, const char *pszTag);
+RTR0DECL(int) RTR0MemObjAllocPageTag(PRTR0MEMOBJ pMemObj, size_t cb,
+				     bool fExecutable, const char *pszTag);
 
 /**
  * Allocates page aligned virtual kernel memory with physical backing below 4GB
@@ -168,7 +165,8 @@ RTR0DECL(int) RTR0MemObjAllocPageTag(PRTR0MEMOBJ pMemObj, size_t cb, bool fExecu
  * @param   fExecutable     Flag indicating whether it should be permitted to executed code in the memory object.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjAllocLowTag(PRTR0MEMOBJ pMemObj, size_t cb, bool fExecutable, const char *pszTag);
+RTR0DECL(int) RTR0MemObjAllocLowTag(PRTR0MEMOBJ pMemObj, size_t cb,
+				    bool fExecutable, const char *pszTag);
 
 /**
  * Allocates page aligned virtual kernel memory with contiguous physical backing
@@ -196,7 +194,8 @@ RTR0DECL(int) RTR0MemObjAllocLowTag(PRTR0MEMOBJ pMemObj, size_t cb, bool fExecut
  * @param   fExecutable     Flag indicating whether it should be permitted to executed code in the memory object.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjAllocContTag(PRTR0MEMOBJ pMemObj, size_t cb, bool fExecutable, const char *pszTag);
+RTR0DECL(int) RTR0MemObjAllocContTag(PRTR0MEMOBJ pMemObj, size_t cb,
+				     bool fExecutable, const char *pszTag);
 
 /**
  * Locks a range of user virtual memory (default tag).
@@ -246,8 +245,9 @@ RTR0DECL(int) RTR0MemObjAllocContTag(PRTR0MEMOBJ pMemObj, size_t cb, bool fExecu
  *          is not intented as permanent restriction, feel free to help out
  *          lifting it.
  */
-RTR0DECL(int) RTR0MemObjLockUserTag(PRTR0MEMOBJ pMemObj, RTR3PTR R3Ptr, size_t cb, uint32_t fAccess,
-                                    RTR0PROCESS R0Process, const char *pszTag);
+RTR0DECL(int) RTR0MemObjLockUserTag(PRTR0MEMOBJ pMemObj, RTR3PTR R3Ptr,
+				    size_t cb, uint32_t fAccess,
+				    RTR0PROCESS R0Process, const char *pszTag);
 
 /**
  * Locks a range of kernel virtual memory (default tag).
@@ -277,7 +277,8 @@ RTR0DECL(int) RTR0MemObjLockUserTag(PRTR0MEMOBJ pMemObj, RTR3PTR R3Ptr, size_t c
  *
  * @remark  RTR0MemGetAddress() will return the rounded down address.
  */
-RTR0DECL(int) RTR0MemObjLockKernelTag(PRTR0MEMOBJ pMemObj, void *pv, size_t cb, uint32_t fAccess, const char *pszTag);
+RTR0DECL(int) RTR0MemObjLockKernelTag(PRTR0MEMOBJ pMemObj, void *pv, size_t cb,
+				      uint32_t fAccess, const char *pszTag);
 
 /**
  * Allocates contiguous page aligned physical memory without (necessarily) any
@@ -303,7 +304,8 @@ RTR0DECL(int) RTR0MemObjLockKernelTag(PRTR0MEMOBJ pMemObj, void *pv, size_t cb, 
  *                          Pass NIL_RTHCPHYS if any address is acceptable.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjAllocPhysTag(PRTR0MEMOBJ pMemObj, size_t cb, RTHCPHYS PhysHighest, const char *pszTag);
+RTR0DECL(int) RTR0MemObjAllocPhysTag(PRTR0MEMOBJ pMemObj, size_t cb,
+				     RTHCPHYS PhysHighest, const char *pszTag);
 
 /**
  * Allocates contiguous physical memory without (necessarily) any kernel mapping
@@ -333,7 +335,9 @@ RTR0DECL(int) RTR0MemObjAllocPhysTag(PRTR0MEMOBJ pMemObj, size_t cb, RTHCPHYS Ph
  *                          Supported values are 0 (alias for PAGE_SIZE), PAGE_SIZE, _2M, _4M and _1G.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjAllocPhysExTag(PRTR0MEMOBJ pMemObj, size_t cb, RTHCPHYS PhysHighest, size_t uAlignment, const char *pszTag);
+RTR0DECL(int) RTR0MemObjAllocPhysExTag(PRTR0MEMOBJ pMemObj, size_t cb,
+				       RTHCPHYS PhysHighest, size_t uAlignment,
+				       const char *pszTag);
 
 /**
  * Allocates non-contiguous page aligned physical memory without (necessarily)
@@ -375,7 +379,9 @@ RTR0DECL(int) RTR0MemObjAllocPhysExTag(PRTR0MEMOBJ pMemObj, size_t cb, RTHCPHYS 
  *                          Pass NIL_RTHCPHYS if any address is acceptable.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjAllocPhysNCTag(PRTR0MEMOBJ pMemObj, size_t cb, RTHCPHYS PhysHighest, const char *pszTag);
+RTR0DECL(int) RTR0MemObjAllocPhysNCTag(PRTR0MEMOBJ pMemObj, size_t cb,
+				       RTHCPHYS PhysHighest,
+				       const char *pszTag);
 
 /** Memory cache policy for RTR0MemObjEnterPhys.
  * @{
@@ -414,7 +420,9 @@ RTR0DECL(int) RTR0MemObjAllocPhysNCTag(PRTR0MEMOBJ pMemObj, size_t cb, RTHCPHYS 
  * @param   uCachePolicy    One of the RTMEM_CACHE_XXX modes.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjEnterPhysTag(PRTR0MEMOBJ pMemObj, RTHCPHYS Phys, size_t cb, uint32_t uCachePolicy, const char *pszTag);
+RTR0DECL(int) RTR0MemObjEnterPhysTag(PRTR0MEMOBJ pMemObj, RTHCPHYS Phys,
+				     size_t cb, uint32_t uCachePolicy,
+				     const char *pszTag);
 
 /**
  * Reserves kernel virtual address space (default tag).
@@ -448,7 +456,9 @@ RTR0DECL(int) RTR0MemObjEnterPhysTag(PRTR0MEMOBJ pMemObj, RTHCPHYS Phys, size_t 
  *                          Supported values are 0 (alias for PAGE_SIZE), PAGE_SIZE, _2M and _4M.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjReserveKernelTag(PRTR0MEMOBJ pMemObj, void *pvFixed, size_t cb, size_t uAlignment, const char *pszTag);
+RTR0DECL(int) RTR0MemObjReserveKernelTag(PRTR0MEMOBJ pMemObj, void *pvFixed,
+					 size_t cb, size_t uAlignment,
+					 const char *pszTag);
 
 /**
  * Reserves user virtual address space in the current process (default tag).
@@ -476,8 +486,10 @@ RTR0DECL(int) RTR0MemObjReserveKernelTag(PRTR0MEMOBJ pMemObj, void *pvFixed, siz
  * @param   R0Process       The process to reserve the memory in. NIL_R0PROCESS is an alias for the current one.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjReserveUserTag(PRTR0MEMOBJ pMemObj, RTR3PTR R3PtrFixed, size_t cb, size_t uAlignment,
-                                       RTR0PROCESS R0Process, const char *pszTag);
+RTR0DECL(int) RTR0MemObjReserveUserTag(PRTR0MEMOBJ pMemObj, RTR3PTR R3PtrFixed,
+				       size_t cb, size_t uAlignment,
+				       RTR0PROCESS R0Process,
+				       const char *pszTag);
 
 /**
  * Maps a memory object into kernel virtual address space (default tag).
@@ -511,8 +523,10 @@ RTR0DECL(int) RTR0MemObjReserveUserTag(PRTR0MEMOBJ pMemObj, RTR3PTR R3PtrFixed, 
  * @param   fProt           Combination of RTMEM_PROT_* flags (except RTMEM_PROT_NONE).
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjMapKernelTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToMap, void *pvFixed,
-                                     size_t uAlignment, unsigned fProt, const char *pszTag);
+RTR0DECL(int) RTR0MemObjMapKernelTag(PRTR0MEMOBJ pMemObj,
+				     RTR0MEMOBJ MemObjToMap, void *pvFixed,
+				     size_t uAlignment, unsigned fProt,
+				     const char *pszTag);
 
 /**
  * Maps a memory object into kernel virtual address space (default tag).
@@ -566,8 +580,11 @@ RTR0DECL(int) RTR0MemObjMapKernelTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToMap
  *                          page aligned.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjMapKernelExTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToMap, void *pvFixed, size_t uAlignment,
-                                       unsigned fProt, size_t offSub, size_t cbSub, const char *pszTag);
+RTR0DECL(int) RTR0MemObjMapKernelExTag(PRTR0MEMOBJ pMemObj,
+				       RTR0MEMOBJ MemObjToMap, void *pvFixed,
+				       size_t uAlignment, unsigned fProt,
+				       size_t offSub, size_t cbSub,
+				       const char *pszTag);
 
 /**
  * Maps a memory object into user virtual address space in the current process
@@ -599,8 +616,10 @@ RTR0DECL(int) RTR0MemObjMapKernelExTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToM
  * @param   R0Process       The process to map the memory into. NIL_R0PROCESS is an alias for the current one.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR0DECL(int) RTR0MemObjMapUserTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToMap, RTR3PTR R3PtrFixed,
-                                   size_t uAlignment, unsigned fProt, RTR0PROCESS R0Process, const char *pszTag);
+RTR0DECL(int) RTR0MemObjMapUserTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToMap,
+				   RTR3PTR R3PtrFixed, size_t uAlignment,
+				   unsigned fProt, RTR0PROCESS R0Process,
+				   const char *pszTag);
 
 /**
  * Change the page level protection of one or more pages in a memory object.
@@ -617,13 +636,12 @@ RTR0DECL(int) RTR0MemObjMapUserTag(PRTR0MEMOBJ pMemObj, RTR0MEMOBJ MemObjToMap, 
  *                          page aligned.
  * @param   fProt           Combination of RTMEM_PROT_* flags.
  */
-RTR0DECL(int) RTR0MemObjProtect(RTR0MEMOBJ hMemObj, size_t offSub, size_t cbSub, uint32_t fProt);
+RTR0DECL(int) RTR0MemObjProtect(RTR0MEMOBJ hMemObj, size_t offSub, size_t cbSub,
+				uint32_t fProt);
 
 #endif /* IN_RING0 */
 
 /** @} */
 
 RT_C_DECLS_END
-
 #endif
-

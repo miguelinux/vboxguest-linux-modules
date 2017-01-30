@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -33,17 +32,16 @@
 
 #include <iprt/process.h>
 
-
 RTDECL(RTPROCESS) RTProcSelf(void)
 {
-    return (RTPROCESS)current->tgid;
+	return (RTPROCESS) current->tgid;
 }
-RT_EXPORT_SYMBOL(RTProcSelf);
 
+RT_EXPORT_SYMBOL(RTProcSelf);
 
 RTR0DECL(RTR0PROCESS) RTR0ProcHandleSelf(void)
 {
-    return (RTR0PROCESS)current->tgid;
+	return (RTR0PROCESS) current->tgid;
 }
-RT_EXPORT_SYMBOL(RTR0ProcHandleSelf);
 
+RT_EXPORT_SYMBOL(RTR0ProcHandleSelf);

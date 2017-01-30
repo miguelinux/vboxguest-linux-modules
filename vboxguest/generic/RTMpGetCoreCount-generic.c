@@ -24,17 +24,15 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
 #include <iprt/mp.h>
 #include "internal/iprt.h"
 
-
 RTDECL(RTCPUID) RTMpGetCoreCount(void)
 {
-    return RTMpGetCount();
+	return RTMpGetCount();
 }
-RT_EXPORT_SYMBOL(RTMpGetCoreCount);
 
+RT_EXPORT_SYMBOL(RTMpGetCoreCount);

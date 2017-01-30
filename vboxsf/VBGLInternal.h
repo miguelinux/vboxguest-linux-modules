@@ -33,7 +33,6 @@
 
 #include <VBox/log.h>
 
-
 #ifdef RT_OS_WINDOWS /** @todo dprintf() -> Log() */
 # if (defined(DEBUG) && !defined(NO_LOGGING)) || defined(LOG_ENABLED)
 #  define dprintf(a) RTLogBackdoorPrintf a
@@ -52,49 +51,45 @@ struct _VBGLPHYSHEAPCHUNK;
 typedef struct _VBGLPHYSHEAPCHUNK VBGLPHYSHEAPCHUNK;
 
 #ifndef VBGL_VBOXGUEST
-struct VBGLHGCMHANDLEDATA
-{
-    uint32_t fAllocated;
-    VBGLDRIVER driver;
+struct VBGLHGCMHANDLEDATA {
+	uint32_t fAllocated;
+	VBGLDRIVER driver;
 };
 #endif
 
-enum VbglLibStatus
-{
-    VbglStatusNotInitialized = 0,
-    VbglStatusInitializing,
-    VbglStatusReady
+enum VbglLibStatus {
+	VbglStatusNotInitialized = 0,
+	VbglStatusInitializing,
+	VbglStatusReady
 };
 
 /**
  * Global VBGL ring-0 data.
  * Lives in VbglR0Init.cpp.
  */
-typedef struct VBGLDATA
-{
-    enum VbglLibStatus status;
+typedef struct VBGLDATA {
+	enum VbglLibStatus status;
 
-    RTIOPORT portVMMDev;
+	RTIOPORT portVMMDev;
 
-    VMMDevMemory *pVMMDevMemory;
+	VMMDevMemory *pVMMDevMemory;
 
     /**
      * Physical memory heap data.
      * @{
      */
 
-    VBGLPHYSHEAPBLOCK *pFreeBlocksHead;
-    VBGLPHYSHEAPBLOCK *pAllocBlocksHead;
-    VBGLPHYSHEAPCHUNK *pChunkHead;
+	VBGLPHYSHEAPBLOCK *pFreeBlocksHead;
+	VBGLPHYSHEAPBLOCK *pAllocBlocksHead;
+	VBGLPHYSHEAPCHUNK *pChunkHead;
 
-    RTSEMFASTMUTEX mutexHeap;
+	RTSEMFASTMUTEX mutexHeap;
     /** @} */
 
     /**
      * The host version data.
      */
-    VMMDevReqHostVersion hostVersion;
-
+	VMMDevReqHostVersion hostVersion;
 
 #ifndef VBGL_VBOXGUEST
     /**
@@ -102,9 +97,9 @@ typedef struct VBGLDATA
      * @{
      */
 
-    RTSEMMUTEX mutexDriverInit;
+	RTSEMMUTEX mutexDriverInit;
 
-    VBGLDRIVER driver;
+	VBGLDRIVER driver;
 
     /** @} */
 
@@ -113,14 +108,13 @@ typedef struct VBGLDATA
      * @{
      */
 
-    RTSEMFASTMUTEX mutexHGCMHandle;
+	RTSEMFASTMUTEX mutexHGCMHandle;
 
-    struct VBGLHGCMHANDLEDATA aHGCMHandleData[64];
+	struct VBGLHGCMHANDLEDATA aHGCMHandleData[64];
 
     /** @} */
 #endif
 } VBGLDATA;
-
 
 #ifndef VBGL_DECL_DATA
 extern VBGLDATA g_vbgldata;
@@ -146,15 +140,15 @@ extern VBGLDATA g_vbgldata;
     ( !!(g_vbgldata.hostVersion.features & VMMDEV_HVF_HGCM_PHYS_PAGE_LIST) )
 #endif
 
-int vbglR0Enter (void);
+int vbglR0Enter(void);
 
 #ifdef VBOX_WITH_HGCM
 # ifndef VBGL_VBOXGUEST
-int                         vbglR0HGCMInit(void);
-int                         vbglR0HGCMTerminate(void);
+int vbglR0HGCMInit(void);
+int vbglR0HGCMTerminate(void);
 # endif
-struct VBGLHGCMHANDLEDATA  *vbglHGCMHandleAlloc(void);
-void                        vbglHGCMHandleFree(struct VBGLHGCMHANDLEDATA *pHandle);
+struct VBGLHGCMHANDLEDATA *vbglHGCMHandleAlloc(void);
+void vbglHGCMHandleFree(struct VBGLHGCMHANDLEDATA *pHandle);
 #endif /* VBOX_WITH_HGCM */
 
 #ifndef VBGL_VBOXGUEST
@@ -162,8 +156,7 @@ void                        vbglHGCMHandleFree(struct VBGLHGCMHANDLEDATA *pHandl
  * Get a handle to the main VBoxGuest driver.
  * @returns VERR_TRY_AGAIN if the main driver has not yet been loaded.
  */
-int vbglGetDriver(VBGLDRIVER **ppDriver);
+int vbglGetDriver(VBGLDRIVER ** ppDriver);
 #endif
 
 #endif /* !___VBoxGuestLib_VBGLInternal_h */
-

@@ -30,15 +30,11 @@
 #include <iprt/types.h>
 #include <iprt/time.h>
 
-
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_fs    RTFs - Filesystem and Volume
  * @ingroup grp_rt
  * @{
  */
-
-
 /** @name Filesystem Object Mode Flags.
  *
  * There are two sets of flags: the unix mode flags and the dos attributes.
@@ -58,14 +54,12 @@ RT_C_DECLS_BEGIN
  *
  * @{
  */
-
 /** Set user id on execution (S_ISUID). */
 #define RTFS_UNIX_ISUID             0004000U
 /** Set group id on execution (S_ISGID). */
 #define RTFS_UNIX_ISGID             0002000U
 /** Sticky bit (S_ISVTX / S_ISTXT). */
 #define RTFS_UNIX_ISTXT             0001000U
-
 /** Owner RWX mask (S_IRWXU). */
 #define RTFS_UNIX_IRWXU             0000700U
 /** Owner readable (S_IRUSR). */
@@ -74,7 +68,6 @@ RT_C_DECLS_BEGIN
 #define RTFS_UNIX_IWUSR             0000200U
 /** Owner executable (S_IXUSR). */
 #define RTFS_UNIX_IXUSR             0000100U
-
 /** Group RWX mask (S_IRWXG). */
 #define RTFS_UNIX_IRWXG             0000070U
 /** Group readable (S_IRGRP). */
@@ -83,7 +76,6 @@ RT_C_DECLS_BEGIN
 #define RTFS_UNIX_IWGRP             0000020U
 /** Group executable (S_IXGRP). */
 #define RTFS_UNIX_IXGRP             0000010U
-
 /** Other RWX mask (S_IRWXO). */
 #define RTFS_UNIX_IRWXO             0000007U
 /** Other readable (S_IROTH). */
@@ -92,12 +84,10 @@ RT_C_DECLS_BEGIN
 #define RTFS_UNIX_IWOTH             0000002U
 /** Other executable (S_IXOTH). */
 #define RTFS_UNIX_IXOTH             0000001U
-
 /** All UNIX access permission bits (0777). */
 #define RTFS_UNIX_ALL_ACCESS_PERMS  0000777U
 /** All UNIX permission bits, including set id and sticky bits.  */
 #define RTFS_UNIX_ALL_PERMS         0007777U
-
 /** Named pipe (fifo) (S_IFIFO). */
 #define RTFS_TYPE_FIFO              0010000U
 /** Character device (S_IFCHR). */
@@ -118,19 +108,16 @@ RT_C_DECLS_BEGIN
 #define RTFS_TYPE_MASK              0170000U
 /** The shift count to convert between RTFS_TYPE_MASK and DIRENTRYTYPE. */
 #define RTFS_TYPE_DIRENTRYTYPE_SHIFT    12
-
 /** Unix attribute mask. */
 #define RTFS_UNIX_MASK              0xffffU
 /** The mask of all the NT, OS/2 and DOS attributes. */
 #define RTFS_DOS_MASK               (0x7fffU << RTFS_DOS_SHIFT)
-
 /** The shift value. */
 #define RTFS_DOS_SHIFT              16
 /** The mask of the OS/2 and DOS attributes. */
 #define RTFS_DOS_MASK_OS2           (0x003fU << RTFS_DOS_SHIFT)
 /** The mask of the NT attributes. */
 #define RTFS_DOS_MASK_NT            (0x7fffU << RTFS_DOS_SHIFT)
-
 /** Readonly object. */
 #define RTFS_DOS_READONLY           (0x0001U << RTFS_DOS_SHIFT)
 /** Hidden object. */
@@ -163,10 +150,7 @@ RT_C_DECLS_BEGIN
 /** Encryped object (NT).
  * For a directory, encrypted is the default for new files. */
 #define RTFS_DOS_NT_ENCRYPTED       (0x4000U << RTFS_DOS_SHIFT)
-
 /** @} */
-
-
 /** @name Filesystem Object Type Predicates.
  * @{ */
 /** Checks the mode flags indicate a named pipe (fifo) (S_ISFIFO). */
@@ -186,8 +170,6 @@ RT_C_DECLS_BEGIN
 /** Checks the mode flags indicate a whiteout (S_ISWHT). */
 #define RTFS_IS_WHITEOUT(fMode)     ( ((fMode) & RTFS_TYPE_MASK) == RTFS_TYPE_WHITEOUT )
 /** @} */
-
-
 /**
  * Filesystem type IDs returned by RTFsQueryType.
  *
@@ -197,99 +179,96 @@ RT_C_DECLS_BEGIN
  * @remarks When adding new entries, please update RTFsTypeName().  Also, try
  *          add them to the most natural group.
  */
-typedef enum RTFSTYPE
-{
+    typedef enum RTFSTYPE {
     /** Unknown file system. */
-    RTFSTYPE_UNKNOWN = 0,
+	RTFSTYPE_UNKNOWN = 0,
 
     /** Universal Disk Format. */
-    RTFSTYPE_UDF,
+	RTFSTYPE_UDF,
     /** ISO 9660, aka Compact Disc File System (CDFS). */
-    RTFSTYPE_ISO9660,
+	RTFSTYPE_ISO9660,
     /** Filesystem in Userspace. */
-    RTFSTYPE_FUSE,
+	RTFSTYPE_FUSE,
     /** VirtualBox shared folders.  */
-    RTFSTYPE_VBOXSHF,
+	RTFSTYPE_VBOXSHF,
 
-    /* Linux: */
-    RTFSTYPE_EXT,
-    RTFSTYPE_EXT2,
-    RTFSTYPE_EXT3,
-    RTFSTYPE_EXT4,
-    RTFSTYPE_XFS,
-    RTFSTYPE_CIFS,
-    RTFSTYPE_SMBFS,
-    RTFSTYPE_TMPFS,
-    RTFSTYPE_SYSFS,
-    RTFSTYPE_PROC,
-    RTFSTYPE_OCFS2,
-    RTFSTYPE_BTRFS,
+	/* Linux: */
+	RTFSTYPE_EXT,
+	RTFSTYPE_EXT2,
+	RTFSTYPE_EXT3,
+	RTFSTYPE_EXT4,
+	RTFSTYPE_XFS,
+	RTFSTYPE_CIFS,
+	RTFSTYPE_SMBFS,
+	RTFSTYPE_TMPFS,
+	RTFSTYPE_SYSFS,
+	RTFSTYPE_PROC,
+	RTFSTYPE_OCFS2,
+	RTFSTYPE_BTRFS,
 
-    /* Windows: */
+	/* Windows: */
     /** New Technology File System. */
-    RTFSTYPE_NTFS,
+	RTFSTYPE_NTFS,
     /** FAT12, FAT16 and FAT32 lumped into one basket.
      * The partition size limit of FAT12 and FAT16 will be the factor
      * limiting the file size (except, perhaps for the 64KB cluster case on
      * non-Windows hosts). */
-    RTFSTYPE_FAT,
+	RTFSTYPE_FAT,
 
-    /* Solaris: */
+	/* Solaris: */
     /** Zettabyte File System.  */
-    RTFSTYPE_ZFS,
+	RTFSTYPE_ZFS,
     /** Unix File System. */
-    RTFSTYPE_UFS,
+	RTFSTYPE_UFS,
     /** Network File System. */
-    RTFSTYPE_NFS,
+	RTFSTYPE_NFS,
 
-    /* Mac OS X: */
+	/* Mac OS X: */
     /** Hierarchical File System. */
-    RTFSTYPE_HFS,
+	RTFSTYPE_HFS,
     /** @todo RTFSTYPE_HFS_PLUS? */
-    RTFSTYPE_AUTOFS,
-    RTFSTYPE_DEVFS,
+	RTFSTYPE_AUTOFS,
+	RTFSTYPE_DEVFS,
 
-    /* *BSD: */
+	/* *BSD: */
 
-    /* OS/2: */
+	/* OS/2: */
     /** High Performance File System. */
-    RTFSTYPE_HPFS,
+	RTFSTYPE_HPFS,
     /** Journaled File System (v2).  */
-    RTFSTYPE_JFS,
+	RTFSTYPE_JFS,
 
     /** The end of valid Filesystem types IDs. */
-    RTFSTYPE_END,
+	RTFSTYPE_END,
     /** The usual 32-bit type blow up. */
-    RTFSTYPE_32BIT_HACK = 0x7fffffff
+	RTFSTYPE_32BIT_HACK = 0x7fffffff
 } RTFSTYPE;
 /** Pointer to a Filesystem type ID. */
 typedef RTFSTYPE *PRTFSTYPE;
 
-
 /**
  * The available additional information in a RTFSOBJATTR object.
  */
-typedef enum RTFSOBJATTRADD
-{
+typedef enum RTFSOBJATTRADD {
     /** No additional information is available / requested. */
-    RTFSOBJATTRADD_NOTHING = 1,
+	RTFSOBJATTRADD_NOTHING = 1,
     /** The additional unix attributes (RTFSOBJATTR::u::Unix) are available /
      *  requested. */
-    RTFSOBJATTRADD_UNIX,
+	RTFSOBJATTRADD_UNIX,
     /** The additional unix attributes (RTFSOBJATTR::u::UnixOwner) are
      * available / requested. */
-    RTFSOBJATTRADD_UNIX_OWNER,
+	RTFSOBJATTRADD_UNIX_OWNER,
     /** The additional unix attributes (RTFSOBJATTR::u::UnixGroup) are
      * available / requested. */
-    RTFSOBJATTRADD_UNIX_GROUP,
+	RTFSOBJATTRADD_UNIX_GROUP,
     /** The additional extended attribute size (RTFSOBJATTR::u::EASize) is available / requested. */
-    RTFSOBJATTRADD_EASIZE,
+	RTFSOBJATTRADD_EASIZE,
     /** The last valid item (inclusive).
      * The valid range is RTFSOBJATTRADD_NOTHING thru RTFSOBJATTRADD_LAST.  */
-    RTFSOBJATTRADD_LAST = RTFSOBJATTRADD_EASIZE,
+	RTFSOBJATTRADD_LAST = RTFSOBJATTRADD_EASIZE,
 
     /** The usual 32-bit hack. */
-    RTFSOBJATTRADD_32BIT_SIZE_HACK = 0x7fffffff
+	RTFSOBJATTRADD_32BIT_SIZE_HACK = 0x7fffffff
 } RTFSOBJATTRADD;
 
 /** The number of bytes reserved for the additional attribute union. */
@@ -298,89 +277,84 @@ typedef enum RTFSOBJATTRADD
 /**
  * Additional Unix Attributes (RTFSOBJATTRADD_UNIX).
  */
-typedef struct RTFSOBJATTRUNIX
-{
+typedef struct RTFSOBJATTRUNIX {
     /** The user owning the filesystem object (st_uid).
      * This field is NIL_UID if not supported. */
-    RTUID           uid;
+	RTUID uid;
 
     /** The group the filesystem object is assigned (st_gid).
      * This field is NIL_GID if not supported. */
-    RTGID           gid;
+	RTGID gid;
 
     /** Number of hard links to this filesystem object (st_nlink).
      * This field is 1 if the filesystem doesn't support hardlinking or
      * the information isn't available.
      */
-    uint32_t        cHardlinks;
+	uint32_t cHardlinks;
 
     /** The device number of the device which this filesystem object resides on (st_dev).
      * This field is 0 if this information is not available. */
-    RTDEV           INodeIdDevice;
+	RTDEV INodeIdDevice;
 
     /** The unique identifier (within the filesystem) of this filesystem object (st_ino).
      * Together with INodeIdDevice, this field can be used as a OS wide unique id
      * when both their values are not 0.
      * This field is 0 if the information is not available. */
-    RTINODE         INodeId;
+	RTINODE INodeId;
 
     /** User flags (st_flags).
      * This field is 0 if this information is not available. */
-    uint32_t        fFlags;
+	uint32_t fFlags;
 
     /** The current generation number (st_gen).
      * This field is 0 if this information is not available. */
-    uint32_t        GenerationId;
+	uint32_t GenerationId;
 
     /** The device number of a character or block device type object (st_rdev).
      * This field is 0 if the file isn't of a character or block device type and
      * when the OS doesn't subscribe to the major+minor device idenfication scheme. */
-    RTDEV           Device;
+	RTDEV Device;
 } RTFSOBJATTRUNIX;
-
 
 /**
  * Additional Unix Attributes (RTFSOBJATTRADD_UNIX_OWNER).
  *
  * @remarks This interface is mainly for TAR.
  */
-typedef struct RTFSOBJATTRUNIXOWNER
-{
+typedef struct RTFSOBJATTRUNIXOWNER {
     /** The user owning the filesystem object (st_uid).
      * This field is NIL_UID if not supported. */
-    RTUID           uid;
+	RTUID uid;
     /** The user name.
      * Empty if not available or not supported, truncated if too long. */
-    char            szName[RTFSOBJATTRUNION_MAX_SIZE - sizeof(RTUID)];
-} RTFSOBJATTRUNIXOWNER;
-
+	char szName[RTFSOBJATTRUNION_MAX_SIZE - sizeof(RTUID)];
+}
+RTFSOBJATTRUNIXOWNER;
 
 /**
  * Additional Unix Attributes (RTFSOBJATTRADD_UNIX_GROUP).
  *
  * @remarks This interface is mainly for TAR.
  */
-typedef struct RTFSOBJATTRUNIXGROUP
-{
+typedef struct RTFSOBJATTRUNIXGROUP {
     /** The user owning the filesystem object (st_uid).
      * This field is NIL_GID if not supported. */
-    RTGID           gid;
+	RTGID gid;
     /** The group name.
      * Empty if not available or not supported, truncated if too long. */
-    char            szName[RTFSOBJATTRUNION_MAX_SIZE - sizeof(RTGID)];
-} RTFSOBJATTRUNIXGROUP;
-
+	char szName[RTFSOBJATTRUNION_MAX_SIZE - sizeof(RTGID)];
+}
+RTFSOBJATTRUNIXGROUP;
 
 /**
  * Filesystem object attributes.
  */
-typedef struct RTFSOBJATTR
-{
+typedef struct RTFSOBJATTR {
     /** Mode flags (st_mode). RTFS_UNIX_*, RTFS_TYPE_*, and RTFS_DOS_*. */
-    RTFMODE         fMode;
+	RTFMODE fMode;
 
     /** The additional attributes available. */
-    RTFSOBJATTRADD  enmAdditional;
+	RTFSOBJATTRADD enmAdditional;
 
     /**
      * Additional attributes.
@@ -388,76 +362,71 @@ typedef struct RTFSOBJATTR
      * Unless explicitly specified to an API, the API can provide additional
      * data as it is provided by the underlying OS.
      */
-    union RTFSOBJATTRUNION
-    {
-        /** Additional Unix Attributes - RTFSOBJATTRADD_UNIX. */
-        RTFSOBJATTRUNIX         Unix;
-        /** Additional Unix Owner Attributes - RTFSOBJATTRADD_UNIX_OWNER. */
-        RTFSOBJATTRUNIXOWNER    UnixOwner;
-        /** Additional Unix Group Attributes - RTFSOBJATTRADD_UNIX_GROUP. */
-        RTFSOBJATTRUNIXGROUP    UnixGroup;
+	union RTFSOBJATTRUNION {
+	/** Additional Unix Attributes - RTFSOBJATTRADD_UNIX. */
+		RTFSOBJATTRUNIX Unix;
+	/** Additional Unix Owner Attributes - RTFSOBJATTRADD_UNIX_OWNER. */
+		RTFSOBJATTRUNIXOWNER UnixOwner;
+	/** Additional Unix Group Attributes - RTFSOBJATTRADD_UNIX_GROUP. */
+		RTFSOBJATTRUNIXGROUP UnixGroup;
 
-        /**
+	/**
          * Extended attribute size is available when RTFS_DOS_HAVE_EA_SIZE is set.
          */
-        struct RTFSOBJATTREASIZE
-        {
-            /** Size of EAs. */
-            RTFOFF          cb;
-        } EASize;
-        /** Reserved space. */
-        uint8_t         abReserveSpace[128];
-    } u;
+		struct RTFSOBJATTREASIZE {
+	    /** Size of EAs. */
+			RTFOFF cb;
+		} EASize;
+	/** Reserved space. */
+		uint8_t abReserveSpace[128];
+	} u;
 } RTFSOBJATTR;
 /** Pointer to a filesystem object attributes structure. */
 typedef RTFSOBJATTR *PRTFSOBJATTR;
 /** Pointer to a const filesystem object attributes structure. */
 typedef const RTFSOBJATTR *PCRTFSOBJATTR;
 
-
 /**
  * Filesystem object information structure.
  *
  * This is returned by the RTPathQueryInfo(), RTFileQueryInfo() and RTDirRead() APIs.
  */
-typedef struct RTFSOBJINFO
-{
+typedef struct RTFSOBJINFO {
    /** Logical size (st_size).
     * For normal files this is the size of the file.
     * For symbolic links, this is the length of the path name contained
     * in the symbolic link.
     * For other objects this fields needs to be specified.
     */
-   RTFOFF       cbObject;
+	RTFOFF cbObject;
 
    /** Disk allocation size (st_blocks * DEV_BSIZE). */
-   RTFOFF       cbAllocated;
+	RTFOFF cbAllocated;
 
    /** Time of last access (st_atime). */
-   RTTIMESPEC   AccessTime;
+	RTTIMESPEC AccessTime;
 
    /** Time of last data modification (st_mtime). */
-   RTTIMESPEC   ModificationTime;
+	RTTIMESPEC ModificationTime;
 
    /** Time of last status change (st_ctime).
     * If not available this is set to ModificationTime.
     */
-   RTTIMESPEC   ChangeTime;
+	RTTIMESPEC ChangeTime;
 
    /** Time of file birth (st_birthtime).
     * If not available this is set to ChangeTime.
     */
-   RTTIMESPEC   BirthTime;
+	RTTIMESPEC BirthTime;
 
    /** Attributes. */
-   RTFSOBJATTR  Attr;
+	RTFSOBJATTR Attr;
 
 } RTFSOBJINFO;
 /** Pointer to a filesystem object information structure. */
 typedef RTFSOBJINFO *PRTFSOBJINFO;
 /** Pointer to a const filesystem object information structure. */
 typedef const RTFSOBJINFO *PCRTFSOBJINFO;
-
 
 #ifdef IN_RING3
 
@@ -473,8 +442,9 @@ typedef const RTFSOBJINFO *PCRTFSOBJINFO;
  *
  * @sa      RTFileQueryFsSizes
  */
-RTR3DECL(int) RTFsQuerySizes(const char *pszFsPath, PRTFOFF pcbTotal, RTFOFF *pcbFree,
-                             uint32_t *pcbBlock, uint32_t *pcbSector);
+RTR3DECL(int) RTFsQuerySizes(const char *pszFsPath, PRTFOFF pcbTotal,
+			     RTFOFF * pcbFree, uint32_t * pcbBlock,
+			     uint32_t * pcbSector);
 
 /**
  * Query the mountpoint of a filesystem.
@@ -485,7 +455,8 @@ RTR3DECL(int) RTFsQuerySizes(const char *pszFsPath, PRTFOFF pcbTotal, RTFOFF *pc
  * @param   pszMountpoint   Where to store the mountpoint path.
  * @param   cbMountpoint    Size of the buffer pointed to by pszMountpoint.
  */
-RTR3DECL(int) RTFsQueryMountpoint(const char *pszFsPath, char *pszMountpoint, size_t cbMountpoint);
+RTR3DECL(int) RTFsQueryMountpoint(const char *pszFsPath, char *pszMountpoint,
+				  size_t cbMountpoint);
 
 /**
  * Query the label of a filesystem.
@@ -496,7 +467,8 @@ RTR3DECL(int) RTFsQueryMountpoint(const char *pszFsPath, char *pszMountpoint, si
  * @param   pszLabel        Where to store the label.
  * @param   cbLabel         Size of the buffer pointed to by pszLabel.
  */
-RTR3DECL(int) RTFsQueryLabel(const char *pszFsPath, char *pszLabel, size_t cbLabel);
+RTR3DECL(int) RTFsQueryLabel(const char *pszFsPath, char *pszLabel,
+			     size_t cbLabel);
 
 /**
  * Query the serial number of a filesystem.
@@ -505,7 +477,7 @@ RTR3DECL(int) RTFsQueryLabel(const char *pszFsPath, char *pszLabel, size_t cbLab
  * @param   pszFsPath       Path within the mounted filesystem.
  * @param   pu32Serial      Where to store the serial number.
  */
-RTR3DECL(int) RTFsQuerySerial(const char *pszFsPath, uint32_t *pu32Serial);
+RTR3DECL(int) RTFsQuerySerial(const char *pszFsPath, uint32_t * pu32Serial);
 
 /**
  * Query the name of the filesystem driver.
@@ -516,7 +488,8 @@ RTR3DECL(int) RTFsQuerySerial(const char *pszFsPath, uint32_t *pu32Serial);
  * @param   pszFsDriver     Where to store the filesystem driver name.
  * @param   cbFsDriver      Size of the buffer pointed to by pszFsDriver.
  */
-RTR3DECL(int) RTFsQueryDriver(const char *pszFsPath, char *pszFsDriver, size_t cbFsDriver);
+RTR3DECL(int) RTFsQueryDriver(const char *pszFsPath, char *pszFsDriver,
+			      size_t cbFsDriver);
 
 /**
  * Query the name of the filesystem the file is located on.
@@ -546,35 +519,34 @@ RTDECL(const char *) RTFsTypeName(RTFSTYPE enmType);
 /**
  * Filesystem properties.
  */
-typedef struct RTFSPROPERTIES
-{
+typedef struct RTFSPROPERTIES {
     /** The maximum size of a filesystem object name.
      * This does not include the '\\0'. */
-    uint32_t cbMaxComponent;
+	uint32_t cbMaxComponent;
 
     /** True if the filesystem is remote.
      * False if the filesystem is local. */
-    bool    fRemote;
+	bool fRemote;
 
     /** True if the filesystem is case sensitive.
      * False if the filesystem is case insensitive. */
-    bool    fCaseSensitive;
+	bool fCaseSensitive;
 
     /** True if the filesystem is mounted read only.
      * False if the filesystem is mounted read write. */
-    bool    fReadOnly;
+	bool fReadOnly;
 
     /** True if the filesystem can encode unicode object names.
      * False if it can't. */
-    bool    fSupportsUnicode;
+	bool fSupportsUnicode;
 
     /** True if the filesystem is compresses.
      * False if it isn't or we don't know. */
-    bool    fCompressed;
+	bool fCompressed;
 
     /** True if the filesystem compresses of individual files.
      * False if it doesn't or we don't know. */
-    bool    fFileCompression;
+	bool fFileCompression;
 
     /** @todo more? */
 } RTFSPROPERTIES;
@@ -592,7 +564,8 @@ typedef RTFSPROPERTIES const *PCRTFSPROPERTIES;
  * @param   pszFsPath       Path within the mounted filesystem.
  * @param   pProperties     Where to store the properties.
  */
-RTR3DECL(int) RTFsQueryProperties(const char *pszFsPath, PRTFSPROPERTIES pProperties);
+RTR3DECL(int) RTFsQueryProperties(const char *pszFsPath,
+				  PRTFSPROPERTIES pProperties);
 
 /**
  * Checks if the given volume is case sensitive or not.
@@ -613,7 +586,8 @@ RTR3DECL(bool) RTFsIsCaseSensitive(const char *pszFsPath);
  * @param   pszMountpoint   The mountpoint name.
  * @param   pvUser          The user argument.
  */
-typedef DECLCALLBACK(int) FNRTFSMOUNTPOINTENUM(const char *pszMountpoint, void *pvUser);
+typedef DECLCALLBACK(int) FNRTFSMOUNTPOINTENUM(const char *pszMountpoint,
+					       void *pvUser);
 /** Pointer to a FNRTFSMOUNTPOINTENUM(). */
 typedef FNRTFSMOUNTPOINTENUM *PFNRTFSMOUNTPOINTENUM;
 
@@ -624,14 +598,12 @@ typedef FNRTFSMOUNTPOINTENUM *PFNRTFSMOUNTPOINTENUM;
  * @param   pfnCallback     The callback function.
  * @param   pvUser          The user argument to the callback.
  */
-RTR3DECL(int) RTFsMountpointsEnum(PFNRTFSMOUNTPOINTENUM pfnCallback, void *pvUser);
-
+RTR3DECL(int) RTFsMountpointsEnum(PFNRTFSMOUNTPOINTENUM pfnCallback,
+				  void *pvUser);
 
 #endif /* IN_RING3 */
 
 /** @} */
 
 RT_C_DECLS_END
-
 #endif /* !___iprt_fs_h */
-

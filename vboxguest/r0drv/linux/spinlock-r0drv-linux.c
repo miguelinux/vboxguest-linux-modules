@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -43,144 +42,141 @@
 #include <iprt/thread.h>
 #include "internal/magics.h"
 
-
 /*********************************************************************************************************************************
 *   Structures and Typedefs                                                                                                      *
 *********************************************************************************************************************************/
 /**
  * Wrapper for the spinlock_t structure.
  */
-typedef struct RTSPINLOCKINTERNAL
-{
+typedef struct RTSPINLOCKINTERNAL {
     /** Spinlock magic value (RTSPINLOCK_MAGIC). */
-    uint32_t volatile       u32Magic;
+	uint32_t volatile u32Magic;
     /** The spinlock creation flags.  */
-    uint32_t                fFlags;
+	uint32_t fFlags;
     /** The saved interrupt flag. */
-    unsigned long volatile  fIntSaved;
+	unsigned long volatile fIntSaved;
     /** The linux spinlock structure. */
-    spinlock_t              Spinlock;
+	spinlock_t Spinlock;
 #ifdef RT_MORE_STRICT
     /** The idAssertCpu variable before acquring the lock for asserting after
      *  releasing the spinlock. */
-    RTCPUID volatile        idAssertCpu;
+	RTCPUID volatile idAssertCpu;
     /** The CPU that owns the lock. */
-    RTCPUID volatile        idCpuOwner;
+	RTCPUID volatile idCpuOwner;
 #endif
 } RTSPINLOCKINTERNAL, *PRTSPINLOCKINTERNAL;
 
-
-
-RTDECL(int)  RTSpinlockCreate(PRTSPINLOCK pSpinlock, uint32_t fFlags, const char *pszName)
+RTDECL(int) RTSpinlockCreate(PRTSPINLOCK pSpinlock, uint32_t fFlags,
+			     const char *pszName)
 {
-    IPRT_LINUX_SAVE_EFL_AC();
-    PRTSPINLOCKINTERNAL pThis;
-    AssertReturn(fFlags == RTSPINLOCK_FLAGS_INTERRUPT_SAFE || fFlags == RTSPINLOCK_FLAGS_INTERRUPT_UNSAFE, VERR_INVALID_PARAMETER);
-    RT_NOREF_PV(pszName);
+	IPRT_LINUX_SAVE_EFL_AC();
+	PRTSPINLOCKINTERNAL pThis;
+	AssertReturn(fFlags == RTSPINLOCK_FLAGS_INTERRUPT_SAFE
+		     || fFlags == RTSPINLOCK_FLAGS_INTERRUPT_UNSAFE,
+		     VERR_INVALID_PARAMETER);
+	RT_NOREF_PV(pszName);
 
-    /*
-     * Allocate.
-     */
-    Assert(sizeof(RTSPINLOCKINTERNAL) > sizeof(void *));
-    pThis = (PRTSPINLOCKINTERNAL)RTMemAlloc(sizeof(*pThis));
-    if (!pThis)
-        return VERR_NO_MEMORY;
-    /*
-     * Initialize and return.
-     */
-    pThis->u32Magic     = RTSPINLOCK_MAGIC;
-    pThis->fFlags       = fFlags;
-    pThis->fIntSaved    = 0;
+	/*
+	 * Allocate.
+	 */
+	Assert(sizeof(RTSPINLOCKINTERNAL) > sizeof(void *));
+	pThis = (PRTSPINLOCKINTERNAL) RTMemAlloc(sizeof(*pThis));
+	if (!pThis)
+		return VERR_NO_MEMORY;
+	/*
+	 * Initialize and return.
+	 */
+	pThis->u32Magic = RTSPINLOCK_MAGIC;
+	pThis->fFlags = fFlags;
+	pThis->fIntSaved = 0;
 #ifdef RT_MORE_STRICT
-    pThis->idCpuOwner   = NIL_RTCPUID;
-    pThis->idAssertCpu  = NIL_RTCPUID;
+	pThis->idCpuOwner = NIL_RTCPUID;
+	pThis->idAssertCpu = NIL_RTCPUID;
 #endif
 
-    spin_lock_init(&pThis->Spinlock);
+	spin_lock_init(&pThis->Spinlock);
 
-    *pSpinlock = pThis;
-    IPRT_LINUX_RESTORE_EFL_AC();
-    return VINF_SUCCESS;
+	*pSpinlock = pThis;
+	IPRT_LINUX_RESTORE_EFL_AC();
+	return VINF_SUCCESS;
 }
+
 RT_EXPORT_SYMBOL(RTSpinlockCreate);
 
-
-RTDECL(int)  RTSpinlockDestroy(RTSPINLOCK Spinlock)
+RTDECL(int)RTSpinlockDestroy(RTSPINLOCK Spinlock)
 {
-    /*
-     * Validate input.
-     */
-    PRTSPINLOCKINTERNAL pThis = (PRTSPINLOCKINTERNAL)Spinlock;
-    if (!pThis)
-        return VERR_INVALID_PARAMETER;
-    if (pThis->u32Magic != RTSPINLOCK_MAGIC)
-    {
-        AssertMsgFailed(("Invalid spinlock %p magic=%#x\n", pThis, pThis->u32Magic));
-        return VERR_INVALID_PARAMETER;
-    }
+	/*
+	 * Validate input.
+	 */
+	PRTSPINLOCKINTERNAL pThis = (PRTSPINLOCKINTERNAL) Spinlock;
+	if (!pThis)
+		return VERR_INVALID_PARAMETER;
+	if (pThis->u32Magic != RTSPINLOCK_MAGIC) {
+		AssertMsgFailed(("Invalid spinlock %p magic=%#x\n", pThis,
+				 pThis->u32Magic));
+		return VERR_INVALID_PARAMETER;
+	}
 
-    ASMAtomicIncU32(&pThis->u32Magic);
-    RTMemFree(pThis);
-    return VINF_SUCCESS;
+	ASMAtomicIncU32(&pThis->u32Magic);
+	RTMemFree(pThis);
+	return VINF_SUCCESS;
 }
+
 RT_EXPORT_SYMBOL(RTSpinlockDestroy);
 
-
-RTDECL(void) RTSpinlockAcquire(RTSPINLOCK Spinlock)
+RTDECL(void)RTSpinlockAcquire(RTSPINLOCK Spinlock)
 {
-    PRTSPINLOCKINTERNAL pThis = (PRTSPINLOCKINTERNAL)Spinlock;
-    IPRT_LINUX_SAVE_EFL_AC();
-    RT_ASSERT_PREEMPT_CPUID_VAR();
-    AssertMsg(pThis && pThis->u32Magic == RTSPINLOCK_MAGIC,
-              ("pThis=%p u32Magic=%08x\n", pThis, pThis ? (int)pThis->u32Magic : 0));
+	PRTSPINLOCKINTERNAL pThis = (PRTSPINLOCKINTERNAL) Spinlock;
+	IPRT_LINUX_SAVE_EFL_AC();
+	RT_ASSERT_PREEMPT_CPUID_VAR();
+	AssertMsg(pThis && pThis->u32Magic == RTSPINLOCK_MAGIC,
+		  ("pThis=%p u32Magic=%08x\n", pThis,
+		   pThis ? (int)pThis->u32Magic : 0));
 
 #ifdef CONFIG_PROVE_LOCKING
-    lockdep_off();
+	lockdep_off();
 #endif
-    if (pThis->fFlags & RTSPINLOCK_FLAGS_INTERRUPT_SAFE)
-    {
-        unsigned long fIntSaved;
-        spin_lock_irqsave(&pThis->Spinlock, fIntSaved);
-        pThis->fIntSaved = fIntSaved;
-    }
-    else
-        spin_lock(&pThis->Spinlock);
+	if (pThis->fFlags & RTSPINLOCK_FLAGS_INTERRUPT_SAFE) {
+		unsigned long fIntSaved;
+		spin_lock_irqsave(&pThis->Spinlock, fIntSaved);
+		pThis->fIntSaved = fIntSaved;
+	} else
+		spin_lock(&pThis->Spinlock);
 #ifdef CONFIG_PROVE_LOCKING
-    lockdep_on();
+	lockdep_on();
 #endif
 
-    IPRT_LINUX_RESTORE_EFL_ONLY_AC();
-    RT_ASSERT_PREEMPT_CPUID_SPIN_ACQUIRED(pThis);
+	IPRT_LINUX_RESTORE_EFL_ONLY_AC();
+	RT_ASSERT_PREEMPT_CPUID_SPIN_ACQUIRED(pThis);
 }
-RT_EXPORT_SYMBOL(RTSpinlockAcquire);
 
+RT_EXPORT_SYMBOL(RTSpinlockAcquire);
 
 RTDECL(void) RTSpinlockRelease(RTSPINLOCK Spinlock)
 {
-    PRTSPINLOCKINTERNAL pThis = (PRTSPINLOCKINTERNAL)Spinlock;
-    IPRT_LINUX_SAVE_EFL_AC();           /* spin_unlock* may preempt and trash eflags.ac. */
-    RT_ASSERT_PREEMPT_CPUID_SPIN_RELEASE_VARS();
-    AssertMsg(pThis && pThis->u32Magic == RTSPINLOCK_MAGIC,
-              ("pThis=%p u32Magic=%08x\n", pThis, pThis ? (int)pThis->u32Magic : 0));
-    RT_ASSERT_PREEMPT_CPUID_SPIN_RELEASE(pThis);
+	PRTSPINLOCKINTERNAL pThis = (PRTSPINLOCKINTERNAL) Spinlock;
+	IPRT_LINUX_SAVE_EFL_AC();	/* spin_unlock* may preempt and trash eflags.ac. */
+	RT_ASSERT_PREEMPT_CPUID_SPIN_RELEASE_VARS();
+	AssertMsg(pThis && pThis->u32Magic == RTSPINLOCK_MAGIC,
+		  ("pThis=%p u32Magic=%08x\n", pThis,
+		   pThis ? (int)pThis->u32Magic : 0));
+	RT_ASSERT_PREEMPT_CPUID_SPIN_RELEASE(pThis);
 
 #ifdef CONFIG_PROVE_LOCKING
-    lockdep_off();
+	lockdep_off();
 #endif
-    if (pThis->fFlags & RTSPINLOCK_FLAGS_INTERRUPT_SAFE)
-    {
-        unsigned long fIntSaved = pThis->fIntSaved;
-        pThis->fIntSaved = 0;
-        spin_unlock_irqrestore(&pThis->Spinlock, fIntSaved);
-    }
-    else
-        spin_unlock(&pThis->Spinlock);
+	if (pThis->fFlags & RTSPINLOCK_FLAGS_INTERRUPT_SAFE) {
+		unsigned long fIntSaved = pThis->fIntSaved;
+		pThis->fIntSaved = 0;
+		spin_unlock_irqrestore(&pThis->Spinlock, fIntSaved);
+	} else
+		spin_unlock(&pThis->Spinlock);
 #ifdef CONFIG_PROVE_LOCKING
-    lockdep_on();
+	lockdep_on();
 #endif
 
-    IPRT_LINUX_RESTORE_EFL_ONLY_AC();
-    RT_ASSERT_PREEMPT_CPUID();
+	IPRT_LINUX_RESTORE_EFL_ONLY_AC();
+	RT_ASSERT_PREEMPT_CPUID();
 }
-RT_EXPORT_SYMBOL(RTSpinlockRelease);
 
+RT_EXPORT_SYMBOL(RTSpinlockRelease);

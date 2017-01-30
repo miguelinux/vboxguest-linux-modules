@@ -26,7 +26,5 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 #define RT_MANGLER(symbol)   VBoxGuest_##symbol
 #include <iprt/mangling.h>
-

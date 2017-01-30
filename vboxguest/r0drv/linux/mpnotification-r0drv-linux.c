@@ -1,4 +1,4 @@
-/* $Id: mpnotification-r0drv-linux.c 109033 2016-07-22 18:27:37Z bird $ */
+/* $Id: mpnotification-r0drv-linux.c 112917 2017-01-16 14:07:06Z fmehnert $ */
 /** @file
  * IPRT - Multiprocessor Event Notifications, Ring-0 Driver, Linux.
  */
@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -37,27 +36,67 @@
 #include <iprt/thread.h>
 #include "r0drv/mp-r0drv.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 71) && defined(CONFIG_SMP)
+static enum cpuhp_state g_rtR0MpOnline;
 
+/*
+ * Linux 4.10 completely removed CPU notifiers. So let's switch to CPU hotplug
+ * notification.
+ */
 
-/*********************************************************************************************************************************
-*   Internal Functions                                                                                                           *
-*********************************************************************************************************************************/
-static int rtMpNotificationLinuxCallback(struct notifier_block *pNotifierBlock, unsigned long ulNativeEvent, void *pvCpu);
+static int rtR0MpNotificationLinuxOnline(unsigned int cpu)
+{
+	RTCPUID idCpu = RTMpCpuIdFromSetIndex(cpu);
+	rtMpNotificationDoCallbacks(RTMPEVENT_ONLINE, idCpu);
+	return 0;
+}
 
+static int rtR0MpNotificationLinuxOffline(unsigned int cpu)
+{
+	RTCPUID idCpu = RTMpCpuIdFromSetIndex(cpu);
+	rtMpNotificationDoCallbacks(RTMPEVENT_OFFLINE, idCpu);
+	return 0;
+}
 
-/*********************************************************************************************************************************
-*   Global Variables                                                                                                             *
-*********************************************************************************************************************************/
+DECLHIDDEN(int)rtR0MpNotificationNativeInit(void)
+{
+	int rc;
+	IPRT_LINUX_SAVE_EFL_AC();
+	rc = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN, "vboxdrv:online",
+				       rtR0MpNotificationLinuxOnline,
+				       rtR0MpNotificationLinuxOffline);
+	IPRT_LINUX_RESTORE_EFL_AC();
+	/*
+	 * cpuhp_setup_state_nocalls() returns a positive state number for
+	 * CPUHP_AP_ONLINE_DYN or -ENOSPC if there is no free slot available
+	 * (see cpuhp_reserve_state / definition of CPUHP_AP_ONLINE_DYN).
+	 */
+	AssertMsgReturn(rc > 0, ("%d\n", rc), RTErrConvertFromErrno(rc));
+	g_rtR0MpOnline = rc;
+	return VINF_SUCCESS;
+}
+
+DECLHIDDEN(void)rtR0MpNotificationNativeTerm(void)
+{
+	IPRT_LINUX_SAVE_EFL_AC();
+	cpuhp_remove_state_nocalls(g_rtR0MpOnline);
+	IPRT_LINUX_RESTORE_EFL_AC();
+}
+
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 71) && defined(CONFIG_SMP)
+
+static int rtMpNotificationLinuxCallback(struct notifier_block *pNotifierBlock,
+					 unsigned long ulNativeEvent,
+					 void *pvCpu);
+
 /**
  * The notifier block we use for registering the callback.
  */
-static struct notifier_block g_NotifierBlock =
-{
-    .notifier_call = rtMpNotificationLinuxCallback,
-    .next = NULL,
-    .priority = 0
+static struct notifier_block g_NotifierBlock = {
+	.notifier_call = rtMpNotificationLinuxCallback,
+	.next = NULL,
+	.priority = 0
 };
 
 # ifdef CPU_DOWN_FAILED
@@ -66,7 +105,6 @@ static struct notifier_block g_NotifierBlock =
  */
 static RTCPUSET g_MpPendingOfflineSet;
 # endif
-
 
 /**
  * The native callback.
@@ -78,132 +116,129 @@ static RTCPUSET g_MpPendingOfflineSet;
  *
  * @remarks This can fire with preemption enabled and on any CPU.
  */
-static int rtMpNotificationLinuxCallback(struct notifier_block *pNotifierBlock, unsigned long ulNativeEvent, void *pvCpu)
+static int rtMpNotificationLinuxCallback(struct notifier_block *pNotifierBlock,
+					 unsigned long ulNativeEvent,
+					 void *pvCpu)
 {
-    bool fProcessEvent = false;
-    RTCPUID idCpu      = (uintptr_t)pvCpu;
-    NOREF(pNotifierBlock);
+	bool fProcessEvent = false;
+	RTCPUID idCpu = (uintptr_t) pvCpu;
+	NOREF(pNotifierBlock);
 
-    /*
-     * Note that redhat/CentOS ported _some_ of the FROZEN macros
-     * back to their 2.6.18-92.1.10.el5 kernel but actually don't
-     * use them. Thus we have to test for both CPU_TASKS_FROZEN and
-     * the individual event variants.
-     */
-    switch (ulNativeEvent)
-    {
-        /*
-         * Pick up online events or failures to go offline.
-         * Ignore failure events for CPUs we didn't see go offline.
-         */
+	/*
+	 * Note that redhat/CentOS ported _some_ of the FROZEN macros
+	 * back to their 2.6.18-92.1.10.el5 kernel but actually don't
+	 * use them. Thus we have to test for both CPU_TASKS_FROZEN and
+	 * the individual event variants.
+	 */
+	switch (ulNativeEvent) {
+		/*
+		 * Pick up online events or failures to go offline.
+		 * Ignore failure events for CPUs we didn't see go offline.
+		 */
 # ifdef CPU_DOWN_FAILED
-        case CPU_DOWN_FAILED:
+	case CPU_DOWN_FAILED:
 #  if defined(CPU_TASKS_FROZEN) && defined(CPU_DOWN_FAILED_FROZEN)
-        case CPU_DOWN_FAILED_FROZEN:
+	case CPU_DOWN_FAILED_FROZEN:
 #  endif
-            if (!RTCpuSetIsMember(&g_MpPendingOfflineSet, idCpu))
-                break;      /* fProcessEvents = false */
-        /* fall thru */
+		if (!RTCpuSetIsMember(&g_MpPendingOfflineSet, idCpu))
+			break;	/* fProcessEvents = false */
+		/* fall thru */
 # endif
-        case CPU_ONLINE:
+	case CPU_ONLINE:
 # if defined(CPU_TASKS_FROZEN) && defined(CPU_ONLINE_FROZEN)
-        case CPU_ONLINE_FROZEN:
+	case CPU_ONLINE_FROZEN:
 # endif
 # ifdef CPU_DOWN_FAILED
-            RTCpuSetDel(&g_MpPendingOfflineSet, idCpu);
+		RTCpuSetDel(&g_MpPendingOfflineSet, idCpu);
 # endif
-            fProcessEvent = true;
-            break;
+		fProcessEvent = true;
+		break;
 
-        /*
-         * Pick the earliest possible offline event.
-         * The only important thing here is that we get the event and that
-         * it's exactly one.
-         */
+		/*
+		 * Pick the earliest possible offline event.
+		 * The only important thing here is that we get the event and that
+		 * it's exactly one.
+		 */
 # ifdef CPU_DOWN_PREPARE
-        case CPU_DOWN_PREPARE:
+	case CPU_DOWN_PREPARE:
 #  if defined(CPU_TASKS_FROZEN) && defined(CPU_DOWN_PREPARE_FROZEN)
-        case CPU_DOWN_PREPARE_FROZEN:
+	case CPU_DOWN_PREPARE_FROZEN:
 #  endif
-            fProcessEvent = true;
+		fProcessEvent = true;
 # else
-        case CPU_DEAD:
+	case CPU_DEAD:
 #  if defined(CPU_TASKS_FROZEN) && defined(CPU_DEAD_FROZEN)
-        case CPU_DEAD_FROZEN:
+	case CPU_DEAD_FROZEN:
 #  endif
-            /* Don't process CPU_DEAD notifications. */
+		/* Don't process CPU_DEAD notifications. */
 # endif
 # ifdef CPU_DOWN_FAILED
-            RTCpuSetAdd(&g_MpPendingOfflineSet, idCpu);
+		RTCpuSetAdd(&g_MpPendingOfflineSet, idCpu);
 # endif
-            break;
-    }
+		break;
+	}
 
-    if (!fProcessEvent)
-        return NOTIFY_DONE;
+	if (!fProcessEvent)
+		return NOTIFY_DONE;
 
-    switch (ulNativeEvent)
-    {
+	switch (ulNativeEvent) {
 # ifdef CPU_DOWN_FAILED
-        case CPU_DOWN_FAILED:
+	case CPU_DOWN_FAILED:
 #  if defined(CPU_TASKS_FROZEN) && defined(CPU_DOWN_FAILED_FROZEN)
-        case CPU_DOWN_FAILED_FROZEN:
+	case CPU_DOWN_FAILED_FROZEN:
 #  endif
 # endif
-        case CPU_ONLINE:
+	case CPU_ONLINE:
 # if defined(CPU_TASKS_FROZEN) && defined(CPU_ONLINE_FROZEN)
-        case CPU_ONLINE_FROZEN:
+	case CPU_ONLINE_FROZEN:
 # endif
-            rtMpNotificationDoCallbacks(RTMPEVENT_ONLINE, idCpu);
-            break;
+		rtMpNotificationDoCallbacks(RTMPEVENT_ONLINE, idCpu);
+		break;
 
 # ifdef CPU_DOWN_PREPARE
-        case CPU_DOWN_PREPARE:
+	case CPU_DOWN_PREPARE:
 #  if defined(CPU_TASKS_FROZEN) && defined(CPU_DOWN_PREPARE_FROZEN)
-        case CPU_DOWN_PREPARE_FROZEN:
+	case CPU_DOWN_PREPARE_FROZEN:
 #  endif
-            rtMpNotificationDoCallbacks(RTMPEVENT_OFFLINE, idCpu);
-            break;
+		rtMpNotificationDoCallbacks(RTMPEVENT_OFFLINE, idCpu);
+		break;
 # endif
-    }
+	}
 
-    return NOTIFY_DONE;
+	return NOTIFY_DONE;
 }
 
-
-DECLHIDDEN(int) rtR0MpNotificationNativeInit(void)
+DECLHIDDEN(int)rtR0MpNotificationNativeInit(void)
 {
-    int rc;
-    IPRT_LINUX_SAVE_EFL_AC();
+	int rc;
+	IPRT_LINUX_SAVE_EFL_AC();
 
 # ifdef CPU_DOWN_FAILED
-    RTCpuSetEmpty(&g_MpPendingOfflineSet);
+	RTCpuSetEmpty(&g_MpPendingOfflineSet);
 # endif
 
-    rc = register_cpu_notifier(&g_NotifierBlock);
-    IPRT_LINUX_RESTORE_EFL_AC();
-    AssertMsgReturn(!rc, ("%d\n", rc), RTErrConvertFromErrno(rc));
-    return VINF_SUCCESS;
+	rc = register_cpu_notifier(&g_NotifierBlock);
+	IPRT_LINUX_RESTORE_EFL_AC();
+	AssertMsgReturn(!rc, ("%d\n", rc), RTErrConvertFromErrno(rc));
+	return VINF_SUCCESS;
 }
 
-
-DECLHIDDEN(void) rtR0MpNotificationNativeTerm(void)
+DECLHIDDEN(void)rtR0MpNotificationNativeTerm(void)
 {
-    IPRT_LINUX_SAVE_EFL_AC();
-    unregister_cpu_notifier(&g_NotifierBlock);
-    IPRT_LINUX_RESTORE_EFL_AC();
+	IPRT_LINUX_SAVE_EFL_AC();
+	unregister_cpu_notifier(&g_NotifierBlock);
+	IPRT_LINUX_RESTORE_EFL_AC();
 }
 
-#else   /* Not supported / Not needed */
+#else /* Not supported / Not needed */
 
 DECLHIDDEN(int) rtR0MpNotificationNativeInit(void)
 {
-    return VINF_SUCCESS;
+	return VINF_SUCCESS;
 }
 
-DECLHIDDEN(void) rtR0MpNotificationNativeTerm(void)
+DECLHIDDEN(void)rtR0MpNotificationNativeTerm(void)
 {
 }
 
-#endif  /* Not supported / Not needed */
-
+#endif /* Not supported / Not needed */

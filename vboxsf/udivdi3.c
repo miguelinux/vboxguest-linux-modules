@@ -40,17 +40,16 @@ static char sccsid[] = "@(#)udivdi3.c	8.1 (Berkeley) 6/4/93";
 #else
 __RCSID("$NetBSD: udivdi3.c,v 1.8 2005/12/11 12:24:37 christos Exp $");
 #endif
-#endif*/ /* LIBC_SCCS and not lint */
+	 #endif*//* LIBC_SCCS and not lint */
 
 #include "quad.h"
 
 /*
  * Divide two unsigned quads.
  */
-u_quad_t
-__udivdi3(a, b)
-	u_quad_t a, b;
+u_quad_t __udivdi3(a, b)
+u_quad_t a, b;
 {
 
-	return (__qdivrem(a, b, (u_quad_t *)0));
+	return (__qdivrem(a, b, (u_quad_t *) 0));
 }

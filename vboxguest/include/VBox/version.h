@@ -34,7 +34,7 @@
 /* Some versions of RC has trouble with cdefs.h, so we duplicate these two here. */
 # define RT_STR(str)             #str
 # define RT_XSTR(str)            RT_STR(str)
-#else  /* !RC_INVOKED */
+#else /* !RC_INVOKED */
 
 /** Combined version number. */
 # define VBOX_VERSION                    (VBOX_VERSION_MAJOR << 16 | VBOX_VERSION_MINOR)
@@ -150,4 +150,3 @@
 /** @} */
 
 #endif
-

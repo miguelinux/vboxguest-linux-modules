@@ -74,7 +74,6 @@
  */
 
 RT_C_DECLS_BEGIN
-
 /**
  * The 1st part of an assert message.
  *
@@ -83,14 +82,16 @@ RT_C_DECLS_BEGIN
  * @param   pszFile     Location file name.
  * @param   pszFunction Location function name.
  */
-RTDECL(void)    RTAssertMsg1(const char *pszExpr, unsigned uLine, const char *pszFile, const char *pszFunction);
+RTDECL(void) RTAssertMsg1(const char *pszExpr, unsigned uLine,
+			  const char *pszFile, const char *pszFunction);
 /**
  * Weak version of RTAssertMsg1 that can be overridden locally in a module to
  * modify, redirect or otherwise mess with the assertion output.
  *
  * @copydoc RTAssertMsg1
  */
-RTDECL(void)    RTAssertMsg1Weak(const char *pszExpr, unsigned uLine, const char *pszFile, const char *pszFunction);
+RTDECL(void) RTAssertMsg1Weak(const char *pszExpr, unsigned uLine,
+			      const char *pszFile, const char *pszFunction);
 
 /**
  * The 2nd (optional) part of an assert message.
@@ -98,7 +99,7 @@ RTDECL(void)    RTAssertMsg1Weak(const char *pszExpr, unsigned uLine, const char
  * @param   pszFormat   Printf like format string.
  * @param   ...         Arguments to that string.
  */
-RTDECL(void)    RTAssertMsg2(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(void) RTAssertMsg2(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
 /**
  * Weak version of RTAssertMsg2 that forwards to RTAssertMsg2WeakV.
  *
@@ -106,7 +107,8 @@ RTDECL(void)    RTAssertMsg2(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 
  *
  * @copydoc RTAssertMsg2
  */
-RTDECL(void)    RTAssertMsg2Weak(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(void) RTAssertMsg2Weak(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1,
+									      2);
 
 /**
  * The 2nd (optional) part of an assert message.
@@ -114,14 +116,16 @@ RTDECL(void)    RTAssertMsg2Weak(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR
  * @param   pszFormat   Printf like format string.
  * @param   va          Arguments to that string.
  */
-RTDECL(void)    RTAssertMsg2V(const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(void) RTAssertMsg2V(const char *pszFormat,
+			   va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
 /**
  * Weak version of RTAssertMsg2V that can be overridden locally in a module to
  * modify, redirect or otherwise mess with the assertion output.
  *
  * @copydoc RTAssertMsg2V
  */
-RTDECL(void)    RTAssertMsg2WeakV(const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(void) RTAssertMsg2WeakV(const char *pszFormat,
+			       va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
 
 /**
  * Additional information which should be appended to the 2nd part of an
@@ -130,7 +134,8 @@ RTDECL(void)    RTAssertMsg2WeakV(const char *pszFormat, va_list va) RT_IPRT_FOR
  * @param   pszFormat   Printf like format string.
  * @param   ...         Arguments to that string.
  */
-RTDECL(void)    RTAssertMsg2Add(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(void) RTAssertMsg2Add(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1,
+									     2);
 /**
  * Weak version of RTAssertMsg2Add that forwards to RTAssertMsg2AddWeakV.
  *
@@ -138,7 +143,8 @@ RTDECL(void)    RTAssertMsg2Add(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(
  *
  * @copydoc RTAssertMsg2Add
  */
-RTDECL(void)    RTAssertMsg2AddWeak(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(void) RTAssertMsg2AddWeak(const char *pszFormat,
+				 ...) RT_IPRT_FORMAT_ATTR(1, 2);
 
 /**
  * Additional information which should be appended to the 2nd part of an
@@ -147,20 +153,22 @@ RTDECL(void)    RTAssertMsg2AddWeak(const char *pszFormat, ...) RT_IPRT_FORMAT_A
  * @param   pszFormat   Printf like format string.
  * @param   va          Arguments to that string.
  */
-RTDECL(void)    RTAssertMsg2AddV(const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(void) RTAssertMsg2AddV(const char *pszFormat,
+			      va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
 /**
  * Weak version of RTAssertMsg2AddV that can be overridden locally in a module
  * to modify, redirect or otherwise mess with the assertion output.
  *
  * @copydoc RTAssertMsg2AddV
  */
-RTDECL(void)    RTAssertMsg2AddWeakV(const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(void) RTAssertMsg2AddWeakV(const char *pszFormat,
+				  va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
 
 #ifdef IN_RING0
 /**
  * Panics the system as the result of a fail assertion.
  */
-RTR0DECL(void)  RTR0AssertPanicSystem(void);
+RTR0DECL(void) RTR0AssertPanicSystem(void);
 #endif /* IN_RING0 */
 
 /**
@@ -177,11 +185,12 @@ RTR0DECL(void)  RTR0AssertPanicSystem(void);
  *          prototype.
  */
 #if !defined(RTASSERT_HAVE_SHOULD_PANIC) && !defined(RTASSERT_HAVE_SHOULD_PANIC_PRIVATE)
-RTDECL(bool)    RTAssertShouldPanic(void);
+RTDECL(bool) RTAssertShouldPanic(void);
 #elif defined(RTASSERT_HAVE_SHOULD_PANIC_PRIVATE)
-bool            RTAssertShouldPanic(void);
+bool RTAssertShouldPanic(void);
 #else
-DECLEXPORT(bool) RTCALL RTAssertShouldPanic(void);
+DECLEXPORT(bool)
+RTCALL RTAssertShouldPanic(void);
 #endif
 
 /**
@@ -190,14 +199,14 @@ DECLEXPORT(bool) RTCALL RTAssertShouldPanic(void);
  * @returns The old setting.
  * @param   fQuiet              The new setting.
  */
-RTDECL(bool)    RTAssertSetQuiet(bool fQuiet);
+RTDECL(bool) RTAssertSetQuiet(bool fQuiet);
 
 /**
  * Are assertions quiet or noisy?
  *
  * @returns True if they are quiet, false if noisy.
  */
-RTDECL(bool)    RTAssertAreQuiet(void);
+RTDECL(bool) RTAssertAreQuiet(void);
 
 /**
  * Makes the assertions panic (default) or not.
@@ -205,45 +214,40 @@ RTDECL(bool)    RTAssertAreQuiet(void);
  * @returns The old setting.
  * @param   fPanic              The new setting.
  */
-RTDECL(bool)    RTAssertSetMayPanic(bool fPanic);
+RTDECL(bool) RTAssertSetMayPanic(bool fPanic);
 
 /**
  * Can assertion panic.
  *
  * @returns True if they can, false if not.
  */
-RTDECL(bool)    RTAssertMayPanic(void);
-
+RTDECL(bool) RTAssertMayPanic(void);
 
 /** @name Globals for crash analysis
  * @remarks     This is the full potential set, it
  * @{
  */
 /** The last assert message, 1st part. */
-extern RTDATADECL(char)                     g_szRTAssertMsg1[1024];
+extern RTDATADECL(char) g_szRTAssertMsg1[1024];
 /** The last assert message, 2nd part. */
-extern RTDATADECL(char)                     g_szRTAssertMsg2[4096];
+extern RTDATADECL(char) g_szRTAssertMsg2[4096];
 /** The last assert message, expression. */
-extern RTDATADECL(const char * volatile)    g_pszRTAssertExpr;
+extern RTDATADECL(const char *volatile) g_pszRTAssertExpr;
 /** The last assert message, file name. */
-extern RTDATADECL(const char * volatile)    g_pszRTAssertFile;
+extern RTDATADECL(const char *volatile) g_pszRTAssertFile;
 /** The last assert message, line number. */
-extern RTDATADECL(uint32_t volatile)        g_u32RTAssertLine;
+extern RTDATADECL(uint32_t volatile) g_u32RTAssertLine;
 /** The last assert message, function name. */
-extern RTDATADECL(const char * volatile)    g_pszRTAssertFunction;
+extern RTDATADECL(const char *volatile) g_pszRTAssertFunction;
 /** @} */
 
 RT_C_DECLS_END
-
 /** @def RTAssertDebugBreak()
  * Debugger breakpoint instruction.
  *
  * @remarks This macro does not depend on RT_STRICT.
  */
 #define RTAssertDebugBreak()    do { RT_BREAKPOINT(); } while (0)
-
-
-
 /** @name Compile time assertions.
  *
  * These assertions are used to check structure sizes, member/size alignments
@@ -251,7 +255,6 @@ RT_C_DECLS_END
  *
  * @{
  */
-
 /**
  * RTASSERTTYPE is the type the AssertCompile() macro redefines.
  * It has no other function and shouldn't be used.
@@ -271,7 +274,6 @@ extern int RTASSERTVAR[1];
 #ifdef __GNUC__
 RT_C_DECLS_END
 #endif
-
 /** @def RTASSERT_HAVE_STATIC_ASSERT
  * Indicates that the compiler implements static_assert(expr, msg).
  */
@@ -291,7 +293,6 @@ RT_C_DECLS_END
 #ifdef DOXYGEN_RUNNING
 # define RTASSERT_HAVE_STATIC_ASSERT
 #endif
-
 /** @def AssertCompileNS
  * Asserts that a compile-time expression is true. If it's not break the build.
  *
@@ -307,7 +308,6 @@ RT_C_DECLS_END
 #else
 # define AssertCompileNS(expr)  typedef int RTASSERTTYPE[(expr) ? 1 : 0]
 #endif
-
 /** @def AssertCompile
  * Asserts that a C++0x compile-time expression is true. If it's not break the
  * build.
@@ -318,7 +318,6 @@ RT_C_DECLS_END
 #else
 # define AssertCompile(expr)    AssertCompileNS(expr)
 #endif
-
 /** @def RTASSERT_OFFSET_OF()
  * A offsetof() macro suitable for compile time assertions.
  * Both GCC v4 and VisualAge for C++ v3.08 has trouble using RT_OFFSETOF.
@@ -334,8 +333,6 @@ RT_C_DECLS_END
 #else
 # define RTASSERT_OFFSET_OF(a_Type, a_Member)   RT_OFFSETOF(a_Type, a_Member)
 #endif
-
-
 /** @def AssertCompileSize
  * Asserts a size at compile.
  * @param   type    The type.
@@ -343,7 +340,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileSize(type, size) \
     AssertCompile(sizeof(type) == (size))
-
 /** @def AssertCompileSizeAlignment
  * Asserts a size alignment at compile.
  * @param   type    The type.
@@ -351,7 +347,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileSizeAlignment(type, align) \
     AssertCompile(!(sizeof(type) & ((align) - 1)))
-
 /** @def AssertCompileMemberSize
  * Asserts a member offset alignment at compile.
  * @param   type    The type.
@@ -360,7 +355,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileMemberSize(type, member, size) \
     AssertCompile(RT_SIZEOFMEMB(type, member) == (size))
-
 /** @def AssertCompileMemberSizeAlignment
  * Asserts a member size alignment at compile.
  * @param   type    The type.
@@ -369,7 +363,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileMemberSizeAlignment(type, member, align) \
     AssertCompile(!(RT_SIZEOFMEMB(type, member) & ((align) - 1)))
-
 /** @def AssertCompileMemberAlignment
  * Asserts a member offset alignment at compile.
  * @param   type    The type.
@@ -378,7 +371,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileMemberAlignment(type, member, align) \
     AssertCompile(!(RTASSERT_OFFSET_OF(type, member) & ((align) - 1)))
-
 /** @def AssertCompileMemberOffset
  * Asserts an offset of a structure member at compile.
  * @param   type    The type.
@@ -387,7 +379,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileMemberOffset(type, member, off) \
     AssertCompile(RTASSERT_OFFSET_OF(type, member) == (off))
-
 /** @def AssertCompile2MemberOffsets
  * Asserts that two (sub-structure) members in union have the same offset.
  * @param   type    The type.
@@ -396,7 +387,6 @@ RT_C_DECLS_END
  */
 #define AssertCompile2MemberOffsets(type, member1, member2) \
     AssertCompile(RTASSERT_OFFSET_OF(type, member1) == RTASSERT_OFFSET_OF(type, member2))
-
 /** @def AssertCompileAdjacentMembers
  * Asserts that two structure members are adjacent.
  * @param   type    The type.
@@ -405,7 +395,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileAdjacentMembers(type, member1, member2) \
     AssertCompile(RTASSERT_OFFSET_OF(type, member1) + RT_SIZEOFMEMB(type, member1) == RTASSERT_OFFSET_OF(type, member2))
-
 /** @def AssertCompileMembersAtSameOffset
  * Asserts that members of two different structures are at the same offset.
  * @param   type1   The first type.
@@ -415,7 +404,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileMembersAtSameOffset(type1, member1, type2, member2) \
     AssertCompile(RTASSERT_OFFSET_OF(type1, member1) == RTASSERT_OFFSET_OF(type2, member2))
-
 /** @def AssertCompileMembersSameSize
  * Asserts that members of two different structures have the same size.
  * @param   type1   The first type.
@@ -425,7 +413,6 @@ RT_C_DECLS_END
  */
 #define AssertCompileMembersSameSize(type1, member1, type2, member2) \
     AssertCompile(RT_SIZEOFMEMB(type1, member1) == RT_SIZEOFMEMB(type2, member2))
-
 /** @def AssertCompileMembersSameSizeAndOffset
  * Asserts that members of two different structures have the same size and are
  * at the same offset.
@@ -437,11 +424,7 @@ RT_C_DECLS_END
 #define AssertCompileMembersSameSizeAndOffset(type1, member1, type2, member2) \
     AssertCompile(   RTASSERT_OFFSET_OF(type1, member1) == RTASSERT_OFFSET_OF(type2, member2) \
                   && RT_SIZEOFMEMB(type1, member1) == RT_SIZEOFMEMB(type2, member2))
-
 /** @} */
-
-
-
 /** @name Assertions
  *
  * These assertions will only trigger when RT_STRICT is defined. When it is
@@ -449,8 +432,6 @@ RT_C_DECLS_END
  *
  * @{
  */
-
-
 /** @def RTASSERT_QUIET
  * This can be defined to shut up the messages for a file where this would be
  * problematic because the message printing code path passes thru it.
@@ -463,7 +444,6 @@ RT_C_DECLS_END
                                 do { } while (0)
 # define RTAssertMsg2Weak       if (1) {} else RTAssertMsg2Weak
 #endif
-
 /** @def RTAssertDoPanic
  * Raises an assertion panic appropriate to the current context.
  * @remarks This macro does not depend on RT_STRICT.
@@ -474,7 +454,6 @@ RT_C_DECLS_END
 #else
 # define RTAssertDoPanic()      RTAssertDebugBreak()
 #endif
-
 /** @def AssertBreakpoint()
  * Assertion Breakpoint.
  * @deprecated Use RTAssertPanic or RTAssertDebugBreak instead.
@@ -484,7 +463,6 @@ RT_C_DECLS_END
 #else
 # define AssertBreakpoint()     do { } while (0)
 #endif
-
 /** @def RTAssertPanic()
  * If RT_STRICT is defined this macro will invoke RTAssertDoPanic if
  * RTAssertShouldPanic returns true. If RT_STRICT isn't defined it won't do any
@@ -495,7 +473,6 @@ RT_C_DECLS_END
 #else
 # define RTAssertPanic()        do { } while (0)
 #endif
-
 /** @def Assert
  * Assert that an expression is true. If false, hit breakpoint.
  * @param   expr    Expression which should be true.
@@ -514,8 +491,6 @@ RT_C_DECLS_END
 #else
 # define Assert(expr)     do { } while (0)
 #endif
-
-
 /** @def AssertStmt
  * Assert that an expression is true. If false, hit breakpoint and execute the
  * statement.
@@ -545,8 +520,6 @@ RT_C_DECLS_END
         } \
     } while (0)
 #endif
-
-
 /** @def AssertReturn
  * Assert that an expression is true and returns if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before returning.
@@ -575,7 +548,6 @@ RT_C_DECLS_END
             return (rc); \
     } while (0)
 #endif
-
 /** @def AssertReturnStmt
  * Assert that an expression is true, if it isn't execute the given statement
  * and return rc.
@@ -612,7 +584,6 @@ RT_C_DECLS_END
         } \
     } while (0)
 #endif
-
 /** @def AssertReturnVoid
  * Assert that an expression is true and returns if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before returning.
@@ -640,7 +611,6 @@ RT_C_DECLS_END
             return; \
     } while (0)
 #endif
-
 /** @def AssertReturnVoidStmt
  * Assert that an expression is true, if it isn't execute the given statement
  * and return.
@@ -675,8 +645,6 @@ RT_C_DECLS_END
         } \
     } while (0)
 #endif
-
-
 /** @def AssertBreak
  * Assert that an expression is true and breaks if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before breaking.
@@ -700,7 +668,6 @@ RT_C_DECLS_END
     else \
         break
 #endif
-
 /** @def AssertContinue
  * Assert that an expression is true and continue if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before continuing.
@@ -724,7 +691,6 @@ RT_C_DECLS_END
     else \
         continue
 #endif
-
 /** @def AssertBreakStmt
  * Assert that an expression is true and breaks if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before doing break.
@@ -753,8 +719,6 @@ RT_C_DECLS_END
         break; \
     } else do {} while (0)
 #endif
-
-
 /** @def AssertMsg
  * Assert that an expression is true. If it's not print message and hit breakpoint.
  * @param   expr    Expression which should be true.
@@ -775,7 +739,6 @@ RT_C_DECLS_END
 #else
 # define AssertMsg(expr, a)  do { } while (0)
 #endif
-
 /** @def AssertMsgStmt
  * Assert that an expression is true.  If it's not print message and hit
  * breakpoint and execute the statement.
@@ -810,7 +773,6 @@ RT_C_DECLS_END
         } \
     } while (0)
 #endif
-
 /** @def AssertMsgReturn
  * Assert that an expression is true and returns if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before returning.
@@ -841,7 +803,6 @@ RT_C_DECLS_END
             return (rc); \
     } while (0)
 #endif
-
 /** @def AssertMsgReturnStmt
  * Assert that an expression is true, if it isn't execute the statement and
  * return.
@@ -880,7 +841,6 @@ RT_C_DECLS_END
         } \
     } while (0)
 #endif
-
 /** @def AssertMsgReturnVoid
  * Assert that an expression is true and returns if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before returning.
@@ -910,7 +870,6 @@ RT_C_DECLS_END
             return; \
     } while (0)
 #endif
-
 /** @def AssertMsgReturnVoidStmt
  * Assert that an expression is true, if it isn't execute the statement and
  * return.
@@ -947,8 +906,6 @@ RT_C_DECLS_END
         } \
     } while (0)
 #endif
-
-
 /** @def AssertMsgBreak
  * Assert that an expression is true and breaks if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before returning.
@@ -974,7 +931,6 @@ RT_C_DECLS_END
     else \
         break
 #endif
-
 /** @def AssertMsgBreakStmt
  * Assert that an expression is true and breaks if it isn't.
  * In RT_STRICT mode it will hit a breakpoint before doing break.
@@ -1005,7 +961,6 @@ RT_C_DECLS_END
         break; \
     } else do {} while (0)
 #endif
-
 /** @def AssertFailed
  * An assertion failed, hit breakpoint.
  */
@@ -1018,7 +973,6 @@ RT_C_DECLS_END
 #else
 # define AssertFailed()         do { } while (0)
 #endif
-
 /** @def AssertFailedStmt
  * An assertion failed, hit breakpoint and execute statement.
  */
@@ -1032,7 +986,6 @@ RT_C_DECLS_END
 #else
 # define AssertFailedStmt(stmt)     do { stmt; } while (0)
 #endif
-
 /** @def AssertFailedReturn
  * An assertion failed, hit breakpoint (RT_STRICT mode only) and return.
  *
@@ -1051,7 +1004,6 @@ RT_C_DECLS_END
         return (rc); \
     } while (0)
 #endif
-
 /** @def AssertFailedReturnStmt
  * An assertion failed, hit breakpoint (RT_STRICT mode only), execute a
  * statement and return a value.
@@ -1074,7 +1026,6 @@ RT_C_DECLS_END
         return (rc); \
     } while (0)
 #endif
-
 /** @def AssertFailedReturnVoid
  * An assertion failed, hit breakpoint (RT_STRICT mode only) and return.
  */
@@ -1091,7 +1042,6 @@ RT_C_DECLS_END
         return; \
     } while (0)
 #endif
-
 /** @def AssertFailedReturnVoidStmt
  * An assertion failed, hit breakpoint (RT_STRICT mode only), execute a
  * statement and return.
@@ -1113,8 +1063,6 @@ RT_C_DECLS_END
         return; \
     } while (0)
 #endif
-
-
 /** @def AssertFailedBreak
  * An assertion failed, hit breakpoint (RT_STRICT mode only) and break.
  */
@@ -1131,7 +1079,6 @@ RT_C_DECLS_END
         break; \
     else do {} while (0)
 #endif
-
 /** @def AssertFailedBreakStmt
  * An assertion failed, hit breakpoint (RT_STRICT mode only), execute
  * the given statement and break.
@@ -1153,8 +1100,6 @@ RT_C_DECLS_END
         break; \
     } else do {} while (0)
 #endif
-
-
 /** @def AssertMsgFailed
  * An assertion failed print a message and a hit breakpoint.
  *
@@ -1170,7 +1115,6 @@ RT_C_DECLS_END
 #else
 # define AssertMsgFailed(a)     do { } while (0)
 #endif
-
 /** @def AssertMsgFailedReturn
  * An assertion failed, hit breakpoint with message (RT_STRICT mode only) and return.
  *
@@ -1191,7 +1135,6 @@ RT_C_DECLS_END
         return (rc); \
     } while (0)
 #endif
-
 /** @def AssertMsgFailedReturnVoid
  * An assertion failed, hit breakpoint with message (RT_STRICT mode only) and return.
  *
@@ -1211,8 +1154,6 @@ RT_C_DECLS_END
         return; \
     } while (0)
 #endif
-
-
 /** @def AssertMsgFailedBreak
  * An assertion failed, hit breakpoint with message (RT_STRICT mode only) and break.
  *
@@ -1232,7 +1173,6 @@ RT_C_DECLS_END
         break; \
     else do {} while (0)
 #endif
-
 /** @def AssertMsgFailedBreakStmt
  * An assertion failed, hit breakpoint (RT_STRICT mode only), execute
  * the given statement and break.
@@ -1256,11 +1196,7 @@ RT_C_DECLS_END
         break; \
     } else do {} while (0)
 #endif
-
 /** @} */
-
-
-
 /** @name Release Log Assertions
  *
  * These assertions will work like normal strict assertion when RT_STRICT is
@@ -1270,7 +1206,6 @@ RT_C_DECLS_END
  *
  * @{
  */
-
 /** @def RTAssertLogRelMsg1
  * RTAssertMsg1Weak (strict builds) / LogRel wrapper (non-strict).
  */
@@ -1282,7 +1217,6 @@ RT_C_DECLS_END
     LogRel(("AssertLogRel %s(%d) %s: %s\n",\
             (pszFile), (iLine), (pszFunction), (pszExpr) ))
 #endif
-
 /** @def RTAssertLogRelMsg2
  * RTAssertMsg2Weak (strict builds) / LogRel wrapper (non-strict).
  */
@@ -1291,7 +1225,6 @@ RT_C_DECLS_END
 #else
 # define RTAssertLogRelMsg2(a)  LogRel(a)
 #endif
-
 /** @def AssertLogRel
  * Assert that an expression is true.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1308,7 +1241,6 @@ RT_C_DECLS_END
             RTAssertPanic(); \
         } \
     } while (0)
-
 /** @def AssertLogRelReturn
  * Assert that an expression is true, return \a rc if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1327,7 +1259,6 @@ RT_C_DECLS_END
             return (rc); \
         } \
     } while (0)
-
 /** @def AssertLogRelReturnVoid
  * Assert that an expression is true, return void if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1345,7 +1276,6 @@ RT_C_DECLS_END
             return; \
         } \
     } while (0)
-
 /** @def AssertLogRelBreak
  * Assert that an expression is true, break if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1362,7 +1292,6 @@ RT_C_DECLS_END
         break; \
     } \
     else do {} while (0)
-
 /** @def AssertLogRelBreakStmt
  * Assert that an expression is true, execute \a stmt and break if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1380,7 +1309,6 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
 /** @def AssertLogRelMsg
  * Assert that an expression is true.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1399,7 +1327,6 @@ RT_C_DECLS_END
             RTAssertPanic(); \
         } \
     } while (0)
-
 /** @def AssertLogRelMsgStmt
  * Assert that an expression is true, execute \a stmt and break if it isn't
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1420,7 +1347,6 @@ RT_C_DECLS_END
             stmt; \
         } \
     } while (0)
-
 /** @def AssertLogRelMsgReturn
  * Assert that an expression is true, return \a rc if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1441,7 +1367,6 @@ RT_C_DECLS_END
             return (rc); \
         } \
     } while (0)
-
 /** @def AssertLogRelMsgReturnStmt
  * Assert that an expression is true, execute @a stmt and return @a rcRet if it
  * isn't.
@@ -1466,7 +1391,6 @@ RT_C_DECLS_END
             return (rcRet); \
         } \
     } while (0)
-
 /** @def AssertLogRelMsgReturnVoid
  * Assert that an expression is true, return (void) if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1486,7 +1410,6 @@ RT_C_DECLS_END
             return; \
         } \
     } while (0)
-
 /** @def AssertLogRelMsgBreak
  * Assert that an expression is true, break if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1505,7 +1428,6 @@ RT_C_DECLS_END
         break; \
     } \
     else do {} while (0)
-
 /** @def AssertLogRelMsgBreakStmt
  * Assert that an expression is true, execute \a stmt and break if it isn't.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1525,7 +1447,6 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
 /** @def AssertLogRelFailed
  * An assertion failed.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1535,7 +1456,6 @@ RT_C_DECLS_END
         RTAssertLogRelMsg1((const char *)0, __LINE__, __FILE__, __PRETTY_FUNCTION__); \
         RTAssertPanic(); \
     } while (0)
-
 /** @def AssertLogRelFailedReturn
  * An assertion failed.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1548,7 +1468,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         return (rc); \
     } while (0)
-
 /** @def AssertLogRelFailedReturnVoid
  * An assertion failed, hit a breakpoint and return.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1559,7 +1478,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         return; \
     } while (0)
-
 /** @def AssertLogRelFailedBreak
  * An assertion failed, break.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1571,7 +1489,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         break; \
     } else do {} while (0)
-
 /** @def AssertLogRelFailedBreakStmt
  * An assertion failed, execute \a stmt and break.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1586,7 +1503,6 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
 /** @def AssertLogRelMsgFailed
  * An assertion failed.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1599,7 +1515,6 @@ RT_C_DECLS_END
         RTAssertLogRelMsg2(a); \
         RTAssertPanic(); \
     } while (0)
-
 /** @def AssertLogRelMsgFailedStmt
  * An assertion failed, execute @a stmt.
  *
@@ -1616,7 +1531,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         stmt; \
     } while (0)
-
 /** @def AssertLogRelMsgFailedReturn
  * An assertion failed, return \a rc.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1631,7 +1545,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         return (rc); \
     } while (0)
-
 /** @def AssertLogRelMsgFailedReturnStmt
  * An assertion failed, execute @a stmt and return @a rc.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1649,7 +1562,6 @@ RT_C_DECLS_END
         stmt; \
         return (rc); \
     } while (0)
-
 /** @def AssertLogRelMsgFailedReturnVoid
  * An assertion failed, return void.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1663,7 +1575,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         return; \
     } while (0)
-
 /** @def AssertLogRelMsgFailedReturnVoidStmt
  * An assertion failed, execute @a stmt and return void.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1680,7 +1591,6 @@ RT_C_DECLS_END
         stmt; \
         return; \
     } while (0)
-
 /** @def AssertLogRelMsgFailedBreak
  * An assertion failed, break.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1695,7 +1605,6 @@ RT_C_DECLS_END
         RTAssertPanic(); \
         break; \
     } else do {} while (0)
-
 /** @def AssertLogRelMsgFailedBreakStmt
  * An assertion failed, execute \a stmt and break.
  * Strict builds will hit a breakpoint, non-strict will only do LogRel.
@@ -1712,17 +1621,12 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
 /** @} */
-
-
-
 /** @name Release Assertions
  *
  * These assertions are always enabled.
  * @{
  */
-
 /** @def RTAssertReleasePanic()
  * Invokes RTAssertShouldPanic and RTAssertDoPanic.
  *
@@ -1731,8 +1635,6 @@ RT_C_DECLS_END
  * used to bail out before taking down the system (the VMMR0 case).
  */
 #define RTAssertReleasePanic()   do { RTAssertShouldPanic(); RTAssertDoPanic(); } while (0)
-
-
 /** @def AssertRelease
  * Assert that an expression is true. If it's not hit a breakpoint.
  *
@@ -1748,7 +1650,6 @@ RT_C_DECLS_END
             RTAssertReleasePanic(); \
         } \
     } while (0)
-
 /** @def AssertReleaseReturn
  * Assert that an expression is true, hit a breakpoint and return if it isn't.
  *
@@ -1766,7 +1667,6 @@ RT_C_DECLS_END
             return (rc); \
         } \
     } while (0)
-
 /** @def AssertReleaseReturnVoid
  * Assert that an expression is true, hit a breakpoint and return if it isn't.
  *
@@ -1783,8 +1683,6 @@ RT_C_DECLS_END
             return; \
         } \
     } while (0)
-
-
 /** @def AssertReleaseBreak
  * Assert that an expression is true, hit a breakpoint and break if it isn't.
  *
@@ -1799,7 +1697,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         break; \
     } else do {} while (0)
-
 /** @def AssertReleaseBreakStmt
  * Assert that an expression is true, hit a breakpoint and break if it isn't.
  *
@@ -1816,8 +1713,6 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
-
 /** @def AssertReleaseMsg
  * Assert that an expression is true, print the message and hit a breakpoint if it isn't.
  *
@@ -1835,7 +1730,6 @@ RT_C_DECLS_END
             RTAssertReleasePanic(); \
         } \
     } while (0)
-
 /** @def AssertReleaseMsgReturn
  * Assert that an expression is true, print the message and hit a breakpoint and return if it isn't.
  *
@@ -1855,7 +1749,6 @@ RT_C_DECLS_END
             return (rc); \
         } \
     } while (0)
-
 /** @def AssertReleaseMsgReturnVoid
  * Assert that an expression is true, print the message and hit a breakpoint and return if it isn't.
  *
@@ -1874,8 +1767,6 @@ RT_C_DECLS_END
             return; \
         } \
     } while (0)
-
-
 /** @def AssertReleaseMsgBreak
  * Assert that an expression is true, print the message and hit a breakpoint and break if it isn't.
  *
@@ -1892,7 +1783,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         break; \
     } else do {} while (0)
-
 /** @def AssertReleaseMsgBreakStmt
  * Assert that an expression is true, print the message and hit a breakpoint and break if it isn't.
  *
@@ -1911,8 +1801,6 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
-
 /** @def AssertReleaseFailed
  * An assertion failed, hit a breakpoint.
  */
@@ -1921,7 +1809,6 @@ RT_C_DECLS_END
         RTAssertMsg1Weak((const char *)0, __LINE__, __FILE__, __PRETTY_FUNCTION__); \
         RTAssertReleasePanic(); \
     } while (0)
-
 /** @def AssertReleaseFailedReturn
  * An assertion failed, hit a breakpoint and return.
  *
@@ -1933,7 +1820,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         return (rc); \
     } while (0)
-
 /** @def AssertReleaseFailedReturnVoid
  * An assertion failed, hit a breakpoint and return.
  */
@@ -1943,8 +1829,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         return; \
     } while (0)
-
-
 /** @def AssertReleaseFailedBreak
  * An assertion failed, hit a breakpoint and break.
  */
@@ -1954,7 +1838,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         break; \
     } else do {} while (0)
-
 /** @def AssertReleaseFailedBreakStmt
  * An assertion failed, hit a breakpoint and break.
  *
@@ -1967,8 +1850,6 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
-
 /** @def AssertReleaseMsgFailed
  * An assertion failed, print a message and hit a breakpoint.
  *
@@ -1980,7 +1861,6 @@ RT_C_DECLS_END
         RTAssertMsg2Weak a; \
         RTAssertReleasePanic(); \
     } while (0)
-
 /** @def AssertReleaseMsgFailedReturn
  * An assertion failed, print a message, hit a breakpoint and return.
  *
@@ -1994,7 +1874,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         return (rc); \
     } while (0)
-
 /** @def AssertReleaseMsgFailedReturnVoid
  * An assertion failed, print a message, hit a breakpoint and return.
  *
@@ -2007,8 +1886,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         return; \
     } while (0)
-
-
 /** @def AssertReleaseMsgFailedBreak
  * An assertion failed, print a message, hit a breakpoint and break.
  *
@@ -2021,7 +1898,6 @@ RT_C_DECLS_END
         RTAssertReleasePanic(); \
         break; \
     } else do {} while (0)
-
 /** @def AssertReleaseMsgFailedBreakStmt
  * An assertion failed, print a message, hit a breakpoint and break.
  *
@@ -2036,18 +1912,13 @@ RT_C_DECLS_END
         stmt; \
         break; \
     } else do {} while (0)
-
 /** @} */
-
-
-
 /** @name Fatal Assertions
  * These are similar to release assertions except that you cannot ignore them in
  * any way, they will loop for ever if RTAssertDoPanic returns.
  *
  * @{
  */
-
 /** @def AssertFatal
  * Assert that an expression is true. If it's not hit a breakpoint (for ever).
  *
@@ -2064,7 +1935,6 @@ RT_C_DECLS_END
                 RTAssertReleasePanic(); \
             } \
     } while (0)
-
 /** @def AssertFatalMsg
  * Assert that an expression is true, print the message and hit a breakpoint (for ever) if it isn't.
  *
@@ -2083,7 +1953,6 @@ RT_C_DECLS_END
                 RTAssertReleasePanic(); \
             } \
     } while (0)
-
 /** @def AssertFatalFailed
  * An assertion failed, hit a breakpoint (for ever).
  */
@@ -2095,7 +1964,6 @@ RT_C_DECLS_END
             RTAssertReleasePanic(); \
         } \
     } while (0)
-
 /** @def AssertFatalMsgFailed
  * An assertion failed, print a message and hit a breakpoint (for ever).
  *
@@ -2110,15 +1978,10 @@ RT_C_DECLS_END
             RTAssertReleasePanic(); \
         } \
     } while (0)
-
 /** @} */
-
-
-
 /** @name Convenience Assertions Macros
  * @{
  */
-
 /** @def AssertRC
  * Asserts a iprt status code successful.
  *
@@ -2128,7 +1991,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRC(rc)                AssertMsgRC(rc, ("%Rra\n", (rc)))
-
 /** @def AssertRCStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and execute
  * @a stmt if it isn't.
@@ -2139,7 +2001,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCStmt(rc, stmt)   AssertMsgRCStmt(rc, ("%Rra\n", (rc)), stmt)
-
 /** @def AssertRCReturn
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and return if it isn't.
  *
@@ -2148,7 +2009,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCReturn(rc, rcRet)   AssertMsgRCReturn(rc, ("%Rra\n", (rc)), rcRet)
-
 /** @def AssertRCReturnStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only), execute
  * @a stmt and returns @a rcRet if it isn't.
@@ -2160,7 +2020,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCReturnStmt(rc, stmt, rcRet) AssertMsgRCReturnStmt(rc, ("%Rra\n", (rc)), stmt, rcRet)
-
 /** @def AssertRCReturnVoid
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and return if it isn't.
  *
@@ -2168,7 +2027,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCReturnVoid(rc)      AssertMsgRCReturnVoid(rc, ("%Rra\n", (rc)))
-
 /** @def AssertRCReturnVoidStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only), and
  * execute the given statement/return if it isn't.
@@ -2178,7 +2036,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCReturnVoidStmt(rc, stmt) AssertMsgRCReturnVoidStmt(rc, ("%Rra\n", (rc)), stmt)
-
 /** @def AssertRCBreak
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and break if it isn't.
  *
@@ -2186,7 +2043,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCBreak(rc)           AssertMsgRCBreak(rc, ("%Rra\n", (rc)))
-
 /** @def AssertRCBreakStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and break if it isn't.
  *
@@ -2195,7 +2051,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCBreakStmt(rc, stmt) AssertMsgRCBreakStmt(rc, ("%Rra\n", (rc)), stmt)
-
 /** @def AssertMsgRC
  * Asserts a iprt status code successful.
  *
@@ -2207,7 +2062,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRC(rc, msg) \
     do { AssertMsg(RT_SUCCESS_NP(rc), msg); NOREF(rc); } while (0)
-
 /** @def AssertMsgRCStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and
  * execute @a stmt if it isn't.
@@ -2220,7 +2074,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCStmt(rc, msg, stmt) \
     do { AssertMsgStmt(RT_SUCCESS_NP(rc), msg, stmt); NOREF(rc); } while (0)
-
 /** @def AssertMsgRCReturn
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and return
  * @a rcRet if it isn't.
@@ -2232,7 +2085,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCReturn(rc, msg, rcRet) \
     do { AssertMsgReturn(RT_SUCCESS_NP(rc), msg, rcRet); NOREF(rc); } while (0)
-
 /** @def AssertMsgRCReturnStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only), execute
  * @a stmt and return @a rcRet if it isn't.
@@ -2246,7 +2098,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCReturnStmt(rc, msg, stmt, rcRet) \
     do { AssertMsgReturnStmt(RT_SUCCESS_NP(rc), msg, stmt, rcRet); NOREF(rc); } while (0)
-
 /** @def AssertMsgRCReturnVoid
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and return
  * void if it isn't.
@@ -2257,7 +2108,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCReturnVoid(rc, msg) \
     do { AssertMsgReturnVoid(RT_SUCCESS_NP(rc), msg); NOREF(rc); } while (0)
-
 /** @def AssertMsgRCReturnVoidStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only), execute
  * @a stmt and return void if it isn't.
@@ -2269,7 +2119,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCReturnVoidStmt(rc, msg, stmt) \
     do { AssertMsgReturnVoidStmt(RT_SUCCESS_NP(rc), msg, stmt); NOREF(rc); } while (0)
-
 /** @def AssertMsgRCBreak
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only) and break
  * if it isn't.
@@ -2280,7 +2129,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCBreak(rc, msg) \
     if (1) { AssertMsgBreak(RT_SUCCESS(rc), msg); NOREF(rc); } else do {} while (0)
-
 /** @def AssertMsgRCBreakStmt
  * Asserts a iprt status code successful, bitch (RT_STRICT mode only), execute
  * @a stmt and break if it isn't.
@@ -2292,7 +2140,6 @@ RT_C_DECLS_END
  */
 #define AssertMsgRCBreakStmt(rc, msg, stmt) \
     if (1) { AssertMsgBreakStmt(RT_SUCCESS_NP(rc), msg, stmt); NOREF(rc); } else do {} while (0)
-
 /** @def AssertRCSuccess
  * Asserts an iprt status code equals VINF_SUCCESS.
  *
@@ -2302,7 +2149,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCSuccess(rc)                 do { AssertMsg((rc) == VINF_SUCCESS, ("%Rra\n", (rc))); NOREF(rc); } while (0)
-
 /** @def AssertRCSuccessReturn
  * Asserts that an iprt status code equals VINF_SUCCESS, bitch (RT_STRICT mode only) and return if it isn't.
  *
@@ -2311,7 +2157,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCSuccessReturn(rc, rcRet)    AssertMsgReturn((rc) == VINF_SUCCESS, ("%Rra\n", (rc)), rcRet)
-
 /** @def AssertRCSuccessReturnVoid
  * Asserts that an iprt status code equals VINF_SUCCESS, bitch (RT_STRICT mode only) and return if it isn't.
  *
@@ -2319,7 +2164,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCSuccessReturnVoid(rc)       AssertMsgReturnVoid((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertRCSuccessBreak
  * Asserts that an iprt status code equals VINF_SUCCESS, bitch (RT_STRICT mode only) and break if it isn't.
  *
@@ -2327,7 +2171,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCSuccessBreak(rc)            AssertMsgBreak((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertRCSuccessBreakStmt
  * Asserts that an iprt status code equals VINF_SUCCESS, bitch (RT_STRICT mode only) and break if it isn't.
  *
@@ -2336,8 +2179,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times. In release mode is NOREF()'ed.
  */
 #define AssertRCSuccessBreakStmt(rc, stmt)  AssertMsgBreakStmt((rc) == VINF_SUCCESS, ("%Rra\n", (rc)), stmt)
-
-
 /** @def AssertLogRelRC
  * Asserts a iprt status code successful.
  *
@@ -2345,7 +2186,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRC(rc)                      AssertLogRelMsgRC(rc, ("%Rra\n", (rc)))
-
 /** @def AssertLogRelRCReturn
  * Asserts a iprt status code successful, returning \a rc if it isn't.
  *
@@ -2354,7 +2194,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCReturn(rc, rcRet)         AssertLogRelMsgRCReturn(rc, ("%Rra\n", (rc)), rcRet)
-
 /** @def AssertLogRelRCReturnStmt
  * Asserts a iprt status code successful, executing \a stmt and returning \a rc
  * if it isn't.
@@ -2366,7 +2205,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCReturnStmt(rc, stmt, rcRet) AssertLogRelMsgRCReturnStmt(rc, ("%Rra\n", (rc)), stmt, rcRet)
-
 /** @def AssertLogRelRCReturnVoid
  * Asserts a iprt status code successful, returning (void) if it isn't.
  *
@@ -2374,7 +2212,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCReturnVoid(rc)            AssertLogRelMsgRCReturnVoid(rc, ("%Rra\n", (rc)))
-
 /** @def AssertLogRelRCBreak
  * Asserts a iprt status code successful, breaking if it isn't.
  *
@@ -2382,7 +2219,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCBreak(rc)                 AssertLogRelMsgRCBreak(rc, ("%Rra\n", (rc)))
-
 /** @def AssertLogRelRCBreakStmt
  * Asserts a iprt status code successful, execute \a statement and break if it isn't.
  *
@@ -2391,7 +2227,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCBreakStmt(rc, stmt)       AssertLogRelMsgRCBreakStmt(rc, ("%Rra\n", (rc)), stmt)
-
 /** @def AssertLogRelMsgRC
  * Asserts a iprt status code successful.
  *
@@ -2400,7 +2235,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelMsgRC(rc, msg)              AssertLogRelMsg(RT_SUCCESS_NP(rc), msg)
-
 /** @def AssertLogRelMsgRCReturn
  * Asserts a iprt status code successful.
  *
@@ -2410,7 +2244,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelMsgRCReturn(rc, msg, rcRet) AssertLogRelMsgReturn(RT_SUCCESS_NP(rc), msg, rcRet)
-
 /** @def AssertLogRelMsgRCReturnStmt
  * Asserts a iprt status code successful, execute \a stmt and return on
  * failure.
@@ -2423,7 +2256,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelMsgRCReturnStmt(rc, msg, stmt, rcRet) AssertLogRelMsgReturnStmt(RT_SUCCESS_NP(rc), msg, stmt, rcRet)
-
 /** @def AssertLogRelMsgRCReturnVoid
  * Asserts a iprt status code successful.
  *
@@ -2432,7 +2264,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelMsgRCReturnVoid(rc, msg)    AssertLogRelMsgReturnVoid(RT_SUCCESS_NP(rc), msg)
-
 /** @def AssertLogRelMsgRCBreak
  * Asserts a iprt status code successful.
  *
@@ -2441,7 +2272,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelMsgRCBreak(rc, msg)         AssertLogRelMsgBreak(RT_SUCCESS(rc), msg)
-
 /** @def AssertLogRelMsgRCBreakStmt
  * Asserts a iprt status code successful, execute \a stmt and break if it isn't.
  *
@@ -2451,7 +2281,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelMsgRCBreakStmt(rc, msg, stmt) AssertLogRelMsgBreakStmt(RT_SUCCESS_NP(rc), msg, stmt)
-
 /** @def AssertLogRelRCSuccess
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2459,7 +2288,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCSuccess(rc)               AssertLogRelMsg((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertLogRelRCSuccessReturn
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2468,7 +2296,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCSuccessReturn(rc, rcRet)  AssertLogRelMsgReturn((rc) == VINF_SUCCESS, ("%Rra\n", (rc)), rcRet)
-
 /** @def AssertLogRelRCSuccessReturnVoid
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2476,7 +2303,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCSuccessReturnVoid(rc)     AssertLogRelMsgReturnVoid((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertLogRelRCSuccessBreak
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2484,7 +2310,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCSuccessBreak(rc)          AssertLogRelMsgBreak((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertLogRelRCSuccessBreakStmt
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2493,8 +2318,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertLogRelRCSuccessBreakStmt(rc, stmt) AssertLogRelMsgBreakStmt((rc) == VINF_SUCCESS, ("%Rra\n", (rc)), stmt)
-
-
 /** @def AssertReleaseRC
  * Asserts a iprt status code successful.
  *
@@ -2504,7 +2327,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRC(rc)                 AssertReleaseMsgRC(rc, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseRCReturn
  * Asserts a iprt status code successful, returning if it isn't.
  *
@@ -2516,7 +2338,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCReturn(rc, rcRet)    AssertReleaseMsgRCReturn(rc, ("%Rra\n", (rc)), rcRet)
-
 /** @def AssertReleaseRCReturnVoid
  * Asserts a iprt status code successful, returning if it isn't.
  *
@@ -2527,7 +2348,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCReturnVoid(rc)       AssertReleaseMsgRCReturnVoid(rc, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseRCBreak
  * Asserts a iprt status code successful, breaking if it isn't.
  *
@@ -2538,7 +2358,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCBreak(rc)            AssertReleaseMsgRCBreak(rc, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseRCBreakStmt
  * Asserts a iprt status code successful, break if it isn't.
  *
@@ -2550,7 +2369,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCBreakStmt(rc, stmt)  AssertReleaseMsgRCBreakStmt(rc, ("%Rra\n", (rc)), stmt)
-
 /** @def AssertReleaseMsgRC
  * Asserts a iprt status code successful.
  *
@@ -2561,7 +2379,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseMsgRC(rc, msg)         AssertReleaseMsg(RT_SUCCESS_NP(rc), msg)
-
 /** @def AssertReleaseMsgRCReturn
  * Asserts a iprt status code successful.
  *
@@ -2574,7 +2391,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseMsgRCReturn(rc, msg, rcRet)    AssertReleaseMsgReturn(RT_SUCCESS_NP(rc), msg, rcRet)
-
 /** @def AssertReleaseMsgRCReturnVoid
  * Asserts a iprt status code successful.
  *
@@ -2586,7 +2402,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseMsgRCReturnVoid(rc, msg)    AssertReleaseMsgReturnVoid(RT_SUCCESS_NP(rc), msg)
-
 /** @def AssertReleaseMsgRCBreak
  * Asserts a iprt status code successful.
  *
@@ -2598,7 +2413,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseMsgRCBreak(rc, msg)        AssertReleaseMsgBreak(RT_SUCCESS(rc), msg)
-
 /** @def AssertReleaseMsgRCBreakStmt
  * Asserts a iprt status code successful.
  *
@@ -2611,7 +2425,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseMsgRCBreakStmt(rc, msg, stmt)  AssertReleaseMsgBreakStmt(RT_SUCCESS_NP(rc), msg, stmt)
-
 /** @def AssertReleaseRCSuccess
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2621,7 +2434,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCSuccess(rc)                  AssertReleaseMsg((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseRCSuccessReturn
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2633,7 +2445,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCSuccessReturn(rc, rcRet)     AssertReleaseMsgReturn((rc) == VINF_SUCCESS, ("%Rra\n", (rc)), rcRet)
-
 /** @def AssertReleaseRCSuccessReturnVoid
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2644,7 +2455,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCSuccessReturnVoid(rc)     AssertReleaseMsgReturnVoid((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseRCSuccessBreak
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2655,7 +2465,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCSuccessBreak(rc)         AssertReleaseMsgBreak((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseRCSuccessBreakStmt
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2667,8 +2476,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertReleaseRCSuccessBreakStmt(rc, stmt)   AssertReleaseMsgBreakStmt((rc) == VINF_SUCCESS, ("%Rra\n", (rc)), stmt)
-
-
 /** @def AssertFatalRC
  * Asserts a iprt status code successful.
  *
@@ -2678,7 +2485,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertFatalRC(rc)               AssertFatalMsgRC(rc, ("%Rra\n", (rc)))
-
 /** @def AssertReleaseMsgRC
  * Asserts a iprt status code successful.
  *
@@ -2689,7 +2495,6 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertFatalMsgRC(rc, msg)       AssertFatalMsg(RT_SUCCESS_NP(rc), msg)
-
 /** @def AssertFatalRCSuccess
  * Asserts that an iprt status code equals VINF_SUCCESS.
  *
@@ -2699,15 +2504,12 @@ RT_C_DECLS_END
  * @remark  rc is referenced multiple times.
  */
 #define AssertFatalRCSuccess(rc)        AssertFatalMsg((rc) == VINF_SUCCESS, ("%Rra\n", (rc)))
-
-
 /** @def AssertPtr
  * Asserts that a pointer is valid.
  *
  * @param   pv      The pointer.
  */
 #define AssertPtr(pv)                   AssertMsg(VALID_PTR(pv), ("%p\n", (pv)))
-
 /** @def AssertPtrReturn
  * Asserts that a pointer is valid.
  *
@@ -2715,21 +2517,18 @@ RT_C_DECLS_END
  * @param   rcRet   What is to be presented to return.
  */
 #define AssertPtrReturn(pv, rcRet)      AssertMsgReturn(VALID_PTR(pv), ("%p\n", (pv)), rcRet)
-
 /** @def AssertPtrReturnVoid
  * Asserts that a pointer is valid.
  *
  * @param   pv      The pointer.
  */
 #define AssertPtrReturnVoid(pv)         AssertMsgReturnVoid(VALID_PTR(pv), ("%p\n", (pv)))
-
 /** @def AssertPtrBreak
  * Asserts that a pointer is valid.
  *
  * @param   pv      The pointer.
  */
 #define AssertPtrBreak(pv)              AssertMsgBreak(VALID_PTR(pv), ("%p\n", (pv)))
-
 /** @def AssertPtrBreakStmt
  * Asserts that a pointer is valid.
  *
@@ -2737,14 +2536,12 @@ RT_C_DECLS_END
  * @param   stmt    Statement to execute before break in case of a failed assertion.
  */
 #define AssertPtrBreakStmt(pv, stmt)    AssertMsgBreakStmt(VALID_PTR(pv), ("%p\n", (pv)), stmt)
-
 /** @def AssertPtrNull
  * Asserts that a pointer is valid or NULL.
  *
  * @param   pv      The pointer.
  */
 #define AssertPtrNull(pv)               AssertMsg(VALID_PTR(pv) || (pv) == NULL, ("%p\n", (pv)))
-
 /** @def AssertPtrNullReturn
  * Asserts that a pointer is valid or NULL.
  *
@@ -2752,21 +2549,18 @@ RT_C_DECLS_END
  * @param   rcRet   What is to be presented to return.
  */
 #define AssertPtrNullReturn(pv, rcRet)  AssertMsgReturn(VALID_PTR(pv) || (pv) == NULL, ("%p\n", (pv)), rcRet)
-
 /** @def AssertPtrNullReturnVoid
  * Asserts that a pointer is valid or NULL.
  *
  * @param   pv      The pointer.
  */
 #define AssertPtrNullReturnVoid(pv)     AssertMsgReturnVoid(VALID_PTR(pv) || (pv) == NULL, ("%p\n", (pv)))
-
 /** @def AssertPtrNullBreak
  * Asserts that a pointer is valid or NULL.
  *
  * @param   pv      The pointer.
  */
 #define AssertPtrNullBreak(pv)          AssertMsgBreak(VALID_PTR(pv) || (pv) == NULL, ("%p\n", (pv)))
-
 /** @def AssertPtrNullBreakStmt
  * Asserts that a pointer is valid or NULL.
  *
@@ -2774,14 +2568,12 @@ RT_C_DECLS_END
  * @param   stmt    Statement to execute before break in case of a failed assertion.
  */
 #define AssertPtrNullBreakStmt(pv, stmt) AssertMsgBreakStmt(VALID_PTR(pv) || (pv) == NULL, ("%p\n", (pv)), stmt)
-
 /** @def AssertGCPhys32
  * Asserts that the high dword of a physical address is zero
  *
  * @param   GCPhys      The address (RTGCPHYS).
  */
 #define AssertGCPhys32(GCPhys)          AssertMsg(VALID_PHYS32(GCPhys), ("%RGp\n", (RTGCPHYS)(GCPhys)))
-
 /** @def AssertGCPtr32
  * Asserts that the high dword of a physical address is zero
  *
@@ -2792,7 +2584,6 @@ RT_C_DECLS_END
 #else
 # define AssertGCPtr32(GCPtr)           AssertMsg(!((GCPtr) & UINT64_C(0xffffffff00000000)), ("%RGv\n", GCPtr))
 #endif
-
 /** @def AssertForEach
  * Equivalent to Assert for each value of the variable from the starting
  * value to the finishing one.
@@ -2812,9 +2603,7 @@ RT_C_DECLS_END
         for (var = (first); var < (end); var++) \
             AssertMsg(expr, ("%s = %#RX64 (%RI64)", #var, (uint64_t)var, (int64_t)var)); \
     } while (0)
-
 #ifdef RT_OS_WINDOWS
-
 /** @def AssertNtStatus
  * Asserts that the NT_SUCCESS() returns true for the given NTSTATUS value.
  *
@@ -2824,7 +2613,6 @@ RT_C_DECLS_END
  */
 # define AssertNtStatus(a_rcNt) \
     do { AssertMsg(NT_SUCCESS(a_rcNt), ("%#x\n", (a_rcNt))); NOREF(a_rcNt); } while (0)
-
 /** @def AssertNtStatusSuccess
  * Asserts that the given NTSTATUS value equals STATUS_SUCCESS.
  *
@@ -2834,12 +2622,7 @@ RT_C_DECLS_END
  */
 # define AssertNtStatusSuccess(a_rcNt) \
     do { AssertMsg((a_rcNt) == STATUS_SUCCESS, ("%#x\n", (a_rcNt))); NOREF(a_rcNt); } while (0)
-
 #endif /* RT_OS_WINDOWS */
-
 /** @} */
-
 /** @} */
-
 #endif
-

@@ -31,12 +31,10 @@
 #include <iprt/stdarg.h>
 
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_log    RTLog - Logging
  * @ingroup grp_rt
  * @{
  */
-
 /**
  * IPRT Logging Groups.
  * (Remember to update RT_LOGGROUP_NAMES!)
@@ -48,28 +46,27 @@ RT_C_DECLS_BEGIN
  *         If anyone might be wondering what the alphabet looks like:
  *              a b c d e f g h i j k l m n o p q r s t u v w x y z
  */
-typedef enum RTLOGGROUP
-{
+    typedef enum RTLOGGROUP {
     /** Default logging group. */
-    RTLOGGROUP_DEFAULT,
-    RTLOGGROUP_CRYPTO,
-    RTLOGGROUP_DBG,
-    RTLOGGROUP_DBG_DWARF,
-    RTLOGGROUP_DIR,
-    RTLOGGROUP_FILE,
-    RTLOGGROUP_FS,
-    RTLOGGROUP_HTTP,
-    RTLOGGROUP_LDR,
-    RTLOGGROUP_PATH,
-    RTLOGGROUP_PROCESS,
-    RTLOGGROUP_SYMLINK,
-    RTLOGGROUP_THREAD,
-    RTLOGGROUP_TIME,
-    RTLOGGROUP_TIMER,
-    RTLOGGROUP_LOCALIPC,
-    RTLOGGROUP_VFS,
-    RTLOGGROUP_ZIP = 31,
-    RTLOGGROUP_FIRST_USER = 32
+	RTLOGGROUP_DEFAULT,
+	RTLOGGROUP_CRYPTO,
+	RTLOGGROUP_DBG,
+	RTLOGGROUP_DBG_DWARF,
+	RTLOGGROUP_DIR,
+	RTLOGGROUP_FILE,
+	RTLOGGROUP_FS,
+	RTLOGGROUP_HTTP,
+	RTLOGGROUP_LDR,
+	RTLOGGROUP_PATH,
+	RTLOGGROUP_PROCESS,
+	RTLOGGROUP_SYMLINK,
+	RTLOGGROUP_THREAD,
+	RTLOGGROUP_TIME,
+	RTLOGGROUP_TIMER,
+	RTLOGGROUP_LOCALIPC,
+	RTLOGGROUP_VFS,
+	RTLOGGROUP_ZIP = 31,
+	RTLOGGROUP_FIRST_USER = 32
 } RTLOGGROUP;
 
 /** @def RT_LOGGROUP_NAMES
@@ -153,7 +150,6 @@ typedef RTLOGGER *PRTLOGGER;
 /** Pointer to const logger structure. */
 typedef const RTLOGGER *PCRTLOGGER;
 
-
 /** Guest context logger structure. */
 typedef struct RTLOGGERRC RTLOGGERRC;
 /** Pointer to guest context logger structure. */
@@ -161,26 +157,23 @@ typedef RTLOGGERRC *PRTLOGGERRC;
 /** Pointer to const guest context logger structure. */
 typedef const RTLOGGERRC *PCRTLOGGERRC;
 
-
 /**
  * Logger phase.
  *
  * Used for signalling the log header/footer callback what to do.
  */
-typedef enum RTLOGPHASE
-{
+typedef enum RTLOGPHASE {
     /** Begin of the logging. */
-    RTLOGPHASE_BEGIN = 0,
+	RTLOGPHASE_BEGIN = 0,
     /** End of the logging. */
-    RTLOGPHASE_END,
+	RTLOGPHASE_END,
     /** Before rotating the log file. */
-    RTLOGPHASE_PREROTATE,
+	RTLOGPHASE_PREROTATE,
     /** After rotating the log file. */
-    RTLOGPHASE_POSTROTATE,
+	RTLOGPHASE_POSTROTATE,
     /** 32-bit type blow up hack.  */
-    RTLOGPHASE_32BIT_HACK = 0x7fffffff
+	RTLOGPHASE_32BIT_HACK = 0x7fffffff
 } RTLOGPHASE;
-
 
 /**
  * Logger function.
@@ -188,7 +181,8 @@ typedef enum RTLOGPHASE
  * @param   pszFormat   Format string.
  * @param   ...         Optional arguments as specified in the format string.
  */
-typedef DECLCALLBACK(void) FNRTLOGGER(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+typedef DECLCALLBACK(void) FNRTLOGGER(const char *pszFormat,
+				      ...) RT_IPRT_FORMAT_ATTR(1, 2);
 /** Pointer to logger function. */
 typedef FNRTLOGGER *PFNRTLOGGER;
 
@@ -217,7 +211,9 @@ typedef RCPTRTYPE(FNRTLOGFLUSHGC *) PFNRTLOGFLUSHGC;
  * @param   pszFormat   Format string.
  * @param   ...         Optional arguments specified in the format string.
  */
-typedef DECLCALLBACK(void) FNRTLOGPHASEMSG(PRTLOGGER pLogger, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(2, 3);
+typedef DECLCALLBACK(void) FNRTLOGPHASEMSG(PRTLOGGER pLogger,
+					   const char *pszFormat,
+					   ...) RT_IPRT_FORMAT_ATTR(2, 3);
 /** Pointer to header/footer message callback function. */
 typedef FNRTLOGPHASEMSG *PFNRTLOGPHASEMSG;
 
@@ -229,7 +225,9 @@ typedef FNRTLOGPHASEMSG *PFNRTLOGPHASEMSG;
  * @param   pfnLogPhaseMsg  Callback for writing the header/footer (RTLogPrintf
  *                          and others are out of bounds).
  */
-typedef DECLCALLBACK(void) FNRTLOGPHASE(PRTLOGGER pLogger, RTLOGPHASE enmLogPhase, PFNRTLOGPHASEMSG pfnLogPhaseMsg);
+typedef DECLCALLBACK(void) FNRTLOGPHASE(PRTLOGGER pLogger,
+					RTLOGPHASE enmLogPhase,
+					PFNRTLOGPHASEMSG pfnLogPhaseMsg);
 /** Pointer to log header/footer callback function. */
 typedef FNRTLOGPHASE *PFNRTLOGPHASE;
 
@@ -245,48 +243,44 @@ typedef FNRTLOGPHASE *PFNRTLOGPHASE;
  * @param   cchBuf      The size of the output buffer.
  * @param   pvUser      The user argument.
  */
-typedef DECLCALLBACK(size_t) FNRTLOGPREFIX(PRTLOGGER pLogger, char *pchBuf, size_t cchBuf, void *pvUser);
+typedef DECLCALLBACK(size_t) FNRTLOGPREFIX(PRTLOGGER pLogger, char *pchBuf,
+					   size_t cchBuf, void *pvUser);
 /** Pointer to prefix callback function. */
 typedef FNRTLOGPREFIX *PFNRTLOGPREFIX;
-
-
 
 /**
  * Logger instance structure for raw-mode context (RC).
  */
-struct RTLOGGERRC
-{
+struct RTLOGGERRC {
     /** Pointer to temporary scratch buffer.
      * This is used to format the log messages. */
-    char                    achScratch[32768];
+	char achScratch[32768];
     /** Current scratch buffer position. */
-    uint32_t                offScratch;
+	uint32_t offScratch;
     /** This is set if a prefix is pending. */
-    bool                    fPendingPrefix;
-    bool                    afAlignment[3];
+	bool fPendingPrefix;
+	bool afAlignment[3];
     /** Pointer to the logger function.
      * This is actually pointer to a wrapper which will push a pointer to the
      * instance pointer onto the stack before jumping to the real logger function.
      * A very unfortunate hack to work around the missing variadic macro support in C++. */
-    RCPTRTYPE(PFNRTLOGGER)  pfnLogger;
+	RCPTRTYPE(PFNRTLOGGER) pfnLogger;
     /** Pointer to the flush function. */
-    PFNRTLOGFLUSHGC         pfnFlush;
+	PFNRTLOGFLUSHGC pfnFlush;
     /** Magic number (RTLOGGERRC_MAGIC). */
-    uint32_t                u32Magic;
+	uint32_t u32Magic;
     /** Logger instance flags - RTLOGFLAGS. */
-    uint32_t                fFlags;
+	uint32_t fFlags;
     /** Number of groups in the afGroups member. */
-    uint32_t                cGroups;
+	uint32_t cGroups;
     /** Group flags array - RTLOGGRPFLAGS.
      * This member have variable length and may extend way beyond
      * the declared size of 1 entry. */
-    uint32_t                afGroups[1];
+	uint32_t afGroups[1];
 };
 
 /** RTLOGGERRC::u32Magic value. (John Rogers Searle) */
 #define RTLOGGERRC_MAGIC    0x19320731
-
-
 
 #ifndef IN_RC
 
@@ -296,22 +290,21 @@ typedef struct RTLOGGERINTERNAL *PRTLOGGERINTERNAL;
 /**
  * Logger instance structure.
  */
-struct RTLOGGER
-{
+struct RTLOGGER {
     /** Pointer to temporary scratch buffer.
      * This is used to format the log messages. */
-    char                    achScratch[49152];
+	char achScratch[49152];
     /** Current scratch buffer position. */
-    uint32_t                offScratch;
+	uint32_t offScratch;
     /** Magic number. */
-    uint32_t                u32Magic;
+	uint32_t u32Magic;
     /** Logger instance flags - RTLOGFLAGS. */
-    uint32_t                fFlags;
+	uint32_t fFlags;
     /** Destination flags - RTLOGDEST. */
-    uint32_t                fDestFlags;
+	uint32_t fDestFlags;
     /** Pointer to the internal bits of the logger.
      * (The memory is allocated in the same block as RTLOGGER.) */
-    PRTLOGGERINTERNAL       pInt;
+	PRTLOGGERINTERNAL pInt;
     /** Pointer to the logger function (used in non-C99 mode only).
      *
      * This is actually pointer to a wrapper which will push a pointer to the
@@ -319,13 +312,13 @@ struct RTLOGGER
      * A very unfortunate hack to work around the missing variadic macro
      * support in older C++/C standards.  (The memory is allocated using
      * RTMemExecAlloc(), except for agnostic R0 code.) */
-    PFNRTLOGGER             pfnLogger;
+	PFNRTLOGGER pfnLogger;
     /** Number of groups in the afGroups and papszGroups members. */
-    uint32_t                cGroups;
+	uint32_t cGroups;
     /** Group flags array - RTLOGGRPFLAGS.
      * This member have variable length and may extend way beyond
      * the declared size of 1 entry. */
-    uint32_t                afGroups[1];
+	uint32_t afGroups[1];
 };
 
 /** RTLOGGER::u32Magic value. (Avram Noam Chomsky) */
@@ -333,62 +326,60 @@ struct RTLOGGER
 
 #endif /* !IN_RC */
 
-
 /**
  * Logger flags.
  */
-typedef enum RTLOGFLAGS
-{
+typedef enum RTLOGFLAGS {
     /** The logger instance is disabled for normal output. */
-    RTLOGFLAGS_DISABLED             = 0x00000001,
+	RTLOGFLAGS_DISABLED = 0x00000001,
     /** The logger instance is using buffered output. */
-    RTLOGFLAGS_BUFFERED             = 0x00000002,
+	RTLOGFLAGS_BUFFERED = 0x00000002,
     /** The logger instance expands LF to CR/LF. */
-    RTLOGFLAGS_USECRLF              = 0x00000010,
+	RTLOGFLAGS_USECRLF = 0x00000010,
     /** Append to the log destination where applicable. */
-    RTLOGFLAGS_APPEND               = 0x00000020,
+	RTLOGFLAGS_APPEND = 0x00000020,
     /** Show relative timestamps with PREFIX_TSC and PREFIX_TS */
-    RTLOGFLAGS_REL_TS               = 0x00000040,
+	RTLOGFLAGS_REL_TS = 0x00000040,
     /** Show decimal timestamps with PREFIX_TSC and PREFIX_TS */
-    RTLOGFLAGS_DECIMAL_TS           = 0x00000080,
+	RTLOGFLAGS_DECIMAL_TS = 0x00000080,
     /** Open the file in write through mode. */
-    RTLOGFLAGS_WRITE_THROUGH        = 0x00000100,
+	RTLOGFLAGS_WRITE_THROUGH = 0x00000100,
     /** Flush the file to disk when flushing the buffer. */
-    RTLOGFLAGS_FLUSH                = 0x00000200,
+	RTLOGFLAGS_FLUSH = 0x00000200,
     /** Restrict the number of log entries per group. */
-    RTLOGFLAGS_RESTRICT_GROUPS      = 0x00000400,
+	RTLOGFLAGS_RESTRICT_GROUPS = 0x00000400,
     /** New lines should be prefixed with the write and read lock counts. */
-    RTLOGFLAGS_PREFIX_LOCK_COUNTS   = 0x00008000,
+	RTLOGFLAGS_PREFIX_LOCK_COUNTS = 0x00008000,
     /** New lines should be prefixed with the CPU id (ApicID on intel/amd). */
-    RTLOGFLAGS_PREFIX_CPUID         = 0x00010000,
+	RTLOGFLAGS_PREFIX_CPUID = 0x00010000,
     /** New lines should be prefixed with the native process id. */
-    RTLOGFLAGS_PREFIX_PID           = 0x00020000,
+	RTLOGFLAGS_PREFIX_PID = 0x00020000,
     /** New lines should be prefixed with group flag number causing the output. */
-    RTLOGFLAGS_PREFIX_FLAG_NO       = 0x00040000,
+	RTLOGFLAGS_PREFIX_FLAG_NO = 0x00040000,
     /** New lines should be prefixed with group flag name causing the output. */
-    RTLOGFLAGS_PREFIX_FLAG          = 0x00080000,
+	RTLOGFLAGS_PREFIX_FLAG = 0x00080000,
     /** New lines should be prefixed with group number. */
-    RTLOGFLAGS_PREFIX_GROUP_NO      = 0x00100000,
+	RTLOGFLAGS_PREFIX_GROUP_NO = 0x00100000,
     /** New lines should be prefixed with group name. */
-    RTLOGFLAGS_PREFIX_GROUP         = 0x00200000,
+	RTLOGFLAGS_PREFIX_GROUP = 0x00200000,
     /** New lines should be prefixed with the native thread id. */
-    RTLOGFLAGS_PREFIX_TID           = 0x00400000,
+	RTLOGFLAGS_PREFIX_TID = 0x00400000,
     /** New lines should be prefixed with thread name. */
-    RTLOGFLAGS_PREFIX_THREAD        = 0x00800000,
+	RTLOGFLAGS_PREFIX_THREAD = 0x00800000,
     /** New lines should be prefixed with data from a custom callback. */
-    RTLOGFLAGS_PREFIX_CUSTOM        = 0x01000000,
+	RTLOGFLAGS_PREFIX_CUSTOM = 0x01000000,
     /** New lines should be prefixed with formatted timestamp since program start. */
-    RTLOGFLAGS_PREFIX_TIME_PROG     = 0x04000000,
+	RTLOGFLAGS_PREFIX_TIME_PROG = 0x04000000,
     /** New lines should be prefixed with formatted timestamp (UCT). */
-    RTLOGFLAGS_PREFIX_TIME          = 0x08000000,
+	RTLOGFLAGS_PREFIX_TIME = 0x08000000,
     /** New lines should be prefixed with milliseconds since program start. */
-    RTLOGFLAGS_PREFIX_MS_PROG       = 0x10000000,
+	RTLOGFLAGS_PREFIX_MS_PROG = 0x10000000,
     /** New lines should be prefixed with timestamp. */
-    RTLOGFLAGS_PREFIX_TSC           = 0x20000000,
+	RTLOGFLAGS_PREFIX_TSC = 0x20000000,
     /** New lines should be prefixed with timestamp. */
-    RTLOGFLAGS_PREFIX_TS            = 0x40000000,
+	RTLOGFLAGS_PREFIX_TS = 0x40000000,
     /** The prefix mask. */
-    RTLOGFLAGS_PREFIX_MASK          = 0x7dff8000
+	RTLOGFLAGS_PREFIX_MASK = 0x7dff8000
 } RTLOGFLAGS;
 
 /**
@@ -397,73 +388,70 @@ typedef enum RTLOGFLAGS
  * @remarks We only use the lower 16 bits here.  We'll be combining it with the
  *          group number in a few places.
  */
-typedef enum RTLOGGRPFLAGS
-{
+typedef enum RTLOGGRPFLAGS {
     /** Enabled. */
-    RTLOGGRPFLAGS_ENABLED      = 0x0001,
+	RTLOGGRPFLAGS_ENABLED = 0x0001,
     /** Flow logging. */
-    RTLOGGRPFLAGS_FLOW         = 0x0002,
+	RTLOGGRPFLAGS_FLOW = 0x0002,
     /** Warnings logging. */
-    RTLOGGRPFLAGS_WARN         = 0x0004,
-    /* 0x0008 for later. */
+	RTLOGGRPFLAGS_WARN = 0x0004,
+	/* 0x0008 for later. */
     /** Level 1 logging. */
-    RTLOGGRPFLAGS_LEVEL_1      = 0x0010,
+	RTLOGGRPFLAGS_LEVEL_1 = 0x0010,
     /** Level 2 logging. */
-    RTLOGGRPFLAGS_LEVEL_2      = 0x0020,
+	RTLOGGRPFLAGS_LEVEL_2 = 0x0020,
     /** Level 3 logging. */
-    RTLOGGRPFLAGS_LEVEL_3      = 0x0040,
+	RTLOGGRPFLAGS_LEVEL_3 = 0x0040,
     /** Level 4 logging. */
-    RTLOGGRPFLAGS_LEVEL_4      = 0x0080,
+	RTLOGGRPFLAGS_LEVEL_4 = 0x0080,
     /** Level 5 logging. */
-    RTLOGGRPFLAGS_LEVEL_5      = 0x0100,
+	RTLOGGRPFLAGS_LEVEL_5 = 0x0100,
     /** Level 6 logging. */
-    RTLOGGRPFLAGS_LEVEL_6      = 0x0200,
+	RTLOGGRPFLAGS_LEVEL_6 = 0x0200,
     /** Level 7 logging. */
-    RTLOGGRPFLAGS_LEVEL_7      = 0x0400,
+	RTLOGGRPFLAGS_LEVEL_7 = 0x0400,
     /** Level 8 logging. */
-    RTLOGGRPFLAGS_LEVEL_8      = 0x0800,
+	RTLOGGRPFLAGS_LEVEL_8 = 0x0800,
     /** Level 9 logging. */
-    RTLOGGRPFLAGS_LEVEL_9      = 0x1000,
+	RTLOGGRPFLAGS_LEVEL_9 = 0x1000,
     /** Level 10 logging. */
-    RTLOGGRPFLAGS_LEVEL_10     = 0x2000,
+	RTLOGGRPFLAGS_LEVEL_10 = 0x2000,
     /** Level 11 logging. */
-    RTLOGGRPFLAGS_LEVEL_11     = 0x4000,
+	RTLOGGRPFLAGS_LEVEL_11 = 0x4000,
     /** Level 12 logging. */
-    RTLOGGRPFLAGS_LEVEL_12     = 0x8000,
+	RTLOGGRPFLAGS_LEVEL_12 = 0x8000,
 
     /** Restrict the number of log entries. */
-    RTLOGGRPFLAGS_RESTRICT     = 0x40000000,
+	RTLOGGRPFLAGS_RESTRICT = 0x40000000,
     /** Blow up the type. */
-    RTLOGGRPFLAGS_32BIT_HACK   = 0x7fffffff
+	RTLOGGRPFLAGS_32BIT_HACK = 0x7fffffff
 } RTLOGGRPFLAGS;
 
 /**
  * Logger destination type.
  */
-typedef enum RTLOGDEST
-{
+typedef enum RTLOGDEST {
     /** Log to file. */
-    RTLOGDEST_FILE          = 0x00000001,
+	RTLOGDEST_FILE = 0x00000001,
     /** Log to stdout. */
-    RTLOGDEST_STDOUT        = 0x00000002,
+	RTLOGDEST_STDOUT = 0x00000002,
     /** Log to stderr. */
-    RTLOGDEST_STDERR        = 0x00000004,
+	RTLOGDEST_STDERR = 0x00000004,
     /** Log to debugger (win32 only). */
-    RTLOGDEST_DEBUGGER      = 0x00000008,
+	RTLOGDEST_DEBUGGER = 0x00000008,
     /** Log to com port. */
-    RTLOGDEST_COM           = 0x00000010,
+	RTLOGDEST_COM = 0x00000010,
     /** Log a memory ring buffer. */
-    RTLOGDEST_RINGBUF       = 0x00000020,
+	RTLOGDEST_RINGBUF = 0x00000020,
     /** Just a dummy flag to be used when no other flag applies. */
-    RTLOGDEST_DUMMY         = 0x20000000,
+	RTLOGDEST_DUMMY = 0x20000000,
     /** Log to a user defined output stream. */
-    RTLOGDEST_USER          = 0x40000000
+	RTLOGDEST_USER = 0x40000000
 } RTLOGDEST;
 
-
 RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
-                           const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(4, 5);
-
+			   const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(4,
+									   5);
 
 #ifdef DOXYGEN_RUNNING
 # define LOG_DISABLED
@@ -502,7 +490,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 # define LOG_DISABLED
 #endif
 
-
 /** @def LOG_USE_C99
  * Governs the use of variadic macros.
  */
@@ -511,7 +498,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #  define LOG_USE_C99
 # endif
 #endif
-
 
 /** @name Macros for checking whether a log level is enabled.
  * @{ */
@@ -595,7 +581,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #define LogIsWarnEnabled()  LogIsItEnabled(RTLOGGRPFLAGS_WARN, LOG_GROUP)
 /** @} */
 
-
 /** @def LogIt
  * Write to specific logger if group enabled.
  */
@@ -614,7 +599,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #  define LogIt(a_fFlags, a_iGroup, fmtargs)            _LogIt(a_fFlags, a_iGroup, _LogRemoveParentheseis fmtargs)
 #  define _LogItAlways(a_fFlags, a_iGroup, ...)          RTLogLoggerEx(NULL, a_fFlags, UINT32_MAX, __VA_ARGS__)
 #  define LogItAlways(a_fFlags, a_iGroup, fmtargs)      _LogItAlways(a_fFlags, a_iGroup, _LogRemoveParentheseis fmtargs)
-        /** @todo invent a flag or something for skipping the group check so we can pass iGroup. LogItAlways. */
+	/** @todo invent a flag or something for skipping the group check so we can pass iGroup. LogItAlways. */
 # else
 #  define LogIt(a_fFlags, a_iGroup, fmtargs) \
     do \
@@ -644,7 +629,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #  define _LogItAlways(a_fFlags, a_iGroup, ...)         do { } while (0)
 # endif
 #endif
-
 
 /** @name Basic logging macros
  * @{ */
@@ -723,7 +707,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
  */
 #define LogWarn(a)      LogIt(RTLOGGRPFLAGS_WARN,      LOG_GROUP, a)
 /** @} */
-
 
 /** @name Logging macros prefixing the current function name.
  * @{ */
@@ -928,7 +911,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #endif
 /** @} */
 
-
 /** @name Logging macros prefixing the this pointer value and method name.
  * @{ */
 
@@ -1101,7 +1083,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #endif
 /** @} */
 
-
 /** @name Misc Logging Macros
  * @{ */
 
@@ -1143,7 +1124,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
     do { Log(("{%p} " LOG_FN_FMT ": WARNING! ", this, __PRETTY_FUNCTION__)); Log(a); } while (0)
 #endif
 
-
 /** Shortcut to |LogFlowFunc ("ENTER\n")|, marks the beginnig of the function. */
 #define LogFlowFuncEnter()      LogFlowFunc(("ENTER\n"))
 
@@ -1158,7 +1138,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 
 /** Shortcut to |LogFlowThisFunc ("LEAVE\n")|, marks the end of the function. */
 #define LogFlowThisFuncLeave()  LogFlowThisFunc(("LEAVE\n"))
-
 
 /** @def LogObjRefCnt
  * Helper macro to print the current reference count of the given COM object
@@ -1178,8 +1157,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
         } \
     } while (0)
 /** @} */
-
-
 
 /** @name Passing Function Call Position When Logging.
  *
@@ -1213,8 +1190,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 # define RTLOG_SRC_POS_NOREF()      do { } while (0)
 #endif
 /** @}  */
-
-
 
 /** @name Release Logging
  * @{
@@ -1325,7 +1300,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #define LogRelIsWarnEnabled()  LogRelIsItEnabled(RTLOGGRPFLAGS_FLOW, LOG_GROUP)
 /** @} */
 
-
 /** @def LogRelIt
  * Write to specific logger if group enabled.
  */
@@ -1417,7 +1391,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
        LogIt(a_fFlags, a_iGroup, fmtargs); \
   } while (0)
 # endif
-#else   /* !RTLOG_REL_ENABLED */
+#else /* !RTLOG_REL_ENABLED */
 # define LogRelIt(a_fFlags, a_iGroup, fmtargs)              do { } while (0)
 # define LogRelItLikely(a_fFlags, a_iGroup, fmtargs)        do { } while (0)
 # define LogRelMaxIt(a_cMax, a_fFlags, a_iGroup, fmtargs)   do { } while (0)
@@ -1427,8 +1401,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #  define _LogRelItLikely(a_fFlags, a_iGroup, ...)          do { } while (0)
 #  define _LogRelMaxIt(a_cMax, a_fFlags, a_iGroup, ...)     do { } while (0)
 # endif
-#endif  /* !RTLOG_REL_ENABLED */
-
+#endif /* !RTLOG_REL_ENABLED */
 
 /** @name Basic release logging macros
  * @{ */
@@ -1503,8 +1476,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #define LogRelWarn(a)       LogRelIt(RTLOGGRPFLAGS_WARN,     LOG_GROUP, a)
 /** @} */
 
-
-
 /** @name Basic release logging macros with local max
  * @{ */
 /** @def LogRelMax
@@ -1573,7 +1544,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #define LogRelMaxFlow(a_cMax, a)    LogRelMaxIt(a_cMax, RTLOGGRPFLAGS_FLOW,     LOG_GROUP, a)
 /** @} */
 
-
 /** @name Release logging macros prefixing the current function name.
  * @{ */
 
@@ -1633,7 +1603,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 
 /** @} */
 
-
 /** @name Release Logging macros prefixing the this pointer value and method name.
  * @{ */
 
@@ -1664,7 +1633,6 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 #endif
 
 /** @} */
-
 
 #ifndef IN_RC
 /**
@@ -1708,7 +1676,8 @@ RTDECL(PRTLOGGER) RTLogRelGetDefaultInstanceEx(uint32_t fFlagsAndGroup);
  * @remark  This is a worker function for LogRelIt.
  */
 RTDECL(void) RTLogRelLogger(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
-                            const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(4, 5);
+			    const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(4,
+									    5);
 
 /**
  * Write to a logger instance, defaulting to the release one.
@@ -1724,8 +1693,9 @@ RTDECL(void) RTLogRelLogger(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
  * @param   pszFormat   Format string.
  * @param   args        Format arguments.
  */
-RTDECL(void) RTLogRelLoggerV(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
-                             const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(4, 0);
+RTDECL(void) RTLogRelLoggerV(PRTLOGGER pLogger, unsigned fFlags,
+			     unsigned iGroup, const char *pszFormat,
+			     va_list args) RT_IPRT_FORMAT_ATTR(4, 0);
 
 /**
  * printf like function for writing to the default release log.
@@ -1735,7 +1705,8 @@ RTDECL(void) RTLogRelLoggerV(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup
  *
  * @remark The API doesn't support formatting of floating point numbers at the moment.
  */
-RTDECL(void) RTLogRelPrintf(const char *pszFormat, ...)  RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(void) RTLogRelPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1,
+									    2);
 
 /**
  * vprintf like function for writing to the default release log.
@@ -1745,7 +1716,8 @@ RTDECL(void) RTLogRelPrintf(const char *pszFormat, ...)  RT_IPRT_FORMAT_ATTR(1, 
  *
  * @remark The API doesn't support formatting of floating point numbers at the moment.
  */
-RTDECL(void) RTLogRelPrintfV(const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(void) RTLogRelPrintfV(const char *pszFormat,
+			     va_list args) RT_IPRT_FORMAT_ATTR(1, 0);
 
 /**
  * Changes the buffering setting of the default release logger.
@@ -1758,8 +1730,6 @@ RTDECL(void) RTLogRelPrintfV(const char *pszFormat, va_list args) RT_IPRT_FORMAT
 RTDECL(bool) RTLogRelSetBuffering(bool fBuffered);
 
 /** @} */
-
-
 
 /** @name COM port logging
  * {
@@ -1804,7 +1774,6 @@ RTDECL(bool) RTLogRelSetBuffering(bool fBuffered);
 #endif
 
 /** @} */
-
 
 /** @name Backdoor Logging
  * @{
@@ -1865,14 +1834,12 @@ RTDECL(bool) RTLogRelSetBuffering(bool fBuffered);
 
 /** @} */
 
-
-
 /**
  * Gets the default logger instance, creating it if necessary.
  *
  * @returns Pointer to default logger instance if availble, otherwise NULL.
  */
-RTDECL(PRTLOGGER)   RTLogDefaultInstance(void);
+RTDECL(PRTLOGGER) RTLogDefaultInstance(void);
 
 /**
  * Gets the logger instance if enabled, creating it if necessary.
@@ -1882,14 +1849,14 @@ RTDECL(PRTLOGGER)   RTLogDefaultInstance(void);
  * @param   fFlagsAndGroup  The flags in the lower 16 bits, the group number in
  *                          the high 16 bits.
  */
-RTDECL(PRTLOGGER)   RTLogDefaultInstanceEx(uint32_t fFlagsAndGroup);
+RTDECL(PRTLOGGER) RTLogDefaultInstanceEx(uint32_t fFlagsAndGroup);
 
 /**
  * Gets the default logger instance.
  *
  * @returns Pointer to default logger instance if availble, otherwise NULL.
  */
-RTDECL(PRTLOGGER)   RTLogGetDefaultInstance(void);
+RTDECL(PRTLOGGER) RTLogGetDefaultInstance(void);
 
 /**
  * Gets the default logger instance if enabled.
@@ -1899,7 +1866,7 @@ RTDECL(PRTLOGGER)   RTLogGetDefaultInstance(void);
  * @param   fFlagsAndGroup  The flags in the lower 16 bits, the group number in
  *                          the high 16 bits.
  */
-RTDECL(PRTLOGGER)   RTLogGetDefaultInstanceEx(uint32_t fFlagsAndGroup);
+RTDECL(PRTLOGGER) RTLogGetDefaultInstanceEx(uint32_t fFlagsAndGroup);
 
 #ifndef IN_RC
 /**
@@ -1908,7 +1875,7 @@ RTDECL(PRTLOGGER)   RTLogGetDefaultInstanceEx(uint32_t fFlagsAndGroup);
  * @returns The old default instance.
  * @param   pLogger     The new default logger instance.
  */
-RTDECL(PRTLOGGER)   RTLogSetDefaultInstance(PRTLOGGER pLogger);
+RTDECL(PRTLOGGER) RTLogSetDefaultInstance(PRTLOGGER pLogger);
 #endif /* !IN_RC */
 
 #ifdef IN_RING0
@@ -1922,9 +1889,8 @@ RTDECL(PRTLOGGER)   RTLogSetDefaultInstance(PRTLOGGER pLogger);
  *                      order to only deregister the instance associated with the
  *                      current thread use 0.
  */
-RTDECL(int)         RTLogSetDefaultInstanceThread(PRTLOGGER pLogger, uintptr_t uKey);
+RTDECL(int) RTLogSetDefaultInstanceThread(PRTLOGGER pLogger, uintptr_t uKey);
 #endif /* IN_RING0 */
-
 
 #ifndef IN_RC
 /**
@@ -1957,9 +1923,11 @@ RTDECL(PRTLOGGER) RTLogDefaultInit(void);
  *                              RTStrFormat().
  * @param   ...                 Format arguments.
  */
-RTDECL(int) RTLogCreate(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGroupSettings,
-                        const char *pszEnvVarBase, unsigned cGroups, const char * const * papszGroups,
-                        uint32_t fDestFlags, const char *pszFilenameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(8, 9);
+RTDECL(int) RTLogCreate(PRTLOGGER * ppLogger, uint32_t fFlags,
+			const char *pszGroupSettings, const char *pszEnvVarBase,
+			unsigned cGroups, const char *const *papszGroups,
+			uint32_t fDestFlags, const char *pszFilenameFmt,
+			...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(8, 9);
 
 /**
  * Create a logger instance.
@@ -1992,11 +1960,15 @@ RTDECL(int) RTLogCreate(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGro
  * @param   pszFilenameFmt      Log filename format string. Standard RTStrFormat().
  * @param   ...                 Format arguments.
  */
-RTDECL(int) RTLogCreateEx(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGroupSettings,
-                          const char *pszEnvVarBase, unsigned cGroups, const char * const * papszGroups,
-                          uint32_t fDestFlags, PFNRTLOGPHASE pfnPhase, uint32_t cHistory,
-                          uint64_t cbHistoryFileMax, uint32_t cSecsHistoryTimeSlot, char *pszErrorMsg, size_t cchErrorMsg,
-                          const char *pszFilenameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(14, 15);
+RTDECL(int) RTLogCreateEx(PRTLOGGER * ppLogger, uint32_t fFlags,
+			  const char *pszGroupSettings,
+			  const char *pszEnvVarBase, unsigned cGroups,
+			  const char *const *papszGroups, uint32_t fDestFlags,
+			  PFNRTLOGPHASE pfnPhase, uint32_t cHistory,
+			  uint64_t cbHistoryFileMax,
+			  uint32_t cSecsHistoryTimeSlot, char *pszErrorMsg,
+			  size_t cchErrorMsg, const char *pszFilenameFmt,
+			  ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(14, 15);
 
 /**
  * Create a logger instance.
@@ -2031,11 +2003,15 @@ RTDECL(int) RTLogCreateEx(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszG
  *                              RTStrFormat().
  * @param   args                Format arguments.
  */
-RTDECL(int) RTLogCreateExV(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGroupSettings,
-                           const char *pszEnvVarBase, unsigned cGroups, const char * const * papszGroups,
-                           uint32_t fDestFlags, PFNRTLOGPHASE pfnPhase, uint32_t cHistory,
-                           uint64_t cbHistoryFileMax, uint32_t cSecsHistoryTimeSlot, char *pszErrorMsg, size_t cchErrorMsg,
-                           const char *pszFilenameFmt, va_list args) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(14, 0);
+RTDECL(int) RTLogCreateExV(PRTLOGGER * ppLogger, uint32_t fFlags,
+			   const char *pszGroupSettings,
+			   const char *pszEnvVarBase, unsigned cGroups,
+			   const char *const *papszGroups, uint32_t fDestFlags,
+			   PFNRTLOGPHASE pfnPhase, uint32_t cHistory,
+			   uint64_t cbHistoryFileMax,
+			   uint32_t cSecsHistoryTimeSlot, char *pszErrorMsg,
+			   size_t cchErrorMsg, const char *pszFilenameFmt,
+			   va_list args) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(14, 0);
 
 /**
  * Create a logger instance for singled threaded ring-0 usage.
@@ -2051,8 +2027,9 @@ RTDECL(int) RTLogCreateExV(PRTLOGGER *ppLogger, uint32_t fFlags, const char *psz
  * @param   fDestFlags          The destination flags.
  */
 RTDECL(int) RTLogCreateForR0(PRTLOGGER pLogger, size_t cbLogger,
-                             RTR0PTR pLoggerR0Ptr, RTR0PTR pfnLoggerR0Ptr, RTR0PTR pfnFlushR0Ptr,
-                             uint32_t fFlags, uint32_t fDestFlags);
+			     RTR0PTR pLoggerR0Ptr, RTR0PTR pfnLoggerR0Ptr,
+			     RTR0PTR pfnFlushR0Ptr, uint32_t fFlags,
+			     uint32_t fDestFlags);
 
 /**
  * Calculates the minimum size of a ring-0 logger instance.
@@ -2087,8 +2064,9 @@ RTDECL(int) RTLogDestroy(PRTLOGGER pLogger);
  * @param   pfnFlushRCPtr       Pointer to flush function (RC Ptr).
  * @param   fFlags              Logger instance flags, a combination of the RTLOGFLAGS_* values.
  */
-RTDECL(int) RTLogCloneRC(PRTLOGGER pLogger, PRTLOGGERRC pLoggerRC, size_t cbLoggerRC,
-                         RTRCPTR pfnLoggerRCPtr, RTRCPTR pfnFlushRCPtr, uint32_t fFlags);
+RTDECL(int) RTLogCloneRC(PRTLOGGER pLogger, PRTLOGGERRC pLoggerRC,
+			 size_t cbLoggerRC, RTRCPTR pfnLoggerRCPtr,
+			 RTRCPTR pfnFlushRCPtr, uint32_t fFlags);
 
 /**
  * Flushes a RC logger instance to a R3 logger.
@@ -2129,7 +2107,9 @@ RTDECL(void) RTLogFlushR0(PRTLOGGER pLogger, PRTLOGGER pLoggerR0);
  * @param   pfnCallback The callback.
  * @param   pvUser      The user argument for the callback.
  *  */
-RTDECL(int) RTLogSetCustomPrefixCallback(PRTLOGGER pLogger, PFNRTLOGPREFIX pfnCallback, void *pvUser);
+RTDECL(int) RTLogSetCustomPrefixCallback(PRTLOGGER pLogger,
+					 PFNRTLOGPREFIX pfnCallback,
+					 void *pvUser);
 
 /**
  * Same as RTLogSetCustomPrefixCallback for loggers created by
@@ -2141,8 +2121,10 @@ RTDECL(int) RTLogSetCustomPrefixCallback(PRTLOGGER pLogger, PFNRTLOGPREFIX pfnCa
  * @param   pfnCallbackR0Ptr    The callback.
  * @param   pvUserR0Ptr         The user argument for the callback.
  *  */
-RTDECL(int) RTLogSetCustomPrefixCallbackForR0(PRTLOGGER pLogger, RTR0PTR pLoggerR0Ptr,
-                                              RTR0PTR pfnCallbackR0Ptr, RTR0PTR pvUserR0Ptr);
+RTDECL(int) RTLogSetCustomPrefixCallbackForR0(PRTLOGGER pLogger,
+					      RTR0PTR pLoggerR0Ptr,
+					      RTR0PTR pfnCallbackR0Ptr,
+					      RTR0PTR pvUserR0Ptr);
 
 /**
  * Copies the group settings and flags from logger instance to another.
@@ -2154,8 +2136,10 @@ RTDECL(int) RTLogSetCustomPrefixCallbackForR0(PRTLOGGER pLogger, RTR0PTR pLogger
  * @param   fFlagsOr        OR mask for the flags.
  * @param   fFlagsAnd       AND mask for the flags.
  */
-RTDECL(int) RTLogCopyGroupsAndFlagsForR0(PRTLOGGER pDstLogger, RTR0PTR pDstLoggerR0Ptr,
-                                         PCRTLOGGER pSrcLogger, uint32_t fFlagsOr, uint32_t fFlagsAnd);
+RTDECL(int) RTLogCopyGroupsAndFlagsForR0(PRTLOGGER pDstLogger,
+					 RTR0PTR pDstLoggerR0Ptr,
+					 PCRTLOGGER pSrcLogger,
+					 uint32_t fFlagsOr, uint32_t fFlagsAnd);
 
 /**
  * Get the current log group settings as a string.
@@ -2166,7 +2150,8 @@ RTDECL(int) RTLogCopyGroupsAndFlagsForR0(PRTLOGGER pDstLogger, RTR0PTR pDstLogge
  * @param   cchBuf              The size of the output buffer. Must be greater
  *                              than zero.
  */
-RTDECL(int) RTLogGetGroupSettings(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf);
+RTDECL(int) RTLogGetGroupSettings(PRTLOGGER pLogger, char *pszBuf,
+				  size_t cchBuf);
 
 /**
  * Updates the group settings for the logger instance using the specified
@@ -2215,7 +2200,8 @@ RTDECL(bool) RTLogSetBuffering(PRTLOGGER pLogger, bool fBuffered);
  * @remarks Lowering the limit of an active logger may quietly mute groups.
  *          Raising it may reactive already muted groups.
  */
-RTDECL(uint32_t) RTLogSetGroupLimit(PRTLOGGER pLogger, uint32_t cMaxEntriesPerGroup);
+RTDECL(uint32_t) RTLogSetGroupLimit(PRTLOGGER pLogger,
+				    uint32_t cMaxEntriesPerGroup);
 
 #ifndef IN_RC
 /**
@@ -2247,7 +2233,8 @@ RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue);
  * @param   cchBuf              The size of the output buffer. Must be greater
  *                              than 0.
  */
-RTDECL(int) RTLogGetDestinations(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf);
+RTDECL(int) RTLogGetDestinations(PRTLOGGER pLogger, char *pszBuf,
+				 size_t cchBuf);
 #endif /* !IN_RC */
 
 /**
@@ -2267,7 +2254,8 @@ RTDECL(void) RTLogFlush(PRTLOGGER pLogger);
  * @param   pszFormat   Format string.
  * @param   ...         Format arguments.
  */
-RTDECL(void) RTLogLogger(PRTLOGGER pLogger, void *pvCallerRet, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
+RTDECL(void) RTLogLogger(PRTLOGGER pLogger, void *pvCallerRet,
+			 const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
 
 /**
  * Write to a logger instance.
@@ -2276,7 +2264,8 @@ RTDECL(void) RTLogLogger(PRTLOGGER pLogger, void *pvCallerRet, const char *pszFo
  * @param   pszFormat   Format string.
  * @param   args        Format arguments.
  */
-RTDECL(void) RTLogLoggerV(PRTLOGGER pLogger, const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
+RTDECL(void) RTLogLoggerV(PRTLOGGER pLogger, const char *pszFormat,
+			  va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
 
 /**
  * Write to a logger instance.
@@ -2294,7 +2283,8 @@ RTDECL(void) RTLogLoggerV(PRTLOGGER pLogger, const char *pszFormat, va_list args
  * @remark  This is a worker function of LogIt.
  */
 RTDECL(void) RTLogLoggerEx(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
-                           const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(4, 5);
+			   const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(4,
+									   5);
 
 /**
  * Write to a logger instance.
@@ -2311,7 +2301,8 @@ RTDECL(void) RTLogLoggerEx(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
  * @param   args        Format arguments.
  */
 RTDECL(void) RTLogLoggerExV(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
-                            const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(4, 0);
+			    const char *pszFormat,
+			    va_list args) RT_IPRT_FORMAT_ATTR(4, 0);
 
 /**
  * printf like function for writing to the default log.
@@ -2331,7 +2322,8 @@ RTDECL(void) RTLogPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
  *
  * @remark The API doesn't support formatting of floating point numbers at the moment.
  */
-RTDECL(void) RTLogPrintfV(const char *pszFormat, va_list va)  RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(void) RTLogPrintfV(const char *pszFormat,
+			  va_list va) RT_IPRT_FORMAT_ATTR(1, 0);
 
 /**
  * Dumper vprintf-like function outputting to a logger.
@@ -2341,10 +2333,10 @@ RTDECL(void) RTLogPrintfV(const char *pszFormat, va_list va)  RT_IPRT_FORMAT_ATT
  * @param   pszFormat       Format string.
  * @param   va              Format arguments.
  */
-RTDECL(void) RTLogDumpPrintfV(void *pvUser, const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(2, 0);
+RTDECL(void) RTLogDumpPrintfV(void *pvUser, const char *pszFormat,
+			      va_list va) RT_IPRT_FORMAT_ATTR(2, 0);
 
-
-#ifndef DECLARED_FNRTSTROUTPUT          /* duplicated in iprt/string.h */
+#ifndef DECLARED_FNRTSTROUTPUT	/* duplicated in iprt/string.h */
 #define DECLARED_FNRTSTROUTPUT
 /**
  * Output callback.
@@ -2354,7 +2346,8 @@ RTDECL(void) RTLogDumpPrintfV(void *pvUser, const char *pszFormat, va_list va) R
  * @param   pachChars   Pointer to an array of utf-8 characters.
  * @param   cbChars     Number of bytes in the character array pointed to by pachChars.
  */
-typedef DECLCALLBACK(size_t) FNRTSTROUTPUT(void *pvArg, const char *pachChars, size_t cbChars);
+typedef DECLCALLBACK(size_t) FNRTSTROUTPUT(void *pvArg, const char *pachChars,
+					   size_t cbChars);
 /** Pointer to callback function. */
 typedef FNRTSTROUTPUT *PFNRTSTROUTPUT;
 #endif
@@ -2370,7 +2363,9 @@ typedef FNRTSTROUTPUT *PFNRTSTROUTPUT;
  * @param   pszFormat   Format string.
  * @param   args        Argument list.
  */
-RTDECL(size_t) RTLogFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArg, const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
+RTDECL(size_t) RTLogFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArg,
+			    const char *pszFormat,
+			    va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
 
 /**
  * Write log buffer to COM port.
@@ -2387,7 +2382,8 @@ RTDECL(void) RTLogWriteCom(const char *pach, size_t cb);
  * @param   pszFormat   Format string.
  * @param   ...         Optional arguments specified in the format string.
  */
-RTDECL(size_t) RTLogComPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(size_t) RTLogComPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1,
+									      2);
 
 /**
  * Prints a formatted string to the serial port used for logging.
@@ -2396,10 +2392,10 @@ RTDECL(size_t) RTLogComPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1,
  * @param   pszFormat   Format string.
  * @param   args        Optional arguments specified in the format string.
  */
-RTDECL(size_t)  RTLogComPrintfV(const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(size_t) RTLogComPrintfV(const char *pszFormat,
+			       va_list args) RT_IPRT_FORMAT_ATTR(1, 0);
 
-
-#if 0 /* not implemented yet */
+#if 0				/* not implemented yet */
 
 /** Indicates that the semaphores shall be used to notify the other
  * part about buffer changes. */
@@ -2409,28 +2405,26 @@ RTDECL(size_t)  RTLogComPrintfV(const char *pszFormat, va_list args) RT_IPRT_FOR
  * Log Hook Buffer.
  * Use to communicate between the logger and a log consumer.
  */
-typedef struct RTLOGHOOKBUFFER
-{
+typedef struct RTLOGHOOKBUFFER {
     /** Write pointer. */
-    volatile void          *pvWrite;
+	volatile void *pvWrite;
     /** Read pointer. */
-    volatile void          *pvRead;
+	volatile void *pvRead;
     /** Buffer start. */
-    void                   *pvStart;
+	void *pvStart;
     /** Buffer end (exclusive). */
-    void                   *pvEnd;
+	void *pvEnd;
     /** Signaling semaphore used by the writer to wait on a full buffer.
      * Only used when indicated in flags. */
-    void                   *pvSemWriter;
+	void *pvSemWriter;
     /** Signaling semaphore used by the read to wait on an empty buffer.
      * Only used when indicated in flags. */
-    void                   *pvSemReader;
+	void *pvSemReader;
     /** Buffer flags. Current reserved and set to zero. */
-    volatile unsigned       fFlags;
+	volatile unsigned fFlags;
 } RTLOGHOOKBUFFER;
 /** Pointer to a log hook buffer. */
 typedef RTLOGHOOKBUFFER *PRTLOGHOOKBUFFER;
-
 
 /**
  * Register a logging hook.
@@ -2447,7 +2441,7 @@ typedef RTLOGHOOKBUFFER *PRTLOGHOOKBUFFER;
  * @returns iprt status code.
  * @param   pBuffer     Pointer to a logger hook buffer.
  */
-RTDECL(int)     RTLogRegisterHook(PRTLOGGER pLogger, PRTLOGHOOKBUFFER pBuffer);
+RTDECL(int) RTLogRegisterHook(PRTLOGGER pLogger, PRTLOGHOOKBUFFER pBuffer);
 
 /**
  * Deregister a logging hook registered with RTLogRegisterHook().
@@ -2455,11 +2449,9 @@ RTDECL(int)     RTLogRegisterHook(PRTLOGGER pLogger, PRTLOGHOOKBUFFER pBuffer);
  * @returns iprt status code.
  * @param   pBuffer     Pointer to a logger hook buffer.
  */
-RTDECL(int)     RTLogDeregisterHook(PRTLOGGER pLogger, PRTLOGHOOKBUFFER pBuffer);
+RTDECL(int) RTLogDeregisterHook(PRTLOGGER pLogger, PRTLOGHOOKBUFFER pBuffer);
 
 #endif /* not implemented yet */
-
-
 
 /**
  * Write log buffer to a debugger (RTLOGDEST_DEBUGGER).
@@ -2506,7 +2498,8 @@ RTDECL(void) RTLogWriteStdErr(const char *pach, size_t cb);
  * @param   pszFormat   Format string.
  * @param   ...         Optional arguments specified in the format string.
  */
-RTDECL(size_t) RTLogBackdoorPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
+RTDECL(size_t) RTLogBackdoorPrintf(const char *pszFormat,
+				   ...) RT_IPRT_FORMAT_ATTR(1, 2);
 
 /**
  * Prints a formatted string to the backdoor port.
@@ -2515,13 +2508,11 @@ RTDECL(size_t) RTLogBackdoorPrintf(const char *pszFormat, ...) RT_IPRT_FORMAT_AT
  * @param   pszFormat   Format string.
  * @param   args        Optional arguments specified in the format string.
  */
-RTDECL(size_t)  RTLogBackdoorPrintfV(const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(size_t) RTLogBackdoorPrintfV(const char *pszFormat,
+				    va_list args) RT_IPRT_FORMAT_ATTR(1, 0);
 
 #endif /* VBOX */
 
 RT_C_DECLS_END
-
 /** @} */
-
 #endif
-

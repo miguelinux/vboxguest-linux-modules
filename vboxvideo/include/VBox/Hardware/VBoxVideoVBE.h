@@ -84,4 +84,3 @@
 #define VBOX_VIDEO_MAX_SCREENS 64
 
 #endif /* !___VBox_Hardware_VBoxVideoVBE_h */
-

@@ -30,141 +30,131 @@
 #include <iprt/assert.h>
 #include <iprt/string.h>
 
-
-DECLVBGL(int) VbglGRVerify(const VMMDevRequestHeader *pReq, size_t cbReq)
+DECLVBGL(int) VbglGRVerify(const VMMDevRequestHeader * pReq, size_t cbReq)
 {
-    size_t cbReqExpected;
+	size_t cbReqExpected;
 
-    if (RT_UNLIKELY(!pReq || cbReq < sizeof(VMMDevRequestHeader)))
-    {
-        dprintf(("VbglGRVerify: Invalid parameter: pReq = %p, cbReq = %zu\n", pReq, cbReq));
-        return VERR_INVALID_PARAMETER;
-    }
+	if (RT_UNLIKELY(!pReq || cbReq < sizeof(VMMDevRequestHeader))) {
+		dprintf(("VbglGRVerify: Invalid parameter: pReq = %p, cbReq = %zu\n", pReq, cbReq));
+		return VERR_INVALID_PARAMETER;
+	}
 
-    if (RT_UNLIKELY(pReq->size > cbReq))
-    {
-        dprintf(("VbglGRVerify: request size %u > buffer size %zu\n", pReq->size, cbReq));
-        return VERR_INVALID_PARAMETER;
-    }
+	if (RT_UNLIKELY(pReq->size > cbReq)) {
+		dprintf(("VbglGRVerify: request size %u > buffer size %zu\n",
+			 pReq->size, cbReq));
+		return VERR_INVALID_PARAMETER;
+	}
 
-    /* The request size must correspond to the request type. */
-    cbReqExpected = vmmdevGetRequestSize(pReq->requestType);
-    if (RT_UNLIKELY(cbReq < cbReqExpected))
-    {
-        dprintf(("VbglGRVerify: buffer size %zu < expected size %zu\n", cbReq, cbReqExpected));
-        return VERR_INVALID_PARAMETER;
-    }
+	/* The request size must correspond to the request type. */
+	cbReqExpected = vmmdevGetRequestSize(pReq->requestType);
+	if (RT_UNLIKELY(cbReq < cbReqExpected)) {
+		dprintf(("VbglGRVerify: buffer size %zu < expected size %zu\n",
+			 cbReq, cbReqExpected));
+		return VERR_INVALID_PARAMETER;
+	}
 
-    if (cbReqExpected == cbReq)
-    {
-        /*
-         * This is most likely a fixed size request, and in this case the
-         * request size must be also equal to the expected size.
-         */
-        if (RT_UNLIKELY(pReq->size != cbReqExpected))
-        {
-            dprintf(("VbglGRVerify: request size %u != expected size %zu\n", pReq->size, cbReqExpected));
-            return VERR_INVALID_PARAMETER;
-        }
+	if (cbReqExpected == cbReq) {
+		/*
+		 * This is most likely a fixed size request, and in this case the
+		 * request size must be also equal to the expected size.
+		 */
+		if (RT_UNLIKELY(pReq->size != cbReqExpected)) {
+			dprintf(("VbglGRVerify: request size %u != expected size %zu\n", pReq->size, cbReqExpected));
+			return VERR_INVALID_PARAMETER;
+		}
 
-        return VINF_SUCCESS;
-    }
+		return VINF_SUCCESS;
+	}
 
-    /*
-     * This can be a variable size request. Check the request type and limit the size
-     * to VMMDEV_MAX_VMMDEVREQ_SIZE, which is max size supported by the host.
-     *
-     * Note: Keep this list sorted for easier human lookup!
-     */
-    if (   pReq->requestType == VMMDevReq_ChangeMemBalloon
+	/*
+	 * This can be a variable size request. Check the request type and limit the size
+	 * to VMMDEV_MAX_VMMDEVREQ_SIZE, which is max size supported by the host.
+	 *
+	 * Note: Keep this list sorted for easier human lookup!
+	 */
+	if (pReq->requestType == VMMDevReq_ChangeMemBalloon
 #ifdef VBOX_WITH_64_BITS_GUESTS
-        || pReq->requestType == VMMDevReq_HGCMCall32
-        || pReq->requestType == VMMDevReq_HGCMCall64
+	    || pReq->requestType == VMMDevReq_HGCMCall32
+	    || pReq->requestType == VMMDevReq_HGCMCall64
 #else
-        || pReq->requestType == VMMDevReq_HGCMCall
+	    || pReq->requestType == VMMDevReq_HGCMCall
 #endif
-        || pReq->requestType == VMMDevReq_RegisterSharedModule
-        || pReq->requestType == VMMDevReq_ReportGuestUserState
-        || pReq->requestType == VMMDevReq_LogString
-        || pReq->requestType == VMMDevReq_SetPointerShape
-        || pReq->requestType == VMMDevReq_VideoSetVisibleRegion)
-    {
-        if (RT_UNLIKELY(cbReq > VMMDEV_MAX_VMMDEVREQ_SIZE))
-        {
-            dprintf(("VbglGRVerify: VMMDevReq_LogString: buffer size %zu too big\n", cbReq));
-            return VERR_BUFFER_OVERFLOW; /** @todo is this error code ok? */
-        }
-    }
-    else
-    {
-        dprintf(("VbglGRVerify: request size %u > buffer size %zu\n", pReq->size, cbReq));
-        return VERR_IO_BAD_LENGTH; /** @todo is this error code ok? */
-    }
+	    || pReq->requestType == VMMDevReq_RegisterSharedModule
+	    || pReq->requestType == VMMDevReq_ReportGuestUserState
+	    || pReq->requestType == VMMDevReq_LogString
+	    || pReq->requestType == VMMDevReq_SetPointerShape
+	    || pReq->requestType == VMMDevReq_VideoSetVisibleRegion) {
+		if (RT_UNLIKELY(cbReq > VMMDEV_MAX_VMMDEVREQ_SIZE)) {
+			dprintf(("VbglGRVerify: VMMDevReq_LogString: buffer size %zu too big\n", cbReq));
+			return VERR_BUFFER_OVERFLOW;
+					 /** @todo is this error code ok? */
+		}
+	} else {
+		dprintf(("VbglGRVerify: request size %u > buffer size %zu\n",
+			 pReq->size, cbReq));
+		return VERR_IO_BAD_LENGTH;
+				   /** @todo is this error code ok? */
+	}
 
-    return VINF_SUCCESS;
+	return VINF_SUCCESS;
 }
 
-DECLVBGL(int) VbglGRAlloc(VMMDevRequestHeader **ppReq, size_t cbReq, VMMDevRequestType enmReqType)
+DECLVBGL(int)VbglGRAlloc(VMMDevRequestHeader ** ppReq, size_t cbReq,
+			 VMMDevRequestType enmReqType)
 {
-    int rc = vbglR0Enter();
-    if (RT_SUCCESS(rc))
-    {
-        if (   ppReq
-            && cbReq >= sizeof(VMMDevRequestHeader)
-            && cbReq == (uint32_t)cbReq)
-        {
-            VMMDevRequestHeader *pReq = (VMMDevRequestHeader *)VbglPhysHeapAlloc((uint32_t)cbReq);
-            AssertMsgReturn(pReq, ("VbglGRAlloc: no memory (cbReq=%u)\n", cbReq), VERR_NO_MEMORY);
-            memset(pReq, 0xAA, cbReq);
+	int rc = vbglR0Enter();
+	if (RT_SUCCESS(rc)) {
+		if (ppReq && cbReq >= sizeof(VMMDevRequestHeader)
+		    && cbReq == (uint32_t) cbReq) {
+			VMMDevRequestHeader *pReq =
+			    (VMMDevRequestHeader *) VbglPhysHeapAlloc((uint32_t)
+								      cbReq);
+			AssertMsgReturn(pReq,
+					("VbglGRAlloc: no memory (cbReq=%u)\n",
+					 cbReq), VERR_NO_MEMORY);
+			memset(pReq, 0xAA, cbReq);
 
-            pReq->size        = (uint32_t)cbReq;
-            pReq->version     = VMMDEV_REQUEST_HEADER_VERSION;
-            pReq->requestType = enmReqType;
-            pReq->rc          = VERR_GENERAL_FAILURE;
-            pReq->reserved1   = 0;
-            pReq->reserved2   = 0;
+			pReq->size = (uint32_t) cbReq;
+			pReq->version = VMMDEV_REQUEST_HEADER_VERSION;
+			pReq->requestType = enmReqType;
+			pReq->rc = VERR_GENERAL_FAILURE;
+			pReq->reserved1 = 0;
+			pReq->reserved2 = 0;
 
-            *ppReq = pReq;
-            rc = VINF_SUCCESS;
-        }
-        else
-        {
-            dprintf(("VbglGRAlloc: Invalid parameter: ppReq=%p cbReq=%u\n", ppReq, cbReq));
-            rc = VERR_INVALID_PARAMETER;
-        }
-    }
-    return rc;
+			*ppReq = pReq;
+			rc = VINF_SUCCESS;
+		} else {
+			dprintf(("VbglGRAlloc: Invalid parameter: ppReq=%p cbReq=%u\n", ppReq, cbReq));
+			rc = VERR_INVALID_PARAMETER;
+		}
+	}
+	return rc;
 }
 
-DECLVBGL(int) VbglGRPerform(VMMDevRequestHeader *pReq)
+DECLVBGL(int)VbglGRPerform(VMMDevRequestHeader * pReq)
 {
-    int rc = vbglR0Enter();
-    if (RT_SUCCESS(rc))
-    {
-        if (pReq)
-        {
-            RTCCPHYS PhysAddr = VbglPhysHeapGetPhysAddr(pReq);
-            if (   PhysAddr != 0
-                && PhysAddr < _4G) /* Port IO is 32 bit. */
-            {
-                ASMOutU32(g_vbgldata.portVMMDev + VMMDEV_PORT_OFF_REQUEST, (uint32_t)PhysAddr);
-                /* Make the compiler aware that the host has changed memory. */
-                ASMCompilerBarrier();
-                rc = pReq->rc;
-            }
-            else
-                rc = VERR_VBGL_INVALID_ADDR;
-        }
-        else
-            rc = VERR_INVALID_PARAMETER;
-    }
-    return rc;
+	int rc = vbglR0Enter();
+	if (RT_SUCCESS(rc)) {
+		if (pReq) {
+			RTCCPHYS PhysAddr = VbglPhysHeapGetPhysAddr(pReq);
+			if (PhysAddr != 0 && PhysAddr < _4G) {	/* Port IO is 32 bit. */
+				ASMOutU32(g_vbgldata.portVMMDev +
+					  VMMDEV_PORT_OFF_REQUEST,
+					  (uint32_t) PhysAddr);
+				/* Make the compiler aware that the host has changed memory. */
+				ASMCompilerBarrier();
+				rc = pReq->rc;
+			} else
+				rc = VERR_VBGL_INVALID_ADDR;
+		} else
+			rc = VERR_INVALID_PARAMETER;
+	}
+	return rc;
 }
 
-DECLVBGL(void) VbglGRFree(VMMDevRequestHeader *pReq)
+DECLVBGL(void)VbglGRFree(VMMDevRequestHeader * pReq)
 {
-    int rc = vbglR0Enter();
-    if (RT_SUCCESS(rc))
-        VbglPhysHeapFree(pReq);
+	int rc = vbglR0Enter();
+	if (RT_SUCCESS(rc))
+		VbglPhysHeapFree(pReq);
 }
-

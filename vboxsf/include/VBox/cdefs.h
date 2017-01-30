@@ -28,7 +28,6 @@
 
 #include <iprt/cdefs.h>
 
-
 /** @defgroup VBox Common Defintions and Macros
  * @{
  */
@@ -51,7 +50,6 @@
 #  define VBOX_STRICT
 # endif
 #endif
-
 
 /*
  * Shut up DOXYGEN warnings and guide it properly thru the code.
@@ -78,15 +76,10 @@
 #define IN_VMM_STATIC
 #endif
 
-
-
-
 /** @def VBOXCALL
  * The standard calling convention for VBOX interfaces.
  */
 #define VBOXCALL   RTCALL
-
-
 
 /** @def IN_DIS
  * Used to indicate whether we're inside the same link module as the
@@ -101,8 +94,6 @@
 #else
 # define DISDECL(type)      DECLIMPORT(type) VBOXCALL
 #endif
-
-
 
 /** @def IN_DBG
  * Used to indicate whether we're inside the same link module as the debugger
@@ -119,8 +110,6 @@
 #else
 # define DBGDECL(type)      DECLIMPORT(type) VBOXCALL
 #endif
-
-
 
 /** @def IN_INTNET_R3
  * Used to indicate whether we're inside the same link module as the Ring-3
@@ -150,8 +139,6 @@
 # define INTNETR0DECL(type) DECLIMPORT(type) VBOXCALL
 #endif
 
-
-
 /** @def IN_PCIRAW_R3
  * Used to indicate whether we're inside the same link module as the Ring-3
  * PCI passthrough support.
@@ -180,8 +167,6 @@
 # define PCIRAWR0DECL(type) DECLIMPORT(type) VBOXCALL
 #endif
 
-
-
 /** @def IN_REM_R3
  * Used to indicate whether we're inside the same link module as
  * the HC Ring-3 Recompiled Execution Manager.
@@ -195,8 +180,6 @@
 #else
 # define REMR3DECL(type)    DECLIMPORT(type) VBOXCALL
 #endif
-
-
 
 /** @def IN_SUP_R3
  * Used to indicate whether we're inside the same link module as the Ring-3
@@ -274,8 +257,6 @@
 # define SUPDECL(type)      DECLIMPORT(type) VBOXCALL
 #endif
 
-
-
 /** @def IN_USBLIB
  * Used to indicate whether we're inside the same link module as the USBLib.
  */
@@ -290,8 +271,6 @@
 #else
 # define USBLIB_DECL(type)   DECLIMPORT(type) VBOXCALL
 #endif
-
-
 
 /** @def IN_VMM_STATIC
  * Used to indicate that the virtual machine monitor is built or used as a
@@ -427,8 +406,6 @@
 # define VMMRZ_INT_DECL(type)       DECL_INVALID(type)
 #endif
 
-
-
 /** @def IN_VBOXDDU
  * Used to indicate whether we're inside the VBoxDDU shared object.
  */
@@ -448,10 +425,8 @@
 
 /** @} */
 
-
 /** @defgroup grp_devdrv    Device Emulations and Drivers
  * @{ */
 /** @} */
 
 #endif
-

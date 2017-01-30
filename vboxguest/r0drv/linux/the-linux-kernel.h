@@ -40,7 +40,7 @@
 #if RT_GNUC_PREREQ(4, 2)
 # pragma GCC diagnostic ignored "-Wunused-parameter"
 # if !defined(__cplusplus) && RT_GNUC_PREREQ(4, 3)
-#  pragma GCC diagnostic ignored "-Wold-style-declaration" /* 2.6.18-411.0.0.0.1.el5/build/include/asm/apic.h:110: warning: 'inline' is not at beginning of declaration [-Wold-style-declaration] */
+#  pragma GCC diagnostic ignored "-Wold-style-declaration"	/* 2.6.18-411.0.0.0.1.el5/build/include/asm/apic.h:110: warning: 'inline' is not at beginning of declaration [-Wold-style-declaration] */
 # endif
 #endif
 
@@ -75,7 +75,7 @@
 # endif
 #endif
 # if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0)
-#  include <linux/kconfig.h> /* for macro IS_ENABLED */
+#  include <linux/kconfig.h>	/* for macro IS_ENABLED */
 # endif
 #include <linux/string.h>
 #include <linux/spinlock.h>
@@ -121,7 +121,7 @@
 #include <linux/interrupt.h>
 #include <linux/completion.h>
 #include <linux/compiler.h>
-#ifndef HAVE_UNLOCKED_IOCTL /* linux/fs.h defines this */
+#ifndef HAVE_UNLOCKED_IOCTL	/* linux/fs.h defines this */
 # include <linux/smp_lock.h>
 #endif
 /* For the shared folders module */
@@ -158,8 +158,13 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
 # include <asm/smap.h>
 #else
-static inline void clac(void) { }
-static inline void stac(void) { }
+static inline void clac(void)
+{
+}
+
+static inline void stac(void)
+{
+}
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0)
@@ -190,30 +195,30 @@ static inline void stac(void) { }
 DECLINLINE(unsigned int) jiffies_to_msecs(unsigned long cJiffies)
 {
 #  if HZ <= 1000 && !(1000 % HZ)
-    return (1000 / HZ) * cJiffies;
+	return (1000 / HZ) * cJiffies;
 #  elif HZ > 1000 && !(HZ % 1000)
-    return (cJiffies + (HZ / 1000) - 1) / (HZ / 1000);
+	return (cJiffies + (HZ / 1000) - 1) / (HZ / 1000);
 #  else
-    return (cJiffies * 1000) / HZ;
+	return (cJiffies * 1000) / HZ;
 #  endif
 }
 
-DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
+DECLINLINE(unsigned long)msecs_to_jiffies(unsigned int cMillies)
 {
 #  if HZ > 1000
-    if (cMillies > jiffies_to_msecs(MAX_JIFFY_OFFSET))
-        return MAX_JIFFY_OFFSET;
+	if (cMillies > jiffies_to_msecs(MAX_JIFFY_OFFSET))
+		return MAX_JIFFY_OFFSET;
 #  endif
 #  if HZ <= 1000 && !(1000 % HZ)
-    return (cMillies + (1000 / HZ) - 1) / (1000 / HZ);
+	return (cMillies + (1000 / HZ) - 1) / (1000 / HZ);
 #  elif HZ > 1000 && !(HZ % 1000)
-    return cMillies * (HZ / 1000);
+	return cMillies * (HZ / 1000);
 #  else
-    return (cMillies * HZ + 999) / 1000;
+	return (cMillies * HZ + 999) / 1000;
 #  endif
 }
 
-# endif  /* < 2.4.29 || >= 2.6.0 */
+# endif	/* < 2.4.29 || >= 2.6.0 */
 
 #endif /* < 2.6.7 */
 
@@ -267,7 +272,6 @@ DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
 # define MY_PAGE_KERNEL_EXEC    PAGE_KERNEL
 #endif
 
-
 /*
  * The redhat hack section.
  *  - The current hacks are for 2.4.21-15.EL only.
@@ -283,7 +287,7 @@ DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
 /* backported remap_page_range. */
 # if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0)
 #  include <asm/tlb.h>
-#  ifdef tlb_vma /* probably not good enough... */
+#  ifdef tlb_vma		/* probably not good enough... */
 #   define HAVE_26_STYLE_REMAP_PAGE_RANGE 1
 #  endif
 # endif
@@ -300,7 +304,7 @@ DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
             change_page_attr(pPages, cPages, prot); \
         change_page_attr(pPages, cPages, prot); \
     } while (0)
-# endif  /* !RT_ARCH_AMD64 */
+# endif	/* !RT_ARCH_AMD64 */
 #endif /* !NO_REDHAT_HACKS */
 
 #ifndef MY_CHANGE_PAGE_ATTR
@@ -432,12 +436,13 @@ DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
  * Workqueue stuff, see initterm-r0drv-linux.c.
  */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 41)
-typedef struct work_struct  RTR0LNXWORKQUEUEITEM;
+typedef struct work_struct RTR0LNXWORKQUEUEITEM;
 #else
-typedef struct tq_struct    RTR0LNXWORKQUEUEITEM;
+typedef struct tq_struct RTR0LNXWORKQUEUEITEM;
 #endif
-DECLHIDDEN(void) rtR0LnxWorkqueuePush(RTR0LNXWORKQUEUEITEM *pWork, void (*pfnWorker)(RTR0LNXWORKQUEUEITEM *));
+DECLHIDDEN(void) rtR0LnxWorkqueuePush(RTR0LNXWORKQUEUEITEM * pWork,
+				      void (*pfnWorker) (RTR0LNXWORKQUEUEITEM
+							 *));
 DECLHIDDEN(void) rtR0LnxWorkqueueFlush(void);
-
 
 #endif

@@ -119,13 +119,11 @@
  * @remarks defined both by iprt/param.h and iprt/path.h.
  */
 #if !defined(___iprt_path_h) || defined(DOXYGEN_RUNNING)
-# define RTPATH_MAX         (4096 + 4)    /* (PATH_MAX + 1) on linux w/ some alignment */
+# define RTPATH_MAX         (4096 + 4)	/* (PATH_MAX + 1) on linux w/ some alignment */
 #endif
 
 /** @} */
 
-
 /** @} */
 
 #endif
-

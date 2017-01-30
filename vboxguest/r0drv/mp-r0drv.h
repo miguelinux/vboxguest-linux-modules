@@ -30,7 +30,6 @@
 #include <iprt/mp.h>
 
 RT_C_DECLS_BEGIN
-
 /**
  * MP callback
  *
@@ -38,7 +37,8 @@ RT_C_DECLS_BEGIN
  * @param   pvUser1     The first user argument.
  * @param   pvUser2     The second user argument.
  */
-typedef DECLCALLBACK(void) FNMPWORKER(RTCPUID idCpu, void *pvUser1, void *pvUser2);
+typedef DECLCALLBACK(void) FNMPWORKER(RTCPUID idCpu, void *pvUser1,
+				      void *pvUser2);
 /** Pointer to a FNMPWORKER(). */
 typedef FNMPWORKER *PFNMPWORKER;
 
@@ -46,37 +46,34 @@ typedef FNMPWORKER *PFNMPWORKER;
  * RTMpOn* argument packet used by the host specific callback
  * wrapper functions.
  */
-typedef struct RTMPARGS
-{
-    PFNMPWORKER pfnWorker;
-    void       *pvUser1;
-    void       *pvUser2;
-    RTCPUID     idCpu;
-    RTCPUID     idCpu2;
-    uint32_t volatile cHits;
+typedef struct RTMPARGS {
+	PFNMPWORKER pfnWorker;
+	void *pvUser1;
+	void *pvUser2;
+	RTCPUID idCpu;
+	RTCPUID idCpu2;
+	uint32_t volatile cHits;
 #ifdef RT_OS_WINDOWS
     /** Turns out that KeFlushQueuedDpcs doesn't necessarily wait till all
      * callbacks are done.  So, do reference counting to make sure we don't free
      * this structure befor all CPUs have completely handled their requests.  */
-    int32_t volatile  cRefs;
+	int32_t volatile cRefs;
 #endif
 #ifdef RT_OS_LINUX
-    PRTCPUSET   pWorkerSet;
+	PRTCPUSET pWorkerSet;
 #endif
 } RTMPARGS;
 /** Pointer to a RTMpOn* argument packet. */
 typedef RTMPARGS *PRTMPARGS;
 
 /* Called from initterm-r0drv.cpp: */
-DECLHIDDEN(int)  rtR0MpNotificationInit(void);
+DECLHIDDEN(int) rtR0MpNotificationInit(void);
 DECLHIDDEN(void) rtR0MpNotificationTerm(void);
 
 /* The following is only relevant when using mpnotifcation-r0drv.cpp: */
-DECLHIDDEN(int)  rtR0MpNotificationNativeInit(void);
+DECLHIDDEN(int) rtR0MpNotificationNativeInit(void);
 DECLHIDDEN(void) rtR0MpNotificationNativeTerm(void);
 DECLHIDDEN(void) rtMpNotificationDoCallbacks(RTMPEVENT enmEvent, RTCPUID idCpu);
 
 RT_C_DECLS_END
-
 #endif
-

@@ -30,12 +30,9 @@
 #include <iprt/power.h>
 
 RT_C_DECLS_BEGIN
-
 /* Called from initterm-r0drv.cpp: */
-DECLHIDDEN(int)  rtR0PowerNotificationInit(void);
+DECLHIDDEN(int) rtR0PowerNotificationInit(void);
 DECLHIDDEN(void) rtR0PowerNotificationTerm(void);
 
 RT_C_DECLS_END
-
 #endif
-

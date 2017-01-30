@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -34,35 +33,29 @@
 #include <iprt/assert.h>
 #include "internal/magics.h"
 
-
-
 RTDECL(PRTERRVARS) RTErrVarsSave(PRTERRVARS pVars)
 {
-    pVars->ai32Vars[0] = RTERRVARS_MAGIC;
-    return pVars;
+	pVars->ai32Vars[0] = RTERRVARS_MAGIC;
+	return pVars;
 }
 
-
-RTDECL(void) RTErrVarsRestore(PCRTERRVARS pVars)
+RTDECL(void)RTErrVarsRestore(PCRTERRVARS pVars)
 {
-    Assert(pVars->ai32Vars[0] == RTERRVARS_MAGIC);
-    RT_NOREF_PV(pVars);
+	Assert(pVars->ai32Vars[0] == RTERRVARS_MAGIC);
+	RT_NOREF_PV(pVars);
 }
-
 
 RTDECL(bool) RTErrVarsAreEqual(PCRTERRVARS pVars1, PCRTERRVARS pVars2)
 {
-    Assert(pVars1->ai32Vars[0] == RTERRVARS_MAGIC);
-    Assert(pVars2->ai32Vars[0] == RTERRVARS_MAGIC);
+	Assert(pVars1->ai32Vars[0] == RTERRVARS_MAGIC);
+	Assert(pVars2->ai32Vars[0] == RTERRVARS_MAGIC);
 
-    return pVars1->ai32Vars[0] == pVars2->ai32Vars[0];
+	return pVars1->ai32Vars[0] == pVars2->ai32Vars[0];
 }
-
 
 RTDECL(bool) RTErrVarsHaveChanged(PCRTERRVARS pVars)
 {
-    Assert(pVars->ai32Vars[0] == RTERRVARS_MAGIC);
-    RT_NOREF_PV(pVars);
-    return false;
+	Assert(pVars->ai32Vars[0] == RTERRVARS_MAGIC);
+	RT_NOREF_PV(pVars);
+	return false;
 }
-

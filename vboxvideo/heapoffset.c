@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -40,7 +39,6 @@
 #include <iprt/string.h>
 
 #include "internal/magics.h"
-
 
 /*********************************************************************************************************************************
 *   Structures and Typedefs                                                                                                      *
@@ -58,16 +56,15 @@ typedef struct RTHEAPOFFSETFREE *PRTHEAPOFFSETFREE;
  * If this block is allocated, it is followed by the user data.
  * If this block is free, see RTHEAPOFFSETFREE.
  */
-typedef struct RTHEAPOFFSETBLOCK
-{
+typedef struct RTHEAPOFFSETBLOCK {
     /** The next block in the global block list. */
-    uint32_t /*PRTHEAPOFFSETBLOCK*/     offNext;
+	uint32_t /*PRTHEAPOFFSETBLOCK*/ offNext;
     /** The previous block in the global block list. */
-    uint32_t /*PRTHEAPOFFSETBLOCK*/     offPrev;
+	uint32_t /*PRTHEAPOFFSETBLOCK*/ offPrev;
     /** Offset into the heap of this block. Used to locate the anchor block. */
-    uint32_t /*PRTHEAPOFFSETINTERNAL*/  offSelf;
+	uint32_t /*PRTHEAPOFFSETINTERNAL*/ offSelf;
     /** Flags + magic. */
-    uint32_t                            fFlags;
+	uint32_t fFlags;
 } RTHEAPOFFSETBLOCK;
 AssertCompileSize(RTHEAPOFFSETBLOCK, 16);
 
@@ -116,53 +113,49 @@ AssertCompileSize(RTHEAPOFFSETBLOCK, 16);
  * This is an extended version of RTHEAPOFFSETBLOCK that takes the unused
  * user data to store free list pointers and a cached size value.
  */
-typedef struct RTHEAPOFFSETFREE
-{
+typedef struct RTHEAPOFFSETFREE {
     /** Core stuff. */
-    RTHEAPOFFSETBLOCK               Core;
+	RTHEAPOFFSETBLOCK Core;
     /** Pointer to the next free block. */
-    uint32_t /*PRTHEAPOFFSETFREE*/  offNext;
+	 uint32_t /*PRTHEAPOFFSETFREE*/ offNext;
     /** Pointer to the previous free block. */
-    uint32_t /*PRTHEAPOFFSETFREE*/  offPrev;
+	 uint32_t /*PRTHEAPOFFSETFREE*/ offPrev;
     /** The size of the block (excluding the RTHEAPOFFSETBLOCK part). */
-    uint32_t                        cb;
+	uint32_t cb;
     /** An alignment filler to make it a multiple of 16 bytes. */
-    uint32_t                        Alignment;
+	uint32_t Alignment;
 } RTHEAPOFFSETFREE;
-AssertCompileSize(RTHEAPOFFSETFREE, 16+16);
-
+AssertCompileSize(RTHEAPOFFSETFREE, 16 + 16);
 
 /**
  * The heap anchor block.
  * This structure is placed at the head of the memory block specified to RTHeapOffsetInit(),
  * which means that the first RTHEAPOFFSETBLOCK appears immediately after this structure.
  */
-typedef struct RTHEAPOFFSETINTERNAL
-{
+typedef struct RTHEAPOFFSETINTERNAL {
     /** The typical magic (RTHEAPOFFSET_MAGIC). */
-    uint32_t                        u32Magic;
+	uint32_t u32Magic;
     /** The heap size. (This structure is included!) */
-    uint32_t                        cbHeap;
+	uint32_t cbHeap;
     /** The amount of free memory in the heap. */
-    uint32_t                        cbFree;
+	uint32_t cbFree;
     /** Free head pointer. */
-    uint32_t /*PRTHEAPOFFSETFREE*/  offFreeHead;
+	 uint32_t /*PRTHEAPOFFSETFREE*/ offFreeHead;
     /** Free tail pointer. */
-    uint32_t /*PRTHEAPOFFSETFREE*/  offFreeTail;
+	 uint32_t /*PRTHEAPOFFSETFREE*/ offFreeTail;
     /** Make the size of this structure 32 bytes. */
-    uint32_t                        au32Alignment[3];
+	uint32_t au32Alignment[3];
 } RTHEAPOFFSETINTERNAL;
 AssertCompileSize(RTHEAPOFFSETINTERNAL, 32);
-
 
 /** The minimum allocation size. */
 #define RTHEAPOFFSET_MIN_BLOCK  (sizeof(RTHEAPOFFSETBLOCK))
 AssertCompile(RTHEAPOFFSET_MIN_BLOCK >= sizeof(RTHEAPOFFSETBLOCK));
-AssertCompile(RTHEAPOFFSET_MIN_BLOCK >= sizeof(RTHEAPOFFSETFREE) - sizeof(RTHEAPOFFSETBLOCK));
+AssertCompile(RTHEAPOFFSET_MIN_BLOCK >=
+	      sizeof(RTHEAPOFFSETFREE) - sizeof(RTHEAPOFFSETBLOCK));
 
 /** The minimum and default alignment.  */
 #define RTHEAPOFFSET_ALIGNMENT  (sizeof(RTHEAPOFFSETBLOCK))
-
 
 /*********************************************************************************************************************************
 *   Defined Constants And Macros                                                                                                 *
@@ -178,7 +171,6 @@ AssertCompile(RTHEAPOFFSET_MIN_BLOCK >= sizeof(RTHEAPOFFSETFREE) - sizeof(RTHEAP
  * @param   pBlock          The block to find the heap anchor block for.
  */
 #define RTHEAPOFF_GET_ANCHOR(pBlock)    ( (PRTHEAPOFFSETINTERNAL)((uint8_t *)(pBlock) - (pBlock)->offSelf ) )
-
 
 /**
  * Converts an offset to a pointer.
@@ -322,176 +314,179 @@ AssertCompile(RTHEAPOFFSET_MIN_BLOCK >= sizeof(RTHEAPOFFSETFREE) - sizeof(RTHEAP
          Assert((pHeapInt)->u32Magic == RTHEAPOFFSET_MAGIC); \
     } while (0)
 
-
 /*********************************************************************************************************************************
 *   Internal Functions                                                                                                           *
 *********************************************************************************************************************************/
 #ifdef RTHEAPOFFSET_STRICT
 static void rtHeapOffsetAssertAll(PRTHEAPOFFSETINTERNAL pHeapInt);
 #endif
-static PRTHEAPOFFSETBLOCK rtHeapOffsetAllocBlock(PRTHEAPOFFSETINTERNAL pHeapInt, size_t cb, size_t uAlignment);
-static void rtHeapOffsetFreeBlock(PRTHEAPOFFSETINTERNAL pHeapInt, PRTHEAPOFFSETBLOCK pBlock);
+static PRTHEAPOFFSETBLOCK rtHeapOffsetAllocBlock(PRTHEAPOFFSETINTERNAL pHeapInt,
+						 size_t cb, size_t uAlignment);
+static void rtHeapOffsetFreeBlock(PRTHEAPOFFSETINTERNAL pHeapInt,
+				  PRTHEAPOFFSETBLOCK pBlock);
 
 #ifdef RTHEAPOFFSET_STRICT
 
 /** Checked version of RTHEAPOFF_TO_PTR and RTHEAPOFF_TO_PTR_N. */
-static void *rtHeapOffCheckedOffToPtr(PRTHEAPOFFSETINTERNAL pHeapInt, uint32_t off, bool fNull)
+static void *rtHeapOffCheckedOffToPtr(PRTHEAPOFFSETINTERNAL pHeapInt,
+				      uint32_t off, bool fNull)
 {
-    Assert(off || fNull);
-    if (!off)
-        return NULL;
-    AssertMsg(off < pHeapInt->cbHeap,   ("%#x %#x\n", off, pHeapInt->cbHeap));
-    AssertMsg(off >= sizeof(*pHeapInt), ("%#x %#x\n", off, sizeof(*pHeapInt)));
-    return (uint8_t *)pHeapInt + off;
+	Assert(off || fNull);
+	if (!off)
+		return NULL;
+	AssertMsg(off < pHeapInt->cbHeap, ("%#x %#x\n", off, pHeapInt->cbHeap));
+	AssertMsg(off >= sizeof(*pHeapInt),
+		  ("%#x %#x\n", off, sizeof(*pHeapInt)));
+	return (uint8_t *) pHeapInt + off;
 }
 
 /** Checked version of RTHEAPOFF_TO_OFF. */
-static uint32_t rtHeapOffCheckedPtrToOff(PRTHEAPOFFSETINTERNAL pHeapInt, void *pv)
+static uint32_t rtHeapOffCheckedPtrToOff(PRTHEAPOFFSETINTERNAL pHeapInt,
+					 void *pv)
 {
-    if (!pv)
-        return 0;
-    uintptr_t off = (uintptr_t)pv - (uintptr_t)pHeapInt;
-    AssertMsg(off < pHeapInt->cbHeap,   ("%#x %#x\n", off, pHeapInt->cbHeap));
-    AssertMsg(off >= sizeof(*pHeapInt), ("%#x %#x\n", off, sizeof(*pHeapInt)));
-    return (uint32_t)off;
+	if (!pv)
+		return 0;
+	uintptr_t off = (uintptr_t) pv - (uintptr_t) pHeapInt;
+	AssertMsg(off < pHeapInt->cbHeap, ("%#x %#x\n", off, pHeapInt->cbHeap));
+	AssertMsg(off >= sizeof(*pHeapInt),
+		  ("%#x %#x\n", off, sizeof(*pHeapInt)));
+	return (uint32_t) off;
 }
 
 #endif /* RTHEAPOFFSET_STRICT */
 
-
-
-RTDECL(int) RTHeapOffsetInit(PRTHEAPOFFSET phHeap, void *pvMemory, size_t cbMemory)
+RTDECL(int)RTHeapOffsetInit(PRTHEAPOFFSET phHeap, void *pvMemory,
+			    size_t cbMemory)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt;
-    PRTHEAPOFFSETFREE pFree;
-    unsigned i;
+	PRTHEAPOFFSETINTERNAL pHeapInt;
+	PRTHEAPOFFSETFREE pFree;
+	unsigned i;
 
-    /*
-     * Validate input. The imposed minimum heap size is just a convenient value.
-     */
-    AssertReturn(cbMemory >= PAGE_SIZE, VERR_INVALID_PARAMETER);
-    AssertReturn(cbMemory < UINT32_MAX, VERR_INVALID_PARAMETER);
-    AssertPtrReturn(pvMemory, VERR_INVALID_POINTER);
-    AssertReturn((uintptr_t)pvMemory + (cbMemory - 1) > (uintptr_t)cbMemory, VERR_INVALID_PARAMETER);
+	/*
+	 * Validate input. The imposed minimum heap size is just a convenient value.
+	 */
+	AssertReturn(cbMemory >= PAGE_SIZE, VERR_INVALID_PARAMETER);
+	AssertReturn(cbMemory < UINT32_MAX, VERR_INVALID_PARAMETER);
+	AssertPtrReturn(pvMemory, VERR_INVALID_POINTER);
+	AssertReturn((uintptr_t) pvMemory + (cbMemory - 1) >
+		     (uintptr_t) cbMemory, VERR_INVALID_PARAMETER);
 
-    /*
-     * Place the heap anchor block at the start of the heap memory,
-     * enforce 32 byte alignment of it. Also align the heap size correctly.
-     */
-    pHeapInt = (PRTHEAPOFFSETINTERNAL)pvMemory;
-    if ((uintptr_t)pvMemory & 31)
-    {
-        const uintptr_t off = 32 - ((uintptr_t)pvMemory & 31);
-        cbMemory -= off;
-        pHeapInt = (PRTHEAPOFFSETINTERNAL)((uintptr_t)pvMemory + off);
-    }
-    cbMemory &= ~(RTHEAPOFFSET_ALIGNMENT - 1);
+	/*
+	 * Place the heap anchor block at the start of the heap memory,
+	 * enforce 32 byte alignment of it. Also align the heap size correctly.
+	 */
+	pHeapInt = (PRTHEAPOFFSETINTERNAL) pvMemory;
+	if ((uintptr_t) pvMemory & 31) {
+		const uintptr_t off = 32 - ((uintptr_t) pvMemory & 31);
+		cbMemory -= off;
+		pHeapInt = (PRTHEAPOFFSETINTERNAL) ((uintptr_t) pvMemory + off);
+	}
+	cbMemory &= ~(RTHEAPOFFSET_ALIGNMENT - 1);
 
+	/* Init the heap anchor block. */
+	pHeapInt->u32Magic = RTHEAPOFFSET_MAGIC;
+	pHeapInt->cbHeap = (uint32_t) cbMemory;
+	pHeapInt->cbFree = (uint32_t) cbMemory - sizeof(RTHEAPOFFSETBLOCK)
+	    - sizeof(RTHEAPOFFSETINTERNAL);
+	pHeapInt->offFreeTail = pHeapInt->offFreeHead = sizeof(*pHeapInt);
+	for (i = 0; i < RT_ELEMENTS(pHeapInt->au32Alignment); i++)
+		pHeapInt->au32Alignment[i] = UINT32_MAX;
 
-    /* Init the heap anchor block. */
-    pHeapInt->u32Magic = RTHEAPOFFSET_MAGIC;
-    pHeapInt->cbHeap = (uint32_t)cbMemory;
-    pHeapInt->cbFree = (uint32_t)cbMemory
-                     - sizeof(RTHEAPOFFSETBLOCK)
-                     - sizeof(RTHEAPOFFSETINTERNAL);
-    pHeapInt->offFreeTail = pHeapInt->offFreeHead = sizeof(*pHeapInt);
-    for (i = 0; i < RT_ELEMENTS(pHeapInt->au32Alignment); i++)
-        pHeapInt->au32Alignment[i] = UINT32_MAX;
+	/* Init the single free block. */
+	pFree =
+	    RTHEAPOFF_TO_PTR(pHeapInt, pHeapInt->offFreeHead,
+			     PRTHEAPOFFSETFREE);
+	pFree->Core.offNext = 0;
+	pFree->Core.offPrev = 0;
+	pFree->Core.offSelf = pHeapInt->offFreeHead;
+	pFree->Core.fFlags =
+	    RTHEAPOFFSETBLOCK_FLAGS_MAGIC | RTHEAPOFFSETBLOCK_FLAGS_FREE;
+	pFree->offNext = 0;
+	pFree->offPrev = 0;
+	pFree->cb = pHeapInt->cbFree;
 
-    /* Init the single free block. */
-    pFree = RTHEAPOFF_TO_PTR(pHeapInt, pHeapInt->offFreeHead, PRTHEAPOFFSETFREE);
-    pFree->Core.offNext = 0;
-    pFree->Core.offPrev = 0;
-    pFree->Core.offSelf = pHeapInt->offFreeHead;
-    pFree->Core.fFlags = RTHEAPOFFSETBLOCK_FLAGS_MAGIC | RTHEAPOFFSETBLOCK_FLAGS_FREE;
-    pFree->offNext = 0;
-    pFree->offPrev = 0;
-    pFree->cb = pHeapInt->cbFree;
-
-    *phHeap = pHeapInt;
+	*phHeap = pHeapInt;
 
 #ifdef RTHEAPOFFSET_STRICT
-    rtHeapOffsetAssertAll(pHeapInt);
+	rtHeapOffsetAssertAll(pHeapInt);
 #endif
-    return VINF_SUCCESS;
+	return VINF_SUCCESS;
 }
+
 RT_EXPORT_SYMBOL(RTHeapOffsetInit);
 
-
-RTDECL(void *) RTHeapOffsetAlloc(RTHEAPOFFSET hHeap, size_t cb, size_t cbAlignment)
+RTDECL(void *)RTHeapOffsetAlloc(RTHEAPOFFSET hHeap, size_t cb,
+				size_t cbAlignment)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt = hHeap;
-    PRTHEAPOFFSETBLOCK pBlock;
+	PRTHEAPOFFSETINTERNAL pHeapInt = hHeap;
+	PRTHEAPOFFSETBLOCK pBlock;
 
-    /*
-     * Validate and adjust the input.
-     */
-    AssertPtrReturn(pHeapInt, NULL);
-    if (cb < RTHEAPOFFSET_MIN_BLOCK)
-        cb = RTHEAPOFFSET_MIN_BLOCK;
-    else
-        cb = RT_ALIGN_Z(cb, RTHEAPOFFSET_ALIGNMENT);
-    if (!cbAlignment)
-        cbAlignment = RTHEAPOFFSET_ALIGNMENT;
-    else
-    {
-        Assert(!(cbAlignment & (cbAlignment - 1)));
-        Assert((cbAlignment & ~(cbAlignment - 1)) == cbAlignment);
-        if (cbAlignment < RTHEAPOFFSET_ALIGNMENT)
-            cbAlignment = RTHEAPOFFSET_ALIGNMENT;
-    }
+	/*
+	 * Validate and adjust the input.
+	 */
+	AssertPtrReturn(pHeapInt, NULL);
+	if (cb < RTHEAPOFFSET_MIN_BLOCK)
+		cb = RTHEAPOFFSET_MIN_BLOCK;
+	else
+		cb = RT_ALIGN_Z(cb, RTHEAPOFFSET_ALIGNMENT);
+	if (!cbAlignment)
+		cbAlignment = RTHEAPOFFSET_ALIGNMENT;
+	else {
+		Assert(!(cbAlignment & (cbAlignment - 1)));
+		Assert((cbAlignment & ~(cbAlignment - 1)) == cbAlignment);
+		if (cbAlignment < RTHEAPOFFSET_ALIGNMENT)
+			cbAlignment = RTHEAPOFFSET_ALIGNMENT;
+	}
 
-    /*
-     * Do the allocation.
-     */
-    pBlock = rtHeapOffsetAllocBlock(pHeapInt, cb, cbAlignment);
-    if (RT_LIKELY(pBlock))
-    {
-        void *pv = pBlock + 1;
-        return pv;
-    }
-    return NULL;
+	/*
+	 * Do the allocation.
+	 */
+	pBlock = rtHeapOffsetAllocBlock(pHeapInt, cb, cbAlignment);
+	if (RT_LIKELY(pBlock)) {
+		void *pv = pBlock + 1;
+		return pv;
+	}
+	return NULL;
 }
+
 RT_EXPORT_SYMBOL(RTHeapOffsetAlloc);
 
-
-RTDECL(void *) RTHeapOffsetAllocZ(RTHEAPOFFSET hHeap, size_t cb, size_t cbAlignment)
+RTDECL(void *)RTHeapOffsetAllocZ(RTHEAPOFFSET hHeap, size_t cb,
+				 size_t cbAlignment)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt = hHeap;
-    PRTHEAPOFFSETBLOCK pBlock;
+	PRTHEAPOFFSETINTERNAL pHeapInt = hHeap;
+	PRTHEAPOFFSETBLOCK pBlock;
 
-    /*
-     * Validate and adjust the input.
-     */
-    AssertPtrReturn(pHeapInt, NULL);
-    if (cb < RTHEAPOFFSET_MIN_BLOCK)
-        cb = RTHEAPOFFSET_MIN_BLOCK;
-    else
-        cb = RT_ALIGN_Z(cb, RTHEAPOFFSET_ALIGNMENT);
-    if (!cbAlignment)
-        cbAlignment = RTHEAPOFFSET_ALIGNMENT;
-    else
-    {
-        Assert(!(cbAlignment & (cbAlignment - 1)));
-        Assert((cbAlignment & ~(cbAlignment - 1)) == cbAlignment);
-        if (cbAlignment < RTHEAPOFFSET_ALIGNMENT)
-            cbAlignment = RTHEAPOFFSET_ALIGNMENT;
-    }
+	/*
+	 * Validate and adjust the input.
+	 */
+	AssertPtrReturn(pHeapInt, NULL);
+	if (cb < RTHEAPOFFSET_MIN_BLOCK)
+		cb = RTHEAPOFFSET_MIN_BLOCK;
+	else
+		cb = RT_ALIGN_Z(cb, RTHEAPOFFSET_ALIGNMENT);
+	if (!cbAlignment)
+		cbAlignment = RTHEAPOFFSET_ALIGNMENT;
+	else {
+		Assert(!(cbAlignment & (cbAlignment - 1)));
+		Assert((cbAlignment & ~(cbAlignment - 1)) == cbAlignment);
+		if (cbAlignment < RTHEAPOFFSET_ALIGNMENT)
+			cbAlignment = RTHEAPOFFSET_ALIGNMENT;
+	}
 
-    /*
-     * Do the allocation.
-     */
-    pBlock = rtHeapOffsetAllocBlock(pHeapInt, cb, cbAlignment);
-    if (RT_LIKELY(pBlock))
-    {
-        void *pv = pBlock + 1;
-        memset(pv, 0, cb);
-        return pv;
-    }
-    return NULL;
+	/*
+	 * Do the allocation.
+	 */
+	pBlock = rtHeapOffsetAllocBlock(pHeapInt, cb, cbAlignment);
+	if (RT_LIKELY(pBlock)) {
+		void *pv = pBlock + 1;
+		memset(pv, 0, cb);
+		return pv;
+	}
+	return NULL;
 }
-RT_EXPORT_SYMBOL(RTHeapOffsetAllocZ);
 
+RT_EXPORT_SYMBOL(RTHeapOffsetAllocZ);
 
 /**
  * Allocates a block of memory from the specified heap.
@@ -505,183 +500,216 @@ RT_EXPORT_SYMBOL(RTHeapOffsetAllocZ);
  * @param   cb          Size of the memory block to allocate.
  * @param   uAlignment  The alignment specifications for the allocated block.
  */
-static PRTHEAPOFFSETBLOCK rtHeapOffsetAllocBlock(PRTHEAPOFFSETINTERNAL pHeapInt, size_t cb, size_t uAlignment)
+static PRTHEAPOFFSETBLOCK rtHeapOffsetAllocBlock(PRTHEAPOFFSETINTERNAL pHeapInt,
+						 size_t cb, size_t uAlignment)
 {
-    PRTHEAPOFFSETBLOCK  pRet = NULL;
-    PRTHEAPOFFSETFREE   pFree;
+	PRTHEAPOFFSETBLOCK pRet = NULL;
+	PRTHEAPOFFSETFREE pFree;
 
-    AssertReturn((pHeapInt)->u32Magic == RTHEAPOFFSET_MAGIC, NULL);
+	AssertReturn((pHeapInt)->u32Magic == RTHEAPOFFSET_MAGIC, NULL);
 #ifdef RTHEAPOFFSET_STRICT
-    rtHeapOffsetAssertAll(pHeapInt);
+	rtHeapOffsetAssertAll(pHeapInt);
 #endif
 
-    /*
-     * Search for a fitting block from the lower end of the heap.
-     */
-    for (pFree = RTHEAPOFF_TO_PTR_N(pHeapInt, pHeapInt->offFreeHead, PRTHEAPOFFSETFREE);
-         pFree;
-         pFree = RTHEAPOFF_TO_PTR_N(pHeapInt, pFree->offNext, PRTHEAPOFFSETFREE))
-    {
-        uintptr_t offAlign;
-        ASSERT_BLOCK_FREE(pHeapInt, pFree);
+	/*
+	 * Search for a fitting block from the lower end of the heap.
+	 */
+	for (pFree =
+	     RTHEAPOFF_TO_PTR_N(pHeapInt, pHeapInt->offFreeHead,
+				PRTHEAPOFFSETFREE); pFree;
+	     pFree =
+	     RTHEAPOFF_TO_PTR_N(pHeapInt, pFree->offNext, PRTHEAPOFFSETFREE)) {
+		uintptr_t offAlign;
+		ASSERT_BLOCK_FREE(pHeapInt, pFree);
 
-        /*
-         * Match for size and alignment.
-         */
-        if (pFree->cb < cb)
-            continue;
-        offAlign = (uintptr_t)(&pFree->Core + 1) & (uAlignment - 1);
-        if (offAlign)
-        {
-            PRTHEAPOFFSETFREE pPrev;
+		/*
+		 * Match for size and alignment.
+		 */
+		if (pFree->cb < cb)
+			continue;
+		offAlign = (uintptr_t) (&pFree->Core + 1) & (uAlignment - 1);
+		if (offAlign) {
+			PRTHEAPOFFSETFREE pPrev;
 
-            offAlign = (uintptr_t)(&pFree[1].Core + 1) & (uAlignment - 1);
-            offAlign = uAlignment - offAlign;
-            if (pFree->cb < cb + offAlign + sizeof(RTHEAPOFFSETFREE))
-                continue;
+			offAlign =
+			    (uintptr_t) (&pFree[1].Core + 1) & (uAlignment - 1);
+			offAlign = uAlignment - offAlign;
+			if (pFree->cb <
+			    cb + offAlign + sizeof(RTHEAPOFFSETFREE))
+				continue;
 
-            /*
-             * Split up the free block into two, so that the 2nd is aligned as
-             * per specification.
-             */
-            pPrev = pFree;
-            pFree = (PRTHEAPOFFSETFREE)((uintptr_t)(pFree + 1) + offAlign);
-            pFree->Core.offPrev = pPrev->Core.offSelf;
-            pFree->Core.offNext = pPrev->Core.offNext;
-            pFree->Core.offSelf = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-            pFree->Core.fFlags  = RTHEAPOFFSETBLOCK_FLAGS_MAGIC | RTHEAPOFFSETBLOCK_FLAGS_FREE;
-            pFree->offPrev      = pPrev->Core.offSelf;
-            pFree->offNext      = pPrev->offNext;
-            pFree->cb           = (pFree->Core.offNext ? pFree->Core.offNext : pHeapInt->cbHeap)
-                                - pFree->Core.offSelf - sizeof(RTHEAPOFFSETBLOCK);
+			/*
+			 * Split up the free block into two, so that the 2nd is aligned as
+			 * per specification.
+			 */
+			pPrev = pFree;
+			pFree =
+			    (PRTHEAPOFFSETFREE) ((uintptr_t) (pFree + 1) +
+						 offAlign);
+			pFree->Core.offPrev = pPrev->Core.offSelf;
+			pFree->Core.offNext = pPrev->Core.offNext;
+			pFree->Core.offSelf = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+			pFree->Core.fFlags =
+			    RTHEAPOFFSETBLOCK_FLAGS_MAGIC |
+			    RTHEAPOFFSETBLOCK_FLAGS_FREE;
+			pFree->offPrev = pPrev->Core.offSelf;
+			pFree->offNext = pPrev->offNext;
+			pFree->cb =
+			    (pFree->Core.offNext ? pFree->Core.
+			     offNext : pHeapInt->cbHeap)
+			    - pFree->Core.offSelf - sizeof(RTHEAPOFFSETBLOCK);
 
-            pPrev->Core.offNext = pFree->Core.offSelf;
-            pPrev->offNext      = pFree->Core.offSelf;
-            pPrev->cb           = pFree->Core.offSelf - pPrev->Core.offSelf - sizeof(RTHEAPOFFSETBLOCK);
+			pPrev->Core.offNext = pFree->Core.offSelf;
+			pPrev->offNext = pFree->Core.offSelf;
+			pPrev->cb =
+			    pFree->Core.offSelf - pPrev->Core.offSelf -
+			    sizeof(RTHEAPOFFSETBLOCK);
 
-            if (pFree->Core.offNext)
-                RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext, PRTHEAPOFFSETBLOCK)->offPrev = pFree->Core.offSelf;
-            if (pFree->offNext)
-                RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext, PRTHEAPOFFSETFREE)->offPrev = pFree->Core.offSelf;
-            else
-                pHeapInt->offFreeTail = pFree->Core.offSelf;
+			if (pFree->Core.offNext)
+				RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext,
+						 PRTHEAPOFFSETBLOCK)->offPrev =
+				    pFree->Core.offSelf;
+			if (pFree->offNext)
+				RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext,
+						 PRTHEAPOFFSETFREE)->offPrev =
+				    pFree->Core.offSelf;
+			else
+				pHeapInt->offFreeTail = pFree->Core.offSelf;
 
-            pHeapInt->cbFree -= sizeof(RTHEAPOFFSETBLOCK);
-            ASSERT_BLOCK_FREE(pHeapInt, pPrev);
-            ASSERT_BLOCK_FREE(pHeapInt, pFree);
-        }
+			pHeapInt->cbFree -= sizeof(RTHEAPOFFSETBLOCK);
+			ASSERT_BLOCK_FREE(pHeapInt, pPrev);
+			ASSERT_BLOCK_FREE(pHeapInt, pFree);
+		}
 
-        /*
-         * Split off a new FREE block?
-         */
-        if (pFree->cb >= cb + RT_ALIGN_Z(sizeof(RTHEAPOFFSETFREE), RTHEAPOFFSET_ALIGNMENT))
-        {
-            /*
-             * Create a new FREE block at then end of this one.
-             */
-            PRTHEAPOFFSETFREE   pNew = (PRTHEAPOFFSETFREE)((uintptr_t)&pFree->Core + cb + sizeof(RTHEAPOFFSETBLOCK));
+		/*
+		 * Split off a new FREE block?
+		 */
+		if (pFree->cb >=
+		    cb + RT_ALIGN_Z(sizeof(RTHEAPOFFSETFREE),
+				    RTHEAPOFFSET_ALIGNMENT)) {
+			/*
+			 * Create a new FREE block at then end of this one.
+			 */
+			PRTHEAPOFFSETFREE pNew =
+			    (PRTHEAPOFFSETFREE) ((uintptr_t) & pFree->Core +
+						 cb +
+						 sizeof(RTHEAPOFFSETBLOCK));
 
-            pNew->Core.offSelf = RTHEAPOFF_TO_OFF(pHeapInt, pNew);
-            pNew->Core.offNext = pFree->Core.offNext;
-            if (pFree->Core.offNext)
-                RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext, PRTHEAPOFFSETBLOCK)->offPrev = pNew->Core.offSelf;
-            pNew->Core.offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-            pNew->Core.fFlags = RTHEAPOFFSETBLOCK_FLAGS_MAGIC | RTHEAPOFFSETBLOCK_FLAGS_FREE;
+			pNew->Core.offSelf = RTHEAPOFF_TO_OFF(pHeapInt, pNew);
+			pNew->Core.offNext = pFree->Core.offNext;
+			if (pFree->Core.offNext)
+				RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext,
+						 PRTHEAPOFFSETBLOCK)->offPrev =
+				    pNew->Core.offSelf;
+			pNew->Core.offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+			pNew->Core.fFlags =
+			    RTHEAPOFFSETBLOCK_FLAGS_MAGIC |
+			    RTHEAPOFFSETBLOCK_FLAGS_FREE;
 
-            pNew->offNext = pFree->offNext;
-            if (pNew->offNext)
-                RTHEAPOFF_TO_PTR(pHeapInt, pNew->offNext, PRTHEAPOFFSETFREE)->offPrev = pNew->Core.offSelf;
-            else
-                pHeapInt->offFreeTail = pNew->Core.offSelf;
-            pNew->offPrev = pFree->offPrev;
-            if (pNew->offPrev)
-                RTHEAPOFF_TO_PTR(pHeapInt, pNew->offPrev, PRTHEAPOFFSETFREE)->offNext = pNew->Core.offSelf;
-            else
-                pHeapInt->offFreeHead = pNew->Core.offSelf;
-            pNew->cb    = (pNew->Core.offNext ? pNew->Core.offNext : pHeapInt->cbHeap) \
-                        - pNew->Core.offSelf - sizeof(RTHEAPOFFSETBLOCK);
-            ASSERT_BLOCK_FREE(pHeapInt, pNew);
+			pNew->offNext = pFree->offNext;
+			if (pNew->offNext)
+				RTHEAPOFF_TO_PTR(pHeapInt, pNew->offNext,
+						 PRTHEAPOFFSETFREE)->offPrev =
+				    pNew->Core.offSelf;
+			else
+				pHeapInt->offFreeTail = pNew->Core.offSelf;
+			pNew->offPrev = pFree->offPrev;
+			if (pNew->offPrev)
+				RTHEAPOFF_TO_PTR(pHeapInt, pNew->offPrev,
+						 PRTHEAPOFFSETFREE)->offNext =
+				    pNew->Core.offSelf;
+			else
+				pHeapInt->offFreeHead = pNew->Core.offSelf;
+			pNew->cb =
+			    (pNew->Core.offNext ? pNew->Core.
+			     offNext : pHeapInt->cbHeap)
+			    - pNew->Core.offSelf - sizeof(RTHEAPOFFSETBLOCK);
+			ASSERT_BLOCK_FREE(pHeapInt, pNew);
 
-            /*
-             * Adjust and convert the old FREE node into a USED node.
-             */
-            pFree->Core.fFlags &= ~RTHEAPOFFSETBLOCK_FLAGS_FREE;
-            pFree->Core.offNext = pNew->Core.offSelf;
-            pHeapInt->cbFree -= pFree->cb;
-            pHeapInt->cbFree += pNew->cb;
-            pRet = &pFree->Core;
-            ASSERT_BLOCK_USED(pHeapInt, pRet);
-        }
-        else
-        {
-            /*
-             * Link it out of the free list.
-             */
-            if (pFree->offNext)
-                RTHEAPOFF_TO_PTR(pHeapInt, pFree->offNext, PRTHEAPOFFSETFREE)->offPrev = pFree->offPrev;
-            else
-                pHeapInt->offFreeTail = pFree->offPrev;
-            if (pFree->offPrev)
-                RTHEAPOFF_TO_PTR(pHeapInt, pFree->offPrev, PRTHEAPOFFSETFREE)->offNext = pFree->offNext;
-            else
-                pHeapInt->offFreeHead = pFree->offNext;
+			/*
+			 * Adjust and convert the old FREE node into a USED node.
+			 */
+			pFree->Core.fFlags &= ~RTHEAPOFFSETBLOCK_FLAGS_FREE;
+			pFree->Core.offNext = pNew->Core.offSelf;
+			pHeapInt->cbFree -= pFree->cb;
+			pHeapInt->cbFree += pNew->cb;
+			pRet = &pFree->Core;
+			ASSERT_BLOCK_USED(pHeapInt, pRet);
+		} else {
+			/*
+			 * Link it out of the free list.
+			 */
+			if (pFree->offNext)
+				RTHEAPOFF_TO_PTR(pHeapInt, pFree->offNext,
+						 PRTHEAPOFFSETFREE)->offPrev =
+				    pFree->offPrev;
+			else
+				pHeapInt->offFreeTail = pFree->offPrev;
+			if (pFree->offPrev)
+				RTHEAPOFF_TO_PTR(pHeapInt, pFree->offPrev,
+						 PRTHEAPOFFSETFREE)->offNext =
+				    pFree->offNext;
+			else
+				pHeapInt->offFreeHead = pFree->offNext;
 
-            /*
-             * Convert it to a used block.
-             */
-            pHeapInt->cbFree -= pFree->cb;
-            pFree->Core.fFlags &= ~RTHEAPOFFSETBLOCK_FLAGS_FREE;
-            pRet = &pFree->Core;
-            ASSERT_BLOCK_USED(pHeapInt, pRet);
-        }
-        break;
-    }
+			/*
+			 * Convert it to a used block.
+			 */
+			pHeapInt->cbFree -= pFree->cb;
+			pFree->Core.fFlags &= ~RTHEAPOFFSETBLOCK_FLAGS_FREE;
+			pRet = &pFree->Core;
+			ASSERT_BLOCK_USED(pHeapInt, pRet);
+		}
+		break;
+	}
 
 #ifdef RTHEAPOFFSET_STRICT
-    rtHeapOffsetAssertAll(pHeapInt);
+	rtHeapOffsetAssertAll(pHeapInt);
 #endif
-    return pRet;
+	return pRet;
 }
 
-
-RTDECL(void) RTHeapOffsetFree(RTHEAPOFFSET hHeap, void *pv)
+RTDECL(void)RTHeapOffsetFree(RTHEAPOFFSET hHeap, void *pv)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt;
-    PRTHEAPOFFSETBLOCK pBlock;
+	PRTHEAPOFFSETINTERNAL pHeapInt;
+	PRTHEAPOFFSETBLOCK pBlock;
 
-    /*
-     * Validate input.
-     */
-    if (!pv)
-        return;
-    AssertPtr(pv);
-    Assert(RT_ALIGN_P(pv, RTHEAPOFFSET_ALIGNMENT) == pv);
+	/*
+	 * Validate input.
+	 */
+	if (!pv)
+		return;
+	AssertPtr(pv);
+	Assert(RT_ALIGN_P(pv, RTHEAPOFFSET_ALIGNMENT) == pv);
 
-    /*
-     * Get the block and heap. If in strict mode, validate these.
-     */
-    pBlock = (PRTHEAPOFFSETBLOCK)pv - 1;
-    pHeapInt = RTHEAPOFF_GET_ANCHOR(pBlock);
-    ASSERT_BLOCK_USED(pHeapInt, pBlock);
-    ASSERT_ANCHOR(pHeapInt);
-    Assert(pHeapInt == (PRTHEAPOFFSETINTERNAL)hHeap || !hHeap); RT_NOREF_PV(hHeap);
+	/*
+	 * Get the block and heap. If in strict mode, validate these.
+	 */
+	pBlock = (PRTHEAPOFFSETBLOCK) pv - 1;
+	pHeapInt = RTHEAPOFF_GET_ANCHOR(pBlock);
+	ASSERT_BLOCK_USED(pHeapInt, pBlock);
+	ASSERT_ANCHOR(pHeapInt);
+	Assert(pHeapInt == (PRTHEAPOFFSETINTERNAL) hHeap || !hHeap);
+	RT_NOREF_PV(hHeap);
 
 #ifdef RTHEAPOFFSET_FREE_POISON
-    /*
-     * Poison the block.
-     */
-    const size_t cbBlock = (pBlock->pNext ? (uintptr_t)pBlock->pNext : (uintptr_t)pHeapInt->pvEnd)
-                         - (uintptr_t)pBlock - sizeof(RTHEAPOFFSETBLOCK);
-    memset(pBlock + 1, RTHEAPOFFSET_FREE_POISON, cbBlock);
+	/*
+	 * Poison the block.
+	 */
+	const size_t cbBlock =
+	    (pBlock->pNext ? (uintptr_t) pBlock->pNext : (uintptr_t) pHeapInt->
+	     pvEnd)
+	    - (uintptr_t) pBlock - sizeof(RTHEAPOFFSETBLOCK);
+	memset(pBlock + 1, RTHEAPOFFSET_FREE_POISON, cbBlock);
 #endif
 
-    /*
-     * Call worker which does the actual job.
-     */
-    rtHeapOffsetFreeBlock(pHeapInt, pBlock);
+	/*
+	 * Call worker which does the actual job.
+	 */
+	rtHeapOffsetFreeBlock(pHeapInt, pBlock);
 }
-RT_EXPORT_SYMBOL(RTHeapOffsetFree);
 
+RT_EXPORT_SYMBOL(RTHeapOffsetFree);
 
 /**
  * Free a memory block.
@@ -689,122 +717,138 @@ RT_EXPORT_SYMBOL(RTHeapOffsetFree);
  * @param   pHeapInt       The heap.
  * @param   pBlock         The memory block to free.
  */
-static void rtHeapOffsetFreeBlock(PRTHEAPOFFSETINTERNAL pHeapInt, PRTHEAPOFFSETBLOCK pBlock)
+static void rtHeapOffsetFreeBlock(PRTHEAPOFFSETINTERNAL pHeapInt,
+				  PRTHEAPOFFSETBLOCK pBlock)
 {
-    PRTHEAPOFFSETFREE   pFree = (PRTHEAPOFFSETFREE)pBlock;
-    PRTHEAPOFFSETFREE   pLeft;
-    PRTHEAPOFFSETFREE   pRight;
+	PRTHEAPOFFSETFREE pFree = (PRTHEAPOFFSETFREE) pBlock;
+	PRTHEAPOFFSETFREE pLeft;
+	PRTHEAPOFFSETFREE pRight;
 
 #ifdef RTHEAPOFFSET_STRICT
-    rtHeapOffsetAssertAll(pHeapInt);
+	rtHeapOffsetAssertAll(pHeapInt);
 #endif
 
-    /*
-     * Look for the closest free list blocks by walking the blocks right
-     * of us (both lists are sorted by address).
-     */
-    pLeft = NULL;
-    pRight = NULL;
-    if (pHeapInt->offFreeTail)
-    {
-        pRight = RTHEAPOFF_TO_PTR_N(pHeapInt, pFree->Core.offNext, PRTHEAPOFFSETFREE);
-        while (pRight && !RTHEAPOFFSETBLOCK_IS_FREE(&pRight->Core))
-        {
-            ASSERT_BLOCK(pHeapInt, &pRight->Core);
-            pRight = RTHEAPOFF_TO_PTR_N(pHeapInt, pRight->Core.offNext, PRTHEAPOFFSETFREE);
-        }
-        if (!pRight)
-            pLeft = RTHEAPOFF_TO_PTR_N(pHeapInt, pHeapInt->offFreeTail, PRTHEAPOFFSETFREE);
-        else
-        {
-            ASSERT_BLOCK_FREE(pHeapInt, pRight);
-            pLeft = RTHEAPOFF_TO_PTR_N(pHeapInt, pRight->offPrev, PRTHEAPOFFSETFREE);
-        }
-        if (pLeft)
-            ASSERT_BLOCK_FREE(pHeapInt, pLeft);
-    }
-    AssertMsgReturnVoid(pLeft != pFree, ("Freed twice! pv=%p (pBlock=%p)\n", pBlock + 1, pBlock));
-    ASSERT_L(RTHEAPOFF_TO_OFF(pHeapInt, pLeft), RTHEAPOFF_TO_OFF(pHeapInt, pFree));
-    Assert(!pRight || (uintptr_t)pRight > (uintptr_t)pFree);
-    Assert(!pLeft || RTHEAPOFF_TO_PTR_N(pHeapInt, pLeft->offNext, PRTHEAPOFFSETFREE) == pRight);
+	/*
+	 * Look for the closest free list blocks by walking the blocks right
+	 * of us (both lists are sorted by address).
+	 */
+	pLeft = NULL;
+	pRight = NULL;
+	if (pHeapInt->offFreeTail) {
+		pRight =
+		    RTHEAPOFF_TO_PTR_N(pHeapInt, pFree->Core.offNext,
+				       PRTHEAPOFFSETFREE);
+		while (pRight && !RTHEAPOFFSETBLOCK_IS_FREE(&pRight->Core)) {
+			ASSERT_BLOCK(pHeapInt, &pRight->Core);
+			pRight =
+			    RTHEAPOFF_TO_PTR_N(pHeapInt, pRight->Core.offNext,
+					       PRTHEAPOFFSETFREE);
+		}
+		if (!pRight)
+			pLeft =
+			    RTHEAPOFF_TO_PTR_N(pHeapInt, pHeapInt->offFreeTail,
+					       PRTHEAPOFFSETFREE);
+		else {
+			ASSERT_BLOCK_FREE(pHeapInt, pRight);
+			pLeft =
+			    RTHEAPOFF_TO_PTR_N(pHeapInt, pRight->offPrev,
+					       PRTHEAPOFFSETFREE);
+		}
+		if (pLeft)
+			ASSERT_BLOCK_FREE(pHeapInt, pLeft);
+	}
+	AssertMsgReturnVoid(pLeft != pFree,
+			    ("Freed twice! pv=%p (pBlock=%p)\n", pBlock + 1,
+			     pBlock));
+	ASSERT_L(RTHEAPOFF_TO_OFF(pHeapInt, pLeft),
+		 RTHEAPOFF_TO_OFF(pHeapInt, pFree));
+	Assert(!pRight || (uintptr_t) pRight > (uintptr_t) pFree);
+	Assert(!pLeft
+	       || RTHEAPOFF_TO_PTR_N(pHeapInt, pLeft->offNext,
+				     PRTHEAPOFFSETFREE) == pRight);
 
-    /*
-     * Insert at the head of the free block list?
-     */
-    if (!pLeft)
-    {
-        Assert(pRight == RTHEAPOFF_TO_PTR_N(pHeapInt, pHeapInt->offFreeHead, PRTHEAPOFFSETFREE));
-        pFree->Core.fFlags |= RTHEAPOFFSETBLOCK_FLAGS_FREE;
-        pFree->offPrev = 0;
-        pFree->offNext = RTHEAPOFF_TO_OFF(pHeapInt, pRight);
-        if (pRight)
-            pRight->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-        else
-            pHeapInt->offFreeTail = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-        pHeapInt->offFreeHead = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-    }
-    else
-    {
-        /*
-         * Can we merge with left hand free block?
-         */
-        if (pLeft->Core.offNext == RTHEAPOFF_TO_OFF(pHeapInt, pFree))
-        {
-            pLeft->Core.offNext = pFree->Core.offNext;
-            if (pFree->Core.offNext)
-                RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext, PRTHEAPOFFSETBLOCK)->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pLeft);
-            pHeapInt->cbFree -= pLeft->cb;
-            pFree = pLeft;
-        }
-        /*
-         * No, just link it into the free list then.
-         */
-        else
-        {
-            pFree->Core.fFlags |= RTHEAPOFFSETBLOCK_FLAGS_FREE;
-            pFree->offNext = RTHEAPOFF_TO_OFF(pHeapInt, pRight);
-            pFree->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pLeft);
-            pLeft->offNext = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-            if (pRight)
-                pRight->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-            else
-                pHeapInt->offFreeTail = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-        }
-    }
+	/*
+	 * Insert at the head of the free block list?
+	 */
+	if (!pLeft) {
+		Assert(pRight ==
+		       RTHEAPOFF_TO_PTR_N(pHeapInt, pHeapInt->offFreeHead,
+					  PRTHEAPOFFSETFREE));
+		pFree->Core.fFlags |= RTHEAPOFFSETBLOCK_FLAGS_FREE;
+		pFree->offPrev = 0;
+		pFree->offNext = RTHEAPOFF_TO_OFF(pHeapInt, pRight);
+		if (pRight)
+			pRight->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+		else
+			pHeapInt->offFreeTail =
+			    RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+		pHeapInt->offFreeHead = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+	} else {
+		/*
+		 * Can we merge with left hand free block?
+		 */
+		if (pLeft->Core.offNext == RTHEAPOFF_TO_OFF(pHeapInt, pFree)) {
+			pLeft->Core.offNext = pFree->Core.offNext;
+			if (pFree->Core.offNext)
+				RTHEAPOFF_TO_PTR(pHeapInt, pFree->Core.offNext,
+						 PRTHEAPOFFSETBLOCK)->offPrev =
+				    RTHEAPOFF_TO_OFF(pHeapInt, pLeft);
+			pHeapInt->cbFree -= pLeft->cb;
+			pFree = pLeft;
+		}
+		/*
+		 * No, just link it into the free list then.
+		 */
+		else {
+			pFree->Core.fFlags |= RTHEAPOFFSETBLOCK_FLAGS_FREE;
+			pFree->offNext = RTHEAPOFF_TO_OFF(pHeapInt, pRight);
+			pFree->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pLeft);
+			pLeft->offNext = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+			if (pRight)
+				pRight->offPrev =
+				    RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+			else
+				pHeapInt->offFreeTail =
+				    RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+		}
+	}
 
-    /*
-     * Can we merge with right hand free block?
-     */
-    if (    pRight
-        &&  pRight->Core.offPrev == RTHEAPOFF_TO_OFF(pHeapInt, pFree))
-    {
-        /* core */
-        pFree->Core.offNext = pRight->Core.offNext;
-        if (pRight->Core.offNext)
-            RTHEAPOFF_TO_PTR(pHeapInt, pRight->Core.offNext, PRTHEAPOFFSETBLOCK)->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+	/*
+	 * Can we merge with right hand free block?
+	 */
+	if (pRight && pRight->Core.offPrev == RTHEAPOFF_TO_OFF(pHeapInt, pFree)) {
+		/* core */
+		pFree->Core.offNext = pRight->Core.offNext;
+		if (pRight->Core.offNext)
+			RTHEAPOFF_TO_PTR(pHeapInt, pRight->Core.offNext,
+					 PRTHEAPOFFSETBLOCK)->offPrev =
+			    RTHEAPOFF_TO_OFF(pHeapInt, pFree);
 
-        /* free */
-        pFree->offNext = pRight->offNext;
-        if (pRight->offNext)
-            RTHEAPOFF_TO_PTR(pHeapInt, pRight->offNext, PRTHEAPOFFSETFREE)->offPrev = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-        else
-            pHeapInt->offFreeTail = RTHEAPOFF_TO_OFF(pHeapInt, pFree);
-        pHeapInt->cbFree -= pRight->cb;
-    }
+		/* free */
+		pFree->offNext = pRight->offNext;
+		if (pRight->offNext)
+			RTHEAPOFF_TO_PTR(pHeapInt, pRight->offNext,
+					 PRTHEAPOFFSETFREE)->offPrev =
+			    RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+		else
+			pHeapInt->offFreeTail =
+			    RTHEAPOFF_TO_OFF(pHeapInt, pFree);
+		pHeapInt->cbFree -= pRight->cb;
+	}
 
-    /*
-     * Calculate the size and update free stats.
-     */
-    pFree->cb = (pFree->Core.offNext ? pFree->Core.offNext : pHeapInt->cbHeap)
-              - RTHEAPOFF_TO_OFF(pHeapInt, pFree) - sizeof(RTHEAPOFFSETBLOCK);
-    pHeapInt->cbFree += pFree->cb;
-    ASSERT_BLOCK_FREE(pHeapInt, pFree);
+	/*
+	 * Calculate the size and update free stats.
+	 */
+	pFree->cb =
+	    (pFree->Core.offNext ? pFree->Core.offNext : pHeapInt->cbHeap)
+	    - RTHEAPOFF_TO_OFF(pHeapInt, pFree) - sizeof(RTHEAPOFFSETBLOCK);
+	pHeapInt->cbFree += pFree->cb;
+	ASSERT_BLOCK_FREE(pHeapInt, pFree);
 
 #ifdef RTHEAPOFFSET_STRICT
-    rtHeapOffsetAssertAll(pHeapInt);
+	rtHeapOffsetAssertAll(pHeapInt);
 #endif
 }
-
 
 #ifdef RTHEAPOFFSET_STRICT
 /**
@@ -813,116 +857,128 @@ static void rtHeapOffsetFreeBlock(PRTHEAPOFFSETINTERNAL pHeapInt, PRTHEAPOFFSETB
  */
 static void rtHeapOffsetAssertAll(PRTHEAPOFFSETINTERNAL pHeapInt)
 {
-    PRTHEAPOFFSETFREE pPrev = NULL;
-    PRTHEAPOFFSETFREE pPrevFree = NULL;
-    PRTHEAPOFFSETFREE pBlock;
-    for (pBlock = (PRTHEAPOFFSETFREE)(pHeapInt + 1);
-         pBlock;
-         pBlock = RTHEAPOFF_TO_PTR_N(pHeapInt, pBlock->Core.offNext, PRTHEAPOFFSETFREE))
-    {
-        if (RTHEAPOFFSETBLOCK_IS_FREE(&pBlock->Core))
-        {
-            ASSERT_BLOCK_FREE(pHeapInt, pBlock);
-            Assert(pBlock->offPrev == RTHEAPOFF_TO_OFF(pHeapInt, pPrevFree));
-            Assert(pPrevFree || pHeapInt->offFreeHead == RTHEAPOFF_TO_OFF(pHeapInt, pBlock));
-            pPrevFree = pBlock;
-        }
-        else
-            ASSERT_BLOCK_USED(pHeapInt, &pBlock->Core);
-        Assert(!pPrev || RTHEAPOFF_TO_OFF(pHeapInt, pPrev) == pBlock->Core.offPrev);
-        pPrev = pBlock;
-    }
-    Assert(pHeapInt->offFreeTail == RTHEAPOFF_TO_OFF(pHeapInt, pPrevFree));
+	PRTHEAPOFFSETFREE pPrev = NULL;
+	PRTHEAPOFFSETFREE pPrevFree = NULL;
+	PRTHEAPOFFSETFREE pBlock;
+	for (pBlock = (PRTHEAPOFFSETFREE) (pHeapInt + 1);
+	     pBlock;
+	     pBlock =
+	     RTHEAPOFF_TO_PTR_N(pHeapInt, pBlock->Core.offNext,
+				PRTHEAPOFFSETFREE)) {
+		if (RTHEAPOFFSETBLOCK_IS_FREE(&pBlock->Core)) {
+			ASSERT_BLOCK_FREE(pHeapInt, pBlock);
+			Assert(pBlock->offPrev ==
+			       RTHEAPOFF_TO_OFF(pHeapInt, pPrevFree));
+			Assert(pPrevFree
+			       || pHeapInt->offFreeHead ==
+			       RTHEAPOFF_TO_OFF(pHeapInt, pBlock));
+			pPrevFree = pBlock;
+		} else
+			ASSERT_BLOCK_USED(pHeapInt, &pBlock->Core);
+		Assert(!pPrev
+		       || RTHEAPOFF_TO_OFF(pHeapInt,
+					   pPrev) == pBlock->Core.offPrev);
+		pPrev = pBlock;
+	}
+	Assert(pHeapInt->offFreeTail == RTHEAPOFF_TO_OFF(pHeapInt, pPrevFree));
 }
 #endif
 
-
 RTDECL(size_t) RTHeapOffsetSize(RTHEAPOFFSET hHeap, void *pv)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt;
-    PRTHEAPOFFSETBLOCK pBlock;
-    size_t cbBlock;
+	PRTHEAPOFFSETINTERNAL pHeapInt;
+	PRTHEAPOFFSETBLOCK pBlock;
+	size_t cbBlock;
 
-    /*
-     * Validate input.
-     */
-    if (!pv)
-        return 0;
-    AssertPtrReturn(pv, 0);
-    AssertReturn(RT_ALIGN_P(pv, RTHEAPOFFSET_ALIGNMENT) == pv, 0);
+	/*
+	 * Validate input.
+	 */
+	if (!pv)
+		return 0;
+	AssertPtrReturn(pv, 0);
+	AssertReturn(RT_ALIGN_P(pv, RTHEAPOFFSET_ALIGNMENT) == pv, 0);
 
-    /*
-     * Get the block and heap. If in strict mode, validate these.
-     */
-    pBlock = (PRTHEAPOFFSETBLOCK)pv - 1;
-    pHeapInt = RTHEAPOFF_GET_ANCHOR(pBlock);
-    ASSERT_BLOCK_USED(pHeapInt, pBlock);
-    ASSERT_ANCHOR(pHeapInt);
-    Assert(pHeapInt == (PRTHEAPOFFSETINTERNAL)hHeap || !hHeap); RT_NOREF_PV(hHeap);
+	/*
+	 * Get the block and heap. If in strict mode, validate these.
+	 */
+	pBlock = (PRTHEAPOFFSETBLOCK) pv - 1;
+	pHeapInt = RTHEAPOFF_GET_ANCHOR(pBlock);
+	ASSERT_BLOCK_USED(pHeapInt, pBlock);
+	ASSERT_ANCHOR(pHeapInt);
+	Assert(pHeapInt == (PRTHEAPOFFSETINTERNAL) hHeap || !hHeap);
+	RT_NOREF_PV(hHeap);
 
-    /*
-     * Calculate the block size.
-     */
-    cbBlock = (pBlock->offNext ? pBlock->offNext : pHeapInt->cbHeap)
-            - RTHEAPOFF_TO_OFF(pHeapInt, pBlock) - sizeof(RTHEAPOFFSETBLOCK);
-    return cbBlock;
+	/*
+	 * Calculate the block size.
+	 */
+	cbBlock = (pBlock->offNext ? pBlock->offNext : pHeapInt->cbHeap)
+	    - RTHEAPOFF_TO_OFF(pHeapInt, pBlock) - sizeof(RTHEAPOFFSETBLOCK);
+	return cbBlock;
 }
-RT_EXPORT_SYMBOL(RTHeapOffsetSize);
 
+RT_EXPORT_SYMBOL(RTHeapOffsetSize);
 
 RTDECL(size_t) RTHeapOffsetGetHeapSize(RTHEAPOFFSET hHeap)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt;
+	PRTHEAPOFFSETINTERNAL pHeapInt;
 
-    if (hHeap == NIL_RTHEAPOFFSET)
-        return 0;
+	if (hHeap == NIL_RTHEAPOFFSET)
+		return 0;
 
-    pHeapInt = hHeap;
-    AssertPtrReturn(pHeapInt, 0);
-    ASSERT_ANCHOR(pHeapInt);
-    return pHeapInt->cbHeap;
+	pHeapInt = hHeap;
+	AssertPtrReturn(pHeapInt, 0);
+	ASSERT_ANCHOR(pHeapInt);
+	return pHeapInt->cbHeap;
 }
-RT_EXPORT_SYMBOL(RTHeapOffsetGetHeapSize);
 
+RT_EXPORT_SYMBOL(RTHeapOffsetGetHeapSize);
 
 RTDECL(size_t) RTHeapOffsetGetFreeSize(RTHEAPOFFSET hHeap)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt;
+	PRTHEAPOFFSETINTERNAL pHeapInt;
 
-    if (hHeap == NIL_RTHEAPOFFSET)
-        return 0;
+	if (hHeap == NIL_RTHEAPOFFSET)
+		return 0;
 
-    pHeapInt = hHeap;
-    AssertPtrReturn(pHeapInt, 0);
-    ASSERT_ANCHOR(pHeapInt);
-    return pHeapInt->cbFree;
+	pHeapInt = hHeap;
+	AssertPtrReturn(pHeapInt, 0);
+	ASSERT_ANCHOR(pHeapInt);
+	return pHeapInt->cbFree;
 }
+
 RT_EXPORT_SYMBOL(RTHeapOffsetGetFreeSize);
 
-
-RTDECL(void) RTHeapOffsetDump(RTHEAPOFFSET hHeap, PFNRTHEAPOFFSETPRINTF pfnPrintf)
+RTDECL(void)RTHeapOffsetDump(RTHEAPOFFSET hHeap,
+			     PFNRTHEAPOFFSETPRINTF pfnPrintf)
 {
-    PRTHEAPOFFSETINTERNAL pHeapInt = (PRTHEAPOFFSETINTERNAL)hHeap;
-    PRTHEAPOFFSETFREE pBlock;
+	PRTHEAPOFFSETINTERNAL pHeapInt = (PRTHEAPOFFSETINTERNAL) hHeap;
+	PRTHEAPOFFSETFREE pBlock;
 
-    pfnPrintf("**** Dumping Heap %p - cbHeap=%x cbFree=%x ****\n",
-              hHeap, pHeapInt->cbHeap, pHeapInt->cbFree);
+	pfnPrintf("**** Dumping Heap %p - cbHeap=%x cbFree=%x ****\n",
+		  hHeap, pHeapInt->cbHeap, pHeapInt->cbFree);
 
-    for (pBlock = (PRTHEAPOFFSETFREE)(pHeapInt + 1);
-         pBlock;
-         pBlock = RTHEAPOFF_TO_PTR_N(pHeapInt, pBlock->Core.offNext, PRTHEAPOFFSETFREE))
-    {
-        size_t cb = (pBlock->offNext ? pBlock->Core.offNext : pHeapInt->cbHeap)
-                  - RTHEAPOFF_TO_OFF(pHeapInt, pBlock) - sizeof(RTHEAPOFFSETBLOCK);
-        if (RTHEAPOFFSETBLOCK_IS_FREE(&pBlock->Core))
-            pfnPrintf("%p  %06x FREE offNext=%06x offPrev=%06x fFlags=%#x cb=%#06x : cb=%#06x offNext=%06x offPrev=%06x\n",
-                      pBlock, pBlock->Core.offSelf, pBlock->Core.offNext, pBlock->Core.offPrev, pBlock->Core.fFlags, cb,
-                      pBlock->cb, pBlock->offNext, pBlock->offPrev);
-        else
-            pfnPrintf("%p  %06x USED offNext=%06x offPrev=%06x fFlags=%#x cb=%#06x\n",
-                      pBlock, pBlock->Core.offSelf, pBlock->Core.offNext, pBlock->Core.offPrev, pBlock->Core.fFlags, cb);
-    }
-    pfnPrintf("**** Done dumping Heap %p ****\n", hHeap);
+	for (pBlock = (PRTHEAPOFFSETFREE) (pHeapInt + 1);
+	     pBlock;
+	     pBlock =
+	     RTHEAPOFF_TO_PTR_N(pHeapInt, pBlock->Core.offNext,
+				PRTHEAPOFFSETFREE)) {
+		size_t cb =
+		    (pBlock->offNext ? pBlock->Core.offNext : pHeapInt->cbHeap)
+		    - RTHEAPOFF_TO_OFF(pHeapInt,
+				       pBlock) - sizeof(RTHEAPOFFSETBLOCK);
+		if (RTHEAPOFFSETBLOCK_IS_FREE(&pBlock->Core))
+			pfnPrintf
+			    ("%p  %06x FREE offNext=%06x offPrev=%06x fFlags=%#x cb=%#06x : cb=%#06x offNext=%06x offPrev=%06x\n",
+			     pBlock, pBlock->Core.offSelf, pBlock->Core.offNext,
+			     pBlock->Core.offPrev, pBlock->Core.fFlags, cb,
+			     pBlock->cb, pBlock->offNext, pBlock->offPrev);
+		else
+			pfnPrintf
+			    ("%p  %06x USED offNext=%06x offPrev=%06x fFlags=%#x cb=%#06x\n",
+			     pBlock, pBlock->Core.offSelf, pBlock->Core.offNext,
+			     pBlock->Core.offPrev, pBlock->Core.fFlags, cb);
+	}
+	pfnPrintf("**** Done dumping Heap %p ****\n", hHeap);
 }
-RT_EXPORT_SYMBOL(RTHeapOffsetDump);
 
+RT_EXPORT_SYMBOL(RTHeapOffsetDump);

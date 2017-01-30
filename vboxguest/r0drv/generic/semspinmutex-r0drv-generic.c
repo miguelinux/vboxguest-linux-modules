@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -42,48 +41,44 @@
 #include <iprt/thread.h>
 #include "internal/magics.h"
 
-
 /*********************************************************************************************************************************
 *   Structures and Typedefs                                                                                                      *
 *********************************************************************************************************************************/
 /**
  * Saved state information.
  */
-typedef struct RTSEMSPINMUTEXSTATE
-{
+typedef struct RTSEMSPINMUTEXSTATE {
     /** Saved flags register. */
-    RTCCUINTREG             fSavedFlags;
+	RTCCUINTREG fSavedFlags;
     /** Preemption state.  */
-    RTTHREADPREEMPTSTATE    PreemptState;
+	RTTHREADPREEMPTSTATE PreemptState;
     /** Whether to spin or sleep. */
-    bool                    fSpin;
+	bool fSpin;
     /** Whether the flags have been saved. */
-    bool                    fValidFlags;
+	bool fValidFlags;
 } RTSEMSPINMUTEXSTATE;
 
 /**
  * Spinning mutex semaphore.
  */
-typedef struct RTSEMSPINMUTEXINTERNAL
-{
+typedef struct RTSEMSPINMUTEXINTERNAL {
     /** Magic value (RTSEMSPINMUTEX_MAGIC)
      * RTCRITSECT_MAGIC is the value of an initialized & operational section. */
-    uint32_t volatile       u32Magic;
+	uint32_t volatile u32Magic;
     /** Flags. This is a combination of RTSEMSPINMUTEX_FLAGS_XXX and
      *  RTSEMSPINMUTEX_INT_FLAGS_XXX. */
-    uint32_t volatile       fFlags;
+	uint32_t volatile fFlags;
     /** The owner thread.
      * This is NIL if the semaphore is not owned by anyone. */
-    RTNATIVETHREAD volatile hOwner;
+	RTNATIVETHREAD volatile hOwner;
     /** Number of threads that are fighting for the lock. */
-    int32_t volatile        cLockers;
+	int32_t volatile cLockers;
     /** The semaphore to block on. */
-    RTSEMEVENT              hEventSem;
+	RTSEMEVENT hEventSem;
     /** Saved state information of the owner.
      * This will be restored by RTSemSpinRelease. */
-    RTSEMSPINMUTEXSTATE     SavedState;
+	RTSEMSPINMUTEXSTATE SavedState;
 } RTSEMSPINMUTEXINTERNAL;
-
 
 /*********************************************************************************************************************************
 *   Defined Constants And Macros                                                                                                 *
@@ -104,37 +99,37 @@ typedef struct RTSEMSPINMUTEXINTERNAL
         } \
     } while (0)
 
-
 RTDECL(int) RTSemSpinMutexCreate(PRTSEMSPINMUTEX phSpinMtx, uint32_t fFlags)
 {
-    RTSEMSPINMUTEXINTERNAL *pThis;
-    int                     rc;
+	RTSEMSPINMUTEXINTERNAL *pThis;
+	int rc;
 
-    AssertReturn(!(fFlags & ~RTSEMSPINMUTEX_FLAGS_VALID_MASK), VERR_INVALID_PARAMETER);
-    AssertPtr(phSpinMtx);
+	AssertReturn(!(fFlags & ~RTSEMSPINMUTEX_FLAGS_VALID_MASK),
+		     VERR_INVALID_PARAMETER);
+	AssertPtr(phSpinMtx);
 
-    /*
-     * Allocate and initialize the structure.
-     */
-    pThis = (RTSEMSPINMUTEXINTERNAL *)RTMemAllocZ(sizeof(*pThis));
-    if (!pThis)
-        return VERR_NO_MEMORY;
-    pThis->u32Magic   = RTSEMSPINMUTEX_MAGIC;
-    pThis->fFlags     = fFlags;
-    pThis->hOwner     = NIL_RTNATIVETHREAD;
-    pThis->cLockers   = 0;
-    rc = RTSemEventCreateEx(&pThis->hEventSem, RTSEMEVENT_FLAGS_NO_LOCK_VAL, NIL_RTLOCKVALCLASS, NULL);
-    if (RT_SUCCESS(rc))
-    {
-        *phSpinMtx = pThis;
-        return VINF_SUCCESS;
-    }
+	/*
+	 * Allocate and initialize the structure.
+	 */
+	pThis = (RTSEMSPINMUTEXINTERNAL *) RTMemAllocZ(sizeof(*pThis));
+	if (!pThis)
+		return VERR_NO_MEMORY;
+	pThis->u32Magic = RTSEMSPINMUTEX_MAGIC;
+	pThis->fFlags = fFlags;
+	pThis->hOwner = NIL_RTNATIVETHREAD;
+	pThis->cLockers = 0;
+	rc = RTSemEventCreateEx(&pThis->hEventSem, RTSEMEVENT_FLAGS_NO_LOCK_VAL,
+				NIL_RTLOCKVALCLASS, NULL);
+	if (RT_SUCCESS(rc)) {
+		*phSpinMtx = pThis;
+		return VINF_SUCCESS;
+	}
 
-    RTMemFree(pThis);
-    return rc;
+	RTMemFree(pThis);
+	return rc;
 }
-RT_EXPORT_SYMBOL(RTSemSpinMutexCreate);
 
+RT_EXPORT_SYMBOL(RTSemSpinMutexCreate);
 
 /**
  * Helper for RTSemSpinMutexTryRequest and RTSemSpinMutexRequest.
@@ -144,12 +139,13 @@ RT_EXPORT_SYMBOL(RTSemSpinMutexCreate);
  * @returns VINF_SUCCESS or VERR_SEM_BAD_CONTEXT.
  * @param   pState      Output structure.
  */
-static int rtSemSpinMutexEnter(RTSEMSPINMUTEXSTATE *pState, RTSEMSPINMUTEXINTERNAL *pThis)
+static int rtSemSpinMutexEnter(RTSEMSPINMUTEXSTATE * pState,
+			       RTSEMSPINMUTEXINTERNAL * pThis)
 {
 #ifndef RT_OS_WINDOWS
-    RTTHREADPREEMPTSTATE const StateInit = RTTHREADPREEMPTSTATE_INITIALIZER;
+	RTTHREADPREEMPTSTATE const StateInit = RTTHREADPREEMPTSTATE_INITIALIZER;
 #endif
-    int rc  = VINF_SUCCESS;
+	int rc = VINF_SUCCESS;
 
     /** @todo Later #1: When entering in interrupt context and we're not able to
      *        wake up threads from it, we could try switch the lock into pure
@@ -164,80 +160,76 @@ static int rtSemSpinMutexEnter(RTSEMSPINMUTEXSTATE *pState, RTSEMSPINMUTEXINTERN
      */
 
 #ifdef RT_OS_WINDOWS
-    /*
-     * NT: IRQL <= DISPATCH_LEVEL for waking up threads; IRQL < DISPATCH_LEVEL for sleeping.
-     */
-    pState->PreemptState.uchOldIrql = KeGetCurrentIrql();
-    if (pState->PreemptState.uchOldIrql > DISPATCH_LEVEL)
-        return VERR_SEM_BAD_CONTEXT;
+	/*
+	 * NT: IRQL <= DISPATCH_LEVEL for waking up threads; IRQL < DISPATCH_LEVEL for sleeping.
+	 */
+	pState->PreemptState.uchOldIrql = KeGetCurrentIrql();
+	if (pState->PreemptState.uchOldIrql > DISPATCH_LEVEL)
+		return VERR_SEM_BAD_CONTEXT;
 
-    if (pState->PreemptState.uchOldIrql >= DISPATCH_LEVEL)
-        pState->fSpin = true;
-    else
-    {
-        pState->fSpin = false;
-        KeRaiseIrql(DISPATCH_LEVEL, &pState->PreemptState.uchOldIrql);
-        Assert(pState->PreemptState.uchOldIrql < DISPATCH_LEVEL);
-    }
+	if (pState->PreemptState.uchOldIrql >= DISPATCH_LEVEL)
+		pState->fSpin = true;
+	else {
+		pState->fSpin = false;
+		KeRaiseIrql(DISPATCH_LEVEL, &pState->PreemptState.uchOldIrql);
+		Assert(pState->PreemptState.uchOldIrql < DISPATCH_LEVEL);
+	}
 
 #elif defined(RT_OS_SOLARIS)
-    /*
-     * Solaris:  RTSemEventSignal will do bad stuff on S10 if interrupts are disabled.
-     */
-    if (!ASMIntAreEnabled())
-        return VERR_SEM_BAD_CONTEXT;
+	/*
+	 * Solaris:  RTSemEventSignal will do bad stuff on S10 if interrupts are disabled.
+	 */
+	if (!ASMIntAreEnabled())
+		return VERR_SEM_BAD_CONTEXT;
 
-    pState->fSpin = !RTThreadPreemptIsEnabled(NIL_RTTHREAD);
-    if (RTThreadIsInInterrupt(NIL_RTTHREAD))
-    {
-        if (!(pThis->fFlags & RTSEMSPINMUTEX_FLAGS_IRQ_SAFE))
-            rc = VINF_SEM_BAD_CONTEXT; /* Try, but owner might be interrupted. */
-        pState->fSpin = true;
-    }
-    pState->PreemptState = StateInit;
-    RTThreadPreemptDisable(&pState->PreemptState);
+	pState->fSpin = !RTThreadPreemptIsEnabled(NIL_RTTHREAD);
+	if (RTThreadIsInInterrupt(NIL_RTTHREAD)) {
+		if (!(pThis->fFlags & RTSEMSPINMUTEX_FLAGS_IRQ_SAFE))
+			rc = VINF_SEM_BAD_CONTEXT;	/* Try, but owner might be interrupted. */
+		pState->fSpin = true;
+	}
+	pState->PreemptState = StateInit;
+	RTThreadPreemptDisable(&pState->PreemptState);
 
 #elif defined(RT_OS_LINUX) || defined(RT_OS_OS2)
-    /*
-     * OSes on which RTSemEventSignal can be called from any context.
-     */
-    pState->fSpin = !RTThreadPreemptIsEnabled(NIL_RTTHREAD);
-    if (RTThreadIsInInterrupt(NIL_RTTHREAD))
-    {
-        if (!(pThis->fFlags & RTSEMSPINMUTEX_FLAGS_IRQ_SAFE))
-            rc = VINF_SEM_BAD_CONTEXT; /* Try, but owner might be interrupted. */
-        pState->fSpin = true;
-    }
-    pState->PreemptState = StateInit;
-    RTThreadPreemptDisable(&pState->PreemptState);
+	/*
+	 * OSes on which RTSemEventSignal can be called from any context.
+	 */
+	pState->fSpin = !RTThreadPreemptIsEnabled(NIL_RTTHREAD);
+	if (RTThreadIsInInterrupt(NIL_RTTHREAD)) {
+		if (!(pThis->fFlags & RTSEMSPINMUTEX_FLAGS_IRQ_SAFE))
+			rc = VINF_SEM_BAD_CONTEXT;	/* Try, but owner might be interrupted. */
+		pState->fSpin = true;
+	}
+	pState->PreemptState = StateInit;
+	RTThreadPreemptDisable(&pState->PreemptState);
 
 #else /* PORTME: Check for context where we cannot wake up threads. */
-    /*
-     * Default: ASSUME thread can be woken up if interrupts are enabled and
-     *          we're not in an interrupt context.
-     *          ASSUME that we can go to sleep if preemption is enabled.
-     */
-    if (    RTThreadIsInInterrupt(NIL_RTTHREAD)
-        ||  !ASMIntAreEnabled())
-        return VERR_SEM_BAD_CONTEXT;
+	/*
+	 * Default: ASSUME thread can be woken up if interrupts are enabled and
+	 *          we're not in an interrupt context.
+	 *          ASSUME that we can go to sleep if preemption is enabled.
+	 */
+	if (RTThreadIsInInterrupt(NIL_RTTHREAD)
+	    || !ASMIntAreEnabled())
+		return VERR_SEM_BAD_CONTEXT;
 
-    pState->fSpin = !RTThreadPreemptIsEnabled(NIL_RTTHREAD);
-    pState->PreemptState = StateInit;
-    RTThreadPreemptDisable(&pState->PreemptState);
+	pState->fSpin = !RTThreadPreemptIsEnabled(NIL_RTTHREAD);
+	pState->PreemptState = StateInit;
+	RTThreadPreemptDisable(&pState->PreemptState);
 #endif
 
-    /*
-     * Disable interrupts if necessary.
-     */
-    pState->fValidFlags = !!(pThis->fFlags & RTSEMSPINMUTEX_FLAGS_IRQ_SAFE);
-    if (pState->fValidFlags)
-        pState->fSavedFlags = ASMIntDisableFlags();
-    else
-        pState->fSavedFlags = 0;
+	/*
+	 * Disable interrupts if necessary.
+	 */
+	pState->fValidFlags = !!(pThis->fFlags & RTSEMSPINMUTEX_FLAGS_IRQ_SAFE);
+	if (pState->fValidFlags)
+		pState->fSavedFlags = ASMIntDisableFlags();
+	else
+		pState->fSavedFlags = 0;
 
-    return rc;
+	return rc;
 }
-
 
 /**
  * Helper for RTSemSpinMutexTryRequest, RTSemSpinMutexRequest and
@@ -245,259 +237,252 @@ static int rtSemSpinMutexEnter(RTSEMSPINMUTEXSTATE *pState, RTSEMSPINMUTEXINTERN
  *
  * @param  pState
  */
-DECL_FORCE_INLINE(void) rtSemSpinMutexLeave(RTSEMSPINMUTEXSTATE *pState)
+DECL_FORCE_INLINE(void)rtSemSpinMutexLeave(RTSEMSPINMUTEXSTATE * pState)
 {
-    /*
-     * Restore the interrupt flag.
-     */
-    if (pState->fValidFlags)
-        ASMSetFlags(pState->fSavedFlags);
+	/*
+	 * Restore the interrupt flag.
+	 */
+	if (pState->fValidFlags)
+		ASMSetFlags(pState->fSavedFlags);
 
 #ifdef RT_OS_WINDOWS
-    /*
-     * NT: Lower the IRQL if we raised it.
-     */
-    if (pState->PreemptState.uchOldIrql < DISPATCH_LEVEL)
-        KeLowerIrql(pState->PreemptState.uchOldIrql);
+	/*
+	 * NT: Lower the IRQL if we raised it.
+	 */
+	if (pState->PreemptState.uchOldIrql < DISPATCH_LEVEL)
+		KeLowerIrql(pState->PreemptState.uchOldIrql);
 #else
-    /*
-     * Default: Restore preemption.
-     */
-    RTThreadPreemptRestore(&pState->PreemptState);
+	/*
+	 * Default: Restore preemption.
+	 */
+	RTThreadPreemptRestore(&pState->PreemptState);
 #endif
 }
 
-
 RTDECL(int) RTSemSpinMutexTryRequest(RTSEMSPINMUTEX hSpinMtx)
 {
-    RTSEMSPINMUTEXINTERNAL *pThis = hSpinMtx;
-    RTNATIVETHREAD          hSelf = RTThreadNativeSelf();
-    RTSEMSPINMUTEXSTATE     State;
-    bool                    fRc;
-    int                     rc;
+	RTSEMSPINMUTEXINTERNAL *pThis = hSpinMtx;
+	RTNATIVETHREAD hSelf = RTThreadNativeSelf();
+	RTSEMSPINMUTEXSTATE State;
+	bool fRc;
+	int rc;
 
-    Assert(hSelf != NIL_RTNATIVETHREAD);
-    RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
+	Assert(hSelf != NIL_RTNATIVETHREAD);
+	RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
 
-    /*
-     * Check context, disable preemption and save flags if necessary.
-     */
-    rc = rtSemSpinMutexEnter(&State, pThis);
-    if (RT_FAILURE(rc))
-        return rc;
+	/*
+	 * Check context, disable preemption and save flags if necessary.
+	 */
+	rc = rtSemSpinMutexEnter(&State, pThis);
+	if (RT_FAILURE(rc))
+		return rc;
 
-    /*
-     * Try take the ownership.
-     */
-    ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf, NIL_RTNATIVETHREAD, fRc);
-    if (!fRc)
-    {
-        /* Busy, too bad. Check for attempts at nested access. */
-        rc = VERR_SEM_BUSY;
-        if (RT_UNLIKELY(pThis->hOwner == hSelf))
-        {
-            AssertMsgFailed(("%p attempt at nested access\n"));
-            rc = VERR_SEM_NESTED;
-        }
+	/*
+	 * Try take the ownership.
+	 */
+	ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf, NIL_RTNATIVETHREAD, fRc);
+	if (!fRc) {
+		/* Busy, too bad. Check for attempts at nested access. */
+		rc = VERR_SEM_BUSY;
+		if (RT_UNLIKELY(pThis->hOwner == hSelf)) {
+			AssertMsgFailed(("%p attempt at nested access\n"));
+			rc = VERR_SEM_NESTED;
+		}
 
-        rtSemSpinMutexLeave(&State);
-        return rc;
-    }
+		rtSemSpinMutexLeave(&State);
+		return rc;
+	}
 
-    /*
-     * We're the semaphore owner.
-     */
-    ASMAtomicIncS32(&pThis->cLockers);
-    pThis->SavedState = State;
-    return VINF_SUCCESS;
+	/*
+	 * We're the semaphore owner.
+	 */
+	ASMAtomicIncS32(&pThis->cLockers);
+	pThis->SavedState = State;
+	return VINF_SUCCESS;
 }
+
 RT_EXPORT_SYMBOL(RTSemSpinMutexTryRequest);
 
-
-RTDECL(int) RTSemSpinMutexRequest(RTSEMSPINMUTEX hSpinMtx)
+RTDECL(int)RTSemSpinMutexRequest(RTSEMSPINMUTEX hSpinMtx)
 {
-    RTSEMSPINMUTEXINTERNAL *pThis = hSpinMtx;
-    RTNATIVETHREAD          hSelf = RTThreadNativeSelf();
-    RTSEMSPINMUTEXSTATE     State;
-    bool                    fRc;
-    int                     rc;
+	RTSEMSPINMUTEXINTERNAL *pThis = hSpinMtx;
+	RTNATIVETHREAD hSelf = RTThreadNativeSelf();
+	RTSEMSPINMUTEXSTATE State;
+	bool fRc;
+	int rc;
 
-    Assert(hSelf != NIL_RTNATIVETHREAD);
-    RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
+	Assert(hSelf != NIL_RTNATIVETHREAD);
+	RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
 
-    /*
-     * Check context, disable preemption and save flags if necessary.
-     */
-    rc = rtSemSpinMutexEnter(&State, pThis);
-    if (RT_FAILURE(rc))
-        return rc;
+	/*
+	 * Check context, disable preemption and save flags if necessary.
+	 */
+	rc = rtSemSpinMutexEnter(&State, pThis);
+	if (RT_FAILURE(rc))
+		return rc;
 
-    /*
-     * Try take the ownership.
-     */
-    ASMAtomicIncS32(&pThis->cLockers);
-    ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf, NIL_RTNATIVETHREAD, fRc);
-    if (!fRc)
-    {
-        uint32_t cSpins;
+	/*
+	 * Try take the ownership.
+	 */
+	ASMAtomicIncS32(&pThis->cLockers);
+	ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf, NIL_RTNATIVETHREAD, fRc);
+	if (!fRc) {
+		uint32_t cSpins;
 
-        /*
-         * It's busy. Check if it's an attempt at nested access.
-         */
-        if (RT_UNLIKELY(pThis->hOwner == hSelf))
-        {
-            AssertMsgFailed(("%p attempt at nested access\n"));
-            rtSemSpinMutexLeave(&State);
-            return VERR_SEM_NESTED;
-        }
+		/*
+		 * It's busy. Check if it's an attempt at nested access.
+		 */
+		if (RT_UNLIKELY(pThis->hOwner == hSelf)) {
+			AssertMsgFailed(("%p attempt at nested access\n"));
+			rtSemSpinMutexLeave(&State);
+			return VERR_SEM_NESTED;
+		}
 
-        /*
-         * Return if we're in interrupt context and the semaphore isn't
-         * configure to be interrupt safe.
-         */
-        if (rc == VINF_SEM_BAD_CONTEXT)
-        {
-            rtSemSpinMutexLeave(&State);
-            return VERR_SEM_BAD_CONTEXT;
-        }
+		/*
+		 * Return if we're in interrupt context and the semaphore isn't
+		 * configure to be interrupt safe.
+		 */
+		if (rc == VINF_SEM_BAD_CONTEXT) {
+			rtSemSpinMutexLeave(&State);
+			return VERR_SEM_BAD_CONTEXT;
+		}
 
-        /*
-         * Ok, we have to wait.
-         */
-        if (State.fSpin)
-        {
-            for (cSpins = 0; ; cSpins++)
-            {
-                ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf, NIL_RTNATIVETHREAD, fRc);
-                if (fRc)
-                    break;
-                ASMNopPause();
-                if (RT_UNLIKELY(pThis->u32Magic != RTSEMSPINMUTEX_MAGIC))
-                {
-                    rtSemSpinMutexLeave(&State);
-                    return VERR_SEM_DESTROYED;
-                }
+		/*
+		 * Ok, we have to wait.
+		 */
+		if (State.fSpin) {
+			for (cSpins = 0;; cSpins++) {
+				ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf,
+						       NIL_RTNATIVETHREAD, fRc);
+				if (fRc)
+					break;
+				ASMNopPause();
+				if (RT_UNLIKELY
+				    (pThis->u32Magic != RTSEMSPINMUTEX_MAGIC)) {
+					rtSemSpinMutexLeave(&State);
+					return VERR_SEM_DESTROYED;
+				}
 
-                /*
-                 * "Yield" once in a while. This may lower our IRQL/PIL which
-                 * may preempting us, and it will certainly stop the hammering
-                 * of hOwner for a little while.
-                 */
-                if ((cSpins & 0x7f) == 0x1f)
-                {
-                    rtSemSpinMutexLeave(&State);
-                    rtSemSpinMutexEnter(&State, pThis);
-                    Assert(State.fSpin);
-                }
-            }
-        }
-        else
-        {
-            for (cSpins = 0;; cSpins++)
-            {
-                ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf, NIL_RTNATIVETHREAD, fRc);
-                if (fRc)
-                    break;
-                ASMNopPause();
-                if (RT_UNLIKELY(pThis->u32Magic != RTSEMSPINMUTEX_MAGIC))
-                {
-                    rtSemSpinMutexLeave(&State);
-                    return VERR_SEM_DESTROYED;
-                }
+				/*
+				 * "Yield" once in a while. This may lower our IRQL/PIL which
+				 * may preempting us, and it will certainly stop the hammering
+				 * of hOwner for a little while.
+				 */
+				if ((cSpins & 0x7f) == 0x1f) {
+					rtSemSpinMutexLeave(&State);
+					rtSemSpinMutexEnter(&State, pThis);
+					Assert(State.fSpin);
+				}
+			}
+		} else {
+			for (cSpins = 0;; cSpins++) {
+				ASMAtomicCmpXchgHandle(&pThis->hOwner, hSelf,
+						       NIL_RTNATIVETHREAD, fRc);
+				if (fRc)
+					break;
+				ASMNopPause();
+				if (RT_UNLIKELY
+				    (pThis->u32Magic != RTSEMSPINMUTEX_MAGIC)) {
+					rtSemSpinMutexLeave(&State);
+					return VERR_SEM_DESTROYED;
+				}
 
-                if ((cSpins & 15) == 15) /* spin a bit before going sleep (again). */
-                {
-                    rtSemSpinMutexLeave(&State);
+				if ((cSpins & 15) == 15) {	/* spin a bit before going sleep (again). */
+					rtSemSpinMutexLeave(&State);
 
-                    rc = RTSemEventWait(pThis->hEventSem, RT_INDEFINITE_WAIT);
-                    ASMCompilerBarrier();
-                    if (RT_SUCCESS(rc))
-                        AssertReturn(pThis->u32Magic == RTSEMSPINMUTEX_MAGIC, VERR_SEM_DESTROYED);
-                    else if (rc == VERR_INTERRUPTED)
-                        AssertRC(rc);       /* shouldn't happen */
-                    else
-                    {
-                        AssertRC(rc);
-                        return rc;
-                    }
+					rc = RTSemEventWait(pThis->hEventSem,
+							    RT_INDEFINITE_WAIT);
+					ASMCompilerBarrier();
+					if (RT_SUCCESS(rc))
+						AssertReturn(pThis->u32Magic ==
+							     RTSEMSPINMUTEX_MAGIC,
+							     VERR_SEM_DESTROYED);
+					else if (rc == VERR_INTERRUPTED)
+						AssertRC(rc);	/* shouldn't happen */
+					else {
+						AssertRC(rc);
+						return rc;
+					}
 
-                    rc = rtSemSpinMutexEnter(&State, pThis);
-                    AssertRCReturn(rc, rc);
-                    Assert(!State.fSpin);
-                }
-            }
-        }
-    }
+					rc = rtSemSpinMutexEnter(&State, pThis);
+					AssertRCReturn(rc, rc);
+					Assert(!State.fSpin);
+				}
+			}
+		}
+	}
 
-    /*
-     * We're the semaphore owner.
-     */
-    pThis->SavedState = State;
-    Assert(pThis->hOwner == hSelf);
-    return VINF_SUCCESS;
+	/*
+	 * We're the semaphore owner.
+	 */
+	pThis->SavedState = State;
+	Assert(pThis->hOwner == hSelf);
+	return VINF_SUCCESS;
 }
+
 RT_EXPORT_SYMBOL(RTSemSpinMutexRequest);
 
-
-RTDECL(int) RTSemSpinMutexRelease(RTSEMSPINMUTEX hSpinMtx)
+RTDECL(int)RTSemSpinMutexRelease(RTSEMSPINMUTEX hSpinMtx)
 {
-    RTSEMSPINMUTEXINTERNAL *pThis = hSpinMtx;
-    RTNATIVETHREAD          hSelf = RTThreadNativeSelf();
-    uint32_t                cLockers;
-    RTSEMSPINMUTEXSTATE     State;
-    bool                    fRc;
+	RTSEMSPINMUTEXINTERNAL *pThis = hSpinMtx;
+	RTNATIVETHREAD hSelf = RTThreadNativeSelf();
+	uint32_t cLockers;
+	RTSEMSPINMUTEXSTATE State;
+	bool fRc;
 
-    Assert(hSelf != NIL_RTNATIVETHREAD);
-    RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
+	Assert(hSelf != NIL_RTNATIVETHREAD);
+	RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
 
-    /*
-     * Get the saved state and try release the semaphore.
-     */
-    State = pThis->SavedState;
-    ASMCompilerBarrier();
-    ASMAtomicCmpXchgHandle(&pThis->hOwner, NIL_RTNATIVETHREAD, hSelf, fRc);
-    AssertMsgReturn(fRc,
-                    ("hOwner=%p hSelf=%p cLockers=%d\n", pThis->hOwner, hSelf, pThis->cLockers),
-                    VERR_NOT_OWNER);
+	/*
+	 * Get the saved state and try release the semaphore.
+	 */
+	State = pThis->SavedState;
+	ASMCompilerBarrier();
+	ASMAtomicCmpXchgHandle(&pThis->hOwner, NIL_RTNATIVETHREAD, hSelf, fRc);
+	AssertMsgReturn(fRc,
+			("hOwner=%p hSelf=%p cLockers=%d\n", pThis->hOwner,
+			 hSelf, pThis->cLockers), VERR_NOT_OWNER);
 
-    cLockers = ASMAtomicDecS32(&pThis->cLockers);
-    rtSemSpinMutexLeave(&State);
-    if (cLockers > 0)
-    {
-        int rc = RTSemEventSignal(pThis->hEventSem);
-        AssertReleaseMsg(RT_SUCCESS(rc), ("RTSemEventSignal -> %Rrc\n", rc));
-    }
-    return VINF_SUCCESS;
+	cLockers = ASMAtomicDecS32(&pThis->cLockers);
+	rtSemSpinMutexLeave(&State);
+	if (cLockers > 0) {
+		int rc = RTSemEventSignal(pThis->hEventSem);
+		AssertReleaseMsg(RT_SUCCESS(rc),
+				 ("RTSemEventSignal -> %Rrc\n", rc));
+	}
+	return VINF_SUCCESS;
 }
+
 RT_EXPORT_SYMBOL(RTSemSpinMutexRelease);
 
-
-RTDECL(int) RTSemSpinMutexDestroy(RTSEMSPINMUTEX hSpinMtx)
+RTDECL(int)RTSemSpinMutexDestroy(RTSEMSPINMUTEX hSpinMtx)
 {
-    RTSEMSPINMUTEXINTERNAL *pThis;
-    RTSEMEVENT              hEventSem;
-    int                     rc;
+	RTSEMSPINMUTEXINTERNAL *pThis;
+	RTSEMEVENT hEventSem;
+	int rc;
 
-    if (hSpinMtx == NIL_RTSEMSPINMUTEX)
-        return VINF_SUCCESS;
-    pThis = hSpinMtx;
-    RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
+	if (hSpinMtx == NIL_RTSEMSPINMUTEX)
+		return VINF_SUCCESS;
+	pThis = hSpinMtx;
+	RTSEMSPINMUTEX_VALIDATE_RETURN(pThis);
 
-    /* No destruction races allowed! */
-    AssertMsg(   pThis->cLockers  == 0
-              && pThis->hOwner    == NIL_RTNATIVETHREAD,
-              ("pThis=%p cLockers=%d hOwner=%p\n", pThis, pThis->cLockers, pThis->hOwner));
+	/* No destruction races allowed! */
+	AssertMsg(pThis->cLockers == 0
+		  && pThis->hOwner == NIL_RTNATIVETHREAD,
+		  ("pThis=%p cLockers=%d hOwner=%p\n", pThis, pThis->cLockers,
+		   pThis->hOwner));
 
-    /*
-     * Invalidate the structure, free the mutex and free the structure.
-     */
-    ASMAtomicWriteU32(&pThis->u32Magic, RTSEMSPINMUTEX_MAGIC_DEAD);
-    hEventSem        = pThis->hEventSem;
-    pThis->hEventSem = NIL_RTSEMEVENT;
-    rc = RTSemEventDestroy(hEventSem); AssertRC(rc);
+	/*
+	 * Invalidate the structure, free the mutex and free the structure.
+	 */
+	ASMAtomicWriteU32(&pThis->u32Magic, RTSEMSPINMUTEX_MAGIC_DEAD);
+	hEventSem = pThis->hEventSem;
+	pThis->hEventSem = NIL_RTSEMEVENT;
+	rc = RTSemEventDestroy(hEventSem);
+	AssertRC(rc);
 
-    RTMemFree(pThis);
-    return rc;
+	RTMemFree(pThis);
+	return rc;
 }
-RT_EXPORT_SYMBOL(RTSemSpinMutexDestroy);
 
+RT_EXPORT_SYMBOL(RTSemSpinMutexDestroy);

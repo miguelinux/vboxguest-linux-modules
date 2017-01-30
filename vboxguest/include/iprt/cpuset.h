@@ -27,18 +27,14 @@
 #define ___iprt_cpuset_h
 
 #include <iprt/types.h>
-#include <iprt/mp.h> /* RTMpCpuIdToSetIndex */
+#include <iprt/mp.h>		/* RTMpCpuIdToSetIndex */
 #include <iprt/asm.h>
 
-
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_cpuset RTCpuSet - CPU Set
  * @ingroup grp_rt
  * @{
  */
-
-
 /**
  * Clear all CPUs.
  *
@@ -47,12 +43,11 @@ RT_C_DECLS_BEGIN
  */
 DECLINLINE(PRTCPUSET) RTCpuSetEmpty(PRTCPUSET pSet)
 {
-    size_t i;
-    for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
-        pSet->bmSet[i] = 0;
-    return pSet;
+	size_t i;
+	for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
+		pSet->bmSet[i] = 0;
+	return pSet;
 }
-
 
 /**
  * Set all CPUs.
@@ -62,12 +57,11 @@ DECLINLINE(PRTCPUSET) RTCpuSetEmpty(PRTCPUSET pSet)
  */
 DECLINLINE(PRTCPUSET) RTCpuSetFill(PRTCPUSET pSet)
 {
-    size_t i;
-    for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
-        pSet->bmSet[i] = UINT64_MAX;
-    return pSet;
+	size_t i;
+	for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
+		pSet->bmSet[i] = UINT64_MAX;
+	return pSet;
 }
-
 
 /**
  * Copies one set to another.
@@ -75,13 +69,12 @@ DECLINLINE(PRTCPUSET) RTCpuSetFill(PRTCPUSET pSet)
  * @param   pDst    Pointer to the destination set.
  * @param   pSrc    Pointer to the source set.
  */
-DECLINLINE(void) RTCpuSetCopy(PRTCPUSET pDst, PRTCPUSET pSrc)
+DECLINLINE(void)RTCpuSetCopy(PRTCPUSET pDst, PRTCPUSET pSrc)
 {
-    size_t i;
-    for (i = 0; i < RT_ELEMENTS(pDst->bmSet); i++)
-        pDst->bmSet[i] = pSrc->bmSet[i];
+	size_t i;
+	for (i = 0; i < RT_ELEMENTS(pDst->bmSet); i++)
+		pDst->bmSet[i] = pSrc->bmSet[i];
 }
-
 
 /**
  * ANDs the given CPU set with another.
@@ -92,12 +85,12 @@ DECLINLINE(void) RTCpuSetCopy(PRTCPUSET pDst, PRTCPUSET pSrc)
  */
 DECLINLINE(PRTCPUSET) RTCpuSetAnd(PRTCPUSET pSet, PRTCPUSET pAndMaskSet)
 {
-    size_t i;
-    for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
-        ASMAtomicAndU64((volatile uint64_t *)&pSet->bmSet[i], pAndMaskSet->bmSet[i]);
-    return pSet;
+	size_t i;
+	for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
+		ASMAtomicAndU64((volatile uint64_t *)&pSet->bmSet[i],
+				pAndMaskSet->bmSet[i]);
+	return pSet;
 }
-
 
 /**
  * Adds a CPU given by its identifier to the set.
@@ -107,17 +100,15 @@ DECLINLINE(PRTCPUSET) RTCpuSetAnd(PRTCPUSET pSet, PRTCPUSET pAndMaskSet)
  * @param   idCpu   The identifier of the CPU to add.
  * @remarks The modification is atomic.
  */
-DECLINLINE(int) RTCpuSetAdd(PRTCPUSET pSet, RTCPUID idCpu)
+DECLINLINE(int)RTCpuSetAdd(PRTCPUSET pSet, RTCPUID idCpu)
 {
-    int iCpu = RTMpCpuIdToSetIndex(idCpu);
-    if (RT_LIKELY(iCpu >= 0))
-    {
-        ASMAtomicBitSet(pSet, iCpu);
-        return 0;
-    }
-    return -1;
+	int iCpu = RTMpCpuIdToSetIndex(idCpu);
+	if (RT_LIKELY(iCpu >= 0)) {
+		ASMAtomicBitSet(pSet, iCpu);
+		return 0;
+	}
+	return -1;
 }
-
 
 /**
  * Adds a CPU given by its identifier to the set.
@@ -127,16 +118,14 @@ DECLINLINE(int) RTCpuSetAdd(PRTCPUSET pSet, RTCPUID idCpu)
  * @param   iCpu    The index of the CPU to add.
  * @remarks The modification is atomic.
  */
-DECLINLINE(int) RTCpuSetAddByIndex(PRTCPUSET pSet, int iCpu)
+DECLINLINE(int)RTCpuSetAddByIndex(PRTCPUSET pSet, int iCpu)
 {
-    if (RT_LIKELY((unsigned)iCpu < RTCPUSET_MAX_CPUS))
-    {
-        ASMAtomicBitSet(pSet, iCpu);
-        return 0;
-    }
-    return -1;
+	if (RT_LIKELY((unsigned)iCpu < RTCPUSET_MAX_CPUS)) {
+		ASMAtomicBitSet(pSet, iCpu);
+		return 0;
+	}
+	return -1;
 }
-
 
 /**
  * Removes a CPU given by its identifier from the set.
@@ -146,17 +135,15 @@ DECLINLINE(int) RTCpuSetAddByIndex(PRTCPUSET pSet, int iCpu)
  * @param   idCpu   The identifier of the CPU to delete.
  * @remarks The modification is atomic.
  */
-DECLINLINE(int) RTCpuSetDel(PRTCPUSET pSet, RTCPUID idCpu)
+DECLINLINE(int)RTCpuSetDel(PRTCPUSET pSet, RTCPUID idCpu)
 {
-    int iCpu = RTMpCpuIdToSetIndex(idCpu);
-    if (RT_LIKELY(iCpu >= 0))
-    {
-        ASMAtomicBitClear(pSet, iCpu);
-        return 0;
-    }
-    return -1;
+	int iCpu = RTMpCpuIdToSetIndex(idCpu);
+	if (RT_LIKELY(iCpu >= 0)) {
+		ASMAtomicBitClear(pSet, iCpu);
+		return 0;
+	}
+	return -1;
 }
-
 
 /**
  * Removes a CPU given by its index from the set.
@@ -166,16 +153,14 @@ DECLINLINE(int) RTCpuSetDel(PRTCPUSET pSet, RTCPUID idCpu)
  * @param   iCpu    The index of the CPU to delete.
  * @remarks The modification is atomic.
  */
-DECLINLINE(int) RTCpuSetDelByIndex(PRTCPUSET pSet, int iCpu)
+DECLINLINE(int)RTCpuSetDelByIndex(PRTCPUSET pSet, int iCpu)
 {
-    if (RT_LIKELY((unsigned)iCpu < RTCPUSET_MAX_CPUS))
-    {
-        ASMAtomicBitClear(pSet, iCpu);
-        return 0;
-    }
-    return -1;
+	if (RT_LIKELY((unsigned)iCpu < RTCPUSET_MAX_CPUS)) {
+		ASMAtomicBitClear(pSet, iCpu);
+		return 0;
+	}
+	return -1;
 }
-
 
 /**
  * Checks if a CPU given by its identifier is a member of the set.
@@ -187,12 +172,11 @@ DECLINLINE(int) RTCpuSetDelByIndex(PRTCPUSET pSet, int iCpu)
  */
 DECLINLINE(bool) RTCpuSetIsMember(PCRTCPUSET pSet, RTCPUID idCpu)
 {
-    int iCpu = RTMpCpuIdToSetIndex(idCpu);
-    if (RT_LIKELY(iCpu >= 0))
-        return ASMBitTest((volatile void *)pSet, iCpu);
-    return false;
+	int iCpu = RTMpCpuIdToSetIndex(idCpu);
+	if (RT_LIKELY(iCpu >= 0))
+		return ASMBitTest((volatile void *)pSet, iCpu);
+	return false;
 }
-
 
 /**
  * Checks if a CPU given by its index is a member of the set.
@@ -204,11 +188,10 @@ DECLINLINE(bool) RTCpuSetIsMember(PCRTCPUSET pSet, RTCPUID idCpu)
  */
 DECLINLINE(bool) RTCpuSetIsMemberByIndex(PCRTCPUSET pSet, int iCpu)
 {
-    if (RT_LIKELY((unsigned)iCpu < RTCPUSET_MAX_CPUS))
-        return ASMBitTest((volatile void *)pSet, iCpu);
-    return false;
+	if (RT_LIKELY((unsigned)iCpu < RTCPUSET_MAX_CPUS))
+		return ASMBitTest((volatile void *)pSet, iCpu);
+	return false;
 }
-
 
 /**
  * Checks if the two sets match or not.
@@ -219,13 +202,12 @@ DECLINLINE(bool) RTCpuSetIsMemberByIndex(PCRTCPUSET pSet, int iCpu)
  */
 DECLINLINE(bool) RTCpuSetIsEqual(PCRTCPUSET pSet1, PCRTCPUSET pSet2)
 {
-    size_t i;
-    for (i = 0; i < RT_ELEMENTS(pSet1->bmSet); i++)
-        if (pSet1->bmSet[i] != pSet2->bmSet[i])
-            return false;
-    return true;
+	size_t i;
+	for (i = 0; i < RT_ELEMENTS(pSet1->bmSet); i++)
+		if (pSet1->bmSet[i] != pSet2->bmSet[i])
+			return false;
+	return true;
 }
-
 
 /**
  * Checks if the CPU set is empty or not.
@@ -235,13 +217,12 @@ DECLINLINE(bool) RTCpuSetIsEqual(PCRTCPUSET pSet1, PCRTCPUSET pSet2)
  */
 DECLINLINE(bool) RTCpuSetIsEmpty(PRTCPUSET pSet)
 {
-    size_t i;
-    for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
-        if (pSet->bmSet[i])
-            return false;
-    return true;
+	size_t i;
+	for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
+		if (pSet->bmSet[i])
+			return false;
+	return true;
 }
-
 
 /**
  * Converts the CPU set to a 64-bit mask.
@@ -252,9 +233,8 @@ DECLINLINE(bool) RTCpuSetIsEmpty(PRTCPUSET pSet)
  */
 DECLINLINE(uint64_t) RTCpuSetToU64(PCRTCPUSET pSet)
 {
-    return pSet->bmSet[0];
+	return pSet->bmSet[0];
 }
-
 
 /**
  * Initializes the CPU set from a 64-bit mask.
@@ -264,15 +244,14 @@ DECLINLINE(uint64_t) RTCpuSetToU64(PCRTCPUSET pSet)
  */
 DECLINLINE(PRTCPUSET) RTCpuSetFromU64(PRTCPUSET pSet, uint64_t fMask)
 {
-    size_t i;
+	size_t i;
 
-    pSet->bmSet[0] = fMask;
-    for (i = 1; i < RT_ELEMENTS(pSet->bmSet); i++)
-        pSet->bmSet[i] = 0;
+	pSet->bmSet[0] = fMask;
+	for (i = 1; i < RT_ELEMENTS(pSet->bmSet); i++)
+		pSet->bmSet[i] = 0;
 
-    return pSet;
+	return pSet;
 }
-
 
 /**
  * Count the CPUs in the set.
@@ -280,28 +259,24 @@ DECLINLINE(PRTCPUSET) RTCpuSetFromU64(PRTCPUSET pSet, uint64_t fMask)
  * @returns CPU count.
  * @param   pSet    Pointer to the set.
  */
-DECLINLINE(int) RTCpuSetCount(PCRTCPUSET pSet)
+DECLINLINE(int)RTCpuSetCount(PCRTCPUSET pSet)
 {
-    int         cCpus = 0;
-    size_t      i;
+	int cCpus = 0;
+	size_t i;
 
-    for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++)
-    {
-        uint64_t u64 = pSet->bmSet[i];
-        if (u64 != 0)
-        {
-            unsigned iCpu = 64;
-            while (iCpu-- > 0)
-            {
-                if (u64 & 1)
-                    cCpus++;
-                u64 >>= 1;
-            }
-        }
-    }
-    return cCpus;
+	for (i = 0; i < RT_ELEMENTS(pSet->bmSet); i++) {
+		uint64_t u64 = pSet->bmSet[i];
+		if (u64 != 0) {
+			unsigned iCpu = 64;
+			while (iCpu-- > 0) {
+				if (u64 & 1)
+					cCpus++;
+				u64 >>= 1;
+			}
+		}
+	}
+	return cCpus;
 }
-
 
 /**
  * Get the highest set index.
@@ -309,32 +284,26 @@ DECLINLINE(int) RTCpuSetCount(PCRTCPUSET pSet)
  * @returns The higest set index, -1 if all bits are clear.
  * @param   pSet    Pointer to the set.
  */
-DECLINLINE(int) RTCpuLastIndex(PCRTCPUSET pSet)
+DECLINLINE(int)RTCpuLastIndex(PCRTCPUSET pSet)
 {
-    size_t i = RT_ELEMENTS(pSet->bmSet);
-    while (i-- > 0)
-    {
-        uint64_t u64 = pSet->bmSet[i];
-        if (u64)
-        {
-            /* There are more efficient ways to do this in asm.h... */
-            unsigned iBit;
-            for (iBit = 63; iBit > 0; iBit--)
-            {
-                if (u64 & RT_BIT_64(63))
-                    break;
-                u64 <<= 1;
-            }
-            return (int)i * 64 + iBit;
-        }
-    }
-    return 0;
+	size_t i = RT_ELEMENTS(pSet->bmSet);
+	while (i-- > 0) {
+		uint64_t u64 = pSet->bmSet[i];
+		if (u64) {
+			/* There are more efficient ways to do this in asm.h... */
+			unsigned iBit;
+			for (iBit = 63; iBit > 0; iBit--) {
+				if (u64 & RT_BIT_64(63))
+					break;
+				u64 <<= 1;
+			}
+			return (int)i *64 + iBit;
+		}
+	}
+	return 0;
 }
-
 
 /** @} */
 
 RT_C_DECLS_END
-
 #endif
-

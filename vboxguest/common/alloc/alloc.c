@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -37,27 +36,26 @@
 #include <iprt/assert.h>
 #include <iprt/string.h>
 
-
-
-RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb, const char *pszTag) RT_NO_THROW_DEF
+RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb,
+			   const char *pszTag) RT_NO_THROW_DEF
 {
-    void *pvDst = RTMemAllocTag(cb, pszTag);
-    if (pvDst)
-        memcpy(pvDst, pvSrc, cb);
-    return pvDst;
+	void *pvDst = RTMemAllocTag(cb, pszTag);
+	if (pvDst)
+		memcpy(pvDst, pvSrc, cb);
+	return pvDst;
 }
+
 RT_EXPORT_SYMBOL(RTMemDupTag);
 
-
-RTDECL(void *) RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra, const char *pszTag) RT_NO_THROW_DEF
+RTDECL(void *)RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra,
+			    const char *pszTag) RT_NO_THROW_DEF
 {
-    void *pvDst = RTMemAllocTag(cbSrc + cbExtra, pszTag);
-    if (pvDst)
-    {
-        memcpy(pvDst, pvSrc, cbSrc);
-        memset((uint8_t *)pvDst + cbSrc, 0, cbExtra);
-    }
-    return pvDst;
+	void *pvDst = RTMemAllocTag(cbSrc + cbExtra, pszTag);
+	if (pvDst) {
+		memcpy(pvDst, pvSrc, cbSrc);
+		memset((uint8_t *) pvDst + cbSrc, 0, cbExtra);
+	}
+	return pvDst;
 }
-RT_EXPORT_SYMBOL(RTMemDupExTag);
 
+RT_EXPORT_SYMBOL(RTMemDupExTag);

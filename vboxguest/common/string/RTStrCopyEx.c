@@ -24,31 +24,28 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
 #include <iprt/string.h>
 #include "internal/iprt.h"
 
-
-RTDECL(int) RTStrCopyEx(char *pszDst, size_t cbDst, const char *pszSrc, size_t cchMaxSrc)
+RTDECL(int) RTStrCopyEx(char *pszDst, size_t cbDst, const char *pszSrc,
+			size_t cchMaxSrc)
 {
-    const char *pszSrcEol = RTStrEnd(pszSrc, cchMaxSrc);
-    size_t      cchSrc    = pszSrcEol ? (size_t)(pszSrcEol - pszSrc) : cchMaxSrc;
-    if (RT_LIKELY(cchSrc < cbDst))
-    {
-        memcpy(pszDst, pszSrc, cchSrc);
-        pszDst[cchSrc] = '\0';
-        return VINF_SUCCESS;
-    }
+	const char *pszSrcEol = RTStrEnd(pszSrc, cchMaxSrc);
+	size_t cchSrc = pszSrcEol ? (size_t) (pszSrcEol - pszSrc) : cchMaxSrc;
+	if (RT_LIKELY(cchSrc < cbDst)) {
+		memcpy(pszDst, pszSrc, cchSrc);
+		pszDst[cchSrc] = '\0';
+		return VINF_SUCCESS;
+	}
 
-    if (cbDst != 0)
-    {
-        memcpy(pszDst, pszSrc, cbDst - 1);
-        pszDst[cbDst - 1] = '\0';
-    }
-    return VERR_BUFFER_OVERFLOW;
+	if (cbDst != 0) {
+		memcpy(pszDst, pszSrc, cbDst - 1);
+		pszDst[cbDst - 1] = '\0';
+	}
+	return VERR_BUFFER_OVERFLOW;
 }
-RT_EXPORT_SYMBOL(RTStrCopyEx);
 
+RT_EXPORT_SYMBOL(RTStrCopyEx);

@@ -26,18 +26,16 @@
 
 #include "VBGLInternal.h"
 
-
-DECLVBGL(int) VbglQueryVMMDevMemory(VMMDevMemory **ppVMMDevMemory)
+DECLVBGL(int) VbglQueryVMMDevMemory(VMMDevMemory ** ppVMMDevMemory)
 {
-    int rc = vbglR0Enter();
-    if (RT_FAILURE(rc))
-        return rc;
+	int rc = vbglR0Enter();
+	if (RT_FAILURE(rc))
+		return rc;
 
-    /* If the memory was not found, return an error. */
-    if (!g_vbgldata.pVMMDevMemory)
-        return VERR_NOT_SUPPORTED;
+	/* If the memory was not found, return an error. */
+	if (!g_vbgldata.pVMMDevMemory)
+		return VERR_NOT_SUPPORTED;
 
-    *ppVMMDevMemory = g_vbgldata.pVMMDevMemory;
-    return rc;
+	*ppVMMDevMemory = g_vbgldata.pVMMDevMemory;
+	return rc;
 }
-

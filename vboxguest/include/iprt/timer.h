@@ -26,13 +26,10 @@
 #ifndef ___iprt_timer_h
 #define ___iprt_timer_h
 
-
 #include <iprt/cdefs.h>
 #include <iprt/types.h>
 
-
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_timer      RTTimer - Timer
  *
  * The IPRT timer API provides a simple abstraction of recurring and one-shot callback timers.
@@ -54,10 +51,8 @@ RT_C_DECLS_BEGIN
  * @ingroup grp_rt
  * @{
  */
-
-
 /** Timer handle. */
-typedef struct RTTIMER   *PRTTIMER;
+typedef struct RTTIMER *PRTTIMER;
 
 /**
  * Timer callback function.
@@ -77,10 +72,10 @@ typedef struct RTTIMER   *PRTTIMER;
  *                      callback after the timer was started. For omni timers
  *                      this will be 1 when a cpu comes back online.
  */
-typedef DECLCALLBACK(void) FNRTTIMER(PRTTIMER pTimer, void *pvUser, uint64_t iTick);
+typedef DECLCALLBACK(void) FNRTTIMER(PRTTIMER pTimer, void *pvUser,
+				     uint64_t iTick);
 /** Pointer to FNRTTIMER() function. */
 typedef FNRTTIMER *PFNRTTIMER;
-
 
 /**
  * Create a recurring timer.
@@ -95,7 +90,8 @@ typedef FNRTTIMER *PFNRTTIMER;
  * @see     RTTimerCreateEx, RTTimerStart, RTTimerStop, RTTimerChangeInterval,
  *          RTTimerDestroy, RTTimerGetSystemGranularity
  */
-RTDECL(int) RTTimerCreate(PRTTIMER *ppTimer, unsigned uMilliesInterval, PFNRTTIMER pfnTimer, void *pvUser);
+RTDECL(int) RTTimerCreate(PRTTIMER * ppTimer, unsigned uMilliesInterval,
+			  PFNRTTIMER pfnTimer, void *pvUser);
 
 /**
  * Create a suspended timer.
@@ -115,7 +111,8 @@ RTDECL(int) RTTimerCreate(PRTTIMER *ppTimer, unsigned uMilliesInterval, PFNRTTIM
  * @see     RTTimerStart, RTTimerStop, RTTimerChangeInterval, RTTimerDestroy,
  *          RTTimerGetSystemGranularity, RTTimerCanDoHighResolution
  */
-RTDECL(int) RTTimerCreateEx(PRTTIMER *ppTimer, uint64_t u64NanoInterval, uint32_t fFlags, PFNRTTIMER pfnTimer, void *pvUser);
+RTDECL(int) RTTimerCreateEx(PRTTIMER * ppTimer, uint64_t u64NanoInterval,
+			    uint32_t fFlags, PFNRTTIMER pfnTimer, void *pvUser);
 
 /** @name RTTimerCreateEx flags
  * @{ */
@@ -243,7 +240,8 @@ RTDECL(uint32_t) RTTimerGetSystemGranularity(void);
  *                          be granted 10.000.055 or 1.000.000.
  * @see     RTTimerReleaseSystemGranularity, RTTimerGetSystemGranularity
  */
-RTDECL(int) RTTimerRequestSystemGranularity(uint32_t u32Request, uint32_t *pu32Granted);
+RTDECL(int) RTTimerRequestSystemGranularity(uint32_t u32Request,
+					    uint32_t * pu32Granted);
 
 /**
  * Releases a system timer granularity grant acquired by RTTimerRequestSystemGranularity().
@@ -273,7 +271,6 @@ RTDECL(int) RTTimerReleaseSystemGranularity(uint32_t u32Granted);
  */
 RTDECL(bool) RTTimerCanDoHighResolution(void);
 
-
 /**
  * Timer callback function for low res timers.
  *
@@ -286,10 +283,10 @@ RTDECL(bool) RTTimerCanDoHighResolution(void);
  *                      callback after the timer was started. Will jump if we've
  *                      skipped ticks when lagging behind.
  */
-typedef DECLCALLBACK(void) FNRTTIMERLR(RTTIMERLR hTimerLR, void *pvUser, uint64_t iTick);
+typedef DECLCALLBACK(void) FNRTTIMERLR(RTTIMERLR hTimerLR, void *pvUser,
+				       uint64_t iTick);
 /** Pointer to FNRTTIMER() function. */
 typedef FNRTTIMERLR *PFNRTTIMERLR;
-
 
 /**
  * Create a recurring low resolution timer.
@@ -303,7 +300,8 @@ typedef FNRTTIMERLR *PFNRTTIMERLR;
  * @param   pvUser              User argument for the callback.
  * @see     RTTimerLRCreateEx, RTTimerLRDestroy, RTTimerLRStop
  */
-RTDECL(int) RTTimerLRCreate(PRTTIMERLR phTimerLR, uint32_t uMilliesInterval, PFNRTTIMERLR pfnTimer, void *pvUser);
+RTDECL(int) RTTimerLRCreate(PRTTIMERLR phTimerLR, uint32_t uMilliesInterval,
+			    PFNRTTIMERLR pfnTimer, void *pvUser);
 
 /**
  * Create a suspended low resolution timer.
@@ -321,7 +319,9 @@ RTDECL(int) RTTimerLRCreate(PRTTIMERLR phTimerLR, uint32_t uMilliesInterval, PFN
  * @param   pvUser              User argument for the callback.
  * @see     RTTimerLRStart, RTTimerLRStop, RTTimerLRDestroy
  */
-RTDECL(int) RTTimerLRCreateEx(PRTTIMERLR phTimerLR, uint64_t u64NanoInterval, uint32_t fFlags, PFNRTTIMERLR pfnTimer, void *pvUser);
+RTDECL(int) RTTimerLRCreateEx(PRTTIMERLR phTimerLR, uint64_t u64NanoInterval,
+			      uint32_t fFlags, PFNRTTIMERLR pfnTimer,
+			      void *pvUser);
 
 /**
  * Stops and destroys a running low resolution timer.
@@ -378,10 +378,10 @@ RTDECL(int) RTTimerLRStop(RTTIMERLR hTimerLR);
  *                              system timer granularity.
  * @remarks Callable from the timer callback.
  */
-RTDECL(int) RTTimerLRChangeInterval(RTTIMERLR hTimerLR, uint64_t u64NanoInterval);
+RTDECL(int) RTTimerLRChangeInterval(RTTIMERLR hTimerLR,
+				    uint64_t u64NanoInterval);
 
 /** @} */
 
 RT_C_DECLS_END
-
 #endif

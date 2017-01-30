@@ -29,13 +29,10 @@
 #include <iprt/string.h>
 
 RT_C_DECLS_BEGIN
-
-
 /** @defgroup rt_str_utf16      UTF-16 String Manipulation
  * @ingroup grp_rt_str
  * @{
  */
-
 /**
  * Allocates memory for UTF-16 string storage (default tag).
  *
@@ -57,7 +54,6 @@ RT_C_DECLS_BEGIN
  *                              allocate a terminator wide char anyway.
  */
 #define RTUtf16Alloc(cb)                    RTUtf16AllocTag((cb), RTSTR_TAG)
-
 /**
  * Allocates memory for UTF-16 string storage (custom tag).
  *
@@ -152,7 +148,8 @@ RTDECL(PRTUTF16) RTUtf16AllocTag(size_t cb, const char *pszTag);
  *                              terminator (RTUTF16) char.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(int) RTUtf16ReallocTag(PRTUTF16 *ppwsz, size_t cbNew, const char *pszTag);
+RTDECL(int) RTUtf16ReallocTag(PRTUTF16 * ppwsz, size_t cbNew,
+			      const char *pszTag);
 
 /**
  * Free a UTF-16 string allocated by RTStrToUtf16(), RTStrToUtf16Ex(),
@@ -161,7 +158,7 @@ RTDECL(int) RTUtf16ReallocTag(PRTUTF16 *ppwsz, size_t cbNew, const char *pszTag)
  * @returns iprt status code.
  * @param   pwszString      The UTF-16 string to free. NULL is accepted.
  */
-RTDECL(void)  RTUtf16Free(PRTUTF16 pwszString);
+RTDECL(void) RTUtf16Free(PRTUTF16 pwszString);
 
 /**
  * Allocates a new copy of the specified UTF-16 string (default tag).
@@ -208,7 +205,8 @@ RTDECL(PRTUTF16) RTUtf16DupTag(PCRTUTF16 pwszString, const char *pszTag);
  * @param   pszTag          Allocation tag used for statistics and such.
  * @remark  This function will not make any attempt to validate the encoding.
  */
-RTDECL(int) RTUtf16DupExTag(PRTUTF16 *ppwszString, PCRTUTF16 pwszString, size_t cwcExtra, const char *pszTag);
+RTDECL(int) RTUtf16DupExTag(PRTUTF16 * ppwszString, PCRTUTF16 pwszString,
+			    size_t cwcExtra, const char *pszTag);
 
 /**
  * Returns the length of a UTF-16 string in UTF-16 characters
@@ -251,7 +249,7 @@ RTDECL(size_t) RTUtf16NLen(PCRTUTF16 pwszString, size_t cwcMax);
  *                      isn't found.
  * @sa      RTUtf16NLen, RTStrNLenEx.
  */
-RTDECL(int) RTUtf16NLenEx(PCRTUTF16 pwszString, size_t cwcMax, size_t *pcwc);
+RTDECL(int) RTUtf16NLenEx(PCRTUTF16 pwszString, size_t cwcMax, size_t * pcwc);
 
 /**
  * Find the zero terminator in a string with a limited length.
@@ -314,7 +312,8 @@ RTDECL(int) RTUtf16Copy(PRTUTF16 pwszDst, size_t cwcDst, PCRTUTF16 pwszSrc);
  * @param   cwcDst              The size of the destination buffer in RTUTF16s.
  * @param   pszSrc              The source string, pure ASCII.  NULL is not OK.
  */
-RTDECL(int) RTUtf16CopyAscii(PRTUTF16 pwszDst, size_t cwcDst, const char *pszSrc);
+RTDECL(int) RTUtf16CopyAscii(PRTUTF16 pwszDst, size_t cwcDst,
+			     const char *pszSrc);
 
 /**
  * String copy with overflow handling.
@@ -331,7 +330,8 @@ RTDECL(int) RTUtf16CopyAscii(PRTUTF16 pwszDst, size_t cwcDst, const char *pszSrc
  *                              copy from the source string, not counting the
  *                              terminator as usual.
  */
-RTDECL(int) RTUtf16CopyEx(PRTUTF16 pwszDst, size_t cwcDst, PCRTUTF16 pwszSrc, size_t cwcSrcMax);
+RTDECL(int) RTUtf16CopyEx(PRTUTF16 pwszDst, size_t cwcDst, PCRTUTF16 pwszSrc,
+			  size_t cwcSrcMax);
 
 /**
  * String concatenation with overflow handling.
@@ -359,7 +359,8 @@ RTDECL(int) RTUtf16Cat(PRTUTF16 pwszDst, size_t cwcDst, PCRTUTF16 pwszSrc);
  * @param   cwcDst              The size of the destination buffer in RTUTF16s.
  * @param   pszSrc              The source string, pure ASCII.  NULL is not OK.
  */
-RTDECL(int) RTUtf16CatAscii(PRTUTF16 pwszDst, size_t cwcDst, const char *pszSrc);
+RTDECL(int) RTUtf16CatAscii(PRTUTF16 pwszDst, size_t cwcDst,
+			    const char *pszSrc);
 
 /**
  * String concatenation with overflow handling.
@@ -376,7 +377,8 @@ RTDECL(int) RTUtf16CatAscii(PRTUTF16 pwszDst, size_t cwcDst, const char *pszSrc)
  *                              points) to copy from the source string, not
  *                              counting the terminator as usual.
  */
-RTDECL(int) RTUtf16CatEx(PRTUTF16 pwszDst, size_t cwcDst, PCRTUTF16 pwszSrc, size_t cwcSrcMax);
+RTDECL(int) RTUtf16CatEx(PRTUTF16 pwszDst, size_t cwcDst, PCRTUTF16 pwszSrc,
+			 size_t cwcSrcMax);
 
 /**
  * Performs a case sensitive string compare between two UTF-16 strings.
@@ -518,7 +520,8 @@ RTDECL(int) RTUtf16ValidateEncoding(PCRTUTF16 pwsz);
  *                      RTSTR_MAX to process the entire string.
  * @param   fFlags      Combination of RTSTR_VALIDATE_ENCODING_XXX flags.
  */
-RTDECL(int) RTUtf16ValidateEncodingEx(PCRTUTF16 pwsz, size_t cwc, uint32_t fFlags);
+RTDECL(int) RTUtf16ValidateEncodingEx(PCRTUTF16 pwsz, size_t cwc,
+				      uint32_t fFlags);
 
 /**
  * Checks if the UTF-16 encoding is valid.
@@ -546,7 +549,9 @@ RTDECL(bool) RTUtf16IsValidEncoding(PCRTUTF16 pwsz);
  * @param   chReplacement  The ASCII replacement character.
  * @sa      RTStrPurgeComplementSet
  */
-RTDECL(ssize_t) RTUtf16PurgeComplementSet(PRTUTF16 pwsz, PCRTUNICP puszValidPairs, char chReplacement);
+RTDECL(ssize_t) RTUtf16PurgeComplementSet(PRTUTF16 pwsz,
+					  PCRTUNICP puszValidPairs,
+					  char chReplacement);
 
 /**
  * Translate a UTF-16 string into a UTF-8 allocating the result buffer (default
@@ -570,7 +575,8 @@ RTDECL(ssize_t) RTUtf16PurgeComplementSet(PRTUTF16 pwsz, PCRTUNICP puszValidPair
  *                          The returned pointer must be freed using RTStrFree().
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int)  RTUtf16ToUtf8Tag(PCRTUTF16 pwszString, char **ppszString, const char *pszTag);
+RTDECL(int) RTUtf16ToUtf8Tag(PCRTUTF16 pwszString, char **ppszString,
+			     const char *pszTag);
 
 /**
  * Translates UTF-16 to UTF-8 using buffer provided by the caller or a fittingly
@@ -622,7 +628,9 @@ RTDECL(int)  RTUtf16ToUtf8Tag(PCRTUTF16 pwszString, char **ppszString, const cha
  *                          length that can be used to resize the buffer.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int)  RTUtf16ToUtf8ExTag(PCRTUTF16 pwszString, size_t cwcString, char **ppsz, size_t cch, size_t *pcch, const char *pszTag);
+RTDECL(int) RTUtf16ToUtf8ExTag(PCRTUTF16 pwszString, size_t cwcString,
+			       char **ppsz, size_t cch, size_t * pcch,
+			       const char *pszTag);
 
 /**
  * Calculates the length of the UTF-16 string in UTF-8 chars (bytes).
@@ -650,7 +658,7 @@ RTDECL(size_t) RTUtf16CalcUtf8Len(PCRTUTF16 pwsz);
  * @param   pcch        Where to store the string length (in bytes). Optional.
  *                      This is undefined on failure.
  */
-RTDECL(int) RTUtf16CalcUtf8LenEx(PCRTUTF16 pwsz, size_t cwc, size_t *pcch);
+RTDECL(int) RTUtf16CalcUtf8LenEx(PCRTUTF16 pwsz, size_t cwc, size_t * pcch);
 
 /**
  * Translate a UTF-16 string into a Latin-1 (ISO-8859-1) allocating the result
@@ -675,7 +683,8 @@ RTDECL(int) RTUtf16CalcUtf8LenEx(PCRTUTF16 pwsz, size_t cwc, size_t *pcch);
  *                          The returned pointer must be freed using RTStrFree().
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int)  RTUtf16ToLatin1Tag(PCRTUTF16 pwszString, char **ppszString, const char *pszTag);
+RTDECL(int) RTUtf16ToLatin1Tag(PCRTUTF16 pwszString, char **ppszString,
+			       const char *pszTag);
 
 /**
  * Translates UTF-16 to Latin-1 (ISO-8859-1) using buffer provided by the caller
@@ -751,7 +760,9 @@ RTDECL(int)  RTUtf16ToLatin1Tag(PCRTUTF16 pwszString, char **ppszString, const c
  *                          length that can be used to resize the buffer.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int)  RTUtf16ToLatin1ExTag(PCRTUTF16 pwszString, size_t cwcString, char **ppsz, size_t cch, size_t *pcch, const char *pszTag);
+RTDECL(int) RTUtf16ToLatin1ExTag(PCRTUTF16 pwszString, size_t cwcString,
+				 char **ppsz, size_t cch, size_t * pcch,
+				 const char *pszTag);
 
 /**
  * Calculates the length of the UTF-16 string in Latin-1 (ISO-8859-1) chars.
@@ -780,7 +791,7 @@ RTDECL(size_t) RTUtf16CalcLatin1Len(PCRTUTF16 pwsz);
  * @param   pcch        Where to store the string length (in bytes). Optional.
  *                      This is undefined on failure.
  */
-RTDECL(int) RTUtf16CalcLatin1LenEx(PCRTUTF16 pwsz, size_t cwc, size_t *pcch);
+RTDECL(int) RTUtf16CalcLatin1LenEx(PCRTUTF16 pwsz, size_t cwc, size_t * pcch);
 
 /**
  * Get the unicode code point at the given string position.
@@ -804,7 +815,7 @@ RTDECL(RTUNICP) RTUtf16GetCpInternal(PCRTUTF16 pwsz);
  *
  * @remark  This is an internal worker for RTUtf16GetCpEx().
  */
-RTDECL(int) RTUtf16GetCpExInternal(PCRTUTF16 *ppwsz, PRTUNICP pCp);
+RTDECL(int) RTUtf16GetCpExInternal(PCRTUTF16 * ppwsz, PRTUNICP pCp);
 
 /**
  * Put the unicode code point at the given string position
@@ -836,10 +847,10 @@ RTDECL(PRTUTF16) RTUtf16PutCpInternal(PRTUTF16 pwsz, RTUNICP CodePoint);
  */
 DECLINLINE(RTUNICP) RTUtf16GetCp(PCRTUTF16 pwsz)
 {
-    const RTUTF16 wc = *pwsz;
-    if (wc < 0xd800 || (wc > 0xdfff && wc < 0xfffe))
-        return wc;
-    return RTUtf16GetCpInternal(pwsz);
+	const RTUTF16 wc = *pwsz;
+	if (wc < 0xd800 || (wc > 0xdfff && wc < 0xfffe))
+		return wc;
+	return RTUtf16GetCpInternal(pwsz);
 }
 
 /**
@@ -854,16 +865,15 @@ DECLINLINE(RTUNICP) RTUtf16GetCp(PCRTUTF16 pwsz)
  * @remark  We optimize this operation by using an inline function for
  *          everything which isn't a surrogate pair or and endian indicator.
  */
-DECLINLINE(int) RTUtf16GetCpEx(PCRTUTF16 *ppwsz, PRTUNICP pCp)
+DECLINLINE(int)RTUtf16GetCpEx(PCRTUTF16 * ppwsz, PRTUNICP pCp)
 {
-    const RTUTF16 wc = **ppwsz;
-    if (wc < 0xd800 || (wc > 0xdfff && wc < 0xfffe))
-    {
-        (*ppwsz)++;
-        *pCp = wc;
-        return VINF_SUCCESS;
-    }
-    return RTUtf16GetCpExInternal(ppwsz, pCp);
+	const RTUTF16 wc = **ppwsz;
+	if (wc < 0xd800 || (wc > 0xdfff && wc < 0xfffe)) {
+		(*ppwsz)++;
+		*pCp = wc;
+		return VINF_SUCCESS;
+	}
+	return RTUtf16GetCpExInternal(ppwsz, pCp);
 }
 
 /**
@@ -885,12 +895,11 @@ DECLINLINE(int) RTUtf16GetCpEx(PCRTUTF16 *ppwsz, PRTUNICP pCp)
  */
 DECLINLINE(PRTUTF16) RTUtf16PutCp(PRTUTF16 pwsz, RTUNICP CodePoint)
 {
-    if (CodePoint < 0xd800 || (CodePoint > 0xd800 && CodePoint < 0xfffe))
-    {
-        *pwsz++ = (RTUTF16)CodePoint;
-        return pwsz;
-    }
-    return RTUtf16PutCpInternal(pwsz, CodePoint);
+	if (CodePoint < 0xd800 || (CodePoint > 0xd800 && CodePoint < 0xfffe)) {
+		*pwsz++ = (RTUTF16) CodePoint;
+		return pwsz;
+	}
+	return RTUtf16PutCpInternal(pwsz, CodePoint);
 }
 
 /**
@@ -902,9 +911,9 @@ DECLINLINE(PRTUTF16) RTUtf16PutCp(PRTUTF16 pwsz, RTUNICP CodePoint)
  */
 DECLINLINE(PRTUTF16) RTUtf16NextCp(PCRTUTF16 pwsz)
 {
-    RTUNICP Cp;
-    RTUtf16GetCpEx(&pwsz, &Cp);
-    return (PRTUTF16)pwsz;
+	RTUNICP Cp;
+	RTUtf16GetCpEx(&pwsz, &Cp);
+	return (PRTUTF16) pwsz;
 }
 
 /**
@@ -916,7 +925,6 @@ DECLINLINE(PRTUTF16) RTUtf16NextCp(PCRTUTF16 pwsz)
  */
 RTDECL(PRTUTF16) RTUtf16PrevCp(PCRTUTF16 pwszStart, PCRTUTF16 pwsz);
 
-
 /**
  * Checks if the UTF-16 char is the high surrogate char (i.e.
  * the 1st char in the pair).
@@ -927,7 +935,7 @@ RTDECL(PRTUTF16) RTUtf16PrevCp(PCRTUTF16 pwszStart, PCRTUTF16 pwsz);
  */
 DECLINLINE(bool) RTUtf16IsHighSurrogate(RTUTF16 wc)
 {
-    return wc >= 0xd800 && wc <= 0xdbff;
+	return wc >= 0xd800 && wc <= 0xdbff;
 }
 
 /**
@@ -940,9 +948,8 @@ DECLINLINE(bool) RTUtf16IsHighSurrogate(RTUTF16 wc)
  */
 DECLINLINE(bool) RTUtf16IsLowSurrogate(RTUTF16 wc)
 {
-    return wc >= 0xdc00 && wc <= 0xdfff;
+	return wc >= 0xdc00 && wc <= 0xdfff;
 }
-
 
 /**
  * Checks if the two UTF-16 chars form a valid surrogate pair.
@@ -954,8 +961,8 @@ DECLINLINE(bool) RTUtf16IsLowSurrogate(RTUTF16 wc)
  */
 DECLINLINE(bool) RTUtf16IsSurrogatePair(RTUTF16 wcHigh, RTUTF16 wcLow)
 {
-    return RTUtf16IsHighSurrogate(wcHigh)
-        && RTUtf16IsLowSurrogate(wcLow);
+	return RTUtf16IsHighSurrogate(wcHigh)
+	    && RTUtf16IsLowSurrogate(wcLow);
 }
 
 /**
@@ -974,14 +981,11 @@ DECLINLINE(bool) RTUtf16IsSurrogatePair(RTUTF16 wcHigh, RTUTF16 wcLow)
  * @param   fFlags      Combination of RTSTRPRINTHEXBYTES_F_XXX values.
  * @sa      RTStrPrintHexBytes.
  */
-RTDECL(int) RTUtf16PrintHexBytes(PRTUTF16 pwszBuf, size_t cwcBuf, void const *pv, size_t cb, uint32_t fFlags);
+RTDECL(int)RTUtf16PrintHexBytes(PRTUTF16 pwszBuf, size_t cwcBuf, void const *pv,
+				size_t cb, uint32_t fFlags);
 
 /** @} */
-
 
 RT_C_DECLS_END
-
 /** @} */
-
 #endif
-

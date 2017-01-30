@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -32,12 +31,11 @@
 #include "internal/iprt.h"
 #include <iprt/log.h>
 
-
 RTDECL(void) RTLogWriteDebugger(const char *pch, size_t cb)
 {
-    IPRT_LINUX_SAVE_EFL_AC();
-    printk("%.*s", (int)cb, pch);
-    IPRT_LINUX_RESTORE_EFL_AC();
+	IPRT_LINUX_SAVE_EFL_AC();
+	printk("%.*s", (int)cb, pch);
+	IPRT_LINUX_RESTORE_EFL_AC();
 }
-RT_EXPORT_SYMBOL(RTLogWriteDebugger);
 
+RT_EXPORT_SYMBOL(RTLogWriteDebugger);

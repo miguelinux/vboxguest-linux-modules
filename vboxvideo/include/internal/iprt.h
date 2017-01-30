@@ -38,7 +38,7 @@
  && defined(IN_RING0) \
  && defined(MODULE) \
  && !defined(RT_NO_EXPORT_SYMBOL)
-# define bool linux_bool /* see r0drv/linux/the-linux-kernel.h */
+# define bool linux_bool	/* see r0drv/linux/the-linux-kernel.h */
 # include <linux/version.h>
 # if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33)
 #  include <generated/autoconf.h>
@@ -59,7 +59,6 @@
 #else
 # define RT_EXPORT_SYMBOL(Name) extern int g_rtExportSymbolDummyVariable
 #endif
-
 
 /** @def RT_MORE_STRICT
  * Enables more assertions in IPRT. */
@@ -169,7 +168,6 @@
 # define RT_ASSERT_PREEMPT_CPUID_RESTORE(pStat)         do { } while (0)
 #endif
 
-
 /** @def RT_ASSERT_INTS_ON
  * Asserts that interrupts are disabled when RT_MORE_STRICT is defined. */
 #ifdef RT_MORE_STRICT
@@ -191,14 +189,10 @@
 # define RT_ASSERT_PREEMPTIBLE()        do { } while (0)
 #endif
 
-
 RT_C_DECLS_BEGIN
-
 #ifdef RT_OS_OS2
-uint32_t rtR0SemWaitOs2ConvertTimeout(uint32_t fFlags, uint64_t uTimeout);
+    uint32_t rtR0SemWaitOs2ConvertTimeout(uint32_t fFlags, uint64_t uTimeout);
 #endif
 
 RT_C_DECLS_END
-
 #endif
-

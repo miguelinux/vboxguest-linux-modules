@@ -51,37 +51,38 @@
 
 static void vbox_clear_irq(void)
 {
-    outl((uint32_t)~0, VGA_PORT_HGSMI_HOST);
+	outl((uint32_t) ~ 0, VGA_PORT_HGSMI_HOST);
 }
 
 static uint32_t vbox_get_flags(struct vbox_private *vbox)
 {
-    return (uint32_t)readl(vbox->mapped_vram + vbox->host_flags_offset);
+	return (uint32_t) readl(vbox->mapped_vram + vbox->host_flags_offset);
 }
 
 void vbox_report_hotplug(struct vbox_private *vbox)
 {
-    schedule_work(&vbox->hotplug_work);
+	schedule_work(&vbox->hotplug_work);
 }
 
 irqreturn_t vbox_irq_handler(int irq, void *arg)
 {
-    struct drm_device *dev = (struct drm_device *) arg;
-    struct vbox_private *vbox = (struct vbox_private *)dev->dev_private;
-    uint32_t host_flags = vbox_get_flags(vbox);
+	struct drm_device *dev = (struct drm_device *)arg;
+	struct vbox_private *vbox = (struct vbox_private *)dev->dev_private;
+	uint32_t host_flags = vbox_get_flags(vbox);
 
-    if (!(host_flags & HGSMIHOSTFLAGS_IRQ))
-        return IRQ_NONE;
+	if (!(host_flags & HGSMIHOSTFLAGS_IRQ))
+		return IRQ_NONE;
 
-    /* Due to a bug in the initial host implementation of hot-plug interrupts,
-     * the hot-plug and cursor capability flags were never cleared.  Fortunately
-     * we can tell when they would have been set by checking that the VSYNC flag
-     * is not set. */
-    if (   host_flags & (HGSMIHOSTFLAGS_HOTPLUG | HGSMIHOSTFLAGS_CURSOR_CAPABILITIES)
-        && !(host_flags & HGSMIHOSTFLAGS_VSYNC))
-        vbox_report_hotplug(vbox);
-    vbox_clear_irq();
-    return IRQ_HANDLED;
+	/* Due to a bug in the initial host implementation of hot-plug interrupts,
+	 * the hot-plug and cursor capability flags were never cleared.  Fortunately
+	 * we can tell when they would have been set by checking that the VSYNC flag
+	 * is not set. */
+	if (host_flags &
+	    (HGSMIHOSTFLAGS_HOTPLUG | HGSMIHOSTFLAGS_CURSOR_CAPABILITIES)
+	    && !(host_flags & HGSMIHOSTFLAGS_VSYNC))
+		vbox_report_hotplug(vbox);
+	vbox_clear_irq();
+	return IRQ_HANDLED;
 }
 
 /**
@@ -89,99 +90,110 @@ irqreturn_t vbox_irq_handler(int irq, void *arg)
  */
 static void vbox_update_mode_hints(struct vbox_private *vbox)
 {
-    struct drm_device *dev = vbox->dev;
-    struct drm_connector *connector;
-    struct vbox_connector *vbox_connector;
-    struct VBVAMODEHINT *hints;
-    uint16_t flags;
-    bool disconnected;
-    unsigned crtc_id;
-    int rc;
+	struct drm_device *dev = vbox->dev;
+	struct drm_connector *connector;
+	struct vbox_connector *vbox_connector;
+	struct VBVAMODEHINT *hints;
+	uint16_t flags;
+	bool disconnected;
+	unsigned crtc_id;
+	int rc;
 
-    rc = VBoxHGSMIGetModeHints(&vbox->submit_info, vbox->num_crtcs,
-                               vbox->last_mode_hints);
-    AssertMsgRCReturnVoid(rc, ("VBoxHGSMIGetModeHints failed, rc=%Rrc.\n", rc));
+	rc = VBoxHGSMIGetModeHints(&vbox->submit_info, vbox->num_crtcs,
+				   vbox->last_mode_hints);
+	AssertMsgRCReturnVoid(rc,
+			      ("VBoxHGSMIGetModeHints failed, rc=%Rrc.\n", rc));
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
-    drm_modeset_lock_all(dev);
+	drm_modeset_lock_all(dev);
 #else
-    mutex_lock(&dev->mode_config.mutex);
+	mutex_lock(&dev->mode_config.mutex);
 #endif
-    list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
-        vbox_connector = to_vbox_connector(connector);
-        hints = &vbox->last_mode_hints[vbox_connector->vbox_crtc->crtc_id];
-        if (hints->magic == VBVAMODEHINT_MAGIC) {
-            LogFunc(("vboxvideo: %d: crtc_id=%u, mode %hdx%hd(enabled:%d),%hdx%hd\n",
-                     __LINE__, (unsigned)vbox_connector->vbox_crtc->crtc_id,
-                     (short)hints->cx, (short)hints->cy, (int)hints->fEnabled,
-                     (short)hints->dx, (short)hints->dy));
-            disconnected = !(hints->fEnabled);
-            crtc_id = vbox_connector->vbox_crtc->crtc_id;
-            flags =   VBVA_SCREEN_F_ACTIVE
-                    | (disconnected ? VBVA_SCREEN_F_DISABLED : VBVA_SCREEN_F_BLANK);
-            vbox_connector->mode_hint.width = hints->cx & 0x8fff;
-            vbox_connector->mode_hint.height = hints->cy & 0x8fff;
-            vbox_connector->mode_hint.disconnected = disconnected;
-            if (vbox_connector->vbox_crtc->disconnected != disconnected) {
-                VBoxHGSMIProcessDisplayInfo(&vbox->submit_info, crtc_id,
-                                            0, 0, 0, hints->cx * 4, hints->cx,
-                                            hints->cy, 0, flags);
-                vbox_connector->vbox_crtc->disconnected = disconnected;
-            }
+	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
+		vbox_connector = to_vbox_connector(connector);
+		hints =
+		    &vbox->last_mode_hints[vbox_connector->vbox_crtc->crtc_id];
+		if (hints->magic == VBVAMODEHINT_MAGIC) {
+			LogFunc(("vboxvideo: %d: crtc_id=%u, mode %hdx%hd(enabled:%d),%hdx%hd\n", __LINE__, (unsigned)vbox_connector->vbox_crtc->crtc_id, (short)hints->cx, (short)hints->cy, (int)hints->fEnabled, (short)hints->dx, (short)hints->dy));
+			disconnected = !(hints->fEnabled);
+			crtc_id = vbox_connector->vbox_crtc->crtc_id;
+			flags = VBVA_SCREEN_F_ACTIVE
+			    | (disconnected ? VBVA_SCREEN_F_DISABLED :
+			       VBVA_SCREEN_F_BLANK);
+			vbox_connector->mode_hint.width = hints->cx & 0x8fff;
+			vbox_connector->mode_hint.height = hints->cy & 0x8fff;
+			vbox_connector->mode_hint.disconnected = disconnected;
+			if (vbox_connector->vbox_crtc->disconnected !=
+			    disconnected) {
+				VBoxHGSMIProcessDisplayInfo(&vbox->submit_info,
+							    crtc_id, 0, 0, 0,
+							    hints->cx * 4,
+							    hints->cx,
+							    hints->cy, 0,
+							    flags);
+				vbox_connector->vbox_crtc->disconnected =
+				    disconnected;
+			}
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
-            if ((hints->dx < 0xffff) && (hints->dy < 0xffff)) {
-                drm_object_property_set_value(&connector->base,
-                    dev->mode_config.suggested_x_property, hints->dx & 0x8fff);
-                drm_object_property_set_value(&connector->base,
-                    dev->mode_config.suggested_y_property, hints->dy & 0x8fff);
-            }
+			if ((hints->dx < 0xffff) && (hints->dy < 0xffff)) {
+				drm_object_property_set_value(&connector->base,
+							      dev->mode_config.
+							      suggested_x_property,
+							      hints->
+							      dx & 0x8fff);
+				drm_object_property_set_value(&connector->base,
+							      dev->mode_config.
+							      suggested_y_property,
+							      hints->
+							      dy & 0x8fff);
+			}
 #endif
-        }
-    }
+		}
+	}
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
-    drm_modeset_unlock_all(dev);
+	drm_modeset_unlock_all(dev);
 #else
-    mutex_unlock(&dev->mode_config.mutex);
+	mutex_unlock(&dev->mode_config.mutex);
 #endif
 }
 
 static void vbox_hotplug_worker(struct work_struct *work)
 {
-    struct vbox_private *vbox = container_of(work, struct vbox_private,
-                                             hotplug_work);
+	struct vbox_private *vbox = container_of(work, struct vbox_private,
+						 hotplug_work);
 
-    LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
-    vbox_update_mode_hints(vbox);
-    drm_kms_helper_hotplug_event(vbox->dev);
+	LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
+	vbox_update_mode_hints(vbox);
+	drm_kms_helper_hotplug_event(vbox->dev);
 }
 
 int vbox_irq_init(struct vbox_private *vbox)
 {
-    int ret;
+	int ret;
 
-    LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
-    vbox_update_mode_hints(vbox);
+	LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
+	vbox_update_mode_hints(vbox);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
-    ret = drm_irq_install(vbox->dev, vbox->dev->pdev->irq);
+	ret = drm_irq_install(vbox->dev, vbox->dev->pdev->irq);
 #else
-    ret = drm_irq_install(vbox->dev);
+	ret = drm_irq_install(vbox->dev);
 #endif
-    if (unlikely(ret != 0)) {
-        vbox_irq_fini(vbox);
-        DRM_ERROR("Failed installing irq: %d\n", ret);
-        return 1;
-    }
-    INIT_WORK(&vbox->hotplug_work, vbox_hotplug_worker);
-    vbox->isr_installed = true;
-    LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
-    return 0;
+	if (unlikely(ret != 0)) {
+		vbox_irq_fini(vbox);
+		DRM_ERROR("Failed installing irq: %d\n", ret);
+		return 1;
+	}
+	INIT_WORK(&vbox->hotplug_work, vbox_hotplug_worker);
+	vbox->isr_installed = true;
+	LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
+	return 0;
 }
 
 void vbox_irq_fini(struct vbox_private *vbox)
 {
-    LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
-    if (vbox->isr_installed) {
-        drm_irq_uninstall(vbox->dev);
-        flush_work(&vbox->hotplug_work);
-        vbox->isr_installed = false;
-    }
+	LogFunc(("vboxvideo: %d: vbox=%p\n", __LINE__, vbox));
+	if (vbox->isr_installed) {
+		drm_irq_uninstall(vbox->dev);
+		flush_work(&vbox->hotplug_work);
+		vbox->isr_installed = false;
+	}
 }

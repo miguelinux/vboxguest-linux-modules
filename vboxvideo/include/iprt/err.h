@@ -30,7 +30,6 @@
 #include <iprt/types.h>
 #include <iprt/stdarg.h>
 
-
 /** @defgroup grp_rt_err            RTErr - Status Codes
  * @ingroup grp_rt
  *
@@ -54,10 +53,9 @@
  * RT_SUCCESS_NP, RT_FAILURE and RT_FAILURE_NP.  The RTErrStrictType2
  * constructor is for integration with external status code strictness regimes.
  */
-class RTErrStrictType
-{
+class RTErrStrictType {
 protected:
-    int32_t m_rc;
+	int32_t m_rc;
 
 public:
     /**
@@ -69,20 +67,16 @@ public:
      *
      * @param   rcObj       IPRT status code object from an automatic cast.
      */
-    RTErrStrictType(RTErrStrictType2 const rcObj)
-        : m_rc(rcObj.getValue())
-    {
-    }
-
+	RTErrStrictType(RTErrStrictType2 const rcObj)
+	:m_rc(rcObj.getValue()) {
+	}
     /**
      * Integer constructor used by RT_SUCCESS_NP.
      *
      * @param   rc          IPRT style status code.
-     */
-    RTErrStrictType(int32_t rc)
-        : m_rc(rc)
-    {
-    }
+     */ RTErrStrictType(int32_t rc)
+	:m_rc(rc) {
+	}
 
 #if 0 /** @todo figure where int32_t is long instead of int. */
     /**
@@ -90,35 +84,44 @@ public:
      *
      * @param   rc          IPRT style status code.
      */
-    RTErrStrictType(signed int rc)
-        : m_rc(rc)
-    {
-    }
+	RTErrStrictType(signed int rc)
+	:m_rc(rc) {
+	}
 #endif
 
     /**
      * Test for success.
      */
-    bool success() const
-    {
-        return m_rc >= 0;
-    }
-
-private:
+	bool success() const {
+		return m_rc >= 0;
+} private:
     /** @name Try ban a number of wrong types.
      * @{ */
-    RTErrStrictType(uint8_t rc)         : m_rc(-999) { NOREF(rc); }
-    RTErrStrictType(uint16_t rc)        : m_rc(-999) { NOREF(rc); }
-    RTErrStrictType(uint32_t rc)        : m_rc(-999) { NOREF(rc); }
-    RTErrStrictType(uint64_t rc)        : m_rc(-999) { NOREF(rc); }
-    RTErrStrictType(int8_t rc)          : m_rc(-999) { NOREF(rc); }
-    RTErrStrictType(int16_t rc)         : m_rc(-999) { NOREF(rc); }
-    RTErrStrictType(int64_t rc)         : m_rc(-999) { NOREF(rc); }
+	 RTErrStrictType(uint8_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
+RTErrStrictType(uint16_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
+RTErrStrictType(uint32_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
+RTErrStrictType(uint64_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
+RTErrStrictType(int8_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
+RTErrStrictType(int16_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
+RTErrStrictType(int64_t rc):m_rc(-999) {
+		NOREF(rc);
+	}
     /** @todo fight long here - clashes with int32_t/int64_t on some platforms. */
     /** @} */
 };
 #endif /* __cplusplus */
-
 
 /** @def RTERR_STRICT_RC
  * Indicates that RT_SUCCESS_NP, RT_SUCCESS, RT_FAILURE_NP and RT_FAILURE should
@@ -133,7 +136,6 @@ private:
      || defined(RT_STRICT) )
 # define RTERR_STRICT_RC        1
 #endif
-
 
 /** @def RT_SUCCESS
  * Check for success. We expect success in normal cases, that is the code path depending on
@@ -189,7 +191,6 @@ private:
 #define RT_FAILURE_NP(rc)   ( !RT_SUCCESS_NP(rc) )
 
 RT_C_DECLS_BEGIN
-
 /**
  * Converts a Darwin HRESULT error to an iprt status code.
  *
@@ -197,7 +198,7 @@ RT_C_DECLS_BEGIN
  * @param   iNativeCode    HRESULT error code.
  * @remark  Darwin ring-3 only.
  */
-RTDECL(int)  RTErrConvertFromDarwinCOM(int32_t iNativeCode);
+RTDECL(int)RTErrConvertFromDarwinCOM(int32_t iNativeCode);
 
 /**
  * Converts a Darwin IOReturn error to an iprt status code.
@@ -206,7 +207,7 @@ RTDECL(int)  RTErrConvertFromDarwinCOM(int32_t iNativeCode);
  * @param   iNativeCode    IOReturn error code.
  * @remark  Darwin only.
  */
-RTDECL(int)  RTErrConvertFromDarwinIO(int iNativeCode);
+RTDECL(int) RTErrConvertFromDarwinIO(int iNativeCode);
 
 /**
  * Converts a Darwin kern_return_t error to an iprt status code.
@@ -215,7 +216,7 @@ RTDECL(int)  RTErrConvertFromDarwinIO(int iNativeCode);
  * @param   iNativeCode    kern_return_t error code.
  * @remark  Darwin only.
  */
-RTDECL(int)  RTErrConvertFromDarwinKern(int iNativeCode);
+RTDECL(int) RTErrConvertFromDarwinKern(int iNativeCode);
 
 /**
  * Converts a Darwin error to an iprt status code.
@@ -230,7 +231,7 @@ RTDECL(int)  RTErrConvertFromDarwinKern(int iNativeCode);
  * @remarks This is recommended over RTErrConvertFromDarwinKern and RTErrConvertFromDarwinIO
  *          since these are really just subsets of the same error space.
  */
-RTDECL(int)  RTErrConvertFromDarwin(int iNativeCode);
+RTDECL(int) RTErrConvertFromDarwin(int iNativeCode);
 
 /**
  * Converts errno to iprt status code.
@@ -238,7 +239,7 @@ RTDECL(int)  RTErrConvertFromDarwin(int iNativeCode);
  * @returns iprt status code.
  * @param   uNativeCode    errno code.
  */
-RTDECL(int)  RTErrConvertFromErrno(unsigned uNativeCode);
+RTDECL(int) RTErrConvertFromErrno(unsigned uNativeCode);
 
 /**
  * Converts a L4 errno to a iprt status code.
@@ -247,7 +248,7 @@ RTDECL(int)  RTErrConvertFromErrno(unsigned uNativeCode);
  * @param   uNativeCode l4 errno.
  * @remark  L4 only.
  */
-RTDECL(int)  RTErrConvertFromL4Errno(unsigned uNativeCode);
+RTDECL(int) RTErrConvertFromL4Errno(unsigned uNativeCode);
 
 /**
  * Converts NT status code to iprt status code.
@@ -258,7 +259,7 @@ RTDECL(int)  RTErrConvertFromL4Errno(unsigned uNativeCode);
  * @param   lNativeCode    NT status code.
  * @remark  Windows only.
  */
-RTDECL(int)  RTErrConvertFromNtStatus(long lNativeCode);
+RTDECL(int) RTErrConvertFromNtStatus(long lNativeCode);
 
 /**
  * Converts OS/2 error code to iprt status code.
@@ -267,7 +268,7 @@ RTDECL(int)  RTErrConvertFromNtStatus(long lNativeCode);
  * @param   uNativeCode    OS/2 error code.
  * @remark  OS/2 only.
  */
-RTDECL(int)  RTErrConvertFromOS2(unsigned uNativeCode);
+RTDECL(int) RTErrConvertFromOS2(unsigned uNativeCode);
 
 /**
  * Converts Win32 error code to iprt status code.
@@ -276,7 +277,7 @@ RTDECL(int)  RTErrConvertFromOS2(unsigned uNativeCode);
  * @param   uNativeCode    Win32 error code.
  * @remark  Windows only.
  */
-RTDECL(int)  RTErrConvertFromWin32(unsigned uNativeCode);
+RTDECL(int) RTErrConvertFromWin32(unsigned uNativeCode);
 
 /**
  * Converts an iprt status code to a errno status code.
@@ -284,23 +285,22 @@ RTDECL(int)  RTErrConvertFromWin32(unsigned uNativeCode);
  * @returns errno status code.
  * @param   iErr    iprt status code.
  */
-RTDECL(int)  RTErrConvertToErrno(int iErr);
+RTDECL(int) RTErrConvertToErrno(int iErr);
 
 #ifdef IN_RING3
 
 /**
  * iprt status code message.
  */
-typedef struct RTSTATUSMSG
-{
+typedef struct RTSTATUSMSG {
     /** Pointer to the short message string. */
-    const char *pszMsgShort;
+	const char *pszMsgShort;
     /** Pointer to the full message string. */
-    const char *pszMsgFull;
+	const char *pszMsgFull;
     /** Pointer to the define string. */
-    const char *pszDefine;
+	const char *pszDefine;
     /** Status code number. */
-    int         iCode;
+	int iCode;
 } RTSTATUSMSG;
 /** Pointer to iprt status code message. */
 typedef RTSTATUSMSG *PRTSTATUSMSG;
@@ -343,14 +343,13 @@ RTDECL(PCRTSTATUSMSG) RTErrGet(int rc);
 /**
  * Windows error code message.
  */
-typedef struct RTWINERRMSG
-{
+typedef struct RTWINERRMSG {
     /** Pointer to the full message string. */
-    const char *pszMsgFull;
+	const char *pszMsgFull;
     /** Pointer to the define string. */
-    const char *pszDefine;
+	const char *pszDefine;
     /** Error code number. */
-    long        iCode;
+	long iCode;
 } RTWINERRMSG;
 /** Pointer to Windows error code message. */
 typedef RTWINERRMSG *PRTWINERRMSG;
@@ -368,19 +367,18 @@ RTDECL(PCRTWINERRMSG) RTErrWinGet(long rc);
 /** On windows COM errors are part of the Windows error database. */
 typedef RTWINERRMSG RTCOMERRMSG;
 
-#else  /* !RT_OS_WINDOWS */
+#else /* !RT_OS_WINDOWS */
 
 /**
  * COM/XPCOM error code message.
  */
-typedef struct RTCOMERRMSG
-{
+typedef struct RTCOMERRMSG {
     /** Pointer to the full message string. */
-    const char *pszMsgFull;
+	const char *pszMsgFull;
     /** Pointer to the define string. */
-    const char *pszDefine;
+	const char *pszDefine;
     /** Error code number. */
-    uint32_t    iCode;
+	uint32_t iCode;
 } RTCOMERRMSG;
 #endif /* !RT_OS_WINDOWS */
 /** Pointer to a XPCOM/COM error code message. */
@@ -426,18 +424,19 @@ RTDECL(PCRTCOMERRMSG) RTErrCOMGet(uint32_t rc);
  * @param   pszMsg              The message buffer.  Must be at least one byte.
  * @param   cbMsg               The size of the message buffer.
  */
-DECLINLINE(PRTERRINFO) RTErrInfoInit(PRTERRINFO pErrInfo, char *pszMsg, size_t cbMsg)
+DECLINLINE(PRTERRINFO) RTErrInfoInit(PRTERRINFO pErrInfo, char *pszMsg,
+				     size_t cbMsg)
 {
-    *pszMsg = '\0';
+	*pszMsg = '\0';
 
-    pErrInfo->fFlags         = RTERRINFO_FLAGS_T_CUSTOM | RTERRINFO_FLAGS_MAGIC;
-    pErrInfo->rc             = /*VINF_SUCCESS*/ 0;
-    pErrInfo->pszMsg         = pszMsg;
-    pErrInfo->cbMsg          = cbMsg;
-    pErrInfo->apvReserved[0] = NULL;
-    pErrInfo->apvReserved[1] = NULL;
+	pErrInfo->fFlags = RTERRINFO_FLAGS_T_CUSTOM | RTERRINFO_FLAGS_MAGIC;
+	pErrInfo->rc = /*VINF_SUCCESS */ 0;
+	pErrInfo->pszMsg = pszMsg;
+	pErrInfo->cbMsg = cbMsg;
+	pErrInfo->apvReserved[0] = NULL;
+	pErrInfo->apvReserved[1] = NULL;
 
-    return pErrInfo;
+	return pErrInfo;
 }
 
 /**
@@ -448,9 +447,11 @@ DECLINLINE(PRTERRINFO) RTErrInfoInit(PRTERRINFO pErrInfo, char *pszMsg, size_t c
  */
 DECLINLINE(PRTERRINFO) RTErrInfoInitStatic(PRTERRINFOSTATIC pStaticErrInfo)
 {
-    RTErrInfoInit(&pStaticErrInfo->Core, pStaticErrInfo->szMsg, sizeof(pStaticErrInfo->szMsg));
-    pStaticErrInfo->Core.fFlags = RTERRINFO_FLAGS_T_STATIC | RTERRINFO_FLAGS_MAGIC;
-    return &pStaticErrInfo->Core;
+	RTErrInfoInit(&pStaticErrInfo->Core, pStaticErrInfo->szMsg,
+		      sizeof(pStaticErrInfo->szMsg));
+	pStaticErrInfo->Core.fFlags =
+	    RTERRINFO_FLAGS_T_STATIC | RTERRINFO_FLAGS_MAGIC;
+	return &pStaticErrInfo->Core;
 }
 
 /**
@@ -461,7 +462,7 @@ DECLINLINE(PRTERRINFO) RTErrInfoInitStatic(PRTERRINFOSTATIC pStaticErrInfo)
  * @param   cbMsg               The minimum message buffer size.  Use 0 to get
  *                              the default buffer size.
  */
-RTDECL(PRTERRINFO)  RTErrInfoAlloc(size_t cbMsg);
+RTDECL(PRTERRINFO) RTErrInfoAlloc(size_t cbMsg);
 
 /**
  * Same as RTErrInfoAlloc, except that an IPRT status code is returned.
@@ -474,7 +475,7 @@ RTDECL(PRTERRINFO)  RTErrInfoAlloc(size_t cbMsg);
  *                              error info structure on success.  This is
  *                              always set to NULL.
  */
-RTDECL(int)         RTErrInfoAllocEx(size_t cbMsg, PRTERRINFO *ppErrInfo);
+RTDECL(int)RTErrInfoAllocEx(size_t cbMsg, PRTERRINFO * ppErrInfo);
 
 /**
  * Frees an error info structure allocated by RTErrInfoAlloc or
@@ -482,7 +483,7 @@ RTDECL(int)         RTErrInfoAllocEx(size_t cbMsg, PRTERRINFO *ppErrInfo);
  *
  * @param   pErrInfo            The error info structure.
  */
-RTDECL(void)        RTErrInfoFree(PRTERRINFO pErrInfo);
+RTDECL(void) RTErrInfoFree(PRTERRINFO pErrInfo);
 
 /**
  * Fills in the error info details.
@@ -493,7 +494,7 @@ RTDECL(void)        RTErrInfoFree(PRTERRINFO pErrInfo);
  * @param   rc                  The status code to return.
  * @param   pszMsg              The error message string.
  */
-RTDECL(int)         RTErrInfoSet(PRTERRINFO pErrInfo, int rc, const char *pszMsg);
+RTDECL(int) RTErrInfoSet(PRTERRINFO pErrInfo, int rc, const char *pszMsg);
 
 /**
  * Fills in the error info details, with a sprintf style message.
@@ -505,7 +506,8 @@ RTDECL(int)         RTErrInfoSet(PRTERRINFO pErrInfo, int rc, const char *pszMsg
  * @param   pszFormat           The format string.
  * @param   ...                 The format arguments.
  */
-RTDECL(int)         RTErrInfoSetF(PRTERRINFO pErrInfo, int rc, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
+RTDECL(int) RTErrInfoSetF(PRTERRINFO pErrInfo, int rc, const char *pszFormat,
+			  ...) RT_IPRT_FORMAT_ATTR(3, 4);
 
 /**
  * Fills in the error info details, with a vsprintf style message.
@@ -517,7 +519,8 @@ RTDECL(int)         RTErrInfoSetF(PRTERRINFO pErrInfo, int rc, const char *pszFo
  * @param   pszFormat           The format string.
  * @param   va                  The format arguments.
  */
-RTDECL(int)         RTErrInfoSetV(PRTERRINFO pErrInfo, int rc, const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(3, 0);
+RTDECL(int) RTErrInfoSetV(PRTERRINFO pErrInfo, int rc, const char *pszFormat,
+			  va_list va) RT_IPRT_FORMAT_ATTR(3, 0);
 
 /**
  * Adds more error info details.
@@ -528,7 +531,7 @@ RTDECL(int)         RTErrInfoSetV(PRTERRINFO pErrInfo, int rc, const char *pszFo
  * @param   rc                  The status code to return.
  * @param   pszMsg              The error message string to add.
  */
-RTDECL(int)         RTErrInfoAdd(PRTERRINFO pErrInfo, int rc, const char *pszMsg);
+RTDECL(int) RTErrInfoAdd(PRTERRINFO pErrInfo, int rc, const char *pszMsg);
 
 /**
  * Adds more error info details, with a sprintf style message.
@@ -540,7 +543,8 @@ RTDECL(int)         RTErrInfoAdd(PRTERRINFO pErrInfo, int rc, const char *pszMsg
  * @param   pszFormat           The format string to add.
  * @param   ...                 The format arguments.
  */
-RTDECL(int)         RTErrInfoAddF(PRTERRINFO pErrInfo, int rc, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
+RTDECL(int) RTErrInfoAddF(PRTERRINFO pErrInfo, int rc, const char *pszFormat,
+			  ...) RT_IPRT_FORMAT_ATTR(3, 4);
 
 /**
  * Adds more error info details, with a vsprintf style message.
@@ -552,7 +556,8 @@ RTDECL(int)         RTErrInfoAddF(PRTERRINFO pErrInfo, int rc, const char *pszFo
  * @param   pszFormat           The format string to add.
  * @param   va                  The format arguments.
  */
-RTDECL(int)         RTErrInfoAddV(PRTERRINFO pErrInfo, int rc, const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(3, 0);
+RTDECL(int) RTErrInfoAddV(PRTERRINFO pErrInfo, int rc, const char *pszFormat,
+			  va_list va) RT_IPRT_FORMAT_ATTR(3, 0);
 
 /**
  * Checks if the error info is set.
@@ -560,12 +565,13 @@ RTDECL(int)         RTErrInfoAddV(PRTERRINFO pErrInfo, int rc, const char *pszFo
  * @returns true if set, false if not.
  * @param   pErrInfo            The error info structure. NULL is OK.
  */
-DECLINLINE(bool)    RTErrInfoIsSet(PCRTERRINFO pErrInfo)
+DECLINLINE(bool) RTErrInfoIsSet(PCRTERRINFO pErrInfo)
 {
-    if (!pErrInfo)
-        return false;
-    return (pErrInfo->fFlags & (RTERRINFO_FLAGS_MAGIC_MASK | RTERRINFO_FLAGS_SET))
-        == (RTERRINFO_FLAGS_MAGIC | RTERRINFO_FLAGS_SET);
+	if (!pErrInfo)
+		return false;
+	return (pErrInfo->
+		fFlags & (RTERRINFO_FLAGS_MAGIC_MASK | RTERRINFO_FLAGS_SET))
+	    == (RTERRINFO_FLAGS_MAGIC | RTERRINFO_FLAGS_SET);
 }
 
 /**
@@ -573,14 +579,13 @@ DECLINLINE(bool)    RTErrInfoIsSet(PCRTERRINFO pErrInfo)
  *
  * @param   pErrInfo            The error info structure. NULL is OK.
  */
-DECLINLINE(void)    RTErrInfoClear(PRTERRINFO pErrInfo)
+DECLINLINE(void)RTErrInfoClear(PRTERRINFO pErrInfo)
 {
-    if (pErrInfo)
-    {
-        pErrInfo->fFlags &= ~RTERRINFO_FLAGS_SET;
-        pErrInfo->rc      = /*VINF_SUCCESS*/0;
-        *pErrInfo->pszMsg = '\0';
-    }
+	if (pErrInfo) {
+		pErrInfo->fFlags &= ~RTERRINFO_FLAGS_SET;
+		pErrInfo->rc = /*VINF_SUCCESS */ 0;
+		*pErrInfo->pszMsg = '\0';
+	}
 }
 
 /**
@@ -589,12 +594,11 @@ DECLINLINE(void)    RTErrInfoClear(PRTERRINFO pErrInfo)
  * @remarks Do NOT touch the members!  They are platform specific and what's
  *          where may change at any time!
  */
-typedef union RTERRVARS
-{
-    int8_t  ai8Vars[32];
-    int16_t ai16Vars[16];
-    int32_t ai32Vars[8];
-    int64_t ai64Vars[4];
+typedef union RTERRVARS {
+	int8_t ai8Vars[32];
+	int16_t ai16Vars[16];
+	int32_t ai32Vars[8];
+	int64_t ai64Vars[4];
 } RTERRVARS;
 /** Pointer to an error variable storage union.  */
 typedef RTERRVARS *PRTERRVARS;
@@ -635,36 +639,28 @@ RTDECL(bool) RTErrVarsAreEqual(PCRTERRVARS pVars1, PCRTERRVARS pVars2);
 RTDECL(bool) RTErrVarsHaveChanged(PCRTERRVARS pVars);
 
 RT_C_DECLS_END
-
 /** @} */
-
 /** @name Status Code Ranges
  * @{ */
 /** The first status code in the primary IPRT range. */
 #define RTERR_RANGE1_FIRST                  0
 /** The last status code in the primary IPRT range. */
 #define RTERR_RANGE1_LAST                   999
-
 /** The first status code in the secondary IPRT range. */
 #define RTERR_RANGE2_FIRST                  22000
 /** The last status code in the secondary IPRT range. */
 #define RTERR_RANGE2_LAST                   32766
-
 /** The first status code in the user range. */
 #define RTERR_USER_FIRST                    1000
 /** The last status code in the user range. */
 #define RTERR_USER_LAST                     21999
 /** @}  */
-
-
 /* SED-START */
-
 /** @name Misc. Status Codes
  * @{
  */
 /** Success. */
 #define VINF_SUCCESS                        0
-
 /** General failure - DON'T USE THIS!!! */
 #define VERR_GENERAL_FAILURE                (-1)
 /** Invalid parameter. */
@@ -699,7 +695,6 @@ RT_C_DECLS_END
 #define VERR_NOT_IMPLEMENTED                (-12)
 /** Invalid flags was given. */
 #define VERR_INVALID_FLAGS                  (-13)
-
 /** Not equal. */
 #define VERR_NOT_EQUAL                      (-18)
 /** The specified path does not point at a symbolic link. */
@@ -950,9 +945,9 @@ RT_C_DECLS_END
 /** Process does not have the increase quota (IQ) privilege needed for
  * creating a process as a given user. IQ is also called 'Increase quotas'. */
 #define VERR_PROC_IQ_PRIV_NOT_HELD          (-22413)
+/** The system has too many CPUs. */
+#define VERR_MP_TOO_MANY_CPUS               (-22414)
 /** @} */
-
-
 /** @name Common File/Disk/Pipe/etc Status Codes
  * @{
  */
@@ -1057,8 +1052,6 @@ RT_C_DECLS_END
  * This exact meaning is host platform dependent. */
 #define VERR_FILE_AIO_INSUFFICIENT_EVENTS   (-146)
 /** @} */
-
-
 /** @name Generic Filesystem I/O Status Codes
  * @{
  */
@@ -1081,8 +1074,6 @@ RT_C_DECLS_END
 /** The OS does not support changing the owner of a symbolic link. */
 #define VERR_NS_SYMLINK_CHANGE_OWNER        (-158)
 /** @} */
-
-
 /** @name Generic Directory Enumeration Status Codes
  * @{
  */
@@ -1095,8 +1086,6 @@ RT_C_DECLS_END
 /** RTDirReadEx() failed to retrieve the extra data which was requested. */
 #define VWRN_NO_DIRENT_INFO                 203
 /** @} */
-
-
 /** @name Internal Processing Errors
  * @{
  */
@@ -1122,8 +1111,6 @@ RT_C_DECLS_END
 /** Internal error: Supposedly unreachable default case in a switch. */
 #define VERR_IPE_NOT_REACHED_DEFAULT_CASE   (-234)
 /** @} */
-
-
 /** @name Generic Device I/O Status Codes
  * @{
  */
@@ -1144,8 +1131,6 @@ RT_C_DECLS_END
 /** Device i/o: General failure. */
 #define VERR_IO_GEN_FAILURE                 (-257)
 /** @} */
-
-
 /** @name Generic Pipe I/O Status Codes
  * @{
  */
@@ -1168,8 +1153,6 @@ RT_C_DECLS_END
 /** Expected write pipe, got a read pipe instead. */
 #define VERR_PIPE_NOT_WRITE                 (-308)
 /** @} */
-
-
 /** @name Generic Semaphores Status Codes
  * @{
  */
@@ -1236,8 +1219,6 @@ RT_C_DECLS_END
 /** Internal error in the lock validator or related components. */
 #define VERR_SEM_LV_INTERNAL_ERROR          (-377)
 /** @} */
-
-
 /** @name Generic Network I/O Status Codes
  * @{
  */
@@ -1255,7 +1236,6 @@ RT_C_DECLS_END
 #define VERR_NET_NO_NETWORK                     (-405)
 /** Name is not unique on the network. */
 #define VERR_NET_NOT_UNIQUE_NAME                (-406)
-
 /* These are BSD networking error codes - numbers correspond, don't mess! */
 /** Operation in progress. */
 #define VERR_NET_IN_PROGRESS                    (-436)
@@ -1321,8 +1301,6 @@ RT_C_DECLS_END
 /** Incomplete packet was submitted by guest. */
 #define VERR_NET_INCOMPLETE_TX_PACKET           (-467)
 /** @} */
-
-
 /** @name TCP Status Codes
  * @{
  */
@@ -1337,8 +1315,6 @@ RT_C_DECLS_END
 /** The TCP server has no client associated with it. */
 #define VINF_TCP_SERVER_NO_CLIENT               503
 /** @} */
-
-
 /** @name UDP Status Codes
  * @{
  */
@@ -1353,8 +1329,6 @@ RT_C_DECLS_END
 /** The UDP server has no client associated with it. */
 #define VINF_UDP_SERVER_NO_CLIENT               523
 /** @} */
-
-
 /** @name L4 Specific Status Codes
  * @{
  */
@@ -1393,8 +1367,6 @@ RT_C_DECLS_END
 /** Dataspace manager server not found */
 #define VERR_L4_DS_MANAGER_NOT_FOUND            (-566)
 /** @} */
-
-
 /** @name Loader Status Codes.
  * @{
  */
@@ -1483,7 +1455,6 @@ RT_C_DECLS_END
 /** Invalid segment:offset address. */
 #define VERR_LDR_INVALID_SEG_OFFSET             (-649)
 /** @}*/
-
 /** @name Debug Info Reader Status Codes.
  * @{
  */
@@ -1586,7 +1557,6 @@ RT_C_DECLS_END
 /** Internal processing error the CodeView debug information reader. */
 #define VERR_CV_IPE                             (-693)
 /** @} */
-
 /** @name Request Packet Status Codes.
  * @{
  */
@@ -1611,7 +1581,6 @@ RT_C_DECLS_END
  * Someone is reading the iStatus field of a freed request packet. */
 #define VERR_RT_REQUEST_STATUS_FREED            (-704)
 /** @} */
-
 /** @name Environment Status Code
  * @{
  */
@@ -1629,7 +1598,6 @@ RT_C_DECLS_END
 /** The environment variable has been recorded as being unset. */
 #define VERR_ENV_VAR_UNSET                      (-753)
 /** @} */
-
 /** @name Multiprocessor Status Codes.
  * @{
  */
@@ -1642,7 +1610,6 @@ RT_C_DECLS_END
 /** Internal processing error in the RTMp code.*/
 #define VERR_CPU_IPE_1                          (-803)
 /** @} */
-
 /** @name RTGetOpt status codes
  * @{ */
 /** RTGetOpt: Command line option not recognized. */
@@ -1656,7 +1623,6 @@ RT_C_DECLS_END
 /** RTGetOpt: Command line option needs an index. */
 #define VERR_GETOPT_INDEX_MISSING               (-829)
 /** @} */
-
 /** @name RTCache status codes
  * @{ */
 /** RTCache: cache is full. */
@@ -1664,13 +1630,11 @@ RT_C_DECLS_END
 /** RTCache: cache is empty. */
 #define VERR_CACHE_EMPTY                        (-851)
 /** @} */
-
 /** @name RTMemCache status codes
  * @{ */
 /** Reached the max cache size. */
 #define VERR_MEM_CACHE_MAX_SIZE                 (-855)
 /** @} */
-
 /** @name RTS3 status codes
  * @{ */
 /** Access denied error. */
@@ -1684,7 +1648,6 @@ RT_C_DECLS_END
 /** The current operation was canceled. */
 #define VERR_S3_CANCELED                        (-879)
 /** @} */
-
 /** @name HTTP status codes
  * @{ */
 /** HTTP initialization failed. */
@@ -1716,7 +1679,6 @@ RT_C_DECLS_END
 /** Generic CURL error. */
 #define VERR_HTTP_CURL_ERROR                    (-899)
 /** @} */
-
 /** @name RTManifest status codes
  * @{ */
 /** A digest type used in the manifest file isn't supported. */
@@ -1734,7 +1696,6 @@ RT_C_DECLS_END
 /** No attribute of the specified types was found. */
 #define VERR_MANIFEST_ATTR_TYPE_NOT_FOUND        (-906)
 /** @} */
-
 /** @name RTTar status codes
  * @{ */
 /** The checksum of a tar header record doesn't match. */
@@ -1790,7 +1751,6 @@ RT_C_DECLS_END
 /** A directory entry in the archive. */
 #define VINF_TAR_DIR_PATH                        (948)
 /** @} */
-
 /** @name RTPoll status codes
  * @{ */
 /** The handle is not pollable. */
@@ -1802,7 +1762,6 @@ RT_C_DECLS_END
 /** The poll set is full. */
 #define VERR_POLL_SET_IS_FULL                   (-953)
 /** @} */
-
 /** @name Pkzip status codes
  * @{ */
 /** No end of central directory record found. */
@@ -1817,8 +1776,6 @@ RT_C_DECLS_END
 #define VERR_PKZIP_UNKNOWN_TYPE_FLAG            (-964)
 /** Found a ZIP64 Extra Information Field in a ZIP32 file. */
 #define VERR_PKZIP_ZIP64EX_IN_ZIP32             (-965)
-
-
 /** @name RTZip status codes
  * @{ */
 /** Generic zip error. */
@@ -1834,7 +1791,6 @@ RT_C_DECLS_END
 /** The compressed data started with a bad header. */
 #define VERR_ZIP_BAD_HEADER                     (-22005)
 /** @} */
-
 /** @name RTVfs status codes
  * @{ */
 /** The VFS chain specification does not have a valid prefix. */
@@ -1862,7 +1818,6 @@ RT_C_DECLS_END
 /** Unexpected action type. */
 #define VERR_VFS_CHAIN_UNEXPECTED_ACTION_TYPE       (-22111)
 /** @} */
-
 /** @name RTDvm status codes
  * @{ */
 /** The volume map doesn't contain any valid volume. */
@@ -1870,15 +1825,12 @@ RT_C_DECLS_END
 /** There is no volume behind the current one. */
 #define VERR_DVM_MAP_NO_VOLUME                      (-22201)
 /** @} */
-
 /** @name Logger status codes
  * @{ */
 /** The internal logger revision did not match. */
 #define VERR_LOG_REVISION_MISMATCH                  (-22300)
 /** @} */
-
 /* see above, 22400..22499 is used for misc codes! */
-
 /** @name Logger status codes
  * @{ */
 /** Power off is not supported by the hardware or the OS. */
@@ -1889,13 +1841,11 @@ RT_C_DECLS_END
 /** Shutdown failed. */
 #define VERR_SYS_SHUTDOWN_FAILED                    (-22502)
 /** @} */
-
 /** @name Filesystem status codes
  * @{ */
 /** Filesystem can't be opened because it is corrupt. */
 #define VERR_FILESYSTEM_CORRUPT                     (-22600)
 /** @} */
-
 /** @name RTZipXar status codes.
  * @{ */
 /** Wrong magic value. */
@@ -1985,7 +1935,6 @@ RT_C_DECLS_END
  * uncompressed data. */
 #define VERR_XAR_ARCHIVED_AND_EXTRACTED_SIZES_MISMATCH (-22739)
 /** @} */
-
 /** @name RTX509 status codes
  * @{ */
 /** Error reading a certificate in PEM format from BIO. */
@@ -2011,7 +1960,6 @@ RT_C_DECLS_END
 /** Warning X509 certificate isn't self signed.  */
 #define VINF_X509_NOT_SELFSIGNED_CERTIFICATE             23109
 /** @} */
-
 /** @name RTAsn1 status codes
  * @{ */
 /** Temporary place holder.  */
@@ -2130,7 +2078,8 @@ RT_C_DECLS_END
 #define VERR_ASN1_INVALID_DATA_POINTER              (-22854)
 /** The ASN.1 encoding is too deeply nested for the decoder. */
 #define VERR_ASN1_TOO_DEEPLY_NESTED                 (-22855)
-
+/** Generic unexpected object ID error. */
+#define VERR_ASN1_UNEXPECTED_OBJ_ID                 (-22856)
 /** ANS.1 internal error 1. */
 #define VERR_ASN1_INTERNAL_ERROR_1                  (-22895)
 /** ANS.1 internal error 2. */
@@ -2142,7 +2091,6 @@ RT_C_DECLS_END
 /** ANS.1 internal error 5. */
 #define VERR_ASN1_INTERNAL_ERROR_5                  (-22899)
 /** @} */
-
 /** @name More RTLdr status codes.
  * @{ */
 /** Image Verification Failure: No Authenticode Signature. */
@@ -2178,7 +2126,6 @@ RT_C_DECLS_END
 #define VERR_LDRVI_BAD_CERT_HDR_TYPE                (-22913)
 /** Image Verification Failure: More than one certificate table entry.  */
 #define VERR_LDRVI_BAD_CERT_MULTIPLE                (-22914)
-
 /** Image Verification Failure:  */
 #define VERR_LDRVI_BAD_MZ_OFFSET                    (-22915)
 /** Image Verification Failure: Invalid section count. */
@@ -2189,12 +2136,10 @@ RT_C_DECLS_END
 #define VERR_LDRVI_MACHINE_OPT_HDR_MAGIC_MISMATCH   (-22918)
 /** Unsupported image target architecture. */
 #define VERR_LDRVI_UNSUPPORTED_ARCH                 (-22919)
-
 /** Image Verification Failure: Internal error in signature parser. */
 #define VERR_LDRVI_PARSE_IPE                        (-22921)
 /** Generic BER parse error. Will be refined later. */
 #define VERR_LDRVI_PARSE_BER_ERROR                  (-22922)
-
 /** Expected the signed data content to be the object ID of
  * SpcIndirectDataContent, found something else instead. */
 #define VERR_LDRVI_EXPECTED_INDIRECT_DATA_CONTENT_OID (-22923)
@@ -2210,7 +2155,6 @@ RT_C_DECLS_END
 #define VERR_LDRVI_PAGE_HASH_MISMATCH               (-22928)
 /** Image hash mismatch. */
 #define VERR_LDRVI_IMAGE_HASH_MISMATCH              (-22929)
-
 /** Cannot resolve symbol because it's a forwarder. */
 #define VERR_LDR_FORWARDER                          (-22950)
 /** The symbol is not a forwarder. */
@@ -2222,7 +2166,6 @@ RT_C_DECLS_END
 /** Support for forwarders has not been implemented. */
 #define VERR_LDR_FORWARDERS_NOT_SUPPORTED           (-22954)
 /** @} */
-
 /** @name RTCrX509 status codes.
  * @{ */
 /** Generic X.509 error. */
@@ -2318,7 +2261,6 @@ RT_C_DECLS_END
 /** OpenSSL d2i_X509 failed. */
 #define VERR_CR_X509_OSSL_D2I_FAILED                (-23090)
 /** @} */
-
 /** @name RTCrPkcs7 status codes.
  * @{ */
 /** Generic PKCS \#7 error. */
@@ -2392,7 +2334,6 @@ RT_C_DECLS_END
 /** The encrypted digest algorithm does not match the one in the certificate. */
 #define VERR_CR_PKCS7_SIGNER_INFO_DIGEST_ENCRYPT_MISMATCH       (-22359)
 /** @} */
-
 /** @name RTCrSpc status codes.
  * @{ */
 /** Generic SPC error. */
@@ -2433,7 +2374,6 @@ RT_C_DECLS_END
 /** PE image data without any valid content was not expected. */
 #define VERR_CR_SPC_PEIMAGE_NO_CONTENT                          (-23416)
 /** @} */
-
 /** @name RTCrPkix status codes.
  * @{ */
 /** Generic PKCS \#7 error. */
@@ -2473,19 +2413,16 @@ RT_C_DECLS_END
 /** The EVP_PKEY_type API in OpenSSL failed.  */
 #define VERR_CR_PKIX_OSSL_EVP_PKEY_TYPE_ERROR       (-23517)
 /** @} */
-
 /** @name RTCrStore status codes.
  * @{ */
 /** Generic store error. */
 #define VERR_CR_STORE_GENERIC_ERROR                 (-23700)
 /** @} */
-
 /** @name RTCrRsa status codes.
  * @{ */
 /** Generic RSA error. */
 #define VERR_CR_RSA_GENERIC_ERROR                   (-23900)
 /** @} */
-
 /** @name RTBigNum status codes.
  * @{ */
 /** Sensitive input requires the result(s) to be initialized as sensitive. */
@@ -2494,9 +2431,7 @@ RT_C_DECLS_END
 #define VERR_BIGNUM_DIV_BY_ZERO                     (-24001)
 /** Negative exponent makes no sense to integer math. */
 #define VERR_BIGNUM_NEGATIVE_EXPONENT               (-24002)
-
 /** @} */
-
 /** @name RTCrDigest status codes.
  * @{ */
 /** OpenSSL failed to initialize the digest algorithm context. */
@@ -2504,7 +2439,6 @@ RT_C_DECLS_END
 /** OpenSSL failed to clone the digest algorithm context. */
 #define VERR_CR_DIGEST_OSSL_DIGEST_CTX_COPY_ERROR   (-24201)
 /** @} */
-
 /** @name RTPath  status codes.
  * @{ */
 /** Unknown glob variable.  */
@@ -2516,7 +2450,6 @@ RT_C_DECLS_END
 /** Unknown character class in glob pattern.   */
 #define VERR_PATH_GLOB_UNKNOWN_CHAR_CLASS           (-24403)
 /** @} */
-
 /** @name RTUri status codes.
  * @{ */
 /** The URI is empty */
@@ -2542,7 +2475,6 @@ RT_C_DECLS_END
 /** Expected URI using the 'file:' scheme. */
 #define VERR_URI_NOT_FILE_SCHEME                    (-24610)
 /** @} */
-
 /** @name RTJson status codes.
  * @{ */
 /** The called method does not work with the value type of the given JSON value. */
@@ -2552,10 +2484,6 @@ RT_C_DECLS_END
 /** The JSON document is malformed. */
 #define VERR_JSON_MALFORMED                         (-24702)
 /** @} */
-
 /* SED-END */
-
 /** @} */
-
 #endif
-

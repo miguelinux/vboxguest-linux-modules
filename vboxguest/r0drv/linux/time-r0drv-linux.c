@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -34,154 +33,148 @@
 #include <iprt/time.h>
 #include <iprt/asm.h>
 
-
-
 DECLINLINE(uint64_t) rtTimeGetSystemNanoTS(void)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 16) /* This must match timer-r0drv-linux.c! */
-    /*
-     * Use ktime_get_ts, this is also what clock_gettime(CLOCK_MONOTONIC,) is using.
-     */
-    uint64_t u64;
-    struct timespec Ts;
-    ktime_get_ts(&Ts);
-    u64 = Ts.tv_sec * RT_NS_1SEC_64 + Ts.tv_nsec;
-    return u64;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 16)	/* This must match timer-r0drv-linux.c! */
+	/*
+	 * Use ktime_get_ts, this is also what clock_gettime(CLOCK_MONOTONIC,) is using.
+	 */
+	uint64_t u64;
+	struct timespec Ts;
+	ktime_get_ts(&Ts);
+	u64 = Ts.tv_sec * RT_NS_1SEC_64 + Ts.tv_nsec;
+	return u64;
 
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 60)
-    /*
-     * Seems there is no way of getting to the exact source of
-     * sys_clock_gettime(CLOCK_MONOTONIC, &ts) here, I think. But
-     * 64-bit jiffies adjusted for the initial value should be pretty
-     * much the same I hope.
-     */
-    uint64_t u64 = get_jiffies_64();
+	/*
+	 * Seems there is no way of getting to the exact source of
+	 * sys_clock_gettime(CLOCK_MONOTONIC, &ts) here, I think. But
+	 * 64-bit jiffies adjusted for the initial value should be pretty
+	 * much the same I hope.
+	 */
+	uint64_t u64 = get_jiffies_64();
 # ifdef INITIAL_JIFFIES
-    u64 += INITIAL_JIFFIES;
+	u64 += INITIAL_JIFFIES;
 # endif
-    u64 *= TICK_NSEC;
-    return u64;
+	u64 *= TICK_NSEC;
+	return u64;
 
-#else   /* < 2.5.60 */
+#else /* < 2.5.60 */
 # if BITS_PER_LONG >= 64
-    /*
-     * This is the same as above, except that there is no get_jiffies_64()
-     * here and we rely on long, and therefor jiffies, being 64-bit instead.
-     */
-    uint64_t u64 = jiffies;
+	/*
+	 * This is the same as above, except that there is no get_jiffies_64()
+	 * here and we rely on long, and therefor jiffies, being 64-bit instead.
+	 */
+	uint64_t u64 = jiffies;
 # ifdef INITIAL_JIFFIES
-    u64 += INITIAL_JIFFIES;
+	u64 += INITIAL_JIFFIES;
 # endif
-    u64 *= TICK_NSEC;
-    return u64;
+	u64 *= TICK_NSEC;
+	return u64;
 
 # else /* 32 bit jiffies */
-    /*
-     * We'll have to try track jiffy rollovers here or we'll be
-     * in trouble every time it flips.
-     *
-     * The high dword of the s_u64Last is the rollover count, the
-     * low dword is the previous jiffies.  Updating is done by
-     * atomic compare & exchange of course.
-     */
-    static uint64_t volatile s_u64Last = 0;
-    uint64_t u64;
+	/*
+	 * We'll have to try track jiffy rollovers here or we'll be
+	 * in trouble every time it flips.
+	 *
+	 * The high dword of the s_u64Last is the rollover count, the
+	 * low dword is the previous jiffies.  Updating is done by
+	 * atomic compare & exchange of course.
+	 */
+	static uint64_t volatile s_u64Last = 0;
+	uint64_t u64;
 
-    for (;;)
-    {
-        uint64_t u64NewLast;
-        int32_t iDelta;
-        uint32_t cRollovers;
-        uint32_t u32LastJiffies;
+	for (;;) {
+		uint64_t u64NewLast;
+		int32_t iDelta;
+		uint32_t cRollovers;
+		uint32_t u32LastJiffies;
 
-        /* sample the values */
-        unsigned long ulNow = jiffies;
-        uint64_t u64Last = s_u64Last;
-        if (ulNow != jiffies)
-            continue; /* try again */
+		/* sample the values */
+		unsigned long ulNow = jiffies;
+		uint64_t u64Last = s_u64Last;
+		if (ulNow != jiffies)
+			continue;	/* try again */
 #  ifdef INITIAL_JIFFIES
-        ulNow += INITIAL_JIFFIES;
+		ulNow += INITIAL_JIFFIES;
 #  endif
 
-        u32LastJiffies = (uint32_t)u64Last;
-        cRollovers = u64Last >> 32;
+		u32LastJiffies = (uint32_t) u64Last;
+		cRollovers = u64Last >> 32;
 
-        /*
-         * Check for rollover and update the static last value.
-         *
-         * We have to make sure we update it successfully to rule out
-         * an underrun because of racing someone.
-         */
-        iDelta = ulNow - u32LastJiffies;
-        if (iDelta < 0)
-        {
-            cRollovers++;
-            u64NewLast = RT_MAKE_U64(ulNow, cRollovers);
-            if (!ASMAtomicCmpXchgU64(&s_u64Last, u64NewLast, u64Last))
-                continue; /* race, try again */
-        }
-        else
-        {
-            u64NewLast = RT_MAKE_U64(ulNow, cRollovers);
-            ASMAtomicCmpXchgU64(&s_u64Last, u64NewLast, u64Last);
-        }
+		/*
+		 * Check for rollover and update the static last value.
+		 *
+		 * We have to make sure we update it successfully to rule out
+		 * an underrun because of racing someone.
+		 */
+		iDelta = ulNow - u32LastJiffies;
+		if (iDelta < 0) {
+			cRollovers++;
+			u64NewLast = RT_MAKE_U64(ulNow, cRollovers);
+			if (!ASMAtomicCmpXchgU64
+			    (&s_u64Last, u64NewLast, u64Last))
+				continue;	/* race, try again */
+		} else {
+			u64NewLast = RT_MAKE_U64(ulNow, cRollovers);
+			ASMAtomicCmpXchgU64(&s_u64Last, u64NewLast, u64Last);
+		}
 
-        /* calculate the return value */
-        u64 = ulNow;
-        u64 *= TICK_NSEC;
-        u64 += cRollovers * (_4G * TICK_NSEC);
-        break;
-    }
+		/* calculate the return value */
+		u64 = ulNow;
+		u64 *= TICK_NSEC;
+		u64 += cRollovers * (_4G * TICK_NSEC);
+		break;
+	}
 
-    return u64;
-# endif /* 32 bit jiffies */
-#endif  /* < 2.5.60 */
+	return u64;
+# endif	/* 32 bit jiffies */
+#endif /* < 2.5.60 */
 }
-
 
 RTDECL(uint64_t) RTTimeNanoTS(void)
 {
-    return rtTimeGetSystemNanoTS();
+	return rtTimeGetSystemNanoTS();
 }
-RT_EXPORT_SYMBOL(RTTimeNanoTS);
 
+RT_EXPORT_SYMBOL(RTTimeNanoTS);
 
 RTDECL(uint64_t) RTTimeMilliTS(void)
 {
-    return rtTimeGetSystemNanoTS() / RT_NS_1MS;
+	return rtTimeGetSystemNanoTS() / RT_NS_1MS;
 }
-RT_EXPORT_SYMBOL(RTTimeMilliTS);
 
+RT_EXPORT_SYMBOL(RTTimeMilliTS);
 
 RTDECL(uint64_t) RTTimeSystemNanoTS(void)
 {
-    return rtTimeGetSystemNanoTS();
+	return rtTimeGetSystemNanoTS();
 }
-RT_EXPORT_SYMBOL(RTTimeSystemNanoTS);
 
+RT_EXPORT_SYMBOL(RTTimeSystemNanoTS);
 
 RTDECL(uint64_t) RTTimeSystemMilliTS(void)
 {
-    return rtTimeGetSystemNanoTS() / RT_NS_1MS;
+	return rtTimeGetSystemNanoTS() / RT_NS_1MS;
 }
-RT_EXPORT_SYMBOL(RTTimeSystemMilliTS);
 
+RT_EXPORT_SYMBOL(RTTimeSystemMilliTS);
 
 RTDECL(PRTTIMESPEC) RTTimeNow(PRTTIMESPEC pTime)
 {
-    IPRT_LINUX_SAVE_EFL_AC();
+	IPRT_LINUX_SAVE_EFL_AC();
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 16)
-    struct timespec Ts;
-    ktime_get_real_ts(&Ts);
-    IPRT_LINUX_RESTORE_EFL_AC();
-    return RTTimeSpecSetTimespec(pTime, &Ts);
+	struct timespec Ts;
+	ktime_get_real_ts(&Ts);
+	IPRT_LINUX_RESTORE_EFL_AC();
+	return RTTimeSpecSetTimespec(pTime, &Ts);
 
-#else   /* < 2.6.16 */
-    struct timeval Tv;
-    do_gettimeofday(&Tv);
-    IPRT_LINUX_RESTORE_EFL_AC();
-    return RTTimeSpecSetTimeval(pTime, &Tv);
+#else /* < 2.6.16 */
+	struct timeval Tv;
+	do_gettimeofday(&Tv);
+	IPRT_LINUX_RESTORE_EFL_AC();
+	return RTTimeSpecSetTimeval(pTime, &Tv);
 #endif
 }
-RT_EXPORT_SYMBOL(RTTimeNow);
 
+RT_EXPORT_SYMBOL(RTTimeNow);

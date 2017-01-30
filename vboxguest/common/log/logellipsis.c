@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -34,7 +33,6 @@
 #include <iprt/asm.h>
 #include <iprt/stdarg.h>
 
-
 /**
  * Write to a logger instance.
  *
@@ -43,23 +41,24 @@
  * @param   pszFormat   Format string.
  * @param   ...         Format arguments.
  */
-RTDECL(void) RTLogLogger(PRTLOGGER pLogger, void *pvCallerRet, const char *pszFormat, ...)
+RTDECL(void) RTLogLogger(PRTLOGGER pLogger, void *pvCallerRet,
+			 const char *pszFormat, ...)
 {
-    va_list args;
-    va_start(args, pszFormat);
+	va_list args;
+	va_start(args, pszFormat);
 #if defined(RT_OS_DARWIN) && defined(RT_ARCH_X86) && defined(IN_RING3)
-    /* manually align the stack before doing the call.
-     * We boldly assume that there is a stack frame here! */
-    __asm__ __volatile__("andl $-32, %%esp\t\n" ::: "%esp");
-    RTLogLoggerExV(pLogger, 0, ~0U, pszFormat, args);
+	/* manually align the stack before doing the call.
+	 * We boldly assume that there is a stack frame here! */
+	__asm__ __volatile__("andl $-32, %%esp\t\n":::"%esp");
+	RTLogLoggerExV(pLogger, 0, ~0U, pszFormat, args);
 #else
-    RTLogLoggerExV(pLogger, 0, ~0U, pszFormat, args);
+	RTLogLoggerExV(pLogger, 0, ~0U, pszFormat, args);
 #endif
-    va_end(args);
-    NOREF(pvCallerRet);
+	va_end(args);
+	NOREF(pvCallerRet);
 }
-RT_EXPORT_SYMBOL(RTLogLogger);
 
+RT_EXPORT_SYMBOL(RTLogLogger);
 
 /**
  * Write to a logger instance.
@@ -76,15 +75,16 @@ RT_EXPORT_SYMBOL(RTLogLogger);
  * @param   ...         Format arguments.
  * @remark  This is a worker function of LogIt.
  */
-RTDECL(void) RTLogLoggerEx(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup, const char *pszFormat, ...)
+RTDECL(void) RTLogLoggerEx(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
+			   const char *pszFormat, ...)
 {
-    va_list args;
-    va_start(args, pszFormat);
-    RTLogLoggerExV(pLogger, fFlags, iGroup, pszFormat, args);
-    va_end(args);
+	va_list args;
+	va_start(args, pszFormat);
+	RTLogLoggerExV(pLogger, fFlags, iGroup, pszFormat, args);
+	va_end(args);
 }
-RT_EXPORT_SYMBOL(RTLogLoggerEx);
 
+RT_EXPORT_SYMBOL(RTLogLoggerEx);
 
 /**
  * printf like function for writing to the default log.
@@ -96,10 +96,10 @@ RT_EXPORT_SYMBOL(RTLogLoggerEx);
  */
 RTDECL(void) RTLogPrintf(const char *pszFormat, ...)
 {
-    va_list args;
-    va_start(args, pszFormat);
-    RTLogPrintfV(pszFormat, args);
-    va_end(args);
+	va_list args;
+	va_start(args, pszFormat);
+	RTLogPrintfV(pszFormat, args);
+	va_end(args);
 }
-RT_EXPORT_SYMBOL(RTLogPrintf);
 
+RT_EXPORT_SYMBOL(RTLogPrintf);

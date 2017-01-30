@@ -32,7 +32,6 @@
 #include "internal/thread.h"
 
 RT_C_DECLS_BEGIN
-
 /**
  * Calculate the scheduling properties for all the threads in the default
  * process priority, assuming the current thread have the type enmType.
@@ -43,5 +42,4 @@ RT_C_DECLS_BEGIN
 DECLHIDDEN(int) rtSchedNativeCalcDefaultPriority(RTTHREADTYPE enmType);
 
 RT_C_DECLS_END
-
 #endif

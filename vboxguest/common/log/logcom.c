@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Defined Constants And Macros                                                                                                 *
 *********************************************************************************************************************************/
@@ -40,7 +39,6 @@
 # define IPRT_UART_BASE 0x3f8
 #endif
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -54,12 +52,11 @@
 #include <iprt/stdarg.h>
 #include <iprt/string.h>
 
-
 /*********************************************************************************************************************************
 *   Internal Functions                                                                                                           *
 *********************************************************************************************************************************/
-static DECLCALLBACK(size_t) rtLogComOutput(void *pv, const char *pachChars, size_t cbChars);
-
+static DECLCALLBACK(size_t) rtLogComOutput(void *pv, const char *pachChars,
+					   size_t cbChars);
 
 /**
  * Prints a formatted string to the serial port used for logging.
@@ -70,16 +67,16 @@ static DECLCALLBACK(size_t) rtLogComOutput(void *pv, const char *pachChars, size
  */
 RTDECL(size_t) RTLogComPrintf(const char *pszFormat, ...)
 {
-    va_list     args;
-    size_t      cb;
-    va_start(args, pszFormat);
-    cb = RTLogComPrintfV(pszFormat, args);
-    va_end(args);
+	va_list args;
+	size_t cb;
+	va_start(args, pszFormat);
+	cb = RTLogComPrintfV(pszFormat, args);
+	va_end(args);
 
-    return cb;
+	return cb;
 }
-RT_EXPORT_SYMBOL(RTLogComPrintf);
 
+RT_EXPORT_SYMBOL(RTLogComPrintf);
 
 /**
  * Prints a formatted string to the serial port used for logging.
@@ -90,23 +87,23 @@ RT_EXPORT_SYMBOL(RTLogComPrintf);
  */
 RTDECL(size_t) RTLogComPrintfV(const char *pszFormat, va_list args)
 {
-    return RTLogFormatV(rtLogComOutput, NULL, pszFormat, args);
+	return RTLogFormatV(rtLogComOutput, NULL, pszFormat, args);
 }
-RT_EXPORT_SYMBOL(RTLogComPrintfV);
 
+RT_EXPORT_SYMBOL(RTLogComPrintfV);
 
 /**
  * Callback for RTLogFormatV which writes to the com port.
  * See PFNLOGOUTPUT() for details.
  */
-static DECLCALLBACK(size_t) rtLogComOutput(void *pv, const char *pachChars, size_t cbChars)
+static DECLCALLBACK(size_t) rtLogComOutput(void *pv, const char *pachChars,
+					   size_t cbChars)
 {
-    NOREF(pv);
-    if (cbChars)
-        RTLogWriteCom(pachChars, cbChars);
-    return cbChars;
+	NOREF(pv);
+	if (cbChars)
+		RTLogWriteCom(pachChars, cbChars);
+	return cbChars;
 }
-
 
 /**
  * Write log buffer to COM port.
@@ -114,33 +111,31 @@ static DECLCALLBACK(size_t) rtLogComOutput(void *pv, const char *pachChars, size
  * @param   pach        Pointer to the buffer to write.
  * @param   cb          Number of bytes to write.
  */
-RTDECL(void) RTLogWriteCom(const char *pach, size_t cb)
+RTDECL(void)RTLogWriteCom(const char *pach, size_t cb)
 {
 #if defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)
-    const uint8_t *pu8;
-    for (pu8 = (const uint8_t *)pach; cb-- > 0; pu8++)
-    {
-        register unsigned cMaxWait;
-        register uint8_t  u8;
+	const uint8_t *pu8;
+	for (pu8 = (const uint8_t *)pach; cb-- > 0; pu8++) {
+		register unsigned cMaxWait;
+		register uint8_t u8;
 
-        /* expand \n -> \r\n */
-        if (*pu8 == '\n')
-            RTLogWriteCom("\r", 1);
+		/* expand \n -> \r\n */
+		if (*pu8 == '\n')
+			RTLogWriteCom("\r", 1);
 
-        /* Check if port is ready. */
-        cMaxWait = ~0U;
-        do
-        {
-            u8 = ASMInU8(IPRT_UART_BASE + 5);
-            cMaxWait--;
-        } while (!(u8 & 0x20) && u8 != 0xff && cMaxWait);
+		/* Check if port is ready. */
+		cMaxWait = ~0U;
+		do {
+			u8 = ASMInU8(IPRT_UART_BASE + 5);
+			cMaxWait--;
+		} while (!(u8 & 0x20) && u8 != 0xff && cMaxWait);
 
-        /* write */
-        ASMOutU8(IPRT_UART_BASE, *pu8);
-    }
+		/* write */
+		ASMOutU8(IPRT_UART_BASE, *pu8);
+	}
 #else
-    /* PORTME? */
+	/* PORTME? */
 #endif
 }
-RT_EXPORT_SYMBOL(RTLogWriteCom);
 
+RT_EXPORT_SYMBOL(RTLogWriteCom);

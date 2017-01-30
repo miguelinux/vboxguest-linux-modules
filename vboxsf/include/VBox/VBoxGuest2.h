@@ -42,16 +42,15 @@
  *
  * @ingroup grp_vboxguest
  */
-# pragma pack(1) /* explicit packing for good measure. */
-typedef struct VBoxGuestHGCMConnectInfo
-{
-    int32_t result;           /**< OUT */
-    HGCMServiceLocation Loc;  /**< IN */
-    uint32_t u32ClientID;     /**< OUT */
+# pragma pack(1)		/* explicit packing for good measure. */
+typedef struct VBoxGuestHGCMConnectInfo {
+	int32_t result;	      /**< OUT */
+	HGCMServiceLocation Loc;
+			      /**< IN */
+	uint32_t u32ClientID; /**< OUT */
 } VBoxGuestHGCMConnectInfo;
-AssertCompileSize(VBoxGuestHGCMConnectInfo, 4+4+128+4);
+AssertCompileSize(VBoxGuestHGCMConnectInfo, 4 + 4 + 128 + 4);
 # pragma pack()
-
 
 /**
  * HGCM connect info structure.
@@ -60,10 +59,9 @@ AssertCompileSize(VBoxGuestHGCMConnectInfo, 4+4+128+4);
  *
  * @ingroup grp_vboxguest
  */
-typedef struct VBoxGuestHGCMDisconnectInfo
-{
-    int32_t result;           /**< OUT */
-    uint32_t u32ClientID;     /**< IN */
+typedef struct VBoxGuestHGCMDisconnectInfo {
+	int32_t result;	      /**< OUT */
+	uint32_t u32ClientID; /**< IN */
 } VBoxGuestHGCMDisconnectInfo;
 AssertCompileSize(VBoxGuestHGCMDisconnectInfo, 8);
 
@@ -74,16 +72,14 @@ AssertCompileSize(VBoxGuestHGCMDisconnectInfo, 8);
  *
  * @ingroup grp_vboxguest
  */
-typedef struct VBoxGuestHGCMCallInfo
-{
-    int32_t result;           /**< OUT Host HGCM return code.*/
-    uint32_t u32ClientID;     /**< IN  The id of the caller. */
-    uint32_t u32Function;     /**< IN  Function number. */
-    uint32_t cParms;          /**< IN  How many parms. */
-    /* Parameters follow in form HGCMFunctionParameter aParms[cParms] */
+typedef struct VBoxGuestHGCMCallInfo {
+	int32_t result;	      /**< OUT Host HGCM return code.*/
+	uint32_t u32ClientID; /**< IN  The id of the caller. */
+	uint32_t u32Function; /**< IN  Function number. */
+	uint32_t cParms;      /**< IN  How many parms. */
+	/* Parameters follow in form HGCMFunctionParameter aParms[cParms] */
 } VBoxGuestHGCMCallInfo;
 AssertCompileSize(VBoxGuestHGCMCallInfo, 16);
-
 
 /**
  * HGCM call info structure.
@@ -92,16 +88,16 @@ AssertCompileSize(VBoxGuestHGCMCallInfo, 16);
  *
  * @ingroup grp_vboxguest
  */
-# pragma pack(1) /* explicit packing for good measure. */
-typedef struct VBoxGuestHGCMCallInfoTimed
-{
-    uint32_t u32Timeout;         /**< IN  How long to wait for completion before cancelling the call. */
-    uint32_t fInterruptible;     /**< IN  Is this request interruptible? */
-    VBoxGuestHGCMCallInfo info;  /**< IN/OUT The rest of the call information.  Placed after the timeout
+# pragma pack(1)		/* explicit packing for good measure. */
+typedef struct VBoxGuestHGCMCallInfoTimed {
+	uint32_t u32Timeout;	 /**< IN  How long to wait for completion before cancelling the call. */
+	uint32_t fInterruptible; /**< IN  Is this request interruptible? */
+	VBoxGuestHGCMCallInfo info;
+				 /**< IN/OUT The rest of the call information.  Placed after the timeout
                                   * so that the parameters follow as they would for a normal call. */
-    /* Parameters follow in form HGCMFunctionParameter aParms[cParms] */
+	/* Parameters follow in form HGCMFunctionParameter aParms[cParms] */
 } VBoxGuestHGCMCallInfoTimed;
-AssertCompileSize(VBoxGuestHGCMCallInfoTimed, 8+16);
+AssertCompileSize(VBoxGuestHGCMCallInfoTimed, 8 + 16);
 # pragma pack()
 
 /** @} */
@@ -109,4 +105,3 @@ AssertCompileSize(VBoxGuestHGCMCallInfoTimed, 8+16);
 #endif /* VBOX_WITH_HGCM */
 
 #endif
-

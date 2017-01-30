@@ -23,7 +23,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 #ifndef ___iprt_errno_h___
 #define ___iprt_errno_h___
 
@@ -40,7 +39,6 @@
 #  include <errno.h>
 # endif
 #endif
-
 
 /*
  * Supply missing errno values according to the current RT_OS_XXX definition.
@@ -67,7 +65,7 @@
 # define RT_ERRNO_OS_BSD
 #endif
 #ifdef RT_OS_SOLARIS
-# define RT_ERRNO_OS_SYSV_HARDCORE /* ?? */
+# define RT_ERRNO_OS_SYSV_HARDCORE	/* ?? */
 #endif
 
 /* The relatively similar part. */
@@ -315,6 +313,5 @@
 #endif
 
 /** @todo errno constants {76..}. */
-
 
 #endif

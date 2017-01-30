@@ -51,7 +51,7 @@
  * with 48-bit ints.
  */
 
-#if 0 /* iprt */
+#if 0				/* iprt */
 #include <sys/types.h>
 #if !defined(_KERNEL) && !defined(_STANDALONE)
 #include <limits.h>
@@ -65,23 +65,23 @@
 # define __P(a) a
 # undef __GNUC_PREREQ__
 # define __GNUC_PREREQ__(m1,m2) 1
-# if 1 /* ASSUMES: little endian */
+# if 1				/* ASSUMES: little endian */
 #  define _QUAD_HIGHWORD        1
 #  define _QUAD_LOWWORD         0
 # else
 #  define _QUAD_HIGHWORD        0
 #  define _QUAD_LOWWORD         1
 # endif
-# if !defined(RT_OS_LINUX) || !defined(__KERNEL__) /* (linux/types.h defines u_int) */
-   typedef unsigned int	u_int;
+# if !defined(RT_OS_LINUX) || !defined(__KERNEL__)	/* (linux/types.h defines u_int) */
+typedef unsigned int u_int;
 # endif
 # if !defined(RT_OS_SOLARIS)
-   typedef int64_t quad_t;
+typedef int64_t quad_t;
 # else
 #  define quad_t int64_t
 # endif
-   typedef uint64_t u_quad_t;
-   typedef quad_t *qaddr_t;
+typedef uint64_t u_quad_t;
+typedef quad_t *qaddr_t;
 #endif /* iprt */
 
 /*
@@ -89,10 +89,10 @@
  * one or more of the following formats.
  */
 union uu {
-	quad_t	q;		/* as a (signed) quad */
+	quad_t q;		/* as a (signed) quad */
 	u_quad_t uq;		/* as an unsigned quad */
-	int	sl[2];		/* as two signed ints */
-	u_int	ul[2];		/* as two unsigned ints */
+	int sl[2];		/* as two signed ints */
+	u_int ul[2];		/* as two unsigned ints */
 };
 
 /*
@@ -130,17 +130,16 @@ union uu {
  * both compilers.
  */
 #if __GNUC_PREREQ__(2, 0) || defined(lint)
-typedef unsigned int	qshift_t;
+typedef unsigned int qshift_t;
 #else
-typedef u_quad_t	qshift_t;
+typedef u_quad_t qshift_t;
 #endif
 
-RT_C_DECLS_BEGIN
-quad_t __adddi3 __P((quad_t, quad_t));
+RT_C_DECLS_BEGIN quad_t __adddi3 __P((quad_t, quad_t));
 quad_t __anddi3 __P((quad_t, quad_t));
 quad_t __ashldi3 __P((quad_t, qshift_t));
 quad_t __ashrdi3 __P((quad_t, qshift_t));
-int __cmpdi2 __P((quad_t, quad_t ));
+int __cmpdi2 __P((quad_t, quad_t));
 quad_t __divdi3 __P((quad_t, quad_t));
 quad_t __fixdfdi __P((double));
 quad_t __fixsfdi __P((float));
@@ -159,7 +158,7 @@ quad_t __one_cmpldi2 __P((quad_t));
 u_quad_t __qdivrem __P((u_quad_t, u_quad_t, u_quad_t *));
 quad_t __subdi3 __P((quad_t, quad_t));
 int __ucmpdi2 __P((u_quad_t, u_quad_t));
-u_quad_t __udivdi3 __P((u_quad_t, u_quad_t ));
-u_quad_t __umoddi3 __P((u_quad_t, u_quad_t ));
+u_quad_t __udivdi3 __P((u_quad_t, u_quad_t));
+u_quad_t __umoddi3 __P((u_quad_t, u_quad_t));
 quad_t __xordi3 __P((quad_t, quad_t));
 RT_C_DECLS_END

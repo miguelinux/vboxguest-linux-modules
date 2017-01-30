@@ -30,15 +30,13 @@
 #include <iprt/cdefs.h>
 
 RT_C_DECLS_BEGIN
-
 #ifdef IN_RING0
-
 /**
  * Platform specific initialization.
  *
  * @returns IPRT status code.
  */
-DECLHIDDEN(int)  rtR0InitNative(void);
+DECLHIDDEN(int) rtR0InitNative(void);
 
 /**
  * Platform specific termination.
@@ -48,6 +46,4 @@ DECLHIDDEN(void) rtR0TermNative(void);
 #endif /* IN_RING0 */
 
 RT_C_DECLS_END
-
 #endif
-

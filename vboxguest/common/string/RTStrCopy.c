@@ -24,29 +24,25 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
 #include <iprt/string.h>
 #include "internal/iprt.h"
 
-
 RTDECL(int) RTStrCopy(char *pszDst, size_t cbDst, const char *pszSrc)
 {
-    size_t cchSrc = strlen(pszSrc);
-    if (RT_LIKELY(cchSrc < cbDst))
-    {
-        memcpy(pszDst, pszSrc, cchSrc + 1);
-        return VINF_SUCCESS;
-    }
+	size_t cchSrc = strlen(pszSrc);
+	if (RT_LIKELY(cchSrc < cbDst)) {
+		memcpy(pszDst, pszSrc, cchSrc + 1);
+		return VINF_SUCCESS;
+	}
 
-    if (cbDst != 0)
-    {
-        memcpy(pszDst, pszSrc, cbDst - 1);
-        pszDst[cbDst - 1] = '\0';
-    }
-    return VERR_BUFFER_OVERFLOW;
+	if (cbDst != 0) {
+		memcpy(pszDst, pszSrc, cbDst - 1);
+		pszDst[cbDst - 1] = '\0';
+	}
+	return VERR_BUFFER_OVERFLOW;
 }
-RT_EXPORT_SYMBOL(RTStrCopy);
 
+RT_EXPORT_SYMBOL(RTStrCopy);

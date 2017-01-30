@@ -37,7 +37,7 @@
 #  include <sys/stdarg.h>
 # elif defined(RT_OS_SOLARIS) && defined(_KERNEL) && defined(__GNUC__)
 #  include <stdarg.h>
-#  if __GNUC__ >= 4 /* System headers refers to __builtin_stdarg_start. */
+#  if __GNUC__ >= 4		/* System headers refers to __builtin_stdarg_start. */
 #   define __builtin_stdarg_start __builtin_va_start
 #  endif
 # else
@@ -53,4 +53,3 @@
 #endif
 
 #endif
-

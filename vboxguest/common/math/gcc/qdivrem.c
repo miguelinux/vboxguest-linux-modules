@@ -40,7 +40,7 @@ static char sccsid[] = "@(#)qdivrem.c	8.1 (Berkeley) 6/4/93";
 #else
 __RCSID("$NetBSD: qdivrem.c,v 1.12 2005/12/11 12:24:37 christos Exp $");
 #endif
-#endif*/ /* LIBC_SCCS and not lint */
+	 #endif*//* LIBC_SCCS and not lint */
 
 /*
  * Multiprecision divide.  This algorithm is from Knuth vol. 2 (2nd ed),
@@ -61,7 +61,7 @@ typedef unsigned short digit;
 typedef u_int digit;
 #endif
 
-static void shl __P((digit *p, int len, int sh));
+static void shl __P((digit * p, int len, int sh));
 
 /*
  * __qdivrem(u, v, rem) returns u/v and, optionally, sets *rem to u%v.
@@ -71,9 +71,8 @@ static void shl __P((digit *p, int len, int sh));
  * divisor are 4 `digits' in this base (they are shorter if they have
  * leading zeros).
  */
-u_quad_t
-__qdivrem(uq, vq, arq)
-	u_quad_t uq, vq, *arq;
+u_quad_t __qdivrem(uq, vq, arq)
+u_quad_t uq, vq, *arq;
 {
 	union uu tmp;
 	digit *u, *v, *q;
@@ -107,26 +106,26 @@ __qdivrem(uq, vq, arq)
 	 * Break dividend and divisor into digits in base B, then
 	 * count leading zeros to determine m and n.  When done, we
 	 * will have:
-	 *	u = (u[1]u[2]...u[m+n]) sub B
-	 *	v = (v[1]v[2]...v[n]) sub B
-	 *	v[1] != 0
-	 *	1 < n <= 4 (if n = 1, we use a different division algorithm)
-	 *	m >= 0 (otherwise u < v, which we already checked)
-	 *	m + n = 4
+	 *      u = (u[1]u[2]...u[m+n]) sub B
+	 *      v = (v[1]v[2]...v[n]) sub B
+	 *      v[1] != 0
+	 *      1 < n <= 4 (if n = 1, we use a different division algorithm)
+	 *      m >= 0 (otherwise u < v, which we already checked)
+	 *      m + n = 4
 	 * and thus
-	 *	m = 4 - n <= 2
+	 *      m = 4 - n <= 2
 	 */
 	tmp.uq = uq;
 	u[0] = 0;
-	u[1] = (digit)HHALF(tmp.ul[H]);
-	u[2] = (digit)LHALF(tmp.ul[H]);
-	u[3] = (digit)HHALF(tmp.ul[L]);
-	u[4] = (digit)LHALF(tmp.ul[L]);
+	u[1] = (digit) HHALF(tmp.ul[H]);
+	u[2] = (digit) LHALF(tmp.ul[H]);
+	u[3] = (digit) HHALF(tmp.ul[L]);
+	u[4] = (digit) LHALF(tmp.ul[L]);
 	tmp.uq = vq;
-	v[1] = (digit)HHALF(tmp.ul[H]);
-	v[2] = (digit)LHALF(tmp.ul[H]);
-	v[3] = (digit)HHALF(tmp.ul[L]);
-	v[4] = (digit)LHALF(tmp.ul[L]);
+	v[1] = (digit) HHALF(tmp.ul[H]);
+	v[2] = (digit) LHALF(tmp.ul[H]);
+	v[3] = (digit) HHALF(tmp.ul[L]);
+	v[4] = (digit) LHALF(tmp.ul[L]);
 	for (n = 4; v[1] == 0; v++) {
 		if (--n == 1) {
 			u_int rbj;	/* r*B+u[j] (not root boy jim) */
@@ -134,20 +133,20 @@ __qdivrem(uq, vq, arq)
 
 			/*
 			 * Change of plan, per exercise 16.
-			 *	r = 0;
-			 *	for j = 1..4:
-			 *		q[j] = floor((r*B + u[j]) / v),
-			 *		r = (r*B + u[j]) % v;
+			 *      r = 0;
+			 *      for j = 1..4:
+			 *              q[j] = floor((r*B + u[j]) / v),
+			 *              r = (r*B + u[j]) % v;
 			 * We unroll this completely here.
 			 */
 			t = v[2];	/* nonzero, by definition */
-			q1 = (digit)(u[1] / t);
+			q1 = (digit) (u[1] / t);
 			rbj = COMBINE(u[1] % t, u[2]);
-			q2 = (digit)(rbj / t);
+			q2 = (digit) (rbj / t);
 			rbj = COMBINE(rbj % t, u[3]);
-			q3 = (digit)(rbj / t);
+			q3 = (digit) (rbj / t);
 			rbj = COMBINE(rbj % t, u[4]);
-			q4 = (digit)(rbj / t);
+			q4 = (digit) (rbj / t);
 			if (arq)
 				*arq = rbj % t;
 			tmp.ul[H] = COMBINE(q1, q2);
@@ -177,15 +176,15 @@ __qdivrem(uq, vq, arq)
 	for (t = v[1]; t < B / 2; t <<= 1)
 		d++;
 	if (d > 0) {
-		shl(&u[0], m + n, d);		/* u <<= d */
-		shl(&v[1], n - 1, d);		/* v <<= d */
+		shl(&u[0], m + n, d);	/* u <<= d */
+		shl(&v[1], n - 1, d);	/* v <<= d */
 	}
 	/*
 	 * D2: j = 0.
 	 */
 	j = 0;
-	v1 = v[1];	/* for D3 -- note that v[1..n] are constant */
-	v2 = v[2];	/* for D3 */
+	v1 = v[1];		/* for D3 -- note that v[1..n] are constant */
+	v2 = v[2];		/* for D3 */
 	do {
 		digit uj0, uj1, uj2;
 
@@ -210,7 +209,7 @@ __qdivrem(uq, vq, arq)
 			rhat = nn % v1;
 		}
 		while (v2 * qhat > COMBINE(rhat, uj2)) {
-	qhat_too_big:
+qhat_too_big:
 			qhat--;
 			if ((rhat += v1) >= B)
 				break;
@@ -223,11 +222,11 @@ __qdivrem(uq, vq, arq)
 		 */
 		for (t = 0, i = n; i > 0; i--) {
 			t = u[i + j] - v[i] * qhat - t;
-			u[i + j] = (digit)LHALF(t);
+			u[i + j] = (digit) LHALF(t);
 			t = (B - HHALF(t)) & (B - 1);
 		}
 		t = u[j] - t;
-		u[j] = (digit)LHALF(t);
+		u[j] = (digit) LHALF(t);
 		/*
 		 * D5: test remainder.
 		 * There is a borrow if and only if HHALF(t) is nonzero;
@@ -236,15 +235,15 @@ __qdivrem(uq, vq, arq)
 		 */
 		if (HHALF(t)) {
 			qhat--;
-			for (t = 0, i = n; i > 0; i--) { /* D6: add back. */
+			for (t = 0, i = n; i > 0; i--) {	/* D6: add back. */
 				t += u[i + j] + v[i];
-				u[i + j] = (digit)LHALF(t);
+				u[i + j] = (digit) LHALF(t);
 				t = HHALF(t);
 			}
-			u[j] = (digit)LHALF(u[j] + t);
+			u[j] = (digit) LHALF(u[j] + t);
 		}
-		q[j] = (digit)qhat;
-	} while (++j <= m);		/* D7: loop on j. */
+		q[j] = (digit) qhat;
+	} while (++j <= m);	/* D7: loop on j. */
 
 	/*
 	 * If caller wants the remainder, we have to calculate it as
@@ -254,8 +253,9 @@ __qdivrem(uq, vq, arq)
 	if (arq) {
 		if (d) {
 			for (i = m + n; i > m; --i)
-				u[i] = (digit)(((u_int)u[i] >> d) |
-				    LHALF((u_int)u[i - 1] << (HALF_BITS - d)));
+				u[i] = (digit) (((u_int) u[i] >> d) |
+						LHALF((u_int) u[i - 1] <<
+						      (HALF_BITS - d)));
 			u[i] = 0;
 		}
 		tmp.ul[H] = COMBINE(uspace[1], uspace[2]);
@@ -273,13 +273,12 @@ __qdivrem(uq, vq, arq)
  * `fall out' the left (there never will be any such anyway).
  * We may assume len >= 0.  NOTE THAT THIS WRITES len+1 DIGITS.
  */
-static void
-shl(digit *p, int len, int sh)
+static void shl(digit * p, int len, int sh)
 {
 	int i;
 
 	for (i = 0; i < len; i++)
-		p[i] = (digit)(LHALF((u_int)p[i] << sh) |
-		    ((u_int)p[i + 1] >> (HALF_BITS - sh)));
-	p[i] = (digit)(LHALF((u_int)p[i] << sh));
+		p[i] = (digit) (LHALF((u_int) p[i] << sh) |
+				((u_int) p[i + 1] >> (HALF_BITS - sh)));
+	p[i] = (digit) (LHALF((u_int) p[i] << sh));
 }

@@ -26,15 +26,12 @@
 #ifndef ___iprt_mem_h
 #define ___iprt_mem_h
 
-
 #include <iprt/cdefs.h>
 #include <iprt/types.h>
-
 
 #ifdef IN_RC
 # error "There are no RTMem APIs available Guest Context!"
 #endif
-
 
 /** @defgroup grp_rt_mem    RTMem - Memory Management and Manipulation
  * @ingroup grp_rt
@@ -42,7 +39,6 @@
  */
 
 RT_C_DECLS_BEGIN
-
 /** @def RTMEM_ALIGNMENT
  * The alignment of the memory blocks returned by RTMemAlloc(), RTMemAllocZ(),
  * RTMemRealloc(), RTMemTmpAlloc() and RTMemTmpAllocZ() for allocations greater
@@ -55,7 +51,6 @@ RT_C_DECLS_BEGIN
 #else
 # define RTMEM_ALIGNMENT    8
 #endif
-
 /** @def RTMEM_TAG
  * The default allocation tag used by the RTMem allocation APIs.
  *
@@ -71,8 +66,6 @@ RT_C_DECLS_BEGIN
 #  define RTMEM_TAG   (__FILE__)
 # endif
 #endif
-
-
 /** @name Allocate temporary memory.
  * @{ */
 /**
@@ -88,7 +81,6 @@ RT_C_DECLS_BEGIN
  * @param   cb      Size in bytes of the memory block to allocated.
  */
 #define RTMemTmpAlloc(cb)               RTMemTmpAllocTag((cb), RTMEM_TAG)
-
 /**
  * Allocates temporary memory with custom tag.
  *
@@ -102,7 +94,8 @@ RT_C_DECLS_BEGIN
  * @param   cb      Size in bytes of the memory block to allocated.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *)  RTMemTmpAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemTmpAllocTag(size_t cb,
+				const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Allocates zero'd temporary memory with default tag.
@@ -125,17 +118,17 @@ RTDECL(void *)  RTMemTmpAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROT
  * @param   cb      Size in bytes of the memory block to allocated.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *)  RTMemTmpAllocZTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemTmpAllocZTag(size_t cb,
+				 const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Free temporary memory.
  *
  * @param   pv      Pointer to memory block.
  */
-RTDECL(void)    RTMemTmpFree(void *pv) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemTmpFree(void *pv) RT_NO_THROW_PROTO;
 
 /** @}  */
-
 
 /**
  * Allocates memory with default tag.
@@ -154,7 +147,7 @@ RTDECL(void)    RTMemTmpFree(void *pv) RT_NO_THROW_PROTO;
  * @param   cb      Size in bytes of the memory block to allocated.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *)  RTMemAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Allocates zero'd memory with default tag.
@@ -181,7 +174,7 @@ RTDECL(void *)  RTMemAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
  * @param   cb      Size in bytes of the memory block to allocated.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *)  RTMemAllocZTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemAllocZTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Wrapper around RTMemAlloc for automatically aligning variable sized
@@ -200,7 +193,8 @@ RTDECL(void *)  RTMemAllocZTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
  * @param   cbUnaligned         The unaligned size.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(void *) RTMemAllocVarTag(size_t cbUnaligned, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemAllocVarTag(size_t cbUnaligned,
+				const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Wrapper around RTMemAllocZ for automatically aligning variable sized
@@ -219,7 +213,8 @@ RTDECL(void *) RTMemAllocVarTag(size_t cbUnaligned, const char *pszTag) RT_NO_TH
  * @param   cbUnaligned         The unaligned size.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(void *) RTMemAllocZVarTag(size_t cbUnaligned, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemAllocZVarTag(size_t cbUnaligned,
+				 const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Duplicates a chunk of memory into a new heap block (default tag).
@@ -240,7 +235,8 @@ RTDECL(void *) RTMemAllocZVarTag(size_t cbUnaligned, const char *pszTag) RT_NO_T
  * @param   cb      The amount of memory to duplicate.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb,
+			   const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Duplicates a chunk of memory into a new heap block with some additional
@@ -265,7 +261,8 @@ RTDECL(void *) RTMemDupTag(const void *pvSrc, size_t cb, const char *pszTag) RT_
  * @param   cbExtra The amount of extra memory to allocate and zero.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *) RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra,
+			     const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Reallocates memory with default tag.
@@ -286,16 +283,15 @@ RTDECL(void *) RTMemDupExTag(const void *pvSrc, size_t cbSrc, size_t cbExtra, co
  * @param   cbNew   The new block size (in bytes).
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *)  RTMemReallocTag(void *pvOld, size_t cbNew, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemReallocTag(void *pvOld, size_t cbNew,
+			       const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Frees memory.
  *
  * @param   pv      Pointer to memory block.
  */
-RTDECL(void)    RTMemFree(void *pv) RT_NO_THROW_PROTO;
-
-
+RTDECL(void) RTMemFree(void *pv) RT_NO_THROW_PROTO;
 
 /** @name RTR0MemAllocEx and RTR0MemAllocExTag flags.
  * @{ */
@@ -360,7 +356,8 @@ RTDECL(void)    RTMemFree(void *pv) RT_NO_THROW_PROTO;
  * @param   pszTag              The tag.
  * @param   ppv                 Where to return the memory.
  */
-RTDECL(int) RTMemAllocExTag(size_t cb, size_t cbAlignment, uint32_t fFlags, const char *pszTag, void **ppv) RT_NO_THROW_PROTO;
+RTDECL(int) RTMemAllocExTag(size_t cb, size_t cbAlignment, uint32_t fFlags,
+			    const char *pszTag, void **ppv) RT_NO_THROW_PROTO;
 
 /**
  * For freeing memory allocated by RTMemAllocEx or RTMemAllocExTag.
@@ -369,8 +366,6 @@ RTDECL(int) RTMemAllocExTag(size_t cb, size_t cbAlignment, uint32_t fFlags, cons
  * @param   cb                  The amount of allocated memory.
  */
 RTDECL(void) RTMemFreeEx(void *pv, size_t cb) RT_NO_THROW_PROTO;
-
-
 
 /**
  * Allocates memory which may contain code (default tag).
@@ -389,7 +384,8 @@ RTDECL(void) RTMemFreeEx(void *pv, size_t cb) RT_NO_THROW_PROTO;
  * @param   cb      Size in bytes of the memory block to allocate.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *)  RTMemExecAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemExecAllocTag(size_t cb,
+				 const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Free executable/read/write memory allocated by RTMemExecAlloc().
@@ -397,7 +393,7 @@ RTDECL(void *)  RTMemExecAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PRO
  * @param   pv      Pointer to memory block.
  * @param   cb      The allocation size.
  */
-RTDECL(void)    RTMemExecFree(void *pv, size_t cb) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemExecFree(void *pv, size_t cb) RT_NO_THROW_PROTO;
 
 #if defined(IN_RING0) && defined(RT_ARCH_AMD64) && defined(RT_OS_LINUX)
 /**
@@ -435,7 +431,8 @@ RTR0DECL(int) RTR0MemExecDonate(void *pvMemory, size_t cb) RT_NO_THROW_PROTO;
  * @param   cb  Size of the memory block. Will be rounded up to page size.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *) RTMemPageAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemPageAllocTag(size_t cb,
+				 const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Allocate zero'd page aligned memory with default tag.
@@ -454,7 +451,8 @@ RTDECL(void *) RTMemPageAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROT
  * @param   cb  Size of the memory block. Will be rounded up to page size.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
-RTDECL(void *) RTMemPageAllocZTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemPageAllocZTag(size_t cb,
+				  const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Free a memory block allocated with RTMemPageAlloc() or RTMemPageAllocZ().
@@ -487,7 +485,8 @@ RTDECL(void) RTMemPageFree(void *pv, size_t cb) RT_NO_THROW_PROTO;
  * @param   cb          Size of the region. Will be rounded up to the nearest page boundary.
  * @param   fProtect    The new protection, a combination of the RTMEM_PROT_* defines.
  */
-RTDECL(int) RTMemProtect(void *pv, size_t cb, unsigned fProtect) RT_NO_THROW_PROTO;
+RTDECL(int) RTMemProtect(void *pv, size_t cb,
+			 unsigned fProtect) RT_NO_THROW_PROTO;
 
 /**
  * Goes thru some pains to make sure the specified memory block is thoroughly
@@ -497,7 +496,8 @@ RTDECL(int) RTMemProtect(void *pv, size_t cb, unsigned fProtect) RT_NO_THROW_PRO
  * @param   cb          The size of the memory block.
  * @param   cMinPasses  The minimum number of passes to make.
  */
-RTDECL(void) RTMemWipeThoroughly(void *pv, size_t cb, size_t cMinPasses) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemWipeThoroughly(void *pv, size_t cb,
+				 size_t cMinPasses) RT_NO_THROW_PROTO;
 
 #ifdef IN_RING0
 
@@ -617,7 +617,6 @@ RTR0DECL(int) RTR0MemKernelCopyTo(void *pvDst, void const *pvSrc, size_t cb);
 
 #endif /* IN_RING0 */
 
-
 /** @name Electrical Fence Version of some APIs.
  * @{
  */
@@ -632,7 +631,8 @@ RTR0DECL(int) RTR0MemKernelCopyTo(void *pvDst, void const *pvSrc, size_t cb);
  * @param   SRC_POS The source position where call is being made from.
  *                  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfTmpAlloc(size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfTmpAlloc(size_t cb, const char *pszTag,
+			       RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemTmpAllocZTag() except that it's fenced.
@@ -644,7 +644,8 @@ RTDECL(void *)  RTMemEfTmpAlloc(size_t cb, const char *pszTag, RT_SRC_POS_DECL) 
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfTmpAllocZ(size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfTmpAllocZ(size_t cb, const char *pszTag,
+				RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemTmpFree() except that it's for fenced memory.
@@ -653,7 +654,7 @@ RTDECL(void *)  RTMemEfTmpAllocZ(size_t cb, const char *pszTag, RT_SRC_POS_DECL)
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void)    RTMemEfTmpFree(void *pv, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemEfTmpFree(void *pv, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemAllocTag() except that it's fenced.
@@ -665,7 +666,8 @@ RTDECL(void)    RTMemEfTmpFree(void *pv, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfAlloc(size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAlloc(size_t cb, const char *pszTag,
+			    RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemAllocZTag() except that it's fenced.
@@ -677,7 +679,8 @@ RTDECL(void *)  RTMemEfAlloc(size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT_
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfAllocZ(size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocZ(size_t cb, const char *pszTag,
+			     RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemAllocVarTag() except that it's fenced.
@@ -689,7 +692,8 @@ RTDECL(void *)  RTMemEfAllocZ(size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfAllocVar(size_t cbUnaligned, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocVar(size_t cbUnaligned, const char *pszTag,
+			       RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemAllocZVarTag() except that it's fenced.
@@ -701,7 +705,8 @@ RTDECL(void *)  RTMemEfAllocVar(size_t cbUnaligned, const char *pszTag, RT_SRC_P
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfAllocZVar(size_t cbUnaligned, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocZVar(size_t cbUnaligned, const char *pszTag,
+				RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemReallocTag() except that it's fenced.
@@ -714,7 +719,8 @@ RTDECL(void *)  RTMemEfAllocZVar(size_t cbUnaligned, const char *pszTag, RT_SRC_
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *)  RTMemEfRealloc(void *pvOld, size_t cbNew, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfRealloc(void *pvOld, size_t cbNew, const char *pszTag,
+			      RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Free memory allocated by any of the RTMemEf* allocators.
@@ -723,7 +729,7 @@ RTDECL(void *)  RTMemEfRealloc(void *pvOld, size_t cbNew, const char *pszTag, RT
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void)    RTMemEfFree(void *pv, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemEfFree(void *pv, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemDupTag() except that it's fenced.
@@ -736,7 +742,8 @@ RTDECL(void)    RTMemEfFree(void *pv, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *) RTMemEfDup(const void *pvSrc, size_t cb, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfDup(const void *pvSrc, size_t cb, const char *pszTag,
+			  RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /**
  * Same as RTMemEfDupExTag except that it's fenced.
@@ -750,7 +757,9 @@ RTDECL(void *) RTMemEfDup(const void *pvSrc, size_t cb, const char *pszTag, RT_S
  * @param   SRC_POS The source position where call is being made from.  Use
  *                  RT_SRC_POS when possible.  Optional.
  */
-RTDECL(void *) RTMemEfDupEx(const void *pvSrc, size_t cbSrc, size_t cbExtra, const char *pszTag, RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfDupEx(const void *pvSrc, size_t cbSrc, size_t cbExtra,
+			    const char *pszTag,
+			    RT_SRC_POS_DECL) RT_NO_THROW_PROTO;
 
 /** @def RTMEM_WRAP_SOME_NEW_AND_DELETE_TO_EF
  * Define RTMEM_WRAP_SOME_NEW_AND_DELETE_TO_EF to enable electric fence new and
@@ -914,74 +923,77 @@ RTDECL(void *) RTMemEfDupEx(const void *pvSrc, size_t cbSrc, size_t cbExtra, con
  * Fenced drop-in replacement for RTMemTmpAllocTag.
  * @copydoc RTMemTmpAllocTag
  */
-RTDECL(void *)  RTMemEfTmpAllocNP(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfTmpAllocNP(size_t cb,
+				 const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemTmpAllocZTag.
  * @copydoc RTMemTmpAllocZTag
  */
-RTDECL(void *)  RTMemEfTmpAllocZNP(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfTmpAllocZNP(size_t cb,
+				  const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemTmpFreeTag.
  * @copydoc RTMemTmpFree
  */
-RTDECL(void)    RTMemEfTmpFreeNP(void *pv) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemEfTmpFreeNP(void *pv) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemAllocTag.
  * @copydoc RTMemAllocTag
  */
-RTDECL(void *)  RTMemEfAllocNP(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocNP(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemAllocZTag.
  * @copydoc RTMemAllocZTag
  */
-RTDECL(void *)  RTMemEfAllocZNP(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocZNP(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemAllocVarTag
  * @copydoc RTMemAllocVarTag
  */
-RTDECL(void *)  RTMemEfAllocVarNP(size_t cbUnaligned, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocVarNP(size_t cbUnaligned,
+				 const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemAllocZVarTag.
  * @copydoc RTMemAllocZVarTag
  */
-RTDECL(void *)  RTMemEfAllocZVarNP(size_t cbUnaligned, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfAllocZVarNP(size_t cbUnaligned,
+				  const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemReallocTag.
  * @copydoc RTMemReallocTag
  */
-RTDECL(void *)  RTMemEfReallocNP(void *pvOld, size_t cbNew, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfReallocNP(void *pvOld, size_t cbNew,
+				const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemFree.
  * @copydoc RTMemFree
  */
-RTDECL(void)    RTMemEfFreeNP(void *pv) RT_NO_THROW_PROTO;
+RTDECL(void) RTMemEfFreeNP(void *pv) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemDupExTag.
  * @copydoc RTMemDupTag
  */
-RTDECL(void *) RTMemEfDupNP(const void *pvSrc, size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfDupNP(const void *pvSrc, size_t cb,
+			    const char *pszTag) RT_NO_THROW_PROTO;
 
 /**
  * Fenced drop-in replacement for RTMemDupExTag.
  * @copydoc RTMemDupExTag
  */
-RTDECL(void *) RTMemEfDupExNP(const void *pvSrc, size_t cbSrc, size_t cbExtra, const char *pszTag) RT_NO_THROW_PROTO;
+RTDECL(void *) RTMemEfDupExNP(const void *pvSrc, size_t cbSrc, size_t cbExtra,
+			      const char *pszTag) RT_NO_THROW_PROTO;
 
 /** @} */
 
 RT_C_DECLS_END
-
 /** @} */
-
-
 #endif
-

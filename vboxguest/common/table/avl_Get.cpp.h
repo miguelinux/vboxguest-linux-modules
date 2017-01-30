@@ -27,7 +27,6 @@
 #ifndef _kAVLGet_h_
 #define _kAVLGet_h_
 
-
 /**
  * Gets a node from the tree (does not remove it!)
  * @returns   Pointer to the node holding the given key.
@@ -35,33 +34,28 @@
  * @param     Key     Key value of the node which is to be found.
  * @author    knut st. osmundsen
  */
-KAVL_DECL(PKAVLNODECORE) KAVL_FN(Get)(PPKAVLNODECORE ppTree, KAVLKEY Key)
+KAVL_DECL(PKAVLNODECORE) KAVL_FN(Get) (PPKAVLNODECORE ppTree, KAVLKEY Key)
 {
-    register PKAVLNODECORE  pNode = KAVL_GET_POINTER_NULL(ppTree);
+	register PKAVLNODECORE pNode = KAVL_GET_POINTER_NULL(ppTree);
 
-    if (pNode)
-    {
-        while (KAVL_NE(pNode->Key, Key))
-        {
-            if (KAVL_G(pNode->Key, Key))
-            {
-                if (pNode->pLeft != KAVL_NULL)
-                    pNode = KAVL_GET_POINTER(&pNode->pLeft);
-                else
-                    return NULL;
-            }
-            else
-            {
-                if (pNode->pRight != KAVL_NULL)
-                    pNode = KAVL_GET_POINTER(&pNode->pRight);
-                else
-                    return NULL;
-            }
-        }
-    }
+	if (pNode) {
+		while (KAVL_NE(pNode->Key, Key)) {
+			if (KAVL_G(pNode->Key, Key)) {
+				if (pNode->pLeft != KAVL_NULL)
+					pNode = KAVL_GET_POINTER(&pNode->pLeft);
+				else
+					return NULL;
+			} else {
+				if (pNode->pRight != KAVL_NULL)
+					pNode =
+					    KAVL_GET_POINTER(&pNode->pRight);
+				else
+					return NULL;
+			}
+		}
+	}
 
-    return pNode;
+	return pNode;
 }
-
 
 #endif

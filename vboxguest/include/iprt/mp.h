@@ -29,14 +29,11 @@
 #include <iprt/cdefs.h>
 #include <iprt/types.h>
 
-
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_mp RTMp - Multiprocessor
  * @ingroup grp_rt
  * @{
  */
-
 /**
  * Gets the identifier of the CPU executing the call.
  *
@@ -87,6 +84,38 @@ RTDECL(int) RTMpCpuIdToSetIndex(RTCPUID idCpu);
  * @param   iCpu    The CPU set index.
  */
 RTDECL(RTCPUID) RTMpCpuIdFromSetIndex(int iCpu);
+
+/**
+ * Translates an NT process group member to a CPU set index.
+ *
+ * @returns CPU set index, -1 if not valid.
+ * @param   idxGroup        The CPU group.
+ * @param   idxMember       The CPU group member number.
+ *
+ * @remarks Only available on Windows.
+ */
+RTDECL(int) RTMpSetIndexFromCpuGroupMember(uint32_t idxGroup,
+					   uint32_t idxMember);
+
+/**
+ * Gets the member numbers for a CPU group.
+ *
+ * @returns Maximum number of group members.
+ * @param   idxGroup        The CPU group.
+ * @param   pcActive        Where to return the number of active members.
+ *
+ * @remarks Only available on Windows.
+ */
+RTDECL(uint32_t) RTMpGetCpuGroupCounts(uint32_t idxGroup, uint32_t * pcActive);
+
+/**
+ * Get the maximum number of CPU groups.
+ *
+ * @returns Maximum number of CPU groups.
+ *
+ * @remarks Only available on Windows.
+ */
+RTDECL(uint32_t) RTMpGetMaxCpuGroupCount(void);
 
 /**
  * Gets the max CPU identifier (inclusive).
@@ -174,7 +203,6 @@ RTDECL(RTCPUID) RTMpGetOnlineCoreCount(void);
  */
 RTDECL(bool) RTMpIsCpuOnline(RTCPUID idCpu);
 
-
 /**
  * Gets set of the CPUs present in the system.
  *
@@ -204,7 +232,6 @@ RTDECL(RTCPUID) RTMpGetPresentCoreCount(void);
  * @param   idCpu       The identifier of the CPU.
  */
 RTDECL(bool) RTMpIsCpuPresent(RTCPUID idCpu);
-
 
 /**
  * Get the current frequency of a CPU.
@@ -241,7 +268,6 @@ RTDECL(uint32_t) RTMpGetMaxFrequency(RTCPUID idCpu);
  */
 RTDECL(int) RTMpGetDescription(RTCPUID idCpu, char *pszBuf, size_t cbBuf);
 
-
 #ifdef IN_RING0
 
 /**
@@ -251,7 +277,6 @@ RTDECL(int) RTMpGetDescription(RTCPUID idCpu, char *pszBuf, size_t cbBuf);
  */
 RTDECL(bool) RTMpIsCpuWorkPending(void);
 
-
 /**
  * Worker function passed to RTMpOnAll, RTMpOnOthers and RTMpOnSpecific that
  * is to be called on the target cpus.
@@ -260,7 +285,8 @@ RTDECL(bool) RTMpIsCpuWorkPending(void);
  * @param   pvUser1     The 1st user argument.
  * @param   pvUser2     The 2nd user argument.
  */
-typedef DECLCALLBACK(void) FNRTMPWORKER(RTCPUID idCpu, void *pvUser1, void *pvUser2);
+typedef DECLCALLBACK(void) FNRTMPWORKER(RTCPUID idCpu, void *pvUser1,
+					void *pvUser2);
 /** Pointer to a FNRTMPWORKER. */
 typedef FNRTMPWORKER *PFNRTMPWORKER;
 
@@ -337,7 +363,8 @@ RTDECL(int) RTMpOnOthers(PFNRTMPWORKER pfnWorker, void *pvUser1, void *pvUser2);
  * @param   pvUser1         The first user argument for the worker.
  * @param   pvUser2         The second user argument for the worker.
  */
-RTDECL(int) RTMpOnSpecific(RTCPUID idCpu, PFNRTMPWORKER pfnWorker, void *pvUser1, void *pvUser2);
+RTDECL(int) RTMpOnSpecific(RTCPUID idCpu, PFNRTMPWORKER pfnWorker,
+			   void *pvUser1, void *pvUser2);
 
 /**
  * Executes a function on two specific CPUs in the system.
@@ -362,7 +389,8 @@ RTDECL(int) RTMpOnSpecific(RTCPUID idCpu, PFNRTMPWORKER pfnWorker, void *pvUser1
  *          offline while setting up the call.  The worker function must take
  *          this into account.
  */
-RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags, PFNRTMPWORKER pfnWorker, void *pvUser1, void *pvUser2);
+RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags,
+		       PFNRTMPWORKER pfnWorker, void *pvUser1, void *pvUser2);
 
 /**
  * Indicates whether RTMpOnPair supports running the pfnWorker concurrently on
@@ -371,7 +399,6 @@ RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags, PFNRTMPW
  * @returns true if supported, false if not.
  */
 RTDECL(bool) RTMpOnPairIsConcurrentExecSupported(void);
-
 
 /**
  * Pokes the specified CPU.
@@ -393,16 +420,14 @@ RTDECL(bool) RTMpOnPairIsConcurrentExecSupported(void);
  */
 RTDECL(int) RTMpPokeCpu(RTCPUID idCpu);
 
-
 /**
  * MP event, see FNRTMPNOTIFICATION.
  */
-typedef enum RTMPEVENT
-{
+typedef enum RTMPEVENT {
     /** The CPU goes online. */
-    RTMPEVENT_ONLINE = 1,
+	RTMPEVENT_ONLINE = 1,
     /** The CPU goes offline. */
-    RTMPEVENT_OFFLINE
+	RTMPEVENT_OFFLINE
 } RTMPEVENT;
 
 /**
@@ -427,7 +452,8 @@ typedef enum RTMPEVENT
  * @param   enmEvent    The event.
  * @param   pvUser      The user argument.
  */
-typedef DECLCALLBACK(void) FNRTMPNOTIFICATION(RTMPEVENT enmEvent, RTCPUID idCpu, void *pvUser);
+typedef DECLCALLBACK(void) FNRTMPNOTIFICATION(RTMPEVENT enmEvent, RTCPUID idCpu,
+					      void *pvUser);
 /** Pointer to a FNRTMPNOTIFICATION(). */
 typedef FNRTMPNOTIFICATION *PFNRTMPNOTIFICATION;
 
@@ -450,7 +476,8 @@ typedef FNRTMPNOTIFICATION *PFNRTMPNOTIFICATION;
  * @param   pfnCallback     The callback.
  * @param   pvUser          The user argument to the callback function.
  */
-RTDECL(int) RTMpNotificationRegister(PFNRTMPNOTIFICATION pfnCallback, void *pvUser);
+RTDECL(int) RTMpNotificationRegister(PFNRTMPNOTIFICATION pfnCallback,
+				     void *pvUser);
 
 /**
  * This deregisters a notification callback registered via RTMpNotificationRegister().
@@ -465,13 +492,12 @@ RTDECL(int) RTMpNotificationRegister(PFNRTMPNOTIFICATION pfnCallback, void *pvUs
  * @param   pfnCallback     The callback.
  * @param   pvUser          The user argument to the callback function.
  */
-RTDECL(int) RTMpNotificationDeregister(PFNRTMPNOTIFICATION pfnCallback, void *pvUser);
+RTDECL(int) RTMpNotificationDeregister(PFNRTMPNOTIFICATION pfnCallback,
+				       void *pvUser);
 
 #endif /* IN_RING0 */
 
 /** @} */
 
 RT_C_DECLS_END
-
 #endif
-

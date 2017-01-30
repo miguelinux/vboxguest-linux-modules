@@ -30,13 +30,10 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
-
-
 /** @defgroup grp_rt_spinlock   RTSpinlock - Spinlocks
  * @ingroup grp_rt
  * @{
  */
-
 /**
  * Creates a spinlock.
  *
@@ -46,7 +43,8 @@ RT_C_DECLS_BEGIN
  * @param   pszName     Spinlock name, for debugging purposes.  String lifetime
  *                      must be the same as the lock as it won't be copied.
  */
-RTDECL(int)  RTSpinlockCreate(PRTSPINLOCK pSpinlock, uint32_t fFlags, const char *pszName);
+RTDECL(int) RTSpinlockCreate(PRTSPINLOCK pSpinlock, uint32_t fFlags,
+			     const char *pszName);
 
 /** @name RTSPINLOCK_FLAGS_XXX
  * @{ */
@@ -67,7 +65,7 @@ RTDECL(int)  RTSpinlockCreate(PRTSPINLOCK pSpinlock, uint32_t fFlags, const char
  * @returns iprt status code.
  * @param   Spinlock    Spinlock returned by RTSpinlockCreate().
  */
-RTDECL(int)  RTSpinlockDestroy(RTSPINLOCK Spinlock);
+RTDECL(int) RTSpinlockDestroy(RTSPINLOCK Spinlock);
 
 /**
  * Acquires the spinlock.
@@ -83,10 +81,7 @@ RTDECL(void) RTSpinlockAcquire(RTSPINLOCK Spinlock);
  */
 RTDECL(void) RTSpinlockRelease(RTSPINLOCK Spinlock);
 
-
 /** @} */
 
 RT_C_DECLS_END
-
 #endif
-

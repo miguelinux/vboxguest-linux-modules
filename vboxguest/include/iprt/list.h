@@ -40,16 +40,14 @@
  */
 
 RT_C_DECLS_BEGIN
-
 /**
  * A list node of a doubly linked list.
  */
-typedef struct RTLISTNODE
-{
+    typedef struct RTLISTNODE {
     /** Pointer to the next list node. */
-    struct RTLISTNODE *pNext;
+	struct RTLISTNODE *pNext;
     /** Pointer to the previous list node. */
-    struct RTLISTNODE *pPrev;
+	struct RTLISTNODE *pPrev;
 } RTLISTNODE;
 /** Pointer to a list node. */
 typedef RTLISTNODE *PRTLISTNODE;
@@ -74,12 +72,13 @@ typedef RTLISTANCHOR const *PCRTLISTANCHOR;
 #if defined(IN_RING3)
 typedef RTLISTNODE RTLISTNODER3;
 #else
-typedef struct { RTR3PTR aOffLimits[2]; } RTLISTNODER3;
+typedef struct {
+	RTR3PTR aOffLimits[2];
+} RTLISTNODER3;
 #endif
 /** Version of RTLISTANCHOR for holding a ring-3 only list in data which gets
  * shared between multiple contexts */
 typedef RTLISTNODER3 RTLISTANCHORR3;
-
 
 /**
  * Initialize a list.
@@ -88,8 +87,8 @@ typedef RTLISTNODER3 RTLISTANCHORR3;
  */
 DECLINLINE(void) RTListInit(PRTLISTNODE pList)
 {
-    pList->pNext = pList;
-    pList->pPrev = pList;
+	pList->pNext = pList;
+	pList->pPrev = pList;
 }
 
 /**
@@ -100,10 +99,10 @@ DECLINLINE(void) RTListInit(PRTLISTNODE pList)
  */
 DECLINLINE(void) RTListAppend(PRTLISTNODE pList, PRTLISTNODE pNode)
 {
-    pList->pPrev->pNext = pNode;
-    pNode->pPrev        = pList->pPrev;
-    pNode->pNext        = pList;
-    pList->pPrev        = pNode;
+	pList->pPrev->pNext = pNode;
+	pNode->pPrev = pList->pPrev;
+	pNode->pNext = pList;
+	pList->pPrev = pNode;
 }
 
 /**
@@ -114,10 +113,10 @@ DECLINLINE(void) RTListAppend(PRTLISTNODE pList, PRTLISTNODE pNode)
  */
 DECLINLINE(void) RTListPrepend(PRTLISTNODE pList, PRTLISTNODE pNode)
 {
-    pList->pNext->pPrev = pNode;
-    pNode->pNext        = pList->pNext;
-    pNode->pPrev        = pList;
-    pList->pNext        = pNode;
+	pList->pNext->pPrev = pNode;
+	pNode->pNext = pList->pNext;
+	pNode->pPrev = pList;
+	pList->pNext = pNode;
 }
 
 /**
@@ -126,9 +125,10 @@ DECLINLINE(void) RTListPrepend(PRTLISTNODE pList, PRTLISTNODE pNode)
  * @param   pCurNode            The current node.
  * @param   pNewNode            The node to insert.
  */
-DECLINLINE(void) RTListNodeInsertAfter(PRTLISTNODE pCurNode, PRTLISTNODE pNewNode)
+DECLINLINE(void) RTListNodeInsertAfter(PRTLISTNODE pCurNode,
+				       PRTLISTNODE pNewNode)
 {
-    RTListPrepend(pCurNode, pNewNode);
+	RTListPrepend(pCurNode, pNewNode);
 }
 
 /**
@@ -137,9 +137,10 @@ DECLINLINE(void) RTListNodeInsertAfter(PRTLISTNODE pCurNode, PRTLISTNODE pNewNod
  * @param   pCurNode            The current node.
  * @param   pNewNode            The node to insert.
  */
-DECLINLINE(void) RTListNodeInsertBefore(PRTLISTNODE pCurNode, PRTLISTNODE pNewNode)
+DECLINLINE(void) RTListNodeInsertBefore(PRTLISTNODE pCurNode,
+					PRTLISTNODE pNewNode)
 {
-    RTListAppend(pCurNode, pNewNode);
+	RTListAppend(pCurNode, pNewNode);
 }
 
 /**
@@ -149,17 +150,16 @@ DECLINLINE(void) RTListNodeInsertBefore(PRTLISTNODE pCurNode, PRTLISTNODE pNewNo
  */
 DECLINLINE(void) RTListNodeRemove(PRTLISTNODE pNode)
 {
-    PRTLISTNODE pPrev = pNode->pPrev;
-    PRTLISTNODE pNext = pNode->pNext;
+	PRTLISTNODE pPrev = pNode->pPrev;
+	PRTLISTNODE pNext = pNode->pNext;
 
-    pPrev->pNext = pNext;
-    pNext->pPrev = pPrev;
+	pPrev->pNext = pNext;
+	pNext->pPrev = pPrev;
 
-    /* poison */
-    pNode->pNext = NULL;
-    pNode->pPrev = NULL;
+	/* poison */
+	pNode->pNext = NULL;
+	pNode->pPrev = NULL;
 }
-
 
 /**
  * Remove a node from a list, returns value.
@@ -169,17 +169,17 @@ DECLINLINE(void) RTListNodeRemove(PRTLISTNODE pNode)
  */
 DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
 {
-    PRTLISTNODE pPrev = pNode->pPrev;
-    PRTLISTNODE pNext = pNode->pNext;
+	PRTLISTNODE pPrev = pNode->pPrev;
+	PRTLISTNODE pNext = pNode->pNext;
 
-    pPrev->pNext = pNext;
-    pNext->pPrev = pPrev;
+	pPrev->pNext = pNext;
+	pNext->pPrev = pPrev;
 
-    /* poison */
-    pNode->pNext = NULL;
-    pNode->pPrev = NULL;
+	/* poison */
+	pNode->pNext = NULL;
+	pNode->pPrev = NULL;
 
-    return pNode;
+	return pNode;
 }
 
 /**
@@ -326,7 +326,6 @@ DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
 #define RTListGetPrevCpp(pList, pCurNode, Type, Member) \
     ( (pCurNode)->Member.pPrev != (pList) ? RT_FROM_CPP_MEMBER((pCurNode)->Member.pPrev, Type, Member) : NULL )
 
-
 /**
  * Removes and returns the first element in the list (checks for empty list).
  *
@@ -391,7 +390,6 @@ DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
 #define RTListRemovePrevCpp(pList, pCurNode, Type, Member) \
     ( (pCurNode)->Member.pNext != (pList) ? RT_FROM_CPP_MEMBER(RTListNodeRemoveRet((pCurNode)->Member.pPrev), Type, Member) : NULL )
 
-
 /**
  * Enumerate the list in head to tail order.
  *
@@ -409,7 +407,6 @@ DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
     for (pIterator = RTListNodeGetNextCpp(pList, Type, Member); \
          !RTListNodeIsDummyCpp(pList, pIterator, Type, Member); \
          pIterator = RT_FROM_CPP_MEMBER((pIterator)->Member.pNext, Type, Member) )
-
 
 /**
  * Enumerate the list in head to tail order, safe against removal of the
@@ -436,7 +433,6 @@ DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
          pIterator = pIterNext, \
          pIterNext = RT_FROM_CPP_MEMBER((pIterator)->Member.pNext, Type, Member) )
 
-
 /**
  * Enumerate the list in reverse order (tail to head).
  *
@@ -454,7 +450,6 @@ DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
     for (pIterator = RTListNodeGetPrevCpp(pList, Type, Member); \
          !RTListNodeIsDummyCpp(pList, pIterator, Type, Member); \
          pIterator = RT_FROM_CPP_MEMBER((pIterator)->Member.pPrev, Type, Member) )
-
 
 /**
  * Enumerate the list in reverse order (tail to head).
@@ -480,27 +475,25 @@ DECLINLINE(PRTLISTNODE) RTListNodeRemoveRet(PRTLISTNODE pNode)
          pIterator = pIterPrev, \
          pIterPrev = RT_FROM_CPP_MEMBER((pIterator)->Member.pPrev, Type, Member) )
 
-
 /**
  * Move the given list to a new list header.
  *
  * @param   pListDst            The new list.
  * @param   pListSrc            The list to move.
  */
-DECLINLINE(void) RTListMove(PRTLISTNODE pListDst, PRTLISTNODE pListSrc)
+DECLINLINE(void)RTListMove(PRTLISTNODE pListDst, PRTLISTNODE pListSrc)
 {
-    if (!RTListIsEmpty(pListSrc))
-    {
-        pListDst->pNext = pListSrc->pNext;
-        pListDst->pPrev = pListSrc->pPrev;
+	if (!RTListIsEmpty(pListSrc)) {
+		pListDst->pNext = pListSrc->pNext;
+		pListDst->pPrev = pListSrc->pPrev;
 
-        /* Adjust the first and last element links */
-        pListDst->pNext->pPrev = pListDst;
-        pListDst->pPrev->pNext = pListDst;
+		/* Adjust the first and last element links */
+		pListDst->pNext->pPrev = pListDst;
+		pListDst->pPrev->pNext = pListDst;
 
-        /* Finally remove the elements from the source list */
-        RTListInit(pListSrc);
-    }
+		/* Finally remove the elements from the source list */
+		RTListInit(pListSrc);
+	}
 }
 
 /**
@@ -510,25 +503,23 @@ DECLINLINE(void) RTListMove(PRTLISTNODE pListDst, PRTLISTNODE pListSrc)
  * @param   pListDst            The destination list.
  * @param   pListSrc            The source list to concatenate.
  */
-DECLINLINE(void) RTListConcatenate(PRTLISTANCHOR pListDst, PRTLISTANCHOR pListSrc)
+DECLINLINE(void) RTListConcatenate(PRTLISTANCHOR pListDst,
+				   PRTLISTANCHOR pListSrc)
 {
-    if (!RTListIsEmpty(pListSrc))
-    {
-        PRTLISTNODE pFirst = pListSrc->pNext;
-        PRTLISTNODE pLast = pListSrc->pPrev;
+	if (!RTListIsEmpty(pListSrc)) {
+		PRTLISTNODE pFirst = pListSrc->pNext;
+		PRTLISTNODE pLast = pListSrc->pPrev;
 
-        pListDst->pPrev->pNext = pFirst;
-        pFirst->pPrev          = pListDst->pPrev;
-        pLast->pNext           = pListDst;
-        pListDst->pPrev        = pLast;
+		pListDst->pPrev->pNext = pFirst;
+		pFirst->pPrev = pListDst->pPrev;
+		pLast->pNext = pListDst;
+		pListDst->pPrev = pLast;
 
-        /* Finally remove the elements from the source list */
-        RTListInit(pListSrc);
-    }
+		/* Finally remove the elements from the source list */
+		RTListInit(pListSrc);
+	}
 }
 
 RT_C_DECLS_END
-
 /** @} */
-
 #endif

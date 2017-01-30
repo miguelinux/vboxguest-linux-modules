@@ -30,12 +30,10 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
-
 /** @defgroup grp_rt_time   RTTime - Time
  * @ingroup grp_rt
  * @{
  */
-
 /** Time Specification.
  *
  * Use the inline RTTimeSpecGet/Set to operate on structure this so we
@@ -46,14 +44,12 @@ RT_C_DECLS_BEGIN
  * 1678 to 2262 without sacrificing the resolution offered by the various
  * host OSes (BSD & LINUX 1ns, NT 100ns).
  */
-typedef struct RTTIMESPEC
-{
+    typedef struct RTTIMESPEC {
     /** Nanoseconds since epoch.
      * The name is intentially too long to be comfortable to use because you should be
      * using inline helpers! */
-    int64_t     i64NanosecondsRelativeToUnixEpoch;
+	int64_t i64NanosecondsRelativeToUnixEpoch;
 } RTTIMESPEC;
-
 
 /** @name RTTIMESPEC methods
  * @{ */
@@ -66,9 +62,8 @@ typedef struct RTTIMESPEC
  */
 DECLINLINE(int64_t) RTTimeSpecGetNano(PCRTTIMESPEC pTime)
 {
-    return pTime->i64NanosecondsRelativeToUnixEpoch;
+	return pTime->i64NanosecondsRelativeToUnixEpoch;
 }
-
 
 /**
  * Sets the time give by nanoseconds relative to the unix epoch.
@@ -79,10 +74,9 @@ DECLINLINE(int64_t) RTTimeSpecGetNano(PCRTTIMESPEC pTime)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNano(PRTTIMESPEC pTime, int64_t i64Nano)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch = i64Nano;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch = i64Nano;
+	return pTime;
 }
-
 
 /**
  * Gets the time as microseconds relative to the unix epoch.
@@ -92,9 +86,8 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNano(PRTTIMESPEC pTime, int64_t i64Nano)
  */
 DECLINLINE(int64_t) RTTimeSpecGetMicro(PCRTTIMESPEC pTime)
 {
-    return pTime->i64NanosecondsRelativeToUnixEpoch / RT_NS_1US;
+	return pTime->i64NanosecondsRelativeToUnixEpoch / RT_NS_1US;
 }
-
 
 /**
  * Sets the time given by microseconds relative to the unix epoch.
@@ -105,10 +98,9 @@ DECLINLINE(int64_t) RTTimeSpecGetMicro(PCRTTIMESPEC pTime)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSetMicro(PRTTIMESPEC pTime, int64_t i64Micro)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch = i64Micro * RT_NS_1US;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch = i64Micro * RT_NS_1US;
+	return pTime;
 }
-
 
 /**
  * Gets the time as milliseconds relative to the unix epoch.
@@ -118,9 +110,8 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetMicro(PRTTIMESPEC pTime, int64_t i64Micro)
  */
 DECLINLINE(int64_t) RTTimeSpecGetMilli(PCRTTIMESPEC pTime)
 {
-    return pTime->i64NanosecondsRelativeToUnixEpoch / RT_NS_1MS;
+	return pTime->i64NanosecondsRelativeToUnixEpoch / RT_NS_1MS;
 }
-
 
 /**
  * Sets the time given by milliseconds relative to the unix epoch.
@@ -131,10 +122,9 @@ DECLINLINE(int64_t) RTTimeSpecGetMilli(PCRTTIMESPEC pTime)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSetMilli(PRTTIMESPEC pTime, int64_t i64Milli)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch = i64Milli * RT_NS_1MS;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch = i64Milli * RT_NS_1MS;
+	return pTime;
 }
-
 
 /**
  * Gets the time as seconds relative to the unix epoch.
@@ -144,9 +134,8 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetMilli(PRTTIMESPEC pTime, int64_t i64Milli)
  */
 DECLINLINE(int64_t) RTTimeSpecGetSeconds(PCRTTIMESPEC pTime)
 {
-    return pTime->i64NanosecondsRelativeToUnixEpoch / RT_NS_1SEC;
+	return pTime->i64NanosecondsRelativeToUnixEpoch / RT_NS_1SEC;
 }
-
 
 /**
  * Sets the time given by seconds relative to the unix epoch.
@@ -155,12 +144,12 @@ DECLINLINE(int64_t) RTTimeSpecGetSeconds(PCRTTIMESPEC pTime)
  * @param   pTime       The time spec to modify.
  * @param   i64Seconds  The new time in seconds.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSetSeconds(PRTTIMESPEC pTime, int64_t i64Seconds)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSetSeconds(PRTTIMESPEC pTime,
+					     int64_t i64Seconds)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch = i64Seconds * RT_NS_1SEC;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch = i64Seconds * RT_NS_1SEC;
+	return pTime;
 }
-
 
 /**
  * Makes the time spec absolute like abs() does (i.e. a positive value).
@@ -170,11 +159,11 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetSeconds(PRTTIMESPEC pTime, int64_t i64Secon
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecAbsolute(PRTTIMESPEC pTime)
 {
-    if (pTime->i64NanosecondsRelativeToUnixEpoch < 0)
-        pTime->i64NanosecondsRelativeToUnixEpoch = -pTime->i64NanosecondsRelativeToUnixEpoch;
-    return pTime;
+	if (pTime->i64NanosecondsRelativeToUnixEpoch < 0)
+		pTime->i64NanosecondsRelativeToUnixEpoch =
+		    -pTime->i64NanosecondsRelativeToUnixEpoch;
+	return pTime;
 }
-
 
 /**
  * Negates the time.
@@ -184,10 +173,10 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecAbsolute(PRTTIMESPEC pTime)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecNegate(PRTTIMESPEC pTime)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch = -pTime->i64NanosecondsRelativeToUnixEpoch;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch =
+	    -pTime->i64NanosecondsRelativeToUnixEpoch;
+	return pTime;
 }
-
 
 /**
  * Adds a time period to the time.
@@ -198,10 +187,10 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecNegate(PRTTIMESPEC pTime)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecAdd(PRTTIMESPEC pTime, PCRTTIMESPEC pTimeAdd)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch += pTimeAdd->i64NanosecondsRelativeToUnixEpoch;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch +=
+	    pTimeAdd->i64NanosecondsRelativeToUnixEpoch;
+	return pTime;
 }
-
 
 /**
  * Adds a time period give as nanoseconds from the time.
@@ -212,10 +201,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecAdd(PRTTIMESPEC pTime, PCRTTIMESPEC pTimeAdd)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecAddNano(PRTTIMESPEC pTime, int64_t i64Nano)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch += i64Nano;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch += i64Nano;
+	return pTime;
 }
-
 
 /**
  * Adds a time period give as microseconds from the time.
@@ -226,10 +214,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecAddNano(PRTTIMESPEC pTime, int64_t i64Nano)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecAddMicro(PRTTIMESPEC pTime, int64_t i64Micro)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch += i64Micro * RT_NS_1US;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch += i64Micro * RT_NS_1US;
+	return pTime;
 }
-
 
 /**
  * Adds a time period give as milliseconds from the time.
@@ -240,10 +227,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecAddMicro(PRTTIMESPEC pTime, int64_t i64Micro)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecAddMilli(PRTTIMESPEC pTime, int64_t i64Milli)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch += i64Milli * RT_NS_1MS;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch += i64Milli * RT_NS_1MS;
+	return pTime;
 }
-
 
 /**
  * Adds a time period give as seconds from the time.
@@ -252,12 +238,12 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecAddMilli(PRTTIMESPEC pTime, int64_t i64Milli)
  * @param   pTime       The time spec to modify.
  * @param   i64Seconds  The time period in seconds.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecAddSeconds(PRTTIMESPEC pTime, int64_t i64Seconds)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecAddSeconds(PRTTIMESPEC pTime,
+					     int64_t i64Seconds)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch += i64Seconds * RT_NS_1SEC;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch += i64Seconds * RT_NS_1SEC;
+	return pTime;
 }
-
 
 /**
  * Subtracts a time period from the time.
@@ -268,10 +254,10 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecAddSeconds(PRTTIMESPEC pTime, int64_t i64Secon
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSub(PRTTIMESPEC pTime, PCRTTIMESPEC pTimeSub)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch -= pTimeSub->i64NanosecondsRelativeToUnixEpoch;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch -=
+	    pTimeSub->i64NanosecondsRelativeToUnixEpoch;
+	return pTime;
 }
-
 
 /**
  * Subtracts a time period give as nanoseconds from the time.
@@ -282,10 +268,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSub(PRTTIMESPEC pTime, PCRTTIMESPEC pTimeSub)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSubNano(PRTTIMESPEC pTime, int64_t i64Nano)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch -= i64Nano;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch -= i64Nano;
+	return pTime;
 }
-
 
 /**
  * Subtracts a time period give as microseconds from the time.
@@ -296,10 +281,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSubNano(PRTTIMESPEC pTime, int64_t i64Nano)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSubMicro(PRTTIMESPEC pTime, int64_t i64Micro)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch -= i64Micro * RT_NS_1US;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch -= i64Micro * RT_NS_1US;
+	return pTime;
 }
-
 
 /**
  * Subtracts a time period give as milliseconds from the time.
@@ -310,10 +294,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSubMicro(PRTTIMESPEC pTime, int64_t i64Micro)
  */
 DECLINLINE(PRTTIMESPEC) RTTimeSpecSubMilli(PRTTIMESPEC pTime, int64_t i64Milli)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch -= i64Milli * RT_NS_1MS;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch -= i64Milli * RT_NS_1MS;
+	return pTime;
 }
-
 
 /**
  * Subtracts a time period give as seconds from the time.
@@ -322,12 +305,12 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSubMilli(PRTTIMESPEC pTime, int64_t i64Milli)
  * @param   pTime       The time spec to modify.
  * @param   i64Seconds  The time period in seconds.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSubSeconds(PRTTIMESPEC pTime, int64_t i64Seconds)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSubSeconds(PRTTIMESPEC pTime,
+					     int64_t i64Seconds)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch -= i64Seconds * RT_NS_1SEC;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch -= i64Seconds * RT_NS_1SEC;
+	return pTime;
 }
-
 
 /**
  * Gives the time in seconds and nanoseconds.
@@ -337,20 +320,20 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSubSeconds(PRTTIMESPEC pTime, int64_t i64Secon
  * @param   *pi32Seconds    Where to store the time period in seconds.
  * @param   *pi32Nano       Where to store the time period in nanoseconds.
  */
-DECLINLINE(void) RTTimeSpecGetSecondsAndNano(PRTTIMESPEC pTime, int32_t *pi32Seconds, int32_t *pi32Nano)
+DECLINLINE(void)RTTimeSpecGetSecondsAndNano(PRTTIMESPEC pTime,
+					    int32_t * pi32Seconds,
+					    int32_t * pi32Nano)
 {
-    int64_t i64 = RTTimeSpecGetNano(pTime);
-    int32_t i32Nano = (int32_t)(i64 % RT_NS_1SEC);
-    i64 /= RT_NS_1SEC;
-    if (i32Nano < 0)
-    {
-        i32Nano += RT_NS_1SEC;
-        i64--;
-    }
-    *pi32Seconds = (int32_t)i64;
-    *pi32Nano    = i32Nano;
+	int64_t i64 = RTTimeSpecGetNano(pTime);
+	int32_t i32Nano = (int32_t) (i64 % RT_NS_1SEC);
+	i64 /= RT_NS_1SEC;
+	if (i32Nano < 0) {
+		i32Nano += RT_NS_1SEC;
+		i64--;
+	}
+	*pi32Seconds = (int32_t) i64;
+	*pi32Nano = i32Nano;
 }
-
 
 /* PORTME: Add struct timeval guard macro here. */
 #if defined(RTTIME_INCL_TIMEVAL) || defined(_STRUCT_TIMEVAL) || defined(_SYS__TIMEVAL_H_) || defined(_SYS_TIME_H) || defined(_TIMEVAL) || defined(_LINUX_TIME_H) \
@@ -362,19 +345,19 @@ DECLINLINE(void) RTTimeSpecGetSecondsAndNano(PRTTIMESPEC pTime, int32_t *pi32Sec
  * @param   pTime       The time spec to interpret.
  * @param   pTimeval    Where to store the time as POSIX timeval.
  */
-DECLINLINE(struct timeval *) RTTimeSpecGetTimeval(PCRTTIMESPEC pTime, struct timeval *pTimeval)
+DECLINLINE(struct timeval *) RTTimeSpecGetTimeval(PCRTTIMESPEC pTime,
+						  struct timeval *pTimeval)
 {
-    int64_t i64 = RTTimeSpecGetMicro(pTime);
-    int32_t i32Micro = (int32_t)(i64 % RT_US_1SEC);
-    i64 /= RT_US_1SEC;
-    if (i32Micro < 0)
-    {
-        i32Micro += RT_US_1SEC;
-        i64--;
-    }
-    pTimeval->tv_sec = (time_t)i64;
-    pTimeval->tv_usec = i32Micro;
-    return pTimeval;
+	int64_t i64 = RTTimeSpecGetMicro(pTime);
+	int32_t i32Micro = (int32_t) (i64 % RT_US_1SEC);
+	i64 /= RT_US_1SEC;
+	if (i32Micro < 0) {
+		i32Micro += RT_US_1SEC;
+		i64--;
+	}
+	pTimeval->tv_sec = (time_t) i64;
+	pTimeval->tv_usec = i32Micro;
+	return pTimeval;
 }
 
 /**
@@ -384,12 +367,13 @@ DECLINLINE(struct timeval *) RTTimeSpecGetTimeval(PCRTTIMESPEC pTime, struct tim
  * @param   pTime       The time spec to modify.
  * @param   pTimeval    Pointer to the POSIX timeval struct with the new time.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSetTimeval(PRTTIMESPEC pTime, const struct timeval *pTimeval)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSetTimeval(PRTTIMESPEC pTime,
+					     const struct timeval * pTimeval)
 {
-    return RTTimeSpecAddMicro(RTTimeSpecSetSeconds(pTime, pTimeval->tv_sec), pTimeval->tv_usec);
+	return RTTimeSpecAddMicro(RTTimeSpecSetSeconds(pTime, pTimeval->tv_sec),
+				  pTimeval->tv_usec);
 }
 #endif /* various ways of detecting struct timeval */
-
 
 /* PORTME: Add struct timespec guard macro here. */
 #if defined(RTTIME_INCL_TIMESPEC) || defined(_STRUCT_TIMESPEC) || defined(_SYS__TIMESPEC_H_) || defined(TIMEVAL_TO_TIMESPEC) || defined(_TIMESPEC) \
@@ -401,19 +385,19 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetTimeval(PRTTIMESPEC pTime, const struct tim
  * @param   pTime       The time spec to interpret.
  * @param   pTimespec   Where to store the time as POSIX timespec.
  */
-DECLINLINE(struct timespec *) RTTimeSpecGetTimespec(PCRTTIMESPEC pTime, struct timespec *pTimespec)
+DECLINLINE(struct timespec *)RTTimeSpecGetTimespec(PCRTTIMESPEC pTime,
+						   struct timespec *pTimespec)
 {
-    int64_t i64 = RTTimeSpecGetNano(pTime);
-    int32_t i32Nano = (int32_t)(i64 % RT_NS_1SEC);
-    i64 /= RT_NS_1SEC;
-    if (i32Nano < 0)
-    {
-        i32Nano += RT_NS_1SEC;
-        i64--;
-    }
-    pTimespec->tv_sec = (time_t)i64;
-    pTimespec->tv_nsec = i32Nano;
-    return pTimespec;
+	int64_t i64 = RTTimeSpecGetNano(pTime);
+	int32_t i32Nano = (int32_t) (i64 % RT_NS_1SEC);
+	i64 /= RT_NS_1SEC;
+	if (i32Nano < 0) {
+		i32Nano += RT_NS_1SEC;
+		i64--;
+	}
+	pTimespec->tv_sec = (time_t) i64;
+	pTimespec->tv_nsec = i32Nano;
+	return pTimespec;
 }
 
 /**
@@ -423,18 +407,17 @@ DECLINLINE(struct timespec *) RTTimeSpecGetTimespec(PCRTTIMESPEC pTime, struct t
  * @param   pTime       The time spec to modify.
  * @param   pTimespec   Pointer to the POSIX timespec struct with the new time.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSetTimespec(PRTTIMESPEC pTime, const struct timespec *pTimespec)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSetTimespec(PRTTIMESPEC pTime,
+					      const struct timespec * pTimespec)
 {
-    return RTTimeSpecAddNano(RTTimeSpecSetSeconds(pTime, pTimespec->tv_sec), pTimespec->tv_nsec);
+	return RTTimeSpecAddNano(RTTimeSpecSetSeconds(pTime, pTimespec->tv_sec),
+				 pTimespec->tv_nsec);
 }
 #endif /* various ways of detecting struct timespec */
-
-
 
 /** The offset of the unix epoch and the base for NT time (in 100ns units).
  * Nt time starts at 1601-01-01 00:00:00. */
 #define RTTIME_NT_TIME_OFFSET_UNIX      (116444736000000000LL)
-
 
 /**
  * Gets the time as NT time.
@@ -444,10 +427,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetTimespec(PRTTIMESPEC pTime, const struct ti
  */
 DECLINLINE(uint64_t) RTTimeSpecGetNtTime(PCRTTIMESPEC pTime)
 {
-    return pTime->i64NanosecondsRelativeToUnixEpoch / 100
-        + RTTIME_NT_TIME_OFFSET_UNIX;
+	return pTime->i64NanosecondsRelativeToUnixEpoch / 100
+	    + RTTIME_NT_TIME_OFFSET_UNIX;
 }
-
 
 /**
  * Sets the time given by Nt time.
@@ -456,13 +438,13 @@ DECLINLINE(uint64_t) RTTimeSpecGetNtTime(PCRTTIMESPEC pTime)
  * @param   pTime       The time spec to modify.
  * @param   u64NtTime   The new time in Nt time.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNtTime(PRTTIMESPEC pTime, uint64_t u64NtTime)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNtTime(PRTTIMESPEC pTime,
+					    uint64_t u64NtTime)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch =
-        ((int64_t)u64NtTime - RTTIME_NT_TIME_OFFSET_UNIX) * 100;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch =
+	    ((int64_t) u64NtTime - RTTIME_NT_TIME_OFFSET_UNIX) * 100;
+	return pTime;
 }
-
 
 #ifdef _FILETIME_
 /**
@@ -472,10 +454,11 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNtTime(PRTTIMESPEC pTime, uint64_t u64NtTim
  * @param   pTime       The time spec to interpret.
  * @param   pFileTime   Pointer to NT filetime structure.
  */
-DECLINLINE(PFILETIME) RTTimeSpecGetNtFileTime(PCRTTIMESPEC pTime, PFILETIME pFileTime)
+DECLINLINE(PFILETIME) RTTimeSpecGetNtFileTime(PCRTTIMESPEC pTime,
+					      PFILETIME pFileTime)
 {
-    *((uint64_t *)pFileTime) = RTTimeSpecGetNtTime(pTime);
-    return pFileTime;
+	*((uint64_t *) pFileTime) = RTTimeSpecGetNtTime(pTime);
+	return pFileTime;
 }
 
 /**
@@ -485,17 +468,16 @@ DECLINLINE(PFILETIME) RTTimeSpecGetNtFileTime(PCRTTIMESPEC pTime, PFILETIME pFil
  * @param   pTime       The time spec to modify.
  * @param   pFileTime   Where to store the time as Nt file time.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNtFileTime(PRTTIMESPEC pTime, const FILETIME *pFileTime)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNtFileTime(PRTTIMESPEC pTime,
+						const FILETIME * pFileTime)
 {
-    return RTTimeSpecSetNtTime(pTime, *(const uint64_t *)pFileTime);
+	return RTTimeSpecSetNtTime(pTime, *(const uint64_t *)pFileTime);
 }
 #endif
-
 
 /** The offset to the start of DOS time.
  * DOS time starts 1980-01-01 00:00:00.  */
 #define RTTIME_OFFSET_DOS_TIME          (315532800000000000LL)
-
 
 /**
  * Gets the time as seconds relative to the start of dos time.
@@ -505,10 +487,10 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetNtFileTime(PRTTIMESPEC pTime, const FILETIM
  */
 DECLINLINE(int64_t) RTTimeSpecGetDosSeconds(PCRTTIMESPEC pTime)
 {
-    return (pTime->i64NanosecondsRelativeToUnixEpoch - RTTIME_OFFSET_DOS_TIME)
-        / RT_NS_1SEC;
+	return (pTime->i64NanosecondsRelativeToUnixEpoch -
+		RTTIME_OFFSET_DOS_TIME)
+	    / RT_NS_1SEC;
 }
-
 
 /**
  * Sets the time given by seconds relative to the start of dos time.
@@ -517,13 +499,13 @@ DECLINLINE(int64_t) RTTimeSpecGetDosSeconds(PCRTTIMESPEC pTime)
  * @param   pTime       The time spec to modify.
  * @param   i64Seconds  The new time in seconds relative to the start of dos time.
  */
-DECLINLINE(PRTTIMESPEC) RTTimeSpecSetDosSeconds(PRTTIMESPEC pTime, int64_t i64Seconds)
+DECLINLINE(PRTTIMESPEC) RTTimeSpecSetDosSeconds(PRTTIMESPEC pTime,
+						int64_t i64Seconds)
 {
-    pTime->i64NanosecondsRelativeToUnixEpoch = i64Seconds * RT_NS_1SEC
-        + RTTIME_OFFSET_DOS_TIME;
-    return pTime;
+	pTime->i64NanosecondsRelativeToUnixEpoch = i64Seconds * RT_NS_1SEC
+	    + RTTIME_OFFSET_DOS_TIME;
+	return pTime;
 }
-
 
 /**
  * Compare two time specs.
@@ -535,9 +517,9 @@ DECLINLINE(PRTTIMESPEC) RTTimeSpecSetDosSeconds(PRTTIMESPEC pTime, int64_t i64Se
  */
 DECLINLINE(bool) RTTimeSpecIsEqual(PCRTTIMESPEC pTime1, PCRTTIMESPEC pTime2)
 {
-    return pTime1->i64NanosecondsRelativeToUnixEpoch == pTime2->i64NanosecondsRelativeToUnixEpoch;
+	return pTime1->i64NanosecondsRelativeToUnixEpoch ==
+	    pTime2->i64NanosecondsRelativeToUnixEpoch;
 }
-
 
 /**
  * Compare two time specs.
@@ -547,13 +529,14 @@ DECLINLINE(bool) RTTimeSpecIsEqual(PCRTTIMESPEC pTime1, PCRTTIMESPEC pTime2)
  * @param   pLeft       The 1st time spec.
  * @param   pRight      The 2nd time spec.
  */
-DECLINLINE(int) RTTimeSpecCompare(PCRTTIMESPEC pLeft, PCRTTIMESPEC pRight)
+DECLINLINE(int)RTTimeSpecCompare(PCRTTIMESPEC pLeft, PCRTTIMESPEC pRight)
 {
-    if (pLeft->i64NanosecondsRelativeToUnixEpoch == pRight->i64NanosecondsRelativeToUnixEpoch)
-        return 0;
-    return pLeft->i64NanosecondsRelativeToUnixEpoch < pRight->i64NanosecondsRelativeToUnixEpoch ? -1 : 1;
+	if (pLeft->i64NanosecondsRelativeToUnixEpoch ==
+	    pRight->i64NanosecondsRelativeToUnixEpoch)
+		return 0;
+	return pLeft->i64NanosecondsRelativeToUnixEpoch <
+	    pRight->i64NanosecondsRelativeToUnixEpoch ? -1 : 1;
 }
-
 
 /**
  * Converts a time spec to a ISO date string.
@@ -564,7 +547,7 @@ DECLINLINE(int) RTTimeSpecCompare(PCRTTIMESPEC pLeft, PCRTTIMESPEC pRight)
  * @param   psz         Where to store the string.
  * @param   cb          The size of the buffer.
  */
-RTDECL(char *) RTTimeSpecToString(PCRTTIMESPEC pTime, char *psz, size_t cb);
+RTDECL(char *)RTTimeSpecToString(PCRTTIMESPEC pTime, char *psz, size_t cb);
 
 /**
  * Attempts to convert an ISO date string to a time structure.
@@ -577,41 +560,40 @@ RTDECL(char *) RTTimeSpecToString(PCRTTIMESPEC pTime, char *psz, size_t cb);
  * @param   pTime       The time spec.
  * @param   pszString   The ISO date string to convert.
  */
-RTDECL(PRTTIMESPEC) RTTimeSpecFromString(PRTTIMESPEC pTime, const char *pszString);
+RTDECL(PRTTIMESPEC) RTTimeSpecFromString(PRTTIMESPEC pTime,
+					 const char *pszString);
 
 /** @} */
-
 
 /**
  * Exploded time.
  */
 #pragma pack(1)
-typedef struct RTTIME
-{
+typedef struct RTTIME {
     /** The year number. */
-    int32_t     i32Year;
+	int32_t i32Year;
     /** The month of the year (1-12). January is 1. */
-    uint8_t     u8Month;
+	uint8_t u8Month;
     /** The day of the week (0-6). Monday is 0. */
-    uint8_t     u8WeekDay;
+	uint8_t u8WeekDay;
     /** The day of the year (1-366). January the 1st is 1. */
-    uint16_t    u16YearDay;
+	uint16_t u16YearDay;
     /** The day of the month (1-31). */
-    uint8_t     u8MonthDay;
+	uint8_t u8MonthDay;
     /** Hour of the day (0-23). */
-    uint8_t     u8Hour;
+	uint8_t u8Hour;
     /** The minute of the hour (0-59). */
-    uint8_t     u8Minute;
+	uint8_t u8Minute;
     /** The second of the minute (0-60).
      * (u32Nanosecond / 1000000) */
-    uint8_t     u8Second;
+	uint8_t u8Second;
     /** The nanoseconds of the second (0-999999999). */
-    uint32_t    u32Nanosecond;
+	uint32_t u32Nanosecond;
     /** Flags, of the RTTIME_FLAGS_* \#defines. */
-    uint32_t    fFlags;
+	uint32_t fFlags;
     /** UCT time offset in minutes (-840-840).
      * @remarks The implementation of RTTimeLocal* isn't quite there yet, so this might not be 100% correct. */
-    int32_t     offUTC;
+	int32_t offUTC;
 } RTTIME;
 #pragma pack()
 /** Pointer to a exploded time structure. */
@@ -642,7 +624,6 @@ typedef const RTTIME *PCRTTIME;
 /** The mask of valid flags. */
 #define RTTIME_FLAGS_MASK           UINT32_C(0xff)
 /** @} */
-
 
 /**
  * Gets the current system time (UTC).
@@ -840,11 +821,10 @@ typedef struct RTTIMENANOTSDATA *PRTTIMENANOTSDATA;
  *
  * @remark Keep this in sync with the assembly version in timesupA.asm.
  */
-typedef struct RTTIMENANOTSDATA
-{
+typedef struct RTTIMENANOTSDATA {
     /** Where the previous timestamp is stored.
      * This is maintained to ensure that time doesn't go backwards or anything. */
-    uint64_t volatile  *pu64Prev;
+	uint64_t volatile *pu64Prev;
 
     /**
      * Helper function that's used by the assembly routines when something goes bust.
@@ -854,7 +834,10 @@ typedef struct RTTIMENANOTSDATA
      * @param   u64DeltaPrev    The delta relative to the previously returned timestamp.
      * @param   u64PrevNanoTS   The previously returned timestamp (as it was read it).
      */
-    DECLCALLBACKMEMBER(void, pfnBad)(PRTTIMENANOTSDATA pData, uint64_t u64NanoTS, uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS);
+	DECLCALLBACKMEMBER(void, pfnBad) (PRTTIMENANOTSDATA pData,
+					  uint64_t u64NanoTS,
+					  uint64_t u64DeltaPrev,
+					  uint64_t u64PrevNanoTS);
 
     /**
      * Callback for when rediscovery is required.
@@ -862,7 +845,7 @@ typedef struct RTTIMENANOTSDATA
      * @returns Nanosecond timestamp.
      * @param   pData           Pointer to this structure.
      */
-    DECLCALLBACKMEMBER(uint64_t, pfnRediscover)(PRTTIMENANOTSDATA pData);
+	DECLCALLBACKMEMBER(uint64_t, pfnRediscover) (PRTTIMENANOTSDATA pData);
 
     /**
      * Callback for when some CPU index related stuff goes wrong.
@@ -875,32 +858,39 @@ typedef struct RTTIMENANOTSDATA
      * @param   iGipCpu         The GIP CPU array index if available, otherwise
      *                          (UINT16_MAX-1).
      */
-    DECLCALLBACKMEMBER(uint64_t, pfnBadCpuIndex)(PRTTIMENANOTSDATA pData, uint16_t idApic, uint16_t iCpuSet, uint16_t iGipCpu);
+	DECLCALLBACKMEMBER(uint64_t, pfnBadCpuIndex) (PRTTIMENANOTSDATA pData,
+						      uint16_t idApic,
+						      uint16_t iCpuSet,
+						      uint16_t iGipCpu);
 
     /** Number of 1ns steps because of overshooting the period. */
-    uint32_t            c1nsSteps;
+	uint32_t c1nsSteps;
     /** The number of times the interval expired (overflow). */
-    uint32_t            cExpired;
+	uint32_t cExpired;
     /** Number of "bad" previous values. */
-    uint32_t            cBadPrev;
+	uint32_t cBadPrev;
     /** The number of update races. */
-    uint32_t            cUpdateRaces;
+	uint32_t cUpdateRaces;
 } RTTIMENANOTSDATA;
 
 #ifndef IN_RING3
 /**
  * The Ring-3 layout of the RTTIMENANOTSDATA structure.
  */
-typedef struct RTTIMENANOTSDATAR3
-{
-    R3PTRTYPE(uint64_t volatile  *) pu64Prev;
-    DECLR3CALLBACKMEMBER(void, pfnBad,(PRTTIMENANOTSDATA pData, uint64_t u64NanoTS, uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS));
-    DECLR3CALLBACKMEMBER(uint64_t, pfnRediscover,(PRTTIMENANOTSDATA pData));
-    DECLR3CALLBACKMEMBER(uint64_t, pfnBadCpuIndex,(PRTTIMENANOTSDATA pData, uint16_t idApic, uint16_t iCpuSet, uint16_t iGipCpu));
-    uint32_t            c1nsSteps;
-    uint32_t            cExpired;
-    uint32_t            cBadPrev;
-    uint32_t            cUpdateRaces;
+typedef struct RTTIMENANOTSDATAR3 {
+	R3PTRTYPE(uint64_t volatile *) pu64Prev;
+	DECLR3CALLBACKMEMBER(void, pfnBad,
+			     (PRTTIMENANOTSDATA pData, uint64_t u64NanoTS,
+			      uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS));
+	DECLR3CALLBACKMEMBER(uint64_t, pfnRediscover,
+			     (PRTTIMENANOTSDATA pData));
+	DECLR3CALLBACKMEMBER(uint64_t, pfnBadCpuIndex,
+			     (PRTTIMENANOTSDATA pData, uint16_t idApic,
+			      uint16_t iCpuSet, uint16_t iGipCpu));
+	uint32_t c1nsSteps;
+	uint32_t cExpired;
+	uint32_t cBadPrev;
+	uint32_t cUpdateRaces;
 } RTTIMENANOTSDATAR3;
 #else
 typedef RTTIMENANOTSDATA RTTIMENANOTSDATAR3;
@@ -910,16 +900,20 @@ typedef RTTIMENANOTSDATA RTTIMENANOTSDATAR3;
 /**
  * The Ring-3 layout of the RTTIMENANOTSDATA structure.
  */
-typedef struct RTTIMENANOTSDATAR0
-{
-    R0PTRTYPE(uint64_t volatile  *) pu64Prev;
-    DECLR0CALLBACKMEMBER(void, pfnBad,(PRTTIMENANOTSDATA pData, uint64_t u64NanoTS, uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS));
-    DECLR0CALLBACKMEMBER(uint64_t, pfnRediscover,(PRTTIMENANOTSDATA pData));
-    DECLR0CALLBACKMEMBER(uint64_t, pfnBadCpuIndex,(PRTTIMENANOTSDATA pData, uint16_t idApic, uint16_t iCpuSet, uint16_t iGipCpu));
-    uint32_t            c1nsSteps;
-    uint32_t            cExpired;
-    uint32_t            cBadPrev;
-    uint32_t            cUpdateRaces;
+typedef struct RTTIMENANOTSDATAR0 {
+	R0PTRTYPE(uint64_t volatile *) pu64Prev;
+	DECLR0CALLBACKMEMBER(void, pfnBad,
+			     (PRTTIMENANOTSDATA pData, uint64_t u64NanoTS,
+			      uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS));
+	DECLR0CALLBACKMEMBER(uint64_t, pfnRediscover,
+			     (PRTTIMENANOTSDATA pData));
+	DECLR0CALLBACKMEMBER(uint64_t, pfnBadCpuIndex,
+			     (PRTTIMENANOTSDATA pData, uint16_t idApic,
+			      uint16_t iCpuSet, uint16_t iGipCpu));
+	uint32_t c1nsSteps;
+	uint32_t cExpired;
+	uint32_t cBadPrev;
+	uint32_t cUpdateRaces;
 } RTTIMENANOTSDATAR0;
 #else
 typedef RTTIMENANOTSDATA RTTIMENANOTSDATAR0;
@@ -929,16 +923,20 @@ typedef RTTIMENANOTSDATA RTTIMENANOTSDATAR0;
 /**
  * The RC layout of the RTTIMENANOTSDATA structure.
  */
-typedef struct RTTIMENANOTSDATARC
-{
-    RCPTRTYPE(uint64_t volatile  *) pu64Prev;
-    DECLRCCALLBACKMEMBER(void, pfnBad,(PRTTIMENANOTSDATA pData, uint64_t u64NanoTS, uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS));
-    DECLRCCALLBACKMEMBER(uint64_t, pfnRediscover,(PRTTIMENANOTSDATA pData));
-    DECLRCCALLBACKMEMBER(uint64_t, pfnBadCpuIndex,(PRTTIMENANOTSDATA pData, uint16_t idApic, uint16_t iCpuSet, uint16_t iGipCpu));
-    uint32_t            c1nsSteps;
-    uint32_t            cExpired;
-    uint32_t            cBadPrev;
-    uint32_t            cUpdateRaces;
+typedef struct RTTIMENANOTSDATARC {
+	RCPTRTYPE(uint64_t volatile *) pu64Prev;
+	DECLRCCALLBACKMEMBER(void, pfnBad,
+			     (PRTTIMENANOTSDATA pData, uint64_t u64NanoTS,
+			      uint64_t u64DeltaPrev, uint64_t u64PrevNanoTS));
+	DECLRCCALLBACKMEMBER(uint64_t, pfnRediscover,
+			     (PRTTIMENANOTSDATA pData));
+	DECLRCCALLBACKMEMBER(uint64_t, pfnBadCpuIndex,
+			     (PRTTIMENANOTSDATA pData, uint16_t idApic,
+			      uint16_t iCpuSet, uint16_t iGipCpu));
+	uint32_t c1nsSteps;
+	uint32_t cExpired;
+	uint32_t cBadPrev;
+	uint32_t cUpdateRaces;
 } RTTIMENANOTSDATARC;
 #else
 typedef RTTIMENANOTSDATA RTTIMENANOTSDATARC;
@@ -953,16 +951,26 @@ RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarNoDelta(PRTTIMENANOTSDATA pData);
 #ifdef IN_RING3
 RTDECL(uint64_t) RTTimeNanoTSLegacyAsyncUseApicId(PRTTIMENANOTSDATA pData);
 RTDECL(uint64_t) RTTimeNanoTSLegacyAsyncUseRdtscp(PRTTIMENANOTSDATA pData);
+RTDECL(uint64_t) RTTimeNanoTSLegacyAsyncUseRdtscpGroupChNumCl(PRTTIMENANOTSDATA
+							      pData);
 RTDECL(uint64_t) RTTimeNanoTSLegacyAsyncUseIdtrLim(PRTTIMENANOTSDATA pData);
-RTDECL(uint64_t) RTTimeNanoTSLegacySyncInvarWithDeltaUseApicId(PRTTIMENANOTSDATA pData);
-RTDECL(uint64_t) RTTimeNanoTSLegacySyncInvarWithDeltaUseRdtscp(PRTTIMENANOTSDATA pData);
-RTDECL(uint64_t) RTTimeNanoTSLegacySyncInvarWithDeltaUseIdtrLim(PRTTIMENANOTSDATA pData);
+RTDECL(uint64_t) RTTimeNanoTSLegacySyncInvarWithDeltaUseApicId(PRTTIMENANOTSDATA
+							       pData);
+RTDECL(uint64_t) RTTimeNanoTSLegacySyncInvarWithDeltaUseRdtscp(PRTTIMENANOTSDATA
+							       pData);
+RTDECL(uint64_t)
+RTTimeNanoTSLegacySyncInvarWithDeltaUseIdtrLim(PRTTIMENANOTSDATA pData);
 RTDECL(uint64_t) RTTimeNanoTSLFenceAsyncUseApicId(PRTTIMENANOTSDATA pData);
 RTDECL(uint64_t) RTTimeNanoTSLFenceAsyncUseRdtscp(PRTTIMENANOTSDATA pData);
+RTDECL(uint64_t) RTTimeNanoTSLFenceAsyncUseRdtscpGroupChNumCl(PRTTIMENANOTSDATA
+							      pData);
 RTDECL(uint64_t) RTTimeNanoTSLFenceAsyncUseIdtrLim(PRTTIMENANOTSDATA pData);
-RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarWithDeltaUseApicId(PRTTIMENANOTSDATA pData);
-RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarWithDeltaUseRdtscp(PRTTIMENANOTSDATA pData);
-RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarWithDeltaUseIdtrLim(PRTTIMENANOTSDATA pData);
+RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarWithDeltaUseApicId(PRTTIMENANOTSDATA
+							       pData);
+RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarWithDeltaUseRdtscp(PRTTIMENANOTSDATA
+							       pData);
+RTDECL(uint64_t)
+RTTimeNanoTSLFenceSyncInvarWithDeltaUseIdtrLim(PRTTIMENANOTSDATA pData);
 #else
 RTDECL(uint64_t) RTTimeNanoTSLegacyAsync(PRTTIMENANOTSDATA pData);
 RTDECL(uint64_t) RTTimeNanoTSLegacySyncInvarWithDelta(PRTTIMENANOTSDATA pData);
@@ -971,7 +979,6 @@ RTDECL(uint64_t) RTTimeNanoTSLFenceSyncInvarWithDelta(PRTTIMENANOTSDATA pData);
 #endif
 
 /** @} */
-
 
 /**
  * Gets the current nanosecond timestamp.
@@ -998,28 +1005,28 @@ RTDECL(uint64_t) RTTimeSystemMilliTS(void);
  *
  * @returns Timestamp relative to program startup.
  */
-RTDECL(uint64_t)  RTTimeProgramNanoTS(void);
+RTDECL(uint64_t) RTTimeProgramNanoTS(void);
 
 /**
  * Get the microsecond timestamp relative to program startup.
  *
  * @returns Timestamp relative to program startup.
  */
-RTDECL(uint64_t)  RTTimeProgramMicroTS(void);
+RTDECL(uint64_t) RTTimeProgramMicroTS(void);
 
 /**
  * Get the millisecond timestamp relative to program startup.
  *
  * @returns Timestamp relative to program startup.
  */
-RTDECL(uint64_t)  RTTimeProgramMilliTS(void);
+RTDECL(uint64_t) RTTimeProgramMilliTS(void);
 
 /**
  * Get the second timestamp relative to program startup.
  *
  * @returns Timestamp relative to program startup.
  */
-RTDECL(uint32_t)  RTTimeProgramSecTS(void);
+RTDECL(uint32_t) RTTimeProgramSecTS(void);
 
 /**
  * Get the RTTimeNanoTS() of when the program started.
@@ -1031,6 +1038,4 @@ RTDECL(uint64_t) RTTimeProgramStartNanoTS(void);
 /** @} */
 
 RT_C_DECLS_END
-
 #endif
-

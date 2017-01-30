@@ -44,22 +44,18 @@
 #endif
 
 RT_C_DECLS_BEGIN
-
-
 #ifndef RTUNI_USE_WCTYPE
-
 /**
  * A unicode flags range.
  * @internal
  */
-typedef struct RTUNIFLAGSRANGE
-{
+    typedef struct RTUNIFLAGSRANGE {
     /** The first code point of the range. */
-    RTUNICP         BeginCP;
+	RTUNICP BeginCP;
     /** The last + 1 code point of the range. */
-    RTUNICP         EndCP;
+	RTUNICP EndCP;
     /** Pointer to the array of case folded code points. */
-    const uint8_t  *pafFlags;
+	const uint8_t *pafFlags;
 } RTUNIFLAGSRANGE;
 /** Pointer to a flags range.
  * @internal */
@@ -72,14 +68,13 @@ typedef const RTUNIFLAGSRANGE *PCRTUNIFLAGSRANGE;
  * A unicode case folded range.
  * @internal
  */
-typedef struct RTUNICASERANGE
-{
+typedef struct RTUNICASERANGE {
     /** The first code point of the range. */
-    RTUNICP         BeginCP;
+	RTUNICP BeginCP;
     /** The last + 1 code point of the range. */
-    RTUNICP         EndCP;
+	RTUNICP EndCP;
     /** Pointer to the array of case folded code points. */
-    PCRTUNICP       paFoldedCPs;
+	PCRTUNICP paFoldedCPs;
 } RTUNICASERANGE;
 /** Pointer to a case folded range.
  * @internal */
@@ -103,7 +98,6 @@ typedef const RTUNICASERANGE *PCRTUNICASERANGE;
 #define RTUNI_QC_NFX        RT_BIT(7)
 /** @} */
 
-
 /**
  * Array of flags ranges.
  * @internal
@@ -119,20 +113,18 @@ extern RTDATADECL(const RTUNIFLAGSRANGE) g_aRTUniFlagsRanges[];
  */
 DECLINLINE(RTUNICP) rtUniCpFlags(RTUNICP CodePoint)
 {
-    PCRTUNIFLAGSRANGE pCur = &g_aRTUniFlagsRanges[0];
-    do
-    {
-        if (pCur->EndCP > CodePoint)
-        {
-            if (pCur->BeginCP <= CodePoint)
-                return pCur->pafFlags[CodePoint - pCur->BeginCP];
-            break;
-        }
-        pCur++;
-    } while (pCur->EndCP != RTUNICP_MAX);
-    return 0;
+	PCRTUNIFLAGSRANGE pCur = &g_aRTUniFlagsRanges[0];
+	do {
+		if (pCur->EndCP > CodePoint) {
+			if (pCur->BeginCP <= CodePoint)
+				return pCur->pafFlags[CodePoint -
+						      pCur->BeginCP];
+			break;
+		}
+		pCur++;
+	} while (pCur->EndCP != RTUNICP_MAX);
+	return 0;
 }
-
 
 /**
  * Checks if a unicode code point is upper case.
@@ -143,9 +135,8 @@ DECLINLINE(RTUNICP) rtUniCpFlags(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsUpper(RTUNICP CodePoint)
 {
-    return (rtUniCpFlags(CodePoint) & RTUNI_UPPER) != 0;
+	return (rtUniCpFlags(CodePoint) & RTUNI_UPPER) != 0;
 }
-
 
 /**
  * Checks if a unicode code point is lower case.
@@ -156,9 +147,8 @@ DECLINLINE(bool) RTUniCpIsUpper(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsLower(RTUNICP CodePoint)
 {
-    return (rtUniCpFlags(CodePoint) & RTUNI_LOWER) != 0;
+	return (rtUniCpFlags(CodePoint) & RTUNI_LOWER) != 0;
 }
-
 
 /**
  * Checks if a unicode code point is case foldable.
@@ -169,10 +159,9 @@ DECLINLINE(bool) RTUniCpIsLower(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsFoldable(RTUNICP CodePoint)
 {
-    /* Right enough. */
-    return (rtUniCpFlags(CodePoint) & (RTUNI_LOWER | RTUNI_UPPER)) != 0;
+	/* Right enough. */
+	return (rtUniCpFlags(CodePoint) & (RTUNI_LOWER | RTUNI_UPPER)) != 0;
 }
-
 
 /**
  * Checks if a unicode code point is alphabetic.
@@ -183,9 +172,8 @@ DECLINLINE(bool) RTUniCpIsFoldable(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsAlphabetic(RTUNICP CodePoint)
 {
-    return (rtUniCpFlags(CodePoint) & RTUNI_ALPHA) != 0;
+	return (rtUniCpFlags(CodePoint) & RTUNI_ALPHA) != 0;
 }
-
 
 /**
  * Checks if a unicode code point is a decimal digit.
@@ -196,9 +184,8 @@ DECLINLINE(bool) RTUniCpIsAlphabetic(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsDecDigit(RTUNICP CodePoint)
 {
-    return (rtUniCpFlags(CodePoint) & RTUNI_DDIGIT) != 0;
+	return (rtUniCpFlags(CodePoint) & RTUNI_DDIGIT) != 0;
 }
-
 
 /**
  * Checks if a unicode code point is a hexadecimal digit.
@@ -209,9 +196,8 @@ DECLINLINE(bool) RTUniCpIsDecDigit(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsHexDigit(RTUNICP CodePoint)
 {
-    return (rtUniCpFlags(CodePoint) & RTUNI_XDIGIT) != 0;
+	return (rtUniCpFlags(CodePoint) & RTUNI_XDIGIT) != 0;
 }
-
 
 /**
  * Checks if a unicode code point is white space.
@@ -222,10 +208,8 @@ DECLINLINE(bool) RTUniCpIsHexDigit(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsSpace(RTUNICP CodePoint)
 {
-    return (rtUniCpFlags(CodePoint) & RTUNI_WSPACE) != 0;
+	return (rtUniCpFlags(CodePoint) & RTUNI_WSPACE) != 0;
 }
-
-
 
 /**
  * Array of uppercase ranges.
@@ -239,7 +223,6 @@ extern RTDATADECL(const RTUNICASERANGE) g_aRTUniUpperRanges[];
  */
 extern RTDATADECL(const RTUNICASERANGE) g_aRTUniLowerRanges[];
 
-
 /**
  * Folds a unicode code point using the specified range array.
  *
@@ -249,19 +232,18 @@ extern RTDATADECL(const RTUNICASERANGE) g_aRTUniLowerRanges[];
  */
 DECLINLINE(RTUNICP) rtUniCpFold(RTUNICP CodePoint, PCRTUNICASERANGE pCur)
 {
-    do
-    {
-        if (pCur->EndCP > CodePoint)
-        {
-            if (pCur->BeginCP <= CodePoint)
-                CodePoint = pCur->paFoldedCPs[CodePoint - pCur->BeginCP];
-            break;
-        }
-        pCur++;
-    } while (pCur->EndCP != RTUNICP_MAX);
-    return CodePoint;
+	do {
+		if (pCur->EndCP > CodePoint) {
+			if (pCur->BeginCP <= CodePoint)
+				CodePoint =
+				    pCur->paFoldedCPs[CodePoint -
+						      pCur->BeginCP];
+			break;
+		}
+		pCur++;
+	} while (pCur->EndCP != RTUNICP_MAX);
+	return CodePoint;
 }
-
 
 /**
  * Folds a unicode code point to upper case.
@@ -271,9 +253,8 @@ DECLINLINE(RTUNICP) rtUniCpFold(RTUNICP CodePoint, PCRTUNICASERANGE pCur)
  */
 DECLINLINE(RTUNICP) RTUniCpToUpper(RTUNICP CodePoint)
 {
-    return rtUniCpFold(CodePoint, &g_aRTUniUpperRanges[0]);
+	return rtUniCpFold(CodePoint, &g_aRTUniUpperRanges[0]);
 }
-
 
 /**
  * Folds a unicode code point to lower case.
@@ -283,13 +264,10 @@ DECLINLINE(RTUNICP) RTUniCpToUpper(RTUNICP CodePoint)
  */
 DECLINLINE(RTUNICP) RTUniCpToLower(RTUNICP CodePoint)
 {
-    return rtUniCpFold(CodePoint, &g_aRTUniLowerRanges[0]);
+	return rtUniCpFold(CodePoint, &g_aRTUniLowerRanges[0]);
 }
 
-
 #else /* RTUNI_USE_WCTYPE */
-
-
 /**
  * Checks if a unicode code point is upper case.
  *
@@ -299,9 +277,8 @@ DECLINLINE(RTUNICP) RTUniCpToLower(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsUpper(RTUNICP CodePoint)
 {
-    return !!iswupper(CodePoint);
+	return !!iswupper(CodePoint);
 }
-
 
 /**
  * Checks if a unicode code point is lower case.
@@ -312,9 +289,8 @@ DECLINLINE(bool) RTUniCpIsUpper(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsLower(RTUNICP CodePoint)
 {
-    return !!iswlower(CodePoint);
+	return !!iswlower(CodePoint);
 }
-
 
 /**
  * Checks if a unicode code point is case foldable.
@@ -325,10 +301,9 @@ DECLINLINE(bool) RTUniCpIsLower(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsFoldable(RTUNICP CodePoint)
 {
-    /* Right enough. */
-    return iswupper(CodePoint) || iswlower(CodePoint);
+	/* Right enough. */
+	return iswupper(CodePoint) || iswlower(CodePoint);
 }
-
 
 /**
  * Checks if a unicode code point is alphabetic.
@@ -339,9 +314,8 @@ DECLINLINE(bool) RTUniCpIsFoldable(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsAlphabetic(RTUNICP CodePoint)
 {
-    return !!iswalpha(CodePoint);
+	return !!iswalpha(CodePoint);
 }
-
 
 /**
  * Checks if a unicode code point is a decimal digit.
@@ -352,9 +326,8 @@ DECLINLINE(bool) RTUniCpIsAlphabetic(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsDecDigit(RTUNICP CodePoint)
 {
-    return !!iswdigit(CodePoint);
+	return !!iswdigit(CodePoint);
 }
-
 
 /**
  * Checks if a unicode code point is a hexadecimal digit.
@@ -365,9 +338,8 @@ DECLINLINE(bool) RTUniCpIsDecDigit(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsHexDigit(RTUNICP CodePoint)
 {
-    return !!iswxdigit(CodePoint);
+	return !!iswxdigit(CodePoint);
 }
-
 
 /**
  * Checks if a unicode code point is white space.
@@ -378,9 +350,8 @@ DECLINLINE(bool) RTUniCpIsHexDigit(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsSpace(RTUNICP CodePoint)
 {
-    return !!iswspace(CodePoint);
+	return !!iswspace(CodePoint);
 }
-
 
 /**
  * Folds a unicode code point to upper case.
@@ -390,9 +361,8 @@ DECLINLINE(bool) RTUniCpIsSpace(RTUNICP CodePoint)
  */
 DECLINLINE(RTUNICP) RTUniCpToUpper(RTUNICP CodePoint)
 {
-    return towupper(CodePoint);
+	return towupper(CodePoint);
 }
-
 
 /**
  * Folds a unicode code point to lower case.
@@ -402,20 +372,17 @@ DECLINLINE(RTUNICP) RTUniCpToUpper(RTUNICP CodePoint)
  */
 DECLINLINE(RTUNICP) RTUniCpToLower(RTUNICP CodePoint)
 {
-    return towlower(CodePoint);
+	return towlower(CodePoint);
 }
 
-
 #endif /* RTUNI_USE_WCTYPE */
-
 
 /**
  * Frees a unicode string.
  *
  * @param   pusz        The string to free.
  */
-RTDECL(void) RTUniFree(PRTUNICP pusz);
-
+RTDECL(void)RTUniFree(PRTUNICP pusz);
 
 /**
  * Checks if a code point valid.
@@ -428,11 +395,9 @@ RTDECL(void) RTUniFree(PRTUNICP pusz);
  */
 DECLINLINE(bool) RTUniCpIsValid(RTUNICP CodePoint)
 {
-    return CodePoint <= 0x00d7ff
-        || (   CodePoint <= 0x10ffff
-            && CodePoint >= 0x00e000);
+	return CodePoint <= 0x00d7ff
+	    || (CodePoint <= 0x10ffff && CodePoint >= 0x00e000);
 }
-
 
 /**
  * Checks if the given code point is in the BMP range.
@@ -444,11 +409,9 @@ DECLINLINE(bool) RTUniCpIsValid(RTUNICP CodePoint)
  */
 DECLINLINE(bool) RTUniCpIsBMP(RTUNICP CodePoint)
 {
-    return CodePoint <= 0xd7ff
-        || (   CodePoint <= 0xffff
-            && CodePoint >= 0xe000);
+	return CodePoint <= 0xd7ff
+	    || (CodePoint <= 0xffff && CodePoint >= 0xe000);
 }
-
 
 /**
  * Folds a unicode code point to lower case.
@@ -458,21 +421,15 @@ DECLINLINE(bool) RTUniCpIsBMP(RTUNICP CodePoint)
  */
 DECLINLINE(size_t) RTUniCpCalcUtf8Len(RTUNICP CodePoint)
 {
-    if (CodePoint < 0x80)
-        return 1;
-    return 2
-        + (CodePoint >= 0x00000800)
-        + (CodePoint >= 0x00010000)
-        + (CodePoint >= 0x00200000)
-        + (CodePoint >= 0x04000000)
-        + (CodePoint >= 0x80000000) /* illegal */;
+	if (CodePoint < 0x80)
+		return 1;
+	return 2 + (CodePoint >= 0x00000800)
+	    + (CodePoint >= 0x00010000)
+	    + (CodePoint >= 0x00200000)
+	    + (CodePoint >= 0x04000000)
+	    + (CodePoint >= 0x80000000) /* illegal */ ;
 }
-
-
 
 RT_C_DECLS_END
 /** @} */
-
-
 #endif
-

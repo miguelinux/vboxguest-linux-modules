@@ -32,7 +32,7 @@
 #define SCHAR_MAX       0x7f
 #define SCHAR_MIN       (-0x7f - 1)
 #define UCHAR_MAX       0xff
-#if 1 /* ASSUMES: signed char */
+#if 1				/* ASSUMES: signed char */
 # define CHAR_MAX       SCHAR_MAX
 # define CHAR_MIN       SCHAR_MIN
 #else
@@ -83,4 +83,3 @@
 #define OFF_MIN         __OFF_MIN*/
 
 #endif
-

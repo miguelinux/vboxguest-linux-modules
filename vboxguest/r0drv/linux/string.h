@@ -30,7 +30,7 @@
 #include <iprt/cdefs.h>
 
 RT_C_DECLS_BEGIN
-#ifndef bool /* Linux 2.6.19 C++ nightmare */
+#ifndef bool			/* Linux 2.6.19 C++ nightmare */
 #define bool bool_type
 #define true true_type
 #define false false_type
@@ -49,9 +49,7 @@ char *strpbrk(const char *pszStr, const char *pszChars)
 #if defined(__THROW)
     __THROW
 #endif
-    ;
+;
 
 RT_C_DECLS_END
-
 #endif
-

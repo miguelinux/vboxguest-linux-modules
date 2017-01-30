@@ -30,9 +30,7 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
-
 #ifdef IN_RING0
-
 /**
  * Print the 1st part of an assert message to whatever native facility is best
  * fitting.
@@ -42,7 +40,9 @@ RT_C_DECLS_BEGIN
  * @param   pszFile     Location file name.
  * @param   pszFunction Location function name.
  */
-DECLHIDDEN(void) rtR0AssertNativeMsg1(const char *pszExpr, unsigned uLine, const char *pszFile, const char *pszFunction);
+DECLHIDDEN(void) rtR0AssertNativeMsg1(const char *pszExpr, unsigned uLine,
+				      const char *pszFile,
+				      const char *pszFunction);
 
 /**
  * Print the 2nd (optional) part of an assert message to whatever native
@@ -53,11 +53,10 @@ DECLHIDDEN(void) rtR0AssertNativeMsg1(const char *pszExpr, unsigned uLine, const
  * @param   pszFormat   Printf like format string.
  * @param   va          Arguments to that string.
  */
-DECLHIDDEN(void) rtR0AssertNativeMsg2V(bool fInitial, const char *pszFormat, va_list va);
+DECLHIDDEN(void) rtR0AssertNativeMsg2V(bool fInitial, const char *pszFormat,
+				       va_list va);
 
 #endif
 
 RT_C_DECLS_END
-
 #endif
-

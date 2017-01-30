@@ -1,0 +1,140 @@
+#!/bin/bash
+# -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# ex: ts=8 sw=4 sts=4 et filetype=sh
+#
+# updatevboxguest
+#
+# Copyright (c) 2016, Intel Corporation.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# Authors:
+# 	Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+
+IS_DIALOG=0
+VBOX_URL=http://download.virtualbox.org/virtualbox
+VBOX_VERSION=0
+KDIR=""
+
+die ()
+{
+    TITLE="$1"
+    shift
+    MSG="$*"
+    if [ ${IS_DIALOG} -eq 1 ] ; then
+        dialog --title "${TITLE}" --msgbox "${MSG}" 0 0
+    else
+        echo "ERROR: ${TITLE}" >&2
+        echo "${MSG}" >&2
+    fi
+    exit 1
+}
+
+check_dialog ()
+{
+    if dialog &> /dev/null; then
+        IS_DIALOG=1
+    fi
+}
+
+check_params ()
+{
+    if [ $# -lt 2 ] ; then
+        die "PARAMETER MISSING" "You should provide a virtualbox version and kernel directory"
+    fi
+    VBOX_VERSION=$1
+    KDIR=$2
+    if [ ! -f ${KDIR}/scripts/Lindent ] ; then
+        die "KERNEL DIRECTORY MISSING" "You should provide a valid kernel directory"
+    fi
+}
+
+get_and_mount_iso ()
+{
+    set -e
+    if [ ! -f VBoxGuestAdditions_${VBOX_VERSION}.iso ] ; then
+        URL="${VBOX_URL}/${VBOX_VERSION}/VBoxGuestAdditions_${VBOX_VERSION}.iso"
+        curl -O ${URL}
+        URL="${VBOX_URL}/${VBOX_VERSION}/SHA256SUMS"
+        curl -O ${URL}
+    fi
+    set +e
+    if ! sha256sum --ignore-missing --status -c SHA256SUMS ; then 
+        die "BAD SHA256SUMS" "The iso file is corrupted, please delete and
+        download it again please."
+    fi
+    sudo mkdir -p /mnt/iso-vbox
+    sudo mount VBoxGuestAdditions_${VBOX_VERSION}.iso /mnt/iso-vbox -t iso9660 -o ro
+}
+
+umount_and_delete_iso ()
+{
+    sudo umount /mnt/iso-vbox
+    sudo rmdir /mnt/iso-vbox
+    rm VBoxGuestAdditions_${VBOX_VERSION}.iso
+    rm SHA256SUMS 
+}
+
+extract_files ()
+{
+    rm -rf /tmp/vblga-bz2
+    rm -rf /tmp/vblga
+    /mnt/iso-vbox/VBoxLinuxAdditions.run --noexec --keep --nox11 --target /tmp/vblga
+    if [ ! -f /tmp/vblga/routines.sh ] ; then
+        sudo umount /mnt/iso-vbox
+        rmdir /mnt/iso-vbox
+        die "VBOX Files not Found" "Can not find VirtualBox install files ..."
+    fi
+    mkdir /tmp/vblga-bz2
+    tar -C /tmp/vblga-bz2 -xjf /tmp/vblga/VBoxGuestAdditions-amd64.tar.bz2
+}
+
+update_repo ()
+{
+    git rm vbox* Make* build_*
+    cp -r /tmp/vblga-bz2/src/vboxguest-${VBOX_VERSION}/* .
+    cp /tmp/vblga-bz2/LICENSE .
+    git add -A
+    git commit -m "src/vboxguest-${VBOX_VERSION}"
+    git tag -a -m "vboxguest-${VBOX_VERSION}" v${VBOX_VERSION}
+}
+
+copy_to_kernel ()
+{
+    cp -r vboxguest vboxsf vboxvideo ${KDIR}/drivers/misc
+}
+
+fix_coding_style ()
+{
+    TMPDIR=/tmp/vblga-bz2/src/vboxguest-${VBOX_VERSION}
+    find ${TMPDIR}/vboxguest -type f -exec dos2unix {} \;
+    find ${TMPDIR}/vboxsf    -type f -exec dos2unix {} \;
+    find ${TMPDIR}/vboxvideo -type f -exec dos2unix {} \;
+
+    LIN=${KDIR}/scripts/Lindent
+    find ${TMPDIR}/vboxguest -type f -not -name "Makefile*" -exec ${LIN} {} \;
+    find ${TMPDIR}/vboxsf    -type f -not -name "Makefile*" -exec ${LIN} {} \;
+    find ${TMPDIR}/vboxvideo -type f -not -name "Makefile*" -exec ${LIN} {} \;
+
+    find ${TMPDIR}/vboxguest -type f -name "*~" -exec rm {} \;
+    find ${TMPDIR}/vboxsf    -type f -name "*~" -exec rm {} \;
+    find ${TMPDIR}/vboxvideo -type f -name "*~" -exec rm {} \;
+
+}
+####################  main  #################### 
+
+check_dialog
+check_params $*
+get_and_mount_iso
+extract_files
+umount_and_delete_iso
+fix_coding_style
+update_repo
+#copy_to_kernel

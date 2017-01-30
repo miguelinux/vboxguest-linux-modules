@@ -24,19 +24,17 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
 #include <iprt/log.h>
 #include "internal/iprt.h"
 
-
 RTDECL(void) RTLogWriteStdOut(const char *pch, size_t cb)
 {
-    NOREF(pch);
-    NOREF(cb);
-    return;
+	NOREF(pch);
+	NOREF(cb);
+	return;
 }
-RT_EXPORT_SYMBOL(RTLogWriteStdOut);
 
+RT_EXPORT_SYMBOL(RTLogWriteStdOut);

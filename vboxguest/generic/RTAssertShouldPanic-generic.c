@@ -24,21 +24,19 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
 #include <iprt/assert.h>
 #include "internal/iprt.h"
 
-
 RTDECL(bool) RTAssertShouldPanic(void)
 {
-#if 0 /* Enable this to not panic on assertions. (Make sure this code is used!) */
-    return false;
+#if 0				/* Enable this to not panic on assertions. (Make sure this code is used!) */
+	return false;
 #else
-    return RTAssertMayPanic();
+	return RTAssertMayPanic();
 #endif
 }
-RT_EXPORT_SYMBOL(RTAssertShouldPanic);
 
+RT_EXPORT_SYMBOL(RTAssertShouldPanic);

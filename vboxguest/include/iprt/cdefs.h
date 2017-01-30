@@ -26,7 +26,6 @@
 #ifndef ___iprt_cdefs_h
 #define ___iprt_cdefs_h
 
-
 /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
  * @{
  */
@@ -48,7 +47,6 @@
 # define RT_C_DECLS_BEGIN
 # define RT_C_DECLS_END
 #endif
-
 
 /*
  * Shut up DOXYGEN warnings and guide it properly thru the code.
@@ -198,24 +196,24 @@
  * @remarks The VCxxx values are derived from the CRT DLLs shipping with the
  *          compilers.
  * @{ */
-#define RT_MSC_VER_VC50     (1100)              /**< Visual C++ 5.0. */
-#define RT_MSC_VER_VC60     (1200)              /**< Visual C++ 6.0. */
-#define RT_MSC_VER_VC70     (1300)              /**< Visual C++ 7.0. */
-#define RT_MSC_VER_VC70     (1300)              /**< Visual C++ 7.0. */
-#define RT_MSC_VER_VS2003   (1310)              /**< Visual Studio 2003, aka Visual C++ 7.1. */
-#define RT_MSC_VER_VC71     RT_MSC_VER_VS2003   /**< Visual C++ 7.1, aka Visual Studio 2003. */
-#define RT_MSC_VER_VS2005   (1400)              /**< Visual Studio 2005. */
-#define RT_MSC_VER_VC80     RT_MSC_VER_VS2005   /**< Visual C++ 8.0, aka Visual Studio 2008. */
-#define RT_MSC_VER_VS2008   (1500)              /**< Visual Studio 2008. */
-#define RT_MSC_VER_VC90     RT_MSC_VER_VS2008   /**< Visual C++ 9.0, aka Visual Studio 2008. */
-#define RT_MSC_VER_VS2010   (1600)              /**< Visual Studio 2010. */
-#define RT_MSC_VER_VC100    RT_MSC_VER_VS2010   /**< Visual C++ 10.0, aka Visual Studio 2010. */
-#define RT_MSC_VER_VS2012   (1700)              /**< Visual Studio 2012. */
-#define RT_MSC_VER_VC110    RT_MSC_VER_VS2012   /**< Visual C++ 11.0, aka Visual Studio 2012. */
-#define RT_MSC_VER_VS2013   (1800)              /**< Visual Studio 2013. */
-#define RT_MSC_VER_VC120    RT_MSC_VER_VS2013   /**< Visual C++ 12.0, aka Visual Studio 2013. */
-#define RT_MSC_VER_VS2015   (1900)              /**< Visual Studio 2015. */
-#define RT_MSC_VER_VC140    RT_MSC_VER_VS2015   /**< Visual C++ 14.0, aka Visual Studio 2015. */
+#define RT_MSC_VER_VC50     (1100)		/**< Visual C++ 5.0. */
+#define RT_MSC_VER_VC60     (1200)		/**< Visual C++ 6.0. */
+#define RT_MSC_VER_VC70     (1300)		/**< Visual C++ 7.0. */
+#define RT_MSC_VER_VC70     (1300)		/**< Visual C++ 7.0. */
+#define RT_MSC_VER_VS2003   (1310)		/**< Visual Studio 2003, aka Visual C++ 7.1. */
+#define RT_MSC_VER_VC71     RT_MSC_VER_VS2003	/**< Visual C++ 7.1, aka Visual Studio 2003. */
+#define RT_MSC_VER_VS2005   (1400)		/**< Visual Studio 2005. */
+#define RT_MSC_VER_VC80     RT_MSC_VER_VS2005	/**< Visual C++ 8.0, aka Visual Studio 2008. */
+#define RT_MSC_VER_VS2008   (1500)		/**< Visual Studio 2008. */
+#define RT_MSC_VER_VC90     RT_MSC_VER_VS2008	/**< Visual C++ 9.0, aka Visual Studio 2008. */
+#define RT_MSC_VER_VS2010   (1600)		/**< Visual Studio 2010. */
+#define RT_MSC_VER_VC100    RT_MSC_VER_VS2010	/**< Visual C++ 10.0, aka Visual Studio 2010. */
+#define RT_MSC_VER_VS2012   (1700)		/**< Visual Studio 2012. */
+#define RT_MSC_VER_VC110    RT_MSC_VER_VS2012	/**< Visual C++ 11.0, aka Visual Studio 2012. */
+#define RT_MSC_VER_VS2013   (1800)		/**< Visual Studio 2013. */
+#define RT_MSC_VER_VC120    RT_MSC_VER_VS2013	/**< Visual C++ 12.0, aka Visual Studio 2013. */
+#define RT_MSC_VER_VS2015   (1900)		/**< Visual Studio 2015. */
+#define RT_MSC_VER_VC140    RT_MSC_VER_VS2015	/**< Visual C++ 14.0, aka Visual Studio 2015. */
 /** @} */
 
 /** @def RT_CLANG_PREREQ
@@ -239,7 +237,6 @@
 #else
 # define RT_CLANG_PREREQ_EX(a_MinMajor, a_MinMinor, a_OtherRet) (a_OtherRet)
 #endif
-
 
 /** @def __X86__
  * Indicates that we're compiling for the X86 architecture.
@@ -281,7 +278,6 @@
 # error "Both RT_BIG_ENDIAN and RT_LITTLE_ENDIAN are defined"
 #endif
 
-
 /** @def IN_RING0
  * Used to indicate that we're compiling code which is running
  * in Ring-0 Host Context.
@@ -305,7 +301,6 @@
 # error "Only one of the IN_RING3, IN_RING0, IN_RC defines should be defined."
 #endif
 
-
 /** @def ARCH_BITS
  * Defines the bit count of the current context.
  */
@@ -321,28 +316,28 @@
 
 /* ARCH_BITS validation (PORTME). */
 #if ARCH_BITS == 64
- #if defined(RT_ARCH_X86) || defined(RT_ARCH_SPARC) || defined(RT_ARCH_ARM)
- # error "ARCH_BITS=64 but non-64-bit RT_ARCH_XXX defined."
- #endif
- #if !defined(RT_ARCH_AMD64) && !defined(RT_ARCH_SPARC64)
- # error "ARCH_BITS=64 but no 64-bit RT_ARCH_XXX defined."
- #endif
+#if defined(RT_ARCH_X86) || defined(RT_ARCH_SPARC) || defined(RT_ARCH_ARM)
+# error "ARCH_BITS=64 but non-64-bit RT_ARCH_XXX defined."
+#endif
+#if !defined(RT_ARCH_AMD64) && !defined(RT_ARCH_SPARC64)
+# error "ARCH_BITS=64 but no 64-bit RT_ARCH_XXX defined."
+#endif
 
 #elif ARCH_BITS == 32
- #if defined(RT_ARCH_AMD64) || defined(RT_ARCH_SPARC64)
- # error "ARCH_BITS=32 but non-32-bit RT_ARCH_XXX defined."
- #endif
- #if !defined(RT_ARCH_X86) && !defined(RT_ARCH_SPARC) && !defined(RT_ARCH_ARM)
- # error "ARCH_BITS=32 but no 32-bit RT_ARCH_XXX defined."
- #endif
+#if defined(RT_ARCH_AMD64) || defined(RT_ARCH_SPARC64)
+# error "ARCH_BITS=32 but non-32-bit RT_ARCH_XXX defined."
+#endif
+#if !defined(RT_ARCH_X86) && !defined(RT_ARCH_SPARC) && !defined(RT_ARCH_ARM)
+# error "ARCH_BITS=32 but no 32-bit RT_ARCH_XXX defined."
+#endif
 
 #elif ARCH_BITS == 16
- #if defined(RT_ARCH_AMD64) || defined(RT_ARCH_SPARC) || defined(RT_ARCH_SPARC64) || defined(RT_ARCH_ARM)
- # error "ARCH_BITS=16 but non-16-bit RT_ARCH_XX defined."
- #endif
- #if !defined(RT_ARCH_X86)
- # error "ARCH_BITS=16 but RT_ARCH_X86 isn't defined."
- #endif
+#if defined(RT_ARCH_AMD64) || defined(RT_ARCH_SPARC) || defined(RT_ARCH_SPARC64) || defined(RT_ARCH_ARM)
+# error "ARCH_BITS=16 but non-16-bit RT_ARCH_XX defined."
+#endif
+#if !defined(RT_ARCH_X86)
+# error "ARCH_BITS=16 but RT_ARCH_X86 isn't defined."
+#endif
 
 #else
 # error "Unsupported ARCH_BITS value!"
@@ -402,8 +397,6 @@
 #  define GC_ARCH_BITS 32
 # endif
 #endif
-
-
 
 /** @name RT_OPSYS_XXX - Operative System Identifiers.
  * These are the value that the RT_OPSYS \#define can take. @{
@@ -522,13 +515,13 @@
 #  define RT_OPSYS      RT_OPSYS_DARWIN
 # elif defined(__DragonFly__)
 #  define RT_OPSYS      RT_OPSYS_DRAGONFLY
-# elif defined(__FreeBSD__) /*??*/
+# elif defined(__FreeBSD__)	/*?? */
 #  define RT_OPSYS      RT_OPSYS_FREEBSD
 # elif defined(__gnu_linux__)
 #  define RT_OPSYS      RT_OPSYS_LINUX
-# elif defined(__NetBSD__) /*??*/
+# elif defined(__NetBSD__)	/*?? */
 #  define RT_OPSYS      RT_OPSYS_NETBSD
-# elif defined(__OpenBSD__) /*??*/
+# elif defined(__OpenBSD__)	/*?? */
 #  define RT_OPSYS      RT_OPSYS_OPENBSD
 # elif defined(__OS2__)
 #  define RT_OPSYS      RT_OPSYS_OS2
@@ -536,7 +529,7 @@
 #  define RT_OPSYS      RT_OPSYS_SOLARIS
 # elif defined(_WIN32) || defined(_WIN64)
 #  define RT_OPSYS      RT_OPSYS_WINDOWS
-# elif defined(MSDOS) || defined(_MSDOS) || defined(DOS16RM) /* OW+MSC || MSC || DMC */
+# elif defined(MSDOS) || defined(_MSDOS) || defined(DOS16RM)	/* OW+MSC || MSC || DMC */
 #  define RT_OPSYS      RT_OPSYS_DOS
 # else
 #  error "Port Me"
@@ -704,7 +697,6 @@
 # error "Bad RT_OPSYS value."
 #endif
 
-
 /**
  * Checks whether the given OpSys uses DOS-style paths or not.
  *
@@ -718,8 +710,6 @@
     (   (a_OpSys) == RT_OPSYS_WINDOWS \
      || (a_OpSys) == RT_OPSYS_OS2 \
      || (a_OpSys) == RT_OPSYS_DOS )
-
-
 
 /** @def CTXTYPE
  * Declare a type differently in GC, R3 and R0.
@@ -847,7 +837,6 @@
 # define CTX_SUFF_Z(var)    var##RZ
 #endif
 
-
 /** @def CTXMID
  * Adds the current context as a middle name of an identifier name
  * The middle name is HC or GC.
@@ -921,7 +910,6 @@
 # define CTX_MID_Z(first, last)     first##RZ##last
 #endif
 
-
 /** @def R3STRING
  * A macro which in GC and R0 will return a dummy string while in R3 it will return
  * the parameter.
@@ -969,7 +957,6 @@
 #else
 # define RCSTRING(pRCString)    ("<RC_STRING>")
 #endif
-
 
 /** @def RT_NOTHING
  * A macro that expands to nothing.
@@ -1024,7 +1011,7 @@
 /** @def RT_COMPILER_GROKS_64BIT_BITFIELDS
  * Macro that is defined if the compiler understands 64-bit bitfields. */
 #if !defined(RT_OS_OS2) || (!defined(__IBMC__) && !defined(__IBMCPP__))
-# if !defined(__WATCOMC__) /* watcom compiler doesn't grok it either. */
+# if !defined(__WATCOMC__)	/* watcom compiler doesn't grok it either. */
 #  define RT_COMPILER_GROKS_64BIT_BITFIELDS
 # endif
 #endif
@@ -1035,7 +1022,6 @@
 #if (defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)) && !defined(RT_OS_WINDOWS)
 # define RT_COMPILER_WITH_80BIT_LONG_DOUBLE
 #endif
-
 
 /** @def RT_EXCEPTIONS_ENABLED
  * Defined when C++ exceptions are enabled.
@@ -1130,7 +1116,6 @@
 # define RT_IPRT_FORMAT_ATTR_MAYBE_NULL(a_iFmt, a_iArgs)
 #endif
 
-
 /** @def RT_GCC_SUPPORTS_VISIBILITY_HIDDEN
  * Indicates that the "hidden" visibility attribute can be used (GCC) */
 #if defined(__GNUC__)
@@ -1142,16 +1127,14 @@
 /** @def RT_COMPILER_SUPPORTS_VA_ARGS
  * If the defined, the compiler supports the variadic macro feature (..., __VA_ARGS__). */
 #if defined(_MSC_VER)
-# if _MSC_VER >= 1600 /* Visual C++ v10.0 / 2010 */
+# if _MSC_VER >= 1600		/* Visual C++ v10.0 / 2010 */
 #  define RT_COMPILER_SUPPORTS_VA_ARGS
 # endif
 #elif defined(__GNUC__)
-# if __GNUC__ >= 3 /* not entirely sure when this was added */
+# if __GNUC__ >= 3		/* not entirely sure when this was added */
 #  define RT_COMPILER_SUPPORTS_VA_ARGS
 # endif
 #endif
-
-
 
 /** @def RTCALL
  * The standard calling convention for the Runtime interfaces.
@@ -1368,7 +1351,6 @@
 # define DECLINLINE(type) inline type
 #endif
 
-
 /** @def DECL_FORCE_INLINE
  * How to declare a function as inline and try convince the compiler to always
  * inline it regardless of optimization switches.
@@ -1383,7 +1365,6 @@
 # define DECL_FORCE_INLINE(type)    DECLINLINE(type)
 #endif
 
-
 /** @def DECL_NO_INLINE
  * How to declare a function telling the compiler not to inline it.
  * @param   scope   The function scope, static or RT_NOTHING.
@@ -1397,7 +1378,6 @@
 #else
 # define DECL_NO_INLINE(scope,type) scope type
 #endif
-
 
 /** @def IN_RT_STATIC
  * Used to indicate whether we're linking against a static IPRT
@@ -1530,7 +1510,6 @@
 # define RT_DECL_CLASS      DECLIMPORT_CLASS
 #endif
 
-
 /** @def RT_NOCRT
  * Symbol name wrapper for the No-CRT bits.
  *
@@ -1553,8 +1532,6 @@
 # define RT_NOCRT(name) name
 # define RT_NOCRT_STR(name) #name
 #endif
-
-
 
 /** @def RT_LIKELY
  * Give the compiler a hint that an expression is very likely to hold true.
@@ -1707,7 +1684,6 @@
 
 #endif /* RT_COMPILER_SUPPORTS_VA_ARGS */
 
-
 /** @def RT_CONCAT
  * Concatenate the expanded arguments without any extra spaces in between.
  *
@@ -1776,14 +1752,12 @@
  */
 #define RT_STR_TUPLE(a_szConst)  a_szConst, (sizeof(a_szConst) - 1)
 
-
 /**
  * Macro for using in switch statements that turns constants into strings.
  *
  * @param   a_Const     The constant (not string).
  */
 #define RT_CASE_RET_STR(a_Const)     case a_Const: return #a_Const
-
 
 /** @def RT_BIT
  * Convert a bit number into an integer bitmask (unsigned).
@@ -1802,7 +1776,6 @@
  * @param   bit     The bit number.
  */
 #define RT_BIT_64(bit)                          ( UINT64_C(1) << (bit) )
-
 
 /** @def RT_BF_GET
  * Gets the value of a bit field in an integer value.
@@ -2048,7 +2021,6 @@
 # define RT_BF_ASSERT_COMPILE_CHECKS(a_Prefix, a_uZero, a_uCovered, a_Fields) AssertCompile(true)
 #endif
 
-
 /** @def RT_ALIGN
  * Align macro.
  * @param   u           Value to align.
@@ -2133,7 +2105,6 @@
  * @param   CastType        The type to cast the result to.
  */
 #define RT_ALIGN_GCPT(u, uAlignment, CastType)  ( (CastType)RT_ALIGN_T(u, uAlignment, RTGCUINTPTR) )
-
 
 /** @def RT_OFFSETOF
  * Our own special offsetof() variant, returns a signed result.
@@ -2294,7 +2265,7 @@
  * Gets the low uint8_t of a uint16_t or something equivalent. */
 #ifdef __GNUC__
 # define RT_LO_U8(a)    __extension__ ({ AssertCompile(sizeof((a)) == sizeof(uint16_t)); (uint8_t)(a); })
-#elif defined(_MSC_VER) /* shut up cast truncates constant value warnings */
+#elif defined(_MSC_VER)		/* shut up cast truncates constant value warnings */
 # define RT_LO_U8(a)                            ( (uint8_t)(UINT8_MAX & (a)) )
 #else
 # define RT_LO_U8(a)                            ( (uint8_t)(a) )
@@ -2311,7 +2282,7 @@
  * Gets the low uint16_t of a uint32_t or something equivalent. */
 #ifdef __GNUC__
 # define RT_LO_U16(a)   __extension__ ({ AssertCompile(sizeof((a)) == sizeof(uint32_t)); (uint16_t)(a); })
-#elif defined(_MSC_VER) /* shut up cast truncates constant value warnings */
+#elif defined(_MSC_VER)		/* shut up cast truncates constant value warnings */
 # define RT_LO_U16(a)                           ( (uint16_t)(UINT16_MAX & (a)) )
 #else
 # define RT_LO_U16(a)                           ( (uint16_t)(a) )
@@ -2328,7 +2299,7 @@
  * Gets the low uint32_t of a uint64_t or something equivalent. */
 #ifdef __GNUC__
 # define RT_LO_U32(a)   __extension__ ({ AssertCompile(sizeof((a)) == sizeof(uint64_t)); (uint32_t)(a); })
-#elif defined(_MSC_VER) /* shut up cast truncates constant value warnings */
+#elif defined(_MSC_VER)		/* shut up cast truncates constant value warnings */
 # define RT_LO_U32(a)                           ( (uint32_t)(UINT32_MAX & (a)) )
 #else
 # define RT_LO_U32(a)                           ( (uint32_t)(a) )
@@ -2366,7 +2337,6 @@
  * Gets the eight byte of something. */
 #define RT_BYTE8(a)                             ( ((a) >> 56) & 0xff )
 
-
 /** @def RT_LODWORD
  * Gets the low dword (=uint32_t) of something.
  * @deprecated  Use RT_LO_U32. */
@@ -2393,7 +2363,6 @@
  * Gets the high byte of a 16-bit something.
  * @deprecated  Use RT_HI_U8. */
 #define RT_HIBYTE(a)                            ( (a) >> 8 )
-
 
 /** @def RT_MAKE_U64
  * Constructs a uint64_t value from two uint32_t values.
@@ -2445,7 +2414,6 @@
     ((uint16_t)(  (uint16_t)((uint8_t)(Hi)) << 8 \
                 | (uint8_t)(Lo) ))
 
-
 /** @def RT_BSWAP_U64
  * Reverses the byte order of an uint64_t value. */
 #if 0
@@ -2479,7 +2447,6 @@
 # define RT_BSWAP_U16(u16)  ASMByteSwapU16(u16)
 #endif
 
-
 /** @def RT_BSWAP_U64_C
  * Reverses the byte order of an uint64_t constant. */
 #define RT_BSWAP_U64_C(u64) RT_MAKE_U64(RT_BSWAP_U32_C((u64) >> 32), RT_BSWAP_U32_C((u64) & 0xffffffff))
@@ -2491,7 +2458,6 @@
 /** @def RT_BSWAP_U16_C
  * Reverses the byte order of an uint16_t constant. */
 #define RT_BSWAP_U16_C(u16) RT_MAKE_U16(RT_HIBYTE(u16), RT_LOBYTE(u16))
-
 
 /** @def RT_H2LE_U64
  * Converts an uint64_t value from host to little endian byte order. */
@@ -2541,7 +2507,6 @@
 # define RT_H2LE_U16_C(u16) (u16)
 #endif
 
-
 /** @def RT_LE2H_U64
  * Converts an uint64_t value from little endian to host byte order. */
 #ifdef RT_BIG_ENDIAN
@@ -2589,7 +2554,6 @@
 #else
 # define RT_LE2H_U16_C(u16) (u16)
 #endif
-
 
 /** @def RT_H2BE_U64
  * Converts an uint64_t value from host to big endian byte order. */
@@ -2687,7 +2651,6 @@
 # define RT_BE2H_U16_C(u16) RT_BSWAP_U16_C(u16)
 #endif
 
-
 /** @def RT_H2N_U64
  * Converts an uint64_t value from host to network byte order. */
 #define RT_H2N_U64(u64)     RT_H2BE_U64(u64)
@@ -2736,7 +2699,6 @@
  * Converts an uint16_t value from network to host byte order. */
 #define RT_N2H_U16_C(u16)   RT_BE2H_U16_C(u16)
 
-
 /*
  * The BSD sys/param.h + machine/param.h file is a major source of
  * namespace pollution. Kill off some of the worse ones unless we're
@@ -2782,7 +2744,6 @@
  * NIL_OFFSET shall be used as the equivalent to NULL.
  */
 #define NIL_OFFSET   (~0U)
-
 
 /** @def NOREF
  * Keeps the compiler from bitching about an unused parameter, local variable,
@@ -2893,7 +2854,6 @@
     RT_UNPACK_CALL(RT_CONCAT(RT_NOREF, RT_EXPAND(RT_COUNT_VA_ARGS(__VA_ARGS__))),(__VA_ARGS__))
 #endif
 
-
 /** @def RT_BREAKPOINT
  * Emit a debug breakpoint instruction.
  *
@@ -2910,9 +2870,9 @@
 #   define RT_BREAKPOINT()      __asm__ __volatile__("int3; jmp 1f; 1:\n\t")
 #  endif
 # elif defined(RT_ARCH_SPARC64)
-#  define RT_BREAKPOINT()       __asm__ __volatile__("illtrap 0\n\t")   /** @todo Sparc64: this is just a wild guess. */
+#  define RT_BREAKPOINT()       __asm__ __volatile__("illtrap 0\n\t")	/** @todo Sparc64: this is just a wild guess. */
 # elif defined(RT_ARCH_SPARC)
-#  define RT_BREAKPOINT()       __asm__ __volatile__("unimp 0\n\t")     /** @todo Sparc: this is just a wild guess (same as Sparc64, just different name). */
+#  define RT_BREAKPOINT()       __asm__ __volatile__("unimp 0\n\t")	/** @todo Sparc: this is just a wild guess (same as Sparc64, just different name). */
 # endif
 #endif
 #ifdef _MSC_VER
@@ -2928,7 +2888,6 @@
 # error "This compiler/arch is not supported!"
 #endif
 
-
 /** @defgroup grp_rt_cdefs_size     Size Constants
  * (Of course, these are binary computer terms, not SI.)
  * @{
@@ -2943,7 +2902,7 @@
 #define _8K                     0x00002000
 /** 16 K (Kilo)                   (16 384). */
 #define _16K                    0x00004000
-/** 32 K (Kilo)                   (32 678). */
+/** 32 K (Kilo)                   (32 768). */
 #define _32K                    0x00008000
 /** 64 K (Kilo)                   (65 536). */
 #if ARCH_BITS != 16
@@ -3106,7 +3065,6 @@
 #define RT_D7_S64(g1, g2, g3, g4, g5, g6, g7)       INT64_C(g1#g2#g3#g4#g5#g6#g7)
 /** @}  */
 
-
 /** @defgroup grp_rt_cdefs_time     Time Constants
  * @{
  */
@@ -3209,7 +3167,6 @@
 #define RT_SEC_1HOUR_64         UINT64_C(3600)
 /** @}  */
 
-
 /** @defgroup grp_rt_cdefs_dbgtype  Debug Info Types
  * @{ */
 /** Other format. */
@@ -3229,7 +3186,6 @@
 /** Map file. */
 #define RT_DBGTYPE_MAP          RT_BIT_32(7)
 /** @} */
-
 
 /** @defgroup grp_rt_cdefs_exetype  Executable Image Types
  * @{ */
@@ -3257,17 +3213,16 @@
 #define RT_EXETYPE_TE           RT_BIT_32(9)
 /** @} */
 
-
 /** @def VALID_PTR
  * Pointer validation macro.
  * @param   ptr         The pointer.
  */
 #if defined(RT_ARCH_AMD64)
 # ifdef IN_RING3
-#  if defined(RT_OS_DARWIN) /* first 4GB is reserved for legacy kernel. */
+#  if defined(RT_OS_DARWIN)	/* first 4GB is reserved for legacy kernel. */
 #   define RT_VALID_PTR(ptr)    (   (uintptr_t)(ptr) >= _4G \
                                  && !((uintptr_t)(ptr) & 0xffff800000000000ULL) )
-#  elif defined(RT_OS_SOLARIS) /* The kernel only used the top 2TB, but keep it simple. */
+#  elif defined(RT_OS_SOLARIS)	/* The kernel only used the top 2TB, but keep it simple. */
 #   define RT_VALID_PTR(ptr)    (   (uintptr_t)(ptr) + 0x1000U >= 0x2000U \
                                  && (   ((uintptr_t)(ptr) & 0xffff800000000000ULL) == 0xffff800000000000ULL \
                                      || ((uintptr_t)(ptr) & 0xffff800000000000ULL) == 0) )
@@ -3279,7 +3234,7 @@
 #  define RT_VALID_PTR(ptr)     (   (uintptr_t)(ptr) + 0x1000U >= 0x2000U \
                                  && (   ((uintptr_t)(ptr) & 0xffff800000000000ULL) == 0xffff800000000000ULL \
                                      || ((uintptr_t)(ptr) & 0xffff800000000000ULL) == 0) )
-# endif /* !IN_RING3 */
+# endif	/* !IN_RING3 */
 
 #elif defined(RT_ARCH_X86)
 # define RT_VALID_PTR(ptr)      ( (uintptr_t)(ptr) + 0x1000U >= 0x2000U )
@@ -3293,7 +3248,7 @@
 #  else
 #   error "Port me"
 #  endif
-# else  /* !IN_RING3 */
+# else /* !IN_RING3 */
 #  if defined(RT_OS_SOLARIS)
 /** @todo Sparc64 kernel mode: This is according to Figure 11.1 in solaris
  *        internals. Verify in sources. */
@@ -3301,7 +3256,7 @@
 #  else
 #   error "Port me"
 #  endif
-# endif /* !IN_RING3 */
+# endif	/* !IN_RING3 */
 
 #elif defined(RT_ARCH_SPARC)
 # ifdef IN_RING3
@@ -3313,14 +3268,14 @@
 #  else
 #   error "Port me"
 #  endif
-# else  /* !IN_RING3 */
+# else /* !IN_RING3 */
 #  ifdef RT_OS_SOLARIS
 /** @todo Sparc kernel mode: Check the sources! */
 #   define RT_VALID_PTR(ptr)    ( (uintptr_t)(ptr) + 0x1000U >= 0x2000U )
 #  else
 #   error "Port me"
 #  endif
-# endif /* !IN_RING3 */
+# endif	/* !IN_RING3 */
 
 #elif defined(RT_ARCH_ARM)
 /* ASSUMES that at least the last and first 4K are out of bounds. */
@@ -3341,7 +3296,6 @@
 #define RT_VALID_ALIGNED_PTR(ptr, align)   \
     (   !((uintptr_t)(ptr) & (uintptr_t)((align) - 1)) \
      && VALID_PTR(ptr) )
-
 
 /** @def VALID_PHYS32
  * 32 bits physical address validation macro.
@@ -3367,7 +3321,6 @@
  */
 #define _(s) gettext(s)
 
-
 /** @def __PRETTY_FUNCTION__
  *  With GNU C we'd like to use the builtin __PRETTY_FUNCTION__, so define that
  *  for the other compilers.
@@ -3379,7 +3332,6 @@
 #  define __PRETTY_FUNCTION__    __FUNCTION__
 # endif
 #endif
-
 
 /** @def RT_STRICT
  * The \#define RT_STRICT controls whether or not assertions and other runtime
@@ -3432,7 +3384,6 @@
 # undef RT_LOCK_STRICT_ORDER
 #endif
 
-
 /** Source position. */
 #define RT_SRC_POS         __FILE__, __LINE__, RT_GCC_EXTENSION __PRETTY_FUNCTION__
 
@@ -3444,7 +3395,6 @@
 
 /** Applies NOREF() to the source position arguments. */
 #define RT_SRC_POS_NOREF() do { NOREF(pszFile); NOREF(iLine); NOREF(pszFunction); } while (0)
-
 
 /** @def RT_INLINE_ASM_EXTERNAL
  * Defined as 1 if the compiler does not support inline assembly.
@@ -3471,13 +3421,13 @@
  * Defined as the major MSC version if the compiler have and uses intrin.h.
  * Otherwise it is 0. */
 #ifdef _MSC_VER
-# if   _MSC_VER >= 1700 /* Visual C++ v11.0 / 2012 */
+# if   _MSC_VER >= 1700		/* Visual C++ v11.0 / 2012 */
 #  define RT_INLINE_ASM_USES_INTRIN 17
-# elif _MSC_VER >= 1600 /* Visual C++ v10.0 / 2010 */
+# elif _MSC_VER >= 1600		/* Visual C++ v10.0 / 2010 */
 #  define RT_INLINE_ASM_USES_INTRIN 16
-# elif _MSC_VER >= 1500 /* Visual C++ v9.0 / 2008 */
+# elif _MSC_VER >= 1500		/* Visual C++ v9.0 / 2008 */
 #  define RT_INLINE_ASM_USES_INTRIN 15
-# elif _MSC_VER >= 1400 /* Visual C++ v8.0 / 2005 */
+# elif _MSC_VER >= 1400		/* Visual C++ v8.0 / 2005 */
 #  define RT_INLINE_ASM_USES_INTRIN 14
 # endif
 #endif
@@ -3489,7 +3439,7 @@
  * If the defined, the compiler supports lambda expressions.   These expressions
  * are useful for embedding assertions and type checks into macros. */
 #if defined(_MSC_VER) && defined(__cplusplus)
-# if _MSC_VER >= 1600 /* Visual C++ v10.0 / 2010 */
+# if _MSC_VER >= 1600		/* Visual C++ v10.0 / 2010 */
 #  define RT_COMPILER_SUPPORTS_LAMBDA
 # endif
 #elif defined(__GNUC__) && defined(__cplusplus)
@@ -3507,7 +3457,6 @@
 #endif
 
 /** @} */
-
 
 /** @defgroup grp_rt_cdefs_cpp  Special Macros for C++
  * @ingroup grp_rt_cdefs
@@ -3624,7 +3573,6 @@
 # define WORKAROUND_MSVC7_ERROR_C2593_FOR_BOOL_OP_TPL(Tpl, ArgsDecl, Args)
 #endif
 
-
 /** @def DECLARE_CLS_COPY_CTOR_ASSIGN_NOOP
  * Declares the copy constructor and the assignment operation as inlined no-ops
  * (non-existent functions) for the given class. Use this macro inside the
@@ -3636,7 +3584,6 @@
 #define DECLARE_CLS_COPY_CTOR_ASSIGN_NOOP(Cls) \
     inline Cls(const Cls &); \
     inline Cls &operator= (const Cls &)
-
 
 /** @def DECLARE_CLS_NEW_DELETE_NOOP
  * Declares the new and delete operations as no-ops (non-existent functions)
@@ -3660,4 +3607,3 @@
 /** @} */
 
 #endif
-

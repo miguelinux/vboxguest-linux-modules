@@ -24,7 +24,6 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -33,13 +32,12 @@
 
 #include <iprt/stdarg.h>
 
-
 RTDECL(void) RTAssertMsg2Add(const char *pszFormat, ...)
 {
-    va_list va;
-    va_start(va, pszFormat);
-    RTAssertMsg2AddV(pszFormat, va);
-    va_end(va);
+	va_list va;
+	va_start(va, pszFormat);
+	RTAssertMsg2AddV(pszFormat, va);
+	va_end(va);
 }
-RT_EXPORT_SYMBOL(RTAssertMsg2Add);
 
+RT_EXPORT_SYMBOL(RTAssertMsg2Add);
