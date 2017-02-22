@@ -79,7 +79,7 @@ umount_and_delete_iso ()
     sudo umount /mnt/iso-vbox
     sudo rmdir /mnt/iso-vbox
     rm VBoxGuestAdditions_${VBOX_VERSION}.iso
-    rm SHA256SUMS 
+    rm SHA256SUMS
 }
 
 extract_files ()
@@ -128,13 +128,14 @@ fix_coding_style ()
     find ${TMPDIR}/vboxvideo -type f -name "*~" -exec rm {} \;
 
 }
-####################  main  #################### 
+####################  main  ####################
 
 check_dialog
 check_params $*
 get_and_mount_iso
 extract_files
 umount_and_delete_iso
-fix_coding_style
+# Keep as is do not fix coding style
+#fix_coding_style
 update_repo
 #copy_to_kernel
