@@ -26,6 +26,7 @@
 
 #include "VBGLInternal.h"
 
+
 /**
  * Checks whether the host supports physical page lists or not.
  *
@@ -33,10 +34,11 @@
  */
 DECLR0VBGL(bool) VbglR0CanUsePhysPageList(void)
 {
-	/* a_fLocked is false, because the actual capability of the host is requested.
-	 * See VBGLR0_CAN_USE_PHYS_PAGE_LIST definition.
-	 */
-	int rc = vbglR0Enter();
-	return RT_SUCCESS(rc)
-	    && VBGLR0_CAN_USE_PHYS_PAGE_LIST( /*a_fLocked = */ false);
+    /* a_fLocked is false, because the actual capability of the host is requested.
+     * See VBGLR0_CAN_USE_PHYS_PAGE_LIST definition.
+     */
+    int rc = vbglR0Enter();
+    return RT_SUCCESS(rc)
+        && VBGLR0_CAN_USE_PHYS_PAGE_LIST(/*a_fLocked =*/ false);
 }
+

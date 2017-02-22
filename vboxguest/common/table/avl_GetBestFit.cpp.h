@@ -29,6 +29,7 @@
 #ifndef _kAVLGetBestFit_h_
 #define _kAVLGetBestFit_h_
 
+
 /**
  * Finds the best fitting node in the tree for the given Key value.
  * @returns   Pointer to the best fitting node found.
@@ -40,55 +41,63 @@
  *            >= (above): The node where you last turned left.
  *            <= (below): the node where you last turned right.
  */
-KAVL_DECL(PKAVLNODECORE) KAVL_FN(GetBestFit) (PPKAVLNODECORE ppTree,
-					      KAVLKEY Key, bool fAbove)
+KAVL_DECL(PKAVLNODECORE) KAVL_FN(GetBestFit)(PPKAVLNODECORE ppTree, KAVLKEY Key, bool fAbove)
 {
-	register PKAVLNODECORE pNode = KAVL_GET_POINTER_NULL(ppTree);
-	if (pNode) {
-		PKAVLNODECORE pNodeLast = NULL;
-		if (fAbove) {	/* pNode->Key >= Key */
-			while (KAVL_NE(pNode->Key, Key)) {
-				if (KAVL_G(pNode->Key, Key)) {
-					if (pNode->pLeft != KAVL_NULL) {
-						pNodeLast = pNode;
-						pNode =
-						    KAVL_GET_POINTER(&pNode->
-								     pLeft);
-					} else
-						return pNode;
-				} else {
-					if (pNode->pRight != KAVL_NULL)
-						pNode =
-						    KAVL_GET_POINTER(&pNode->
-								     pRight);
-					else
-						return pNodeLast;
-				}
-			}
-		} else {	/* pNode->Key <= Key */
-			while (KAVL_NE(pNode->Key, Key)) {
-				if (KAVL_G(pNode->Key, Key)) {
-					if (pNode->pLeft != KAVL_NULL)
-						pNode =
-						    KAVL_GET_POINTER(&pNode->
-								     pLeft);
-					else
-						return pNodeLast;
-				} else {
-					if (pNode->pRight != KAVL_NULL) {
-						pNodeLast = pNode;
-						pNode =
-						    KAVL_GET_POINTER(&pNode->
-								     pRight);
-					} else
-						return pNode;
-				}
-			}
-		}
-	}
+    register PKAVLNODECORE  pNode = KAVL_GET_POINTER_NULL(ppTree);
+    if (pNode)
+    {
+        PKAVLNODECORE           pNodeLast = NULL;
+        if (fAbove)
+        {   /* pNode->Key >= Key */
+            while (KAVL_NE(pNode->Key, Key))
+            {
+                if (KAVL_G(pNode->Key, Key))
+                {
+                    if (pNode->pLeft != KAVL_NULL)
+                    {
+                        pNodeLast = pNode;
+                        pNode = KAVL_GET_POINTER(&pNode->pLeft);
+                    }
+                    else
+                        return pNode;
+                }
+                else
+                {
+                    if (pNode->pRight != KAVL_NULL)
+                        pNode = KAVL_GET_POINTER(&pNode->pRight);
+                    else
+                        return pNodeLast;
+                }
+            }
+        }
+        else
+        {   /* pNode->Key <= Key */
+            while (KAVL_NE(pNode->Key, Key))
+            {
+                if (KAVL_G(pNode->Key, Key))
+                {
+                    if (pNode->pLeft != KAVL_NULL)
+                        pNode = KAVL_GET_POINTER(&pNode->pLeft);
+                    else
+                        return pNodeLast;
+                }
+                else
+                {
+                    if (pNode->pRight != KAVL_NULL)
+                    {
+                        pNodeLast = pNode;
+                        pNode = KAVL_GET_POINTER(&pNode->pRight);
+                    }
+                    else
+                        return pNode;
+                }
+            }
+        }
+    }
 
-	/* perfect match or nothing. */
-	return pNode;
+    /* perfect match or nothing. */
+    return pNode;
 }
+
 
 #endif

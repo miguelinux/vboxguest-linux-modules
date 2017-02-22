@@ -33,19 +33,22 @@
 #include "internal/magics.h"
 
 RT_C_DECLS_BEGIN
+
 /**
  * Header which heading all memory blocks.
  */
-    typedef struct RTMEMHDR {
+typedef struct RTMEMHDR
+{
     /** Magic (RTMEMHDR_MAGIC). */
-	uint32_t u32Magic;
+    uint32_t    u32Magic;
     /** Block flags (RTMEMHDR_FLAG_*). */
-	uint32_t fFlags;
+    uint32_t    fFlags;
     /** The actual size of the block, header not included. */
-	uint32_t cb;
+    uint32_t    cb;
     /** The requested allocation size. */
-	uint32_t cbReq;
+    uint32_t    cbReq;
 } RTMEMHDR, *PRTMEMHDR;
+
 
 /** @name RTMEMHDR::fFlags.
  * @{ */
@@ -71,6 +74,7 @@ RT_C_DECLS_BEGIN
 #endif
 /** @} */
 
+
 /**
  * Heap allocation back end for ring-0.
  *
@@ -84,13 +88,14 @@ RT_C_DECLS_BEGIN
  *                      the backend might be using.
  * @param   ppHdr       Where to return the memory header on success.
  */
-DECLHIDDEN(int) rtR0MemAllocEx(size_t cb, uint32_t fFlags, PRTMEMHDR * ppHdr);
+DECLHIDDEN(int)     rtR0MemAllocEx(size_t cb, uint32_t fFlags, PRTMEMHDR *ppHdr);
 
 /**
  * Free memory allocated by rtR0MemAllocEx.
  * @param   pHdr        The memory block to free.  (Never NULL.)
  */
-DECLHIDDEN(void) rtR0MemFree(PRTMEMHDR pHdr);
+DECLHIDDEN(void)    rtR0MemFree(PRTMEMHDR pHdr);
 
 RT_C_DECLS_END
 #endif
+

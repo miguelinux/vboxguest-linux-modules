@@ -32,7 +32,9 @@
 # include <iprt/lockvalidator.h>
 #endif
 
+
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt_sems    RTSem - Semaphores
  *
  * This module implements all kinds of event and mutex semaphores; in addition
@@ -43,6 +45,8 @@ RT_C_DECLS_BEGIN
  * @ingroup grp_rt
  * @{
  */
+
+
 /** @name Generic Semaphore Wait Flags.
  *
  * @remarks Exactly one of RTSEMWAIT_FLAGS_RELATIVE and
@@ -72,6 +76,7 @@ RT_C_DECLS_BEGIN
 #define RTSEMWAIT_FLAGS_INDEFINITE          RT_BIT_32(4)
 /** Mask covering the time related bits. */
 #define RTSEMWAIT_FLAGS_TIME_MASK           UINT32_C(0x0000001f)
+
 /** Interruptible wait. */
 #define RTSEMWAIT_FLAGS_INTERRUPTIBLE       RT_BIT_32(5)
 /** No automatic resume, same as interruptible. */
@@ -80,6 +85,7 @@ RT_C_DECLS_BEGIN
 #define RTSEMWAIT_FLAGS_UNINTERRUPTIBLE     RT_BIT_32(6)
 /** Resume on interrupt, same as uninterruptible. */
 #define RTSEMWAIT_FLAGS_RESUME              RTSEMWAIT_FLAGS_UNINTERRUPTIBLE
+
 /** Macro for validate the flags. */
 #define RTSEMWAIT_FLAGS_ARE_VALID(fFlags) \
     (   !((fFlags) & UINT32_C(0xffffff80)) \
@@ -87,6 +93,9 @@ RT_C_DECLS_BEGIN
           ? ( (((fFlags) & UINT32_C(0x20))) ^ (((fFlags) >> 1) & UINT32_C(0x20)) ) == UINT32_C(0x20) \
           : ( (((fFlags) & UINT32_C(0x25))) ^ (((fFlags) >> 1) & UINT32_C(0x25)) ) == UINT32_C(0x25) ))
 /** @}  */
+
+
+
 /** @defgroup grp_rt_sems_event    RTSemEvent - Single Release Event Semaphores
  *
  * Event semaphores can be used for inter-thread communication when one thread
@@ -95,6 +104,7 @@ RT_C_DECLS_BEGIN
  * RTSemEventCreate, RTSemEventSignal and RTSemEventWait.
  *
  * @{ */
+
 /**
  * Create an event semaphore.
  *
@@ -102,7 +112,7 @@ RT_C_DECLS_BEGIN
  * @param   phEventSem          Where to store the handle to the newly created
  *                              event semaphore.
  */
-RTDECL(int) RTSemEventCreate(PRTSEMEVENT phEventSem);
+RTDECL(int)  RTSemEventCreate(PRTSEMEVENT phEventSem);
 
 /**
  * Create an event semaphore.
@@ -120,9 +130,8 @@ RTDECL(int) RTSemEventCreate(PRTSEMEVENT phEventSem);
  *                              optional (NULL).  Max length is 32 bytes.
  * @param   ...                 Format string arguments.
  */
-RTDECL(int) RTSemEventCreateEx(PRTSEMEVENT phEventSem, uint32_t fFlags,
-			       RTLOCKVALCLASS hClass, const char *pszNameFmt,
-			       ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(4, 5);
+RTDECL(int)  RTSemEventCreateEx(PRTSEMEVENT phEventSem, uint32_t fFlags, RTLOCKVALCLASS hClass,
+                                const char *pszNameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(4, 5);
 
 /** @name RTSemMutexCreateEx flags
  * @{ */
@@ -139,7 +148,7 @@ RTDECL(int) RTSemEventCreateEx(PRTSEMEVENT phEventSem, uint32_t fFlags,
  * @param   hEventSem           Handle of the event semaphore.  NIL_RTSEMEVENT
  *                              is quietly ignored (VINF_SUCCESS).
  */
-RTDECL(int) RTSemEventDestroy(RTSEMEVENT hEventSem);
+RTDECL(int)  RTSemEventDestroy(RTSEMEVENT hEventSem);
 
 /**
  * Signal an event semaphore.
@@ -155,7 +164,7 @@ RTDECL(int) RTSemEventDestroy(RTSEMEVENT hEventSem);
  *          system specific whether it works in interrupt context or with
  *          interrupts disabled.
  */
-RTDECL(int) RTSemEventSignal(RTSEMEVENT hEventSem);
+RTDECL(int)  RTSemEventSignal(RTSEMEVENT hEventSem);
 
 /**
  * Wait for the event semaphore to be signaled, resume on interruption.
@@ -168,7 +177,7 @@ RTDECL(int) RTSemEventSignal(RTSEMEVENT hEventSem);
  * @param   hEventSem           The event semaphore to wait on.
  * @param   cMillies            Number of milliseconds to wait.
  */
-RTDECL(int) RTSemEventWait(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies);
+RTDECL(int)  RTSemEventWait(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies);
 
 /**
  * Wait for the event semaphore to be signaled, return on interruption.
@@ -179,7 +188,7 @@ RTDECL(int) RTSemEventWait(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies);
  * @param   hEventSem           The event semaphore to wait on.
  * @param   cMillies            Number of milliseconds to wait.
  */
-RTDECL(int) RTSemEventWaitNoResume(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies);
+RTDECL(int)  RTSemEventWaitNoResume(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies);
 
 /**
  * Extended API for waiting on an event semaphore to be signaled.
@@ -194,8 +203,7 @@ RTDECL(int) RTSemEventWaitNoResume(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies);
  *                              fFlags value.  Do not pass RT_INDEFINITE_WAIT
  *                              here, use RTSEMWAIT_FLAGS_INDEFINITE instead.
  */
-RTDECL(int) RTSemEventWaitEx(RTSEMEVENT hEventSem, uint32_t fFlags,
-			     uint64_t uTimeout);
+RTDECL(int)  RTSemEventWaitEx(RTSEMEVENT hEventSem, uint32_t fFlags, uint64_t uTimeout);
 
 /**
  * Debug version of RTSemEventWaitEx that tracks the location.
@@ -209,9 +217,8 @@ RTDECL(int) RTSemEventWaitEx(RTSEMEVENT hEventSem, uint32_t fFlags,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemEventWaitExDebug(RTSEMEVENT hEventSem, uint32_t fFlags,
-				  uint64_t uTimeout, RTHCUINTPTR uId,
-				  RT_SRC_POS_DECL);
+RTDECL(int)  RTSemEventWaitExDebug(RTSEMEVENT hEventSem, uint32_t fFlags, uint64_t uTimeout,
+                                   RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Gets the best timeout resolution that RTSemEventWaitEx can do.
@@ -257,6 +264,7 @@ RTDECL(void) RTSemEventRemoveSignaller(RTSEMEVENT hEventSem, RTTHREAD hThread);
 
 /** @} */
 
+
 /** @defgroup grp_rt_sems_event_multi   RTSemEventMulti - Multiple Release Event Semaphores
  *
  * A variant of @ref  grp_rt_sems_event where all threads will be unblocked when
@@ -271,7 +279,7 @@ RTDECL(void) RTSemEventRemoveSignaller(RTSEMEVENT hEventSem, RTTHREAD hThread);
  * @param   phEventMultiSem     Where to store the handle to the newly created
  *                              multiple release event semaphore.
  */
-RTDECL(int) RTSemEventMultiCreate(PRTSEMEVENTMULTI phEventMultiSem);
+RTDECL(int)  RTSemEventMultiCreate(PRTSEMEVENTMULTI phEventMultiSem);
 
 /**
  * Creates a multiple release event semaphore.
@@ -289,10 +297,8 @@ RTDECL(int) RTSemEventMultiCreate(PRTSEMEVENTMULTI phEventMultiSem);
  *                              optional (NULL).  Max length is 32 bytes.
  * @param   ...                 Format string arguments.
  */
-RTDECL(int) RTSemEventMultiCreateEx(PRTSEMEVENTMULTI phEventMultiSem,
-				    uint32_t fFlags, RTLOCKVALCLASS hClass,
-				    const char *pszNameFmt,
-				    ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(4, 5);
+RTDECL(int)  RTSemEventMultiCreateEx(PRTSEMEVENTMULTI phEventMultiSem, uint32_t fFlags, RTLOCKVALCLASS hClass,
+                                     const char *pszNameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(4, 5);
 
 /** @name RTSemMutexCreateEx flags
  * @{ */
@@ -307,7 +313,7 @@ RTDECL(int) RTSemEventMultiCreateEx(PRTSEMEVENTMULTI phEventMultiSem,
  * @param   hEventMultiSem      The multiple release event semaphore.  NIL is
  *                              quietly ignored (VINF_SUCCESS).
  */
-RTDECL(int) RTSemEventMultiDestroy(RTSEMEVENTMULTI hEventMultiSem);
+RTDECL(int)  RTSemEventMultiDestroy(RTSEMEVENTMULTI hEventMultiSem);
 
 /**
  * Signal an event multi semaphore.
@@ -319,7 +325,7 @@ RTDECL(int) RTSemEventMultiDestroy(RTSEMEVENTMULTI hEventMultiSem);
  *          system specific whether it works in interrupt context or with
  *          interrupts disabled.
  */
-RTDECL(int) RTSemEventMultiSignal(RTSEMEVENTMULTI hEventMultiSem);
+RTDECL(int)  RTSemEventMultiSignal(RTSEMEVENTMULTI hEventMultiSem);
 
 /**
  * Resets an event multi semaphore to non-signaled state.
@@ -327,7 +333,7 @@ RTDECL(int) RTSemEventMultiSignal(RTSEMEVENTMULTI hEventMultiSem);
  * @returns iprt status code.
  * @param   hEventMultiSem      The multiple release event semaphore.
  */
-RTDECL(int) RTSemEventMultiReset(RTSEMEVENTMULTI hEventMultiSem);
+RTDECL(int)  RTSemEventMultiReset(RTSEMEVENTMULTI hEventMultiSem);
 
 /**
  * Wait for the event multi semaphore to be signaled, resume on interruption.
@@ -340,8 +346,7 @@ RTDECL(int) RTSemEventMultiReset(RTSEMEVENTMULTI hEventMultiSem);
  * @param   hEventMultiSem      The multiple release event semaphore.
  * @param   cMillies            Number of milliseconds to wait.
  */
-RTDECL(int) RTSemEventMultiWait(RTSEMEVENTMULTI hEventMultiSem,
-				RTMSINTERVAL cMillies);
+RTDECL(int)  RTSemEventMultiWait(RTSEMEVENTMULTI hEventMultiSem, RTMSINTERVAL cMillies);
 
 /**
  * Wait for the event multi semaphore to be signaled, return on interruption.
@@ -354,8 +359,7 @@ RTDECL(int) RTSemEventMultiWait(RTSEMEVENTMULTI hEventMultiSem,
  * @todo    Rename to RTSemEventMultiWaitIntr since it is mainly for
  *          ring-0 consumption.
  */
-RTDECL(int) RTSemEventMultiWaitNoResume(RTSEMEVENTMULTI hEventMultiSem,
-					RTMSINTERVAL cMillies);
+RTDECL(int)  RTSemEventMultiWaitNoResume(RTSEMEVENTMULTI hEventMultiSem, RTMSINTERVAL cMillies);
 
 /**
  * Extended API for waiting on an event semaphore to be signaled.
@@ -371,8 +375,7 @@ RTDECL(int) RTSemEventMultiWaitNoResume(RTSEMEVENTMULTI hEventMultiSem,
  *                              fFlags value.  Do not pass RT_INDEFINITE_WAIT
  *                              here, use RTSEMWAIT_FLAGS_INDEFINITE instead.
  */
-RTDECL(int) RTSemEventMultiWaitEx(RTSEMEVENTMULTI hEventMultiSem,
-				  uint32_t fFlags, uint64_t uTimeout);
+RTDECL(int)  RTSemEventMultiWaitEx(RTSEMEVENTMULTI hEventMultiSem, uint32_t fFlags, uint64_t uTimeout);
 
 /**
  * Debug version of RTSemEventMultiWaitEx that tracks the location.
@@ -386,9 +389,8 @@ RTDECL(int) RTSemEventMultiWaitEx(RTSEMEVENTMULTI hEventMultiSem,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemEventMultiWaitExDebug(RTSEMEVENTMULTI hEventMultiSem,
-				       uint32_t fFlags, uint64_t uTimeout,
-				       RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)  RTSemEventMultiWaitExDebug(RTSEMEVENTMULTI hEventMultiSem, uint32_t fFlags, uint64_t uTimeout,
+                                        RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Gets the best timeout resolution that RTSemEventMultiWaitEx can do.
@@ -409,8 +411,7 @@ RTDECL(uint32_t) RTSemEventMultiGetResolution(void);
  *                              NIL_RTTHREAD to indicate that there is no
  *                              special signalling thread.
  */
-RTDECL(void) RTSemEventMultiSetSignaller(RTSEMEVENTMULTI hEventMultiSem,
-					 RTTHREAD hThread);
+RTDECL(void) RTSemEventMultiSetSignaller(RTSEMEVENTMULTI hEventMultiSem, RTTHREAD hThread);
 
 /**
  * To add more signalling threads.
@@ -421,8 +422,7 @@ RTDECL(void) RTSemEventMultiSetSignaller(RTSEMEVENTMULTI hEventMultiSem,
  * @param   hThread             The thread that will signal it. NIL_RTTHREAD is
  *                              not accepted.
  */
-RTDECL(void) RTSemEventMultiAddSignaller(RTSEMEVENTMULTI hEventMultiSem,
-					 RTTHREAD hThread);
+RTDECL(void) RTSemEventMultiAddSignaller(RTSEMEVENTMULTI hEventMultiSem, RTTHREAD hThread);
 
 /**
  * To remove a signalling thread.
@@ -432,10 +432,10 @@ RTDECL(void) RTSemEventMultiAddSignaller(RTSEMEVENTMULTI hEventMultiSem,
  * @param   hEventMultiSem      The multiple release event semaphore.
  * @param   hThread             A previously added thread.
  */
-RTDECL(void) RTSemEventMultiRemoveSignaller(RTSEMEVENTMULTI hEventMultiSem,
-					    RTTHREAD hThread);
+RTDECL(void) RTSemEventMultiRemoveSignaller(RTSEMEVENTMULTI hEventMultiSem, RTTHREAD hThread);
 
 /** @} */
+
 
 /** @defgroup grp_rt_sems_mutex     RTSemMutex - Mutex semaphores.
  *
@@ -455,7 +455,7 @@ RTDECL(void) RTSemEventMultiRemoveSignaller(RTSEMEVENTMULTI hEventMultiSem,
  * @returns iprt status code.
  * @param   phMutexSem      Where to store the mutex semaphore handle.
  */
-RTDECL(int) RTSemMutexCreate(PRTSEMMUTEX phMutexSem);
+RTDECL(int)  RTSemMutexCreate(PRTSEMMUTEX phMutexSem);
 
 /**
  * Creates a read/write semaphore.
@@ -475,16 +475,15 @@ RTDECL(int) RTSemMutexCreate(PRTSEMMUTEX phMutexSem);
  *                              optional (NULL).  Max length is 32 bytes.
  * @param   ...                 Format string arguments.
  */
-RTDECL(int) RTSemMutexCreateEx(PRTSEMMUTEX phMutexSem, uint32_t fFlags,
-			       RTLOCKVALCLASS hClass, uint32_t uSubClass,
-			       const char *pszNameFmt,
-			       ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(5, 6);
+RTDECL(int) RTSemMutexCreateEx(PRTSEMMUTEX phMutexSem, uint32_t fFlags, RTLOCKVALCLASS hClass, uint32_t uSubClass,
+                               const char *pszNameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(5, 6);
 
 /** @name RTSemMutexCreateEx flags
  * @{ */
 /** Disables lock validation. */
 #define RTSEMMUTEX_FLAGS_NO_LOCK_VAL    UINT32_C(0x00000001)
 /** @} */
+
 
 /**
  * Destroy a mutex semaphore.
@@ -493,7 +492,7 @@ RTDECL(int) RTSemMutexCreateEx(PRTSEMMUTEX phMutexSem, uint32_t fFlags,
  * @param   hMutexSem           The mutex semaphore to destroy.  NIL is quietly
  *                              ignored (VINF_SUCCESS).
  */
-RTDECL(int) RTSemMutexDestroy(RTSEMMUTEX hMutexSem);
+RTDECL(int)  RTSemMutexDestroy(RTSEMMUTEX hMutexSem);
 
 /**
  * Changes the lock validator sub-class of the mutex semaphore.
@@ -507,8 +506,7 @@ RTDECL(int) RTSemMutexDestroy(RTSEMMUTEX hMutexSem);
  * @param   hMutexSem           The handle to the mutex semaphore.
  * @param   uSubClass           The new sub-class value.
  */
-RTDECL(uint32_t) RTSemMutexSetSubClass(RTSEMMUTEX hMutexSem,
-				       uint32_t uSubClass);
+RTDECL(uint32_t) RTSemMutexSetSubClass(RTSEMMUTEX hMutexSem, uint32_t uSubClass);
 
 /**
  * Request ownership of a mutex semaphore, resume on interruption.
@@ -525,7 +523,7 @@ RTDECL(uint32_t) RTSemMutexSetSubClass(RTSEMMUTEX hMutexSem,
  * @param   hMutexSem           The mutex semaphore to request ownership over.
  * @param   cMillies            The number of milliseconds to wait.
  */
-RTDECL(int) RTSemMutexRequest(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies);
+RTDECL(int)  RTSemMutexRequest(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies);
 
 /**
  * Request ownership of a mutex semaphore, return on interruption.
@@ -540,8 +538,7 @@ RTDECL(int) RTSemMutexRequest(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies);
  * @param   hMutexSem           The mutex semaphore to request ownership over.
  * @param   cMillies            The number of milliseconds to wait.
  */
-RTDECL(int) RTSemMutexRequestNoResume(RTSEMMUTEX hMutexSem,
-				      RTMSINTERVAL cMillies);
+RTDECL(int)  RTSemMutexRequestNoResume(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies);
 
 /**
  * Debug version of RTSemMutexRequest that tracks the location.
@@ -555,8 +552,7 @@ RTDECL(int) RTSemMutexRequestNoResume(RTSEMMUTEX hMutexSem,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemMutexRequestDebug(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies,
-				   RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)  RTSemMutexRequestDebug(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Debug version of RTSemMutexRequestNoResume that tracks the location.
@@ -569,9 +565,7 @@ RTDECL(int) RTSemMutexRequestDebug(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemMutexRequestNoResumeDebug(RTSEMMUTEX hMutexSem,
-					   RTMSINTERVAL cMillies,
-					   RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)  RTSemMutexRequestNoResumeDebug(RTSEMMUTEX hMutexSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Request ownership of a mutex semaphore, extended edition.
@@ -590,8 +584,7 @@ RTDECL(int) RTSemMutexRequestNoResumeDebug(RTSEMMUTEX hMutexSem,
  *                              fFlags value.  Do not pass RT_INDEFINITE_WAIT
  *                              here, use RTSEMWAIT_FLAGS_INDEFINITE instead.
  */
-RTDECL(int) RTSemMutexRequestEx(RTSEMMUTEX hMutexSem, uint32_t fFlags,
-				uint64_t uTimeout);
+RTDECL(int)  RTSemMutexRequestEx(RTSEMMUTEX hMutexSem, uint32_t fFlags, uint64_t uTimeout);
 
 /**
  * Debug version of RTSemMutexRequestEx that tracks the location.
@@ -605,9 +598,8 @@ RTDECL(int) RTSemMutexRequestEx(RTSEMMUTEX hMutexSem, uint32_t fFlags,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemMutexRequestExDebug(RTSEMMUTEX hMutexSem, uint32_t fFlags,
-				     uint64_t uTimeout, RTHCUINTPTR uId,
-				     RT_SRC_POS_DECL);
+RTDECL(int)  RTSemMutexRequestExDebug(RTSEMMUTEX hMutexSem, uint32_t fFlags, uint64_t uTimeout,
+                                      RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Release the ownership of a mutex semaphore.
@@ -617,7 +609,7 @@ RTDECL(int) RTSemMutexRequestExDebug(RTSEMMUTEX hMutexSem, uint32_t fFlags,
  *                              without saying the the calling thread must own
  *                              it.
  */
-RTDECL(int) RTSemMutexRelease(RTSEMMUTEX hMutexSem);
+RTDECL(int)  RTSemMutexRelease(RTSEMMUTEX hMutexSem);
 
 /**
  * Checks if the mutex semaphore is owned or not.
@@ -650,6 +642,7 @@ RTDECL(bool) RTSemMutexIsOwned(RTSEMMUTEX hMutexSem);
 
 /** @} */
 
+
 /** @defgroup grp_rt_sems_fast_mutex    RTSemFastMutex - Fast Mutex Semaphores
  *
  * Fast mutexes work like regular mutexes in that they allow only a single
@@ -671,7 +664,7 @@ RTDECL(bool) RTSemMutexIsOwned(RTSEMMUTEX hMutexSem);
  *
  * @remarks Fast mutex semaphores are not recursive.
  */
-RTDECL(int) RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx);
+RTDECL(int)  RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx);
 
 /**
  * Destroy a fast mutex semaphore.
@@ -680,7 +673,7 @@ RTDECL(int) RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx);
  * @param   hFastMtx            Handle to the fast mutex semaphore.  NIL is
  *                              quietly ignored (VINF_SUCCESS).
  */
-RTDECL(int) RTSemFastMutexDestroy(RTSEMFASTMUTEX hFastMtx);
+RTDECL(int)  RTSemFastMutexDestroy(RTSEMFASTMUTEX hFastMtx);
 
 /**
  * Request ownership of a fast mutex semaphore.
@@ -692,7 +685,7 @@ RTDECL(int) RTSemFastMutexDestroy(RTSEMFASTMUTEX hFastMtx);
  * @returns iprt status code.
  * @param   hFastMtx            Handle to the fast mutex semaphore.
  */
-RTDECL(int) RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx);
+RTDECL(int)  RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx);
 
 /**
  * Release the ownership of a fast mutex semaphore.
@@ -702,9 +695,10 @@ RTDECL(int) RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx);
  *                              without saying the the calling thread must own
  *                              it.
  */
-RTDECL(int) RTSemFastMutexRelease(RTSEMFASTMUTEX hFastMtx);
+RTDECL(int)  RTSemFastMutexRelease(RTSEMFASTMUTEX hFastMtx);
 
 /** @} */
+
 
 /** @defgroup grp_rt_sems_spin_mutex RTSemSpinMutex - Spinning Mutex Semaphores
  *
@@ -799,6 +793,7 @@ RTDECL(int) RTSemSpinMutexRelease(RTSEMSPINMUTEX hSpinMtx);
 
 /** @} */
 
+
 /** @defgroup grp_rt_sem_rw             RTSemRW - Read / Write Semaphores
  *
  * Read/write semaphores are a fancier version of mutexes in that they grant
@@ -815,7 +810,7 @@ RTDECL(int) RTSemSpinMutexRelease(RTSEMSPINMUTEX hSpinMtx);
  * @param   phRWSem             Where to store the handle to the newly created
  *                              RW semaphore.
  */
-RTDECL(int) RTSemRWCreate(PRTSEMRW phRWSem);
+RTDECL(int)   RTSemRWCreate(PRTSEMRW phRWSem);
 
 /**
  * Creates a read/write semaphore.
@@ -835,10 +830,8 @@ RTDECL(int) RTSemRWCreate(PRTSEMRW phRWSem);
  *                              optional (NULL).  Max length is 32 bytes.
  * @param   ...                 Format string arguments.
  */
-RTDECL(int) RTSemRWCreateEx(PRTSEMRW phRWSem, uint32_t fFlags,
-			    RTLOCKVALCLASS hClass, uint32_t uSubClass,
-			    const char *pszNameFmt,
-			    ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(5, 6);
+RTDECL(int)   RTSemRWCreateEx(PRTSEMRW phRWSem, uint32_t fFlags, RTLOCKVALCLASS hClass, uint32_t uSubClass,
+                              const char *pszNameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(5, 6);
 
 /** @name RTSemRWCreateEx flags
  * @{ */
@@ -853,7 +846,7 @@ RTDECL(int) RTSemRWCreateEx(PRTSEMRW phRWSem, uint32_t fFlags,
  * @param   hRWSem              Handle to the read/write semaphore.  NIL is
  *                              quietly ignored (VINF_SUCCESS).
  */
-RTDECL(int) RTSemRWDestroy(RTSEMRW hRWSem);
+RTDECL(int)   RTSemRWDestroy(RTSEMRW hRWSem);
 
 /**
  * Changes the lock validator sub-class of the read/write semaphore.
@@ -880,7 +873,7 @@ RTDECL(uint32_t) RTSemRWSetSubClass(RTSEMRW hRWSem, uint32_t uSubClass);
  * @param   hRWSem              Handle to the read/write semaphore.
  * @param   cMillies            The number of milliseconds to wait.
  */
-RTDECL(int) RTSemRWRequestRead(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
+RTDECL(int)   RTSemRWRequestRead(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
 
 /**
  * Request read access to a read/write semaphore, return on interruption
@@ -893,7 +886,7 @@ RTDECL(int) RTSemRWRequestRead(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
  * @param   hRWSem              Handle to the read/write semaphore.
  * @param   cMillies            The number of milliseconds to wait.
  */
-RTDECL(int) RTSemRWRequestReadNoResume(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
+RTDECL(int)   RTSemRWRequestReadNoResume(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
 
 /**
  * Debug version of RTSemRWRequestRead that tracks the location.
@@ -910,8 +903,7 @@ RTDECL(int) RTSemRWRequestReadNoResume(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemRWRequestReadDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies,
-				    RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)   RTSemRWRequestReadDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Debug version of RTSemRWRequestWriteNoResume that tracks the location.
@@ -928,9 +920,7 @@ RTDECL(int) RTSemRWRequestReadDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemRWRequestReadNoResumeDebug(RTSEMRW hRWSem,
-					    RTMSINTERVAL cMillies,
-					    RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)   RTSemRWRequestReadNoResumeDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Request read access to a read/write semaphore, extended edition.
@@ -950,8 +940,8 @@ RTDECL(int) RTSemRWRequestReadNoResumeDebug(RTSEMRW hRWSem,
  *                              fFlags value.  Do not pass RT_INDEFINITE_WAIT
  *                              here, use RTSEMWAIT_FLAGS_INDEFINITE instead.
  */
-RTDECL(int) RTSemRWRequestReadEx(RTSEMRW hRWSem, uint32_t fFlags,
-				 uint64_t uTimeout);
+RTDECL(int)   RTSemRWRequestReadEx(RTSEMRW hRWSem, uint32_t fFlags, uint64_t uTimeout);
+
 
 /**
  * Debug version of RTSemRWRequestReadEx that tracks the location.
@@ -970,9 +960,8 @@ RTDECL(int) RTSemRWRequestReadEx(RTSEMRW hRWSem, uint32_t fFlags,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemRWRequestReadExDebug(RTSEMRW hRWSem, uint32_t fFlags,
-				      uint64_t uTimeout, RTHCUINTPTR uId,
-				      RT_SRC_POS_DECL);
+RTDECL(int)   RTSemRWRequestReadExDebug(RTSEMRW hRWSem, uint32_t fFlags, uint64_t uTimeout,
+                                        RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Release read access to a read/write semaphore.
@@ -982,7 +971,7 @@ RTDECL(int) RTSemRWRequestReadExDebug(RTSEMRW hRWSem, uint32_t fFlags,
  *                              without saying that caller must own read
  *                              privileges to the semaphore.
  */
-RTDECL(int) RTSemRWReleaseRead(RTSEMRW hRWSem);
+RTDECL(int)   RTSemRWReleaseRead(RTSEMRW hRWSem);
 
 /**
  * Request write access to a read/write semaphore, resume on interruption.
@@ -995,7 +984,7 @@ RTDECL(int) RTSemRWReleaseRead(RTSEMRW hRWSem);
  * @param   hRWSem              Handle to the read/write semaphore.
  * @param   cMillies            The number of milliseconds to wait.
  */
-RTDECL(int) RTSemRWRequestWrite(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
+RTDECL(int)   RTSemRWRequestWrite(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
 
 /**
  * Request write access to a read/write semaphore, return on interruption.
@@ -1009,7 +998,7 @@ RTDECL(int) RTSemRWRequestWrite(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
  * @param   hRWSem              Handle to the read/write semaphore.
  * @param   cMillies            The number of milliseconds to wait.
  */
-RTDECL(int) RTSemRWRequestWriteNoResume(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
+RTDECL(int)   RTSemRWRequestWriteNoResume(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
 
 /**
  * Debug version of RTSemRWRequestWrite that tracks the location.
@@ -1022,8 +1011,7 @@ RTDECL(int) RTSemRWRequestWriteNoResume(RTSEMRW hRWSem, RTMSINTERVAL cMillies);
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemRWRequestWriteDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies,
-				     RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)  RTSemRWRequestWriteDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Debug version of RTSemRWRequestWriteNoResume that tracks the location.
@@ -1036,9 +1024,7 @@ RTDECL(int) RTSemRWRequestWriteDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemRWRequestWriteNoResumeDebug(RTSEMRW hRWSem,
-					     RTMSINTERVAL cMillies,
-					     RTHCUINTPTR uId, RT_SRC_POS_DECL);
+RTDECL(int)  RTSemRWRequestWriteNoResumeDebug(RTSEMRW hRWSem, RTMSINTERVAL cMillies, RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Request write access to a read/write semaphore, extended edition.
@@ -1060,8 +1046,7 @@ RTDECL(int) RTSemRWRequestWriteNoResumeDebug(RTSEMRW hRWSem,
  *                              fFlags value.  Do not pass RT_INDEFINITE_WAIT
  *                              here, use RTSEMWAIT_FLAGS_INDEFINITE instead.
  */
-RTDECL(int) RTSemRWRequestWriteEx(RTSEMRW hRWSem, uint32_t fFlags,
-				  uint64_t uTimeout);
+RTDECL(int)   RTSemRWRequestWriteEx(RTSEMRW hRWSem, uint32_t fFlags, uint64_t uTimeout);
 
 /**
  * Debug version of RTSemRWRequestWriteEx that tracks the location.
@@ -1075,9 +1060,8 @@ RTDECL(int) RTSemRWRequestWriteEx(RTSEMRW hRWSem, uint32_t fFlags,
  * @param   SRC_POS             The source position where call is being made
  *                              from.  Use RT_SRC_POS when possible.  Optional.
  */
-RTDECL(int) RTSemRWRequestWriteExDebug(RTSEMRW hRWSem, uint32_t fFlags,
-				       uint64_t uTimeout, RTHCUINTPTR uId,
-				       RT_SRC_POS_DECL);
+RTDECL(int)  RTSemRWRequestWriteExDebug(RTSEMRW hRWSem, uint32_t fFlags, uint64_t uTimeout,
+                                        RTHCUINTPTR uId, RT_SRC_POS_DECL);
 
 /**
  * Release write access to a read/write semaphore.
@@ -1087,7 +1071,7 @@ RTDECL(int) RTSemRWRequestWriteExDebug(RTSEMRW hRWSem, uint32_t fFlags,
  *                              without saying that caller must have write
  *                              access to the semaphore.
  */
-RTDECL(int) RTSemRWReleaseWrite(RTSEMRW hRWSem);
+RTDECL(int)   RTSemRWReleaseWrite(RTSEMRW hRWSem);
 
 /**
  * Checks if the caller is the exclusive semaphore owner.
@@ -1095,7 +1079,7 @@ RTDECL(int) RTSemRWReleaseWrite(RTSEMRW hRWSem);
  * @returns true / false accoringly.
  * @param   hRWSem              Handle to the read/write semaphore.
  */
-RTDECL(bool) RTSemRWIsWriteOwner(RTSEMRW hRWSem);
+RTDECL(bool)  RTSemRWIsWriteOwner(RTSEMRW hRWSem);
 
 /**
  * Checks if the caller is one of the read owners of the semaphore.
@@ -1116,7 +1100,7 @@ RTDECL(bool) RTSemRWIsWriteOwner(RTSEMRW hRWSem);
  *                              not available.  (For avoiding asserting all over
  *                              the place.)
  */
-RTDECL(bool) RTSemRWIsReadOwner(RTSEMRW hRWSem, bool fWannaHear);
+RTDECL(bool)  RTSemRWIsReadOwner(RTSEMRW hRWSem, bool fWannaHear);
 
 /**
  * Gets the write recursion count.
@@ -1172,6 +1156,7 @@ RTDECL(uint32_t) RTSemRWGetReadCount(RTSEMRW hRWSem);
 
 /** @} */
 
+
 /** @defgroup grp_rt_sems_pingpong      RTSemPingPong - Ping-Pong Construct
  *
  * Serialization of a two way communication.
@@ -1181,19 +1166,20 @@ RTDECL(uint32_t) RTSemRWGetReadCount(RTSEMRW hRWSem);
 /**
  * Ping-pong speaker
  */
-typedef enum RTPINGPONGSPEAKER {
+typedef enum RTPINGPONGSPEAKER
+{
     /** Not initialized. */
-	RTPINGPONGSPEAKER_UNINITIALIZE = 0,
+    RTPINGPONGSPEAKER_UNINITIALIZE = 0,
     /** Ping is speaking, Pong is waiting. */
-	RTPINGPONGSPEAKER_PING,
+    RTPINGPONGSPEAKER_PING,
     /** Pong is signaled, Ping is waiting. */
-	RTPINGPONGSPEAKER_PONG_SIGNALED,
+    RTPINGPONGSPEAKER_PONG_SIGNALED,
     /** Pong is speaking, Ping is waiting. */
-	RTPINGPONGSPEAKER_PONG,
+    RTPINGPONGSPEAKER_PONG,
     /** Ping is signaled, Pong is waiting. */
-	RTPINGPONGSPEAKER_PING_SIGNALED,
+    RTPINGPONGSPEAKER_PING_SIGNALED,
     /** Hack to ensure that it's at least 32-bits wide. */
-	RTPINGPONGSPEAKER_HACK = 0x7fffffff
+    RTPINGPONGSPEAKER_HACK = 0x7fffffff
 } RTPINGPONGSPEAKER;
 
 /**
@@ -1203,16 +1189,17 @@ typedef enum RTPINGPONGSPEAKER {
  * makes sure they don't speak out of turn and that they can wait and poll
  * on the conversation.
  */
-typedef struct RTPINGPONG {
+typedef struct RTPINGPONG
+{
     /** The semaphore the Ping thread waits on. */
-	RTSEMEVENT Ping;
+    RTSEMEVENT                  Ping;
     /** The semaphore the Pong thread waits on. */
-	RTSEMEVENT Pong;
+    RTSEMEVENT                  Pong;
     /** The current speaker. */
-	volatile RTPINGPONGSPEAKER enmSpeaker;
+    volatile RTPINGPONGSPEAKER  enmSpeaker;
 #if HC_ARCH_BITS == 64
     /** Padding the structure to become a multiple of sizeof(RTHCPTR). */
-	uint32_t u32Padding;
+    uint32_t                    u32Padding;
 #endif
 } RTPINGPONG;
 /** Pointer to Ping-Pong construct. */
@@ -1273,6 +1260,7 @@ RTDECL(int) RTSemPingWait(PRTPINGPONG pPP, RTMSINTERVAL cMillies);
  */
 RTDECL(int) RTSemPongWait(PRTPINGPONG pPP, RTMSINTERVAL cMillies);
 
+
 /**
  * Checks if the pong thread is speaking.
  *
@@ -1282,9 +1270,10 @@ RTDECL(int) RTSemPongWait(PRTPINGPONG pPP, RTMSINTERVAL cMillies);
  */
 DECLINLINE(bool) RTSemPingIsSpeaker(PRTPINGPONG pPP)
 {
-	RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
-	return enmSpeaker == RTPINGPONGSPEAKER_PING;
+    RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
+    return enmSpeaker == RTPINGPONGSPEAKER_PING;
 }
+
 
 /**
  * Checks if the pong thread is speaking.
@@ -1295,9 +1284,10 @@ DECLINLINE(bool) RTSemPingIsSpeaker(PRTPINGPONG pPP)
  */
 DECLINLINE(bool) RTSemPongIsSpeaker(PRTPINGPONG pPP)
 {
-	RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
-	return enmSpeaker == RTPINGPONGSPEAKER_PONG;
+    RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
+    return enmSpeaker == RTPINGPONGSPEAKER_PONG;
 }
+
 
 /**
  * Checks whether the ping thread should wait.
@@ -1308,11 +1298,12 @@ DECLINLINE(bool) RTSemPongIsSpeaker(PRTPINGPONG pPP)
  */
 DECLINLINE(bool) RTSemPingShouldWait(PRTPINGPONG pPP)
 {
-	RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
-	return enmSpeaker == RTPINGPONGSPEAKER_PONG
-	    || enmSpeaker == RTPINGPONGSPEAKER_PONG_SIGNALED
-	    || enmSpeaker == RTPINGPONGSPEAKER_PING_SIGNALED;
+    RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
+    return enmSpeaker == RTPINGPONGSPEAKER_PONG
+        || enmSpeaker == RTPINGPONGSPEAKER_PONG_SIGNALED
+        || enmSpeaker == RTPINGPONGSPEAKER_PING_SIGNALED;
 }
+
 
 /**
  * Checks whether the pong thread should wait.
@@ -1323,13 +1314,14 @@ DECLINLINE(bool) RTSemPingShouldWait(PRTPINGPONG pPP)
  */
 DECLINLINE(bool) RTSemPongShouldWait(PRTPINGPONG pPP)
 {
-	RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
-	return enmSpeaker == RTPINGPONGSPEAKER_PING
-	    || enmSpeaker == RTPINGPONGSPEAKER_PING_SIGNALED
-	    || enmSpeaker == RTPINGPONGSPEAKER_PONG_SIGNALED;
+    RTPINGPONGSPEAKER enmSpeaker = pPP->enmSpeaker;
+    return enmSpeaker == RTPINGPONGSPEAKER_PING
+        || enmSpeaker == RTPINGPONGSPEAKER_PING_SIGNALED
+        || enmSpeaker == RTPINGPONGSPEAKER_PONG_SIGNALED;
 }
 
 /** @} */
+
 
 /** @defgroup grp_rt_sems_xroads    RTSemXRoads - Crossroads
  *
@@ -1354,7 +1346,7 @@ DECLINLINE(bool) RTSemPongShouldWait(PRTPINGPONG pPP)
  * @param   phXRoads            Where to return the handle to the newly created
  *                              crossroads semaphore.
  */
-RTDECL(int)RTSemXRoadsCreate(PRTSEMXROADS phXRoads);
+RTDECL(int) RTSemXRoadsCreate(PRTSEMXROADS phXRoads);
 
 /**
  * Destroys a crossroads semaphore.
@@ -1412,4 +1404,6 @@ RTDECL(int) RTSemXRoadsEWLeave(RTSEMXROADS hXRoads);
 /** @} */
 
 RT_C_DECLS_END
+
 #endif
+

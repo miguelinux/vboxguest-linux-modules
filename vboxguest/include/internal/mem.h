@@ -30,6 +30,7 @@
 #include <iprt/cdefs.h>
 
 RT_C_DECLS_BEGIN
+
 /**
  * Special allocation method that does not have any IPRT dependencies.
  *
@@ -41,14 +42,15 @@ RT_C_DECLS_BEGIN
  *          calling rtMemBaseFree().
  * @param   cb          The number of bytes to allocate.
  */
-DECLHIDDEN(void *) rtMemBaseAlloc(size_t cb);
+DECLHIDDEN(void *)  rtMemBaseAlloc(size_t cb);
 
 /**
  * Frees memory allocated by rtInitAlloc().
  *
  * @param   pv          What rtInitAlloc() returned.
  */
-DECLHIDDEN(void) rtMemBaseFree(void *pv);
+DECLHIDDEN(void)    rtMemBaseFree(void *pv);
+
 
 #ifdef IN_RING0
 /** @def RTR0MEM_WITH_EF_APIS
@@ -61,10 +63,12 @@ DECLHIDDEN(void) rtMemBaseFree(void *pv);
 #  define RTR0MEM_WITH_EF_APIS
 # endif
 # ifdef RTR0MEM_WITH_EF_APIS
-DECLHIDDEN(void) rtR0MemEfInit(void);
-DECLHIDDEN(void) rtR0MemEfTerm(void);
+DECLHIDDEN(void)    rtR0MemEfInit(void);
+DECLHIDDEN(void)    rtR0MemEfTerm(void);
 # endif
 #endif
 
 RT_C_DECLS_END
+
 #endif
+

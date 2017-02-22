@@ -29,6 +29,8 @@
 #include <iprt/string.h>
 
 RT_C_DECLS_BEGIN
+
+
 /** @defgroup rt_str_latin1     Latin-1 (ISO-8859-1) String Manipulation
  * @ingroup grp_rt_str
  *
@@ -41,6 +43,7 @@ RT_C_DECLS_BEGIN
  *
  * @{
  */
+
 /**
  * Get the unicode code point at the given string position.
  *
@@ -50,7 +53,7 @@ RT_C_DECLS_BEGIN
  */
 DECLINLINE(RTUNICP) RTLatin1GetCp(const char *pszLatin1)
 {
-	return *(const unsigned char *)pszLatin1;
+    return *(const unsigned char *)pszLatin1;
 }
 
 /**
@@ -65,10 +68,10 @@ DECLINLINE(RTUNICP) RTLatin1GetCp(const char *pszLatin1)
  */
 DECLINLINE(int) RTLatin1GetCpEx(const char **ppszLatin1, PRTUNICP pCp)
 {
-	const unsigned char uch = **(const unsigned char **)ppszLatin1;
-	(*ppszLatin1)++;
-	*pCp = uch;
-	return VINF_SUCCESS;
+    const unsigned char uch = **(const unsigned char **)ppszLatin1;
+    (*ppszLatin1)++;
+    *pCp = uch;
+    return VINF_SUCCESS;
 }
 
 /**
@@ -85,18 +88,18 @@ DECLINLINE(int) RTLatin1GetCpEx(const char **ppszLatin1, PRTUNICP pCp)
  * @param   pCp         Where to store the code point.
  *                      RTUNICP_INVALID is stored here on failure.
  */
-DECLINLINE(int)RTLatin1GetCpNEx(const char **ppszLatin1, size_t * pcchLatin1,
-				PRTUNICP pCp)
+DECLINLINE(int) RTLatin1GetCpNEx(const char **ppszLatin1, size_t *pcchLatin1, PRTUNICP pCp)
 {
-	if (RT_LIKELY(*pcchLatin1 != 0)) {
-		const unsigned char uch = **(const unsigned char **)ppszLatin1;
-		(*ppszLatin1)++;
-		(*pcchLatin1)--;
-		*pCp = uch;
-		return VINF_SUCCESS;
-	}
-	*pCp = RTUNICP_INVALID;
-	return VERR_END_OF_STRING;
+    if (RT_LIKELY(*pcchLatin1 != 0))
+    {
+        const unsigned char uch = **(const unsigned char **)ppszLatin1;
+        (*ppszLatin1)++;
+        (*pcchLatin1)--;
+        *pCp = uch;
+        return VINF_SUCCESS;
+    }
+    *pCp = RTUNICP_INVALID;
+    return VERR_END_OF_STRING;
 }
 
 /**
@@ -109,9 +112,9 @@ DECLINLINE(int)RTLatin1GetCpNEx(const char **ppszLatin1, size_t * pcchLatin1,
  */
 DECLINLINE(size_t) RTLatin1CpSize(RTUNICP CodePoint)
 {
-	if (CodePoint < 0x100)
-		return 1;
-	return 0;
+    if (CodePoint < 0x100)
+        return 1;
+    return 0;
 }
 
 /**
@@ -128,11 +131,11 @@ DECLINLINE(size_t) RTLatin1CpSize(RTUNICP CodePoint)
  *                      This should not be RTUNICP_INVALID or any other
  *                      character out of the Latin-1 range.
  */
-DECLINLINE(char *)RTLatin1PutCp(char *pszLatin1, RTUNICP CodePoint)
+DECLINLINE(char *) RTLatin1PutCp(char *pszLatin1, RTUNICP CodePoint)
 {
-	AssertReturn(CodePoint < 0x100, NULL);
-	*pszLatin1++ = (unsigned char)CodePoint;
-	return pszLatin1;
+    AssertReturn(CodePoint < 0x100, NULL);
+    *pszLatin1++ = (unsigned char)CodePoint;
+    return pszLatin1;
 }
 
 /**
@@ -142,10 +145,10 @@ DECLINLINE(char *)RTLatin1PutCp(char *pszLatin1, RTUNICP CodePoint)
  * @param   pszLatin1   Pointer to the current code point.
  * @remark  This will not move the next valid code point, only past the current one.
  */
-DECLINLINE(char *)RTLatin1NextCp(const char *pszLatin1)
+DECLINLINE(char *) RTLatin1NextCp(const char *pszLatin1)
 {
-	pszLatin1++;
-	return (char *)pszLatin1;
+    pszLatin1++;
+    return (char *)pszLatin1;
 }
 
 /**
@@ -156,14 +159,14 @@ DECLINLINE(char *)RTLatin1NextCp(const char *pszLatin1)
  * @param   pszLatin1Start  Pointer to the start of the string.
  * @param   pszLatin1       Pointer to the current code point.
  */
-DECLINLINE(char *) RTLatin1PrevCp(const char *pszLatin1Start,
-				  const char *pszLatin1)
+DECLINLINE(char *) RTLatin1PrevCp(const char *pszLatin1Start, const char *pszLatin1)
 {
-	if ((uintptr_t) pszLatin1 > (uintptr_t) pszLatin1Start) {
-		pszLatin1--;
-		return (char *)pszLatin1;
-	}
-	return (char *)pszLatin1Start;
+    if ((uintptr_t)pszLatin1 > (uintptr_t)pszLatin1Start)
+    {
+        pszLatin1--;
+        return (char *)pszLatin1;
+    }
+    return (char *)pszLatin1Start;
 }
 
 /**
@@ -188,8 +191,7 @@ DECLINLINE(char *) RTLatin1PrevCp(const char *pszLatin1Start,
  *                          The returned pointer must be freed using RTStrFree().
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTLatin1ToUtf8Tag(const char *pszLatin1, char **ppszString,
-			      const char *pszTag);
+RTDECL(int)  RTLatin1ToUtf8Tag(const char *pszLatin1, char **ppszString, const char *pszTag);
 
 /**
  * Translates Latin-1 to UTF-8 using buffer provided by the caller or a fittingly
@@ -248,9 +250,8 @@ RTDECL(int) RTLatin1ToUtf8Tag(const char *pszLatin1, char **ppszString,
  *                          length that can be used to resize the buffer.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTLatin1ToUtf8ExTag(const char *pszLatin1, size_t cchLatin1,
-				char **ppsz, size_t cch, size_t * pcch,
-				const char *pszTag);
+RTDECL(int)  RTLatin1ToUtf8ExTag(const char *pszLatin1, size_t cchLatin1, char **ppsz, size_t cch, size_t *pcch,
+                                 const char *pszTag);
 
 /**
  * Calculates the length of the Latin-1 string in UTF-8 chars (bytes).
@@ -275,8 +276,7 @@ RTDECL(size_t) RTLatin1CalcUtf8Len(const char *pszLatin1);
  * @param   pcch        Where to store the string length (in bytes).  Optional.
  *                      This is undefined on failure.
  */
-RTDECL(int) RTLatin1CalcUtf8LenEx(const char *pszLatin1, size_t cchLatin1,
-				  size_t * pcch);
+RTDECL(int) RTLatin1CalcUtf8LenEx(const char *pszLatin1, size_t cchLatin1, size_t *pcch);
 
 /**
  * Calculates the length of the Latin-1 (ISO-8859-1) string in RTUTF16 items.
@@ -296,8 +296,7 @@ RTDECL(size_t) RTLatin1CalcUtf16Len(const char *pszLatin1);
  * @param   pcwc            Where to store the string length. Optional.
  *                          This is undefined on failure.
  */
-RTDECL(int) RTLatin1CalcUtf16LenEx(const char *pszLatin1, size_t cchLatin1,
-				   size_t * pcwc);
+RTDECL(int) RTLatin1CalcUtf16LenEx(const char *pszLatin1, size_t cchLatin1, size_t *pcwc);
 
 /**
  * Translate a Latin-1 (ISO-8859-1) string into a UTF-16 allocating the result
@@ -320,8 +319,7 @@ RTDECL(int) RTLatin1CalcUtf16LenEx(const char *pszLatin1, size_t cchLatin1,
  *                          returned string must be freed using RTUtf16Free().
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTLatin1ToUtf16Tag(const char *pszLatin1, PRTUTF16 * ppwszString,
-			       const char *pszTag);
+RTDECL(int) RTLatin1ToUtf16Tag(const char *pszLatin1, PRTUTF16 *ppwszString, const char *pszTag);
 
 /**
  * Translates pszLatin1 from Latin-1 (ISO-8859-1) to UTF-16, allocating the
@@ -382,11 +380,13 @@ RTDECL(int) RTLatin1ToUtf16Tag(const char *pszLatin1, PRTUTF16 * ppwszString,
  * @param   pszTag          Allocation tag used for statistics and such.
  */
 RTDECL(int) RTLatin1ToUtf16ExTag(const char *pszLatin1, size_t cchLatin1,
-				 PRTUTF16 * ppwsz, size_t cwc, size_t * pcwc,
-				 const char *pszTag);
+                                 PRTUTF16 *ppwsz, size_t cwc, size_t *pcwc, const char *pszTag);
 
 /** @} */
 
 RT_C_DECLS_END
+
 /** @} */
+
 #endif
+

@@ -25,9 +25,9 @@
  */
 
 #ifndef NOFILEID
-static const char szFileId[] =
-    "Id: kAVLPVInt.c,v 1.5 2003/02/13 02:02:35 bird Exp $";
+static const char szFileId[] = "Id: kAVLPVInt.c,v 1.5 2003/02/13 02:02:35 bird Exp $";
 #endif
+
 
 /*********************************************************************************************************************************
 *   Defined Constants And Macros                                                                                                 *
@@ -36,8 +36,8 @@ static const char szFileId[] =
  * AVL configuration.
  */
 #define KAVL_FN(a)                  RTAvlPV##a
-#define KAVL_MAX_STACK              27	/* Up to 2^24 nodes. */
-#define KAVL_CHECK_FOR_EQUAL_INSERT 1	/* No duplicate keys! */
+#define KAVL_MAX_STACK              27  /* Up to 2^24 nodes. */
+#define KAVL_CHECK_FOR_EQUAL_INSERT 1   /* No duplicate keys! */
 #define KAVLNODECORE                AVLPVNODECORE
 #define PKAVLNODECORE               PAVLPVNODECORE
 #define PPKAVLNODECORE              PPAVLPVNODECORE
@@ -47,12 +47,14 @@ static const char szFileId[] =
 #define PKAVLENUMDATA               PAVLPVENUMDATA
 #define PKAVLCALLBACK               PAVLPVCALLBACK
 
+
 /*
  * AVL Compare macros
  */
 #define KAVL_G(key1, key2)          ( (const char*)(key1) >  (const char*)(key2) )
 #define KAVL_E(key1, key2)          ( (const char*)(key1) == (const char*)(key2) )
 #define KAVL_NE(key1, key2)         ( (const char*)(key1) != (const char*)(key2) )
+
 
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
@@ -73,3 +75,4 @@ static const char szFileId[] =
 #include "avl_RemoveBestFit.cpp.h"
 #include "avl_DoWithAll.cpp.h"
 #include "avl_Destroy.cpp.h"
+

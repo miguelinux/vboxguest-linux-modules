@@ -29,20 +29,25 @@
 #include <iprt/cdefs.h>
 #include <iprt/types.h>
 
+
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt_power RTPower - Power management
  * @ingroup grp_rt
  * @{
  */
+
 #ifdef IN_RING0
+
 /**
  * MP event, see FNRTPOWERNOTIFICATION.
  */
-    typedef enum RTPOWEREVENT {
+typedef enum RTPOWEREVENT
+{
     /** The system will go into suspend mode. */
-	RTPOWEREVENT_SUSPEND = 1,
+    RTPOWEREVENT_SUSPEND = 1,
     /** The system has resumed. */
-	RTPOWEREVENT_RESUME
+    RTPOWEREVENT_RESUME
 } RTPOWEREVENT;
 
 /**
@@ -54,8 +59,7 @@ RT_C_DECLS_BEGIN
  * @param   enmEvent    The event.
  * @param   pvUser      The user argument.
  */
-typedef DECLCALLBACK(void) FNRTPOWERNOTIFICATION(RTPOWEREVENT enmEvent,
-						 void *pvUser);
+typedef DECLCALLBACK(void) FNRTPOWERNOTIFICATION(RTPOWEREVENT enmEvent, void *pvUser);
 /** Pointer to a FNRTPOWERNOTIFICATION(). */
 typedef FNRTPOWERNOTIFICATION *PFNRTPOWERNOTIFICATION;
 
@@ -71,8 +75,7 @@ typedef FNRTPOWERNOTIFICATION *PFNRTPOWERNOTIFICATION;
  * @param   pfnCallback     The callback.
  * @param   pvUser          The user argument to the callback function.
  */
-RTDECL(int) RTPowerNotificationRegister(PFNRTPOWERNOTIFICATION pfnCallback,
-					void *pvUser);
+RTDECL(int) RTPowerNotificationRegister(PFNRTPOWERNOTIFICATION pfnCallback, void *pvUser);
 
 /**
  * This deregisters a notification callback registered via RTPowerNotificationRegister().
@@ -87,8 +90,7 @@ RTDECL(int) RTPowerNotificationRegister(PFNRTPOWERNOTIFICATION pfnCallback,
  * @param   pfnCallback     The callback.
  * @param   pvUser          The user argument to the callback function.
  */
-RTDECL(int) RTPowerNotificationDeregister(PFNRTPOWERNOTIFICATION pfnCallback,
-					  void *pvUser);
+RTDECL(int) RTPowerNotificationDeregister(PFNRTPOWERNOTIFICATION pfnCallback, void *pvUser);
 
 /**
  * This calls all registered power management callback handlers registered via RTPowerNotificationRegister().
@@ -105,4 +107,6 @@ RTDECL(int) RTPowerSignalEvent(RTPOWEREVENT enmEvent);
 /** @} */
 
 RT_C_DECLS_END
+
 #endif
+

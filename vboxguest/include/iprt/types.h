@@ -42,7 +42,8 @@
 RT_C_DECLS_BEGIN
 #  include "xf86_ansic.h"
 #  undef NULL
-    RT_C_DECLS_END
+RT_C_DECLS_END
+
 # elif defined(RT_OS_DARWIN) && defined(KERNEL)
     /*
      * Kludge for the darwin kernel:
@@ -50,7 +51,7 @@ RT_C_DECLS_BEGIN
      */
 #  ifndef _PTRDIFF_T
 #  define _PTRDIFF_T
-typedef __darwin_ptrdiff_t ptrdiff_t;
+    typedef __darwin_ptrdiff_t ptrdiff_t;
 #  endif
 #  include <sys/types.h>
 
@@ -108,7 +109,7 @@ typedef __darwin_ptrdiff_t ptrdiff_t;
     * _KERNEL code.
     */
 #  ifdef _BSD_PTRDIFF_T_
-typedef _BSD_PTRDIFF_T_ ptrdiff_t;
+    typedef _BSD_PTRDIFF_T_ ptrdiff_t;
 #  endif
 
 # elif defined(RT_OS_LINUX) && defined(__KERNEL__)
@@ -122,7 +123,7 @@ typedef _BSD_PTRDIFF_T_ ptrdiff_t;
      */
 #  include <stddef.h>
 #  if defined(__cplusplus)
-typedef bool _Bool;
+    typedef bool _Bool;
 #  endif
 #  define bool linux_bool
 #  define true linux_true
@@ -178,15 +179,18 @@ typedef bool _Bool;
 #  include <sys/types.h>
 # endif
 
+
 /* Define any types missing from sys/types.h on windows. */
 # ifdef _MSC_VER
 #  undef ssize_t
-typedef intptr_t ssize_t;
+   typedef intptr_t ssize_t;
 # endif
 
-#else /* no crt */
+#else  /* no crt */
 # include <iprt/nocrt/compiler/compiler.h>
 #endif /* no crt */
+
+
 
 /** @def NULL
  * NULL pointer.
@@ -199,6 +203,8 @@ typedef intptr_t ssize_t;
 # endif
 #endif
 
+
+
 /** @defgroup grp_rt_types  IPRT Base Types
  * @{
  */
@@ -206,7 +212,7 @@ typedef intptr_t ssize_t;
 /* define wchar_t, we don't wanna include all the wcsstuff to get this. */
 #ifdef _MSC_VER
 # ifndef _WCHAR_T_DEFINED
-typedef unsigned short wchar_t;
+  typedef unsigned short wchar_t;
 # define _WCHAR_T_DEFINED
 # endif
 #endif
@@ -244,7 +250,7 @@ typedef _Bool bool;
       * include it later doesn't mess things up.
       */
 #    undef bool
-typedef _Bool bool;
+     typedef _Bool bool;
 #   endif
 #  else
 #   if (defined(RT_OS_DARWIN) || defined(RT_OS_HAIKU)) && (defined(_STDBOOL_H) || defined(__STDBOOL_H))
@@ -269,16 +275,18 @@ typedef unsigned char bool;
 #if defined(__GNUC__) && defined(RT_ARCH_AMD64)
 typedef __uint128_t uint128_t;
 #else
-typedef struct uint128_s {
+typedef struct uint128_s
+{
 # ifdef RT_BIG_ENDIAN
-	uint64_t Hi;
-	uint64_t Lo;
+    uint64_t    Hi;
+    uint64_t    Lo;
 # else
-	uint64_t Lo;
-	uint64_t Hi;
+    uint64_t    Lo;
+    uint64_t    Hi;
 # endif
 } uint128_t;
 #endif
+
 
 /**
  * 128-bit signed integer.
@@ -286,215 +294,234 @@ typedef struct uint128_s {
 #if defined(__GNUC__) && defined(RT_ARCH_AMD64)
 typedef __int128_t int128_t;
 #else
-typedef struct int128_s {
+typedef struct int128_s
+{
 # ifdef RT_BIG_ENDIAN
-	int64_t Hi;
-	uint64_t Lo;
+    int64_t     Hi;
+    uint64_t    Lo;
 # else
-	uint64_t Lo;
-	int64_t Hi;
+    uint64_t    Lo;
+    int64_t     Hi;
 # endif
 } int128_t;
 #endif
 
+
 /**
  * 16-bit unsigned integer union.
  */
-typedef union RTUINT16U {
+typedef union RTUINT16U
+{
     /** natural view. */
-	uint16_t u;
+    uint16_t    u;
 
     /** 16-bit view. */
-	uint16_t au16[1];
+    uint16_t    au16[1];
     /** 8-bit view. */
-	uint8_t au8[2];
+    uint8_t     au8[2];
     /** 16-bit hi/lo view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint8_t Hi;
-		uint8_t Lo;
+        uint8_t    Hi;
+        uint8_t    Lo;
 #else
-		uint8_t Lo;
-		uint8_t Hi;
+        uint8_t    Lo;
+        uint8_t    Hi;
 #endif
-	} s;
+    } s;
 } RTUINT16U;
 /** Pointer to a 16-bit unsigned integer union. */
 typedef RTUINT16U *PRTUINT16U;
 /** Pointer to a const 32-bit unsigned integer union. */
 typedef const RTUINT16U *PCRTUINT16U;
 
+
 /**
  * 32-bit unsigned integer union.
  */
-typedef union RTUINT32U {
+typedef union RTUINT32U
+{
     /** natural view. */
-	uint32_t u;
+    uint32_t    u;
     /** Hi/Low view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint16_t Hi;
-		uint16_t Lo;
+        uint16_t    Hi;
+        uint16_t    Lo;
 #else
-		uint16_t Lo;
-		uint16_t Hi;
+        uint16_t    Lo;
+        uint16_t    Hi;
 #endif
-	} s;
+    } s;
     /** Word view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint16_t w1;
-		uint16_t w0;
+        uint16_t    w1;
+        uint16_t    w0;
 #else
-		uint16_t w0;
-		uint16_t w1;
+        uint16_t    w0;
+        uint16_t    w1;
 #endif
-	} Words;
+    } Words;
 
     /** 32-bit view. */
-	uint32_t au32[1];
+    uint32_t    au32[1];
     /** 16-bit view. */
-	uint16_t au16[2];
+    uint16_t    au16[2];
     /** 8-bit view. */
-	uint8_t au8[4];
+    uint8_t     au8[4];
 } RTUINT32U;
 /** Pointer to a 32-bit unsigned integer union. */
 typedef RTUINT32U *PRTUINT32U;
 /** Pointer to a const 32-bit unsigned integer union. */
 typedef const RTUINT32U *PCRTUINT32U;
 
+
 /**
  * 64-bit unsigned integer union.
  */
-typedef union RTUINT64U {
+typedef union RTUINT64U
+{
     /** Natural view. */
-	uint64_t u;
+    uint64_t    u;
     /** Hi/Low view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint32_t Hi;
-		uint32_t Lo;
+        uint32_t    Hi;
+        uint32_t    Lo;
 #else
-		uint32_t Lo;
-		uint32_t Hi;
+        uint32_t    Lo;
+        uint32_t    Hi;
 #endif
-	} s;
+    } s;
     /** Double-Word view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint32_t dw1;
-		uint32_t dw0;
+        uint32_t    dw1;
+        uint32_t    dw0;
 #else
-		uint32_t dw0;
-		uint32_t dw1;
+        uint32_t    dw0;
+        uint32_t    dw1;
 #endif
-	} DWords;
+    } DWords;
     /** Word view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint16_t w3;
-		uint16_t w2;
-		uint16_t w1;
-		uint16_t w0;
+        uint16_t    w3;
+        uint16_t    w2;
+        uint16_t    w1;
+        uint16_t    w0;
 #else
-		uint16_t w0;
-		uint16_t w1;
-		uint16_t w2;
-		uint16_t w3;
+        uint16_t    w0;
+        uint16_t    w1;
+        uint16_t    w2;
+        uint16_t    w3;
 #endif
-	} Words;
+    } Words;
 
     /** 64-bit view. */
-	uint64_t au64[1];
+    uint64_t    au64[1];
     /** 32-bit view. */
-	uint32_t au32[2];
+    uint32_t    au32[2];
     /** 16-bit view. */
-	uint16_t au16[4];
+    uint16_t    au16[4];
     /** 8-bit view. */
-	uint8_t au8[8];
+    uint8_t     au8[8];
 } RTUINT64U;
 /** Pointer to a 64-bit unsigned integer union. */
 typedef RTUINT64U *PRTUINT64U;
 /** Pointer to a const 64-bit unsigned integer union. */
 typedef const RTUINT64U *PCRTUINT64U;
 
+
 /**
  * 128-bit unsigned integer union.
  */
 #pragma pack(1)
-typedef union RTUINT128U {
+typedef union RTUINT128U
+{
     /** Hi/Low view.
      * @remarks We put this first so we can have portable initializers
      *          (RTUINT128_INIT) */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint64_t Hi;
-		uint64_t Lo;
+        uint64_t    Hi;
+        uint64_t    Lo;
 #else
-		uint64_t Lo;
-		uint64_t Hi;
+        uint64_t    Lo;
+        uint64_t    Hi;
 #endif
-	} s;
+    } s;
 
     /** Natural view.
      * WARNING! This member depends on the compiler supporting 128-bit stuff. */
-	uint128_t u;
+    uint128_t   u;
 
     /** Quad-Word view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint64_t qw1;
-		uint64_t qw0;
+        uint64_t    qw1;
+        uint64_t    qw0;
 #else
-		uint64_t qw0;
-		uint64_t qw1;
+        uint64_t    qw0;
+        uint64_t    qw1;
 #endif
-	} QWords;
+    } QWords;
     /** Double-Word view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint32_t dw3;
-		uint32_t dw2;
-		uint32_t dw1;
-		uint32_t dw0;
+        uint32_t    dw3;
+        uint32_t    dw2;
+        uint32_t    dw1;
+        uint32_t    dw0;
 #else
-		uint32_t dw0;
-		uint32_t dw1;
-		uint32_t dw2;
-		uint32_t dw3;
+        uint32_t    dw0;
+        uint32_t    dw1;
+        uint32_t    dw2;
+        uint32_t    dw3;
 #endif
-	} DWords;
+    } DWords;
     /** Word view. */
-	struct {
+    struct
+    {
 #ifdef RT_BIG_ENDIAN
-		uint16_t w7;
-		uint16_t w6;
-		uint16_t w5;
-		uint16_t w4;
-		uint16_t w3;
-		uint16_t w2;
-		uint16_t w1;
-		uint16_t w0;
+        uint16_t    w7;
+        uint16_t    w6;
+        uint16_t    w5;
+        uint16_t    w4;
+        uint16_t    w3;
+        uint16_t    w2;
+        uint16_t    w1;
+        uint16_t    w0;
 #else
-		uint16_t w0;
-		uint16_t w1;
-		uint16_t w2;
-		uint16_t w3;
-		uint16_t w4;
-		uint16_t w5;
-		uint16_t w6;
-		uint16_t w7;
+        uint16_t    w0;
+        uint16_t    w1;
+        uint16_t    w2;
+        uint16_t    w3;
+        uint16_t    w4;
+        uint16_t    w5;
+        uint16_t    w6;
+        uint16_t    w7;
 #endif
-	} Words;
+    } Words;
 
     /** 64-bit view. */
-	uint64_t au64[2];
+    uint64_t    au64[2];
     /** 32-bit view. */
-	uint32_t au32[4];
+    uint32_t    au32[4];
     /** 16-bit view. */
-	uint16_t au16[8];
+    uint16_t    au16[8];
     /** 8-bit view. */
-	uint8_t au8[16];
+    uint8_t     au8[16];
 } RTUINT128U;
 #pragma pack()
 /** Pointer to a 64-bit unsigned integer union. */
@@ -518,71 +545,76 @@ typedef const RTUINT128U *PCRTUINT128U;
 # define RTUINT128_INIT_C(a_Hi, a_Lo) { { UINT64_C(a_Lo), UINT64_C(a_Hi) } }
 #endif
 
+
 /**
  * Double precision floating point format (64-bit).
  */
-typedef union RTFLOAT64U {
+typedef union RTFLOAT64U
+{
 #if defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)
     /** Double view. */
-	double rd;
+    double      rd;
 #endif
     /** Format using regular bitfields.  */
-	struct {
+    struct
+    {
 # ifdef RT_BIG_ENDIAN
-	/** The sign indicator. */
-		uint32_t fSign:1;
-	/** The exponent (offseted by 1023). */
-		uint32_t uExponent:11;
-	/** The fraction, bits 32 thru 51. */
-		uint32_t u20FractionHigh:20;
-	/** The fraction, bits 0 thru 31. */
-		uint32_t u32FractionLow;
+        /** The sign indicator. */
+        uint32_t    fSign : 1;
+        /** The exponent (offseted by 1023). */
+        uint32_t    uExponent : 11;
+        /** The fraction, bits 32 thru 51. */
+        uint32_t    u20FractionHigh : 20;
+        /** The fraction, bits 0 thru 31. */
+        uint32_t    u32FractionLow;
 # else
-	/** The fraction, bits 0 thru 31. */
-		uint32_t u32FractionLow;
-	/** The fraction, bits 32 thru 51. */
-		uint32_t u20FractionHigh:20;
-	/** The exponent (offseted by 1023). */
-		uint32_t uExponent:11;
-	/** The sign indicator. */
-		uint32_t fSign:1;
+        /** The fraction, bits 0 thru 31. */
+        uint32_t    u32FractionLow;
+        /** The fraction, bits 32 thru 51. */
+        uint32_t    u20FractionHigh : 20;
+        /** The exponent (offseted by 1023). */
+        uint32_t    uExponent : 11;
+        /** The sign indicator. */
+        uint32_t    fSign : 1;
 # endif
-	} s;
+    } s;
 
 #ifdef RT_COMPILER_GROKS_64BIT_BITFIELDS
     /** Format using 64-bit bitfields.  */
-	RT_GCC_EXTENSION struct {
+    RT_GCC_EXTENSION struct
+    {
 # ifdef RT_BIG_ENDIAN
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint64_t fSign:1;
-	/** The exponent (offseted by 1023). */
-		RT_GCC_EXTENSION uint64_t uExponent:11;
-	/** The fraction. */
-		RT_GCC_EXTENSION uint64_t uFraction:52;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint64_t    fSign : 1;
+        /** The exponent (offseted by 1023). */
+        RT_GCC_EXTENSION uint64_t    uExponent : 11;
+        /** The fraction. */
+        RT_GCC_EXTENSION uint64_t    uFraction : 52;
 # else
-	/** The fraction. */
-		RT_GCC_EXTENSION uint64_t uFraction:52;
-	/** The exponent (offseted by 1023). */
-		RT_GCC_EXTENSION uint64_t uExponent:11;
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint64_t fSign:1;
+        /** The fraction. */
+        RT_GCC_EXTENSION uint64_t    uFraction : 52;
+        /** The exponent (offseted by 1023). */
+        RT_GCC_EXTENSION uint64_t    uExponent : 11;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint64_t    fSign : 1;
 # endif
-	} s64;
+    } s64;
 #endif
 
     /** 64-bit view. */
-	uint64_t au64[1];
+    uint64_t    au64[1];
     /** 32-bit view. */
-	uint32_t au32[2];
+    uint32_t    au32[2];
     /** 16-bit view. */
-	uint16_t au16[4];
+    uint16_t    au16[4];
     /** 8-bit view. */
-	uint8_t au8[8];
+    uint8_t     au8[8];
 } RTFLOAT64U;
 /** Pointer to a double precision floating point format union. */
 typedef RTFLOAT64U *PRTFLOAT64U;
 /** Pointer to a const double precision floating point format union. */
 typedef const RTFLOAT64U *PCRTFLOAT64U;
+
 
 #if !defined(__IBMCPP__) && !defined(__IBMC__)
 
@@ -590,34 +622,36 @@ typedef const RTFLOAT64U *PCRTFLOAT64U;
  * Extended Double precision floating point format (80-bit).
  */
 #pragma pack(1)
-typedef union RTFLOAT80U {
+typedef union RTFLOAT80U
+{
     /** Format using bitfields.  */
-	RT_GCC_EXTENSION struct {
+    RT_GCC_EXTENSION struct
+    {
 # ifdef RT_BIG_ENDIAN
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The mantissa. */
-		uint64_t u64Mantissa;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The mantissa. */
+        uint64_t                    u64Mantissa;
 # else
-	/** The mantissa. */
-		uint64_t u64Mantissa;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
+        /** The mantissa. */
+        uint64_t                    u64Mantissa;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
 # endif
-	} s;
+    } s;
 
     /** 64-bit view. */
-	uint64_t au64[1];
+    uint64_t    au64[1];
     /** 32-bit view. */
-	uint32_t au32[2];
+    uint32_t    au32[2];
     /** 16-bit view. */
-	uint16_t au16[5];
+    uint16_t    au16[5];
     /** 8-bit view. */
-	uint8_t au8[10];
+    uint8_t     au8[10];
 } RTFLOAT80U;
 #pragma pack()
 /** Pointer to a extended precision floating point format union. */
@@ -625,95 +659,100 @@ typedef RTFLOAT80U *PRTFLOAT80U;
 /** Pointer to a const extended precision floating point format union. */
 typedef const RTFLOAT80U *PCRTFLOAT80U;
 
+
 /**
  * A variant of RTFLOAT80U that may be larger than 80-bits depending on how the
  * compiler implements long double.
  */
 #pragma pack(1)
-typedef union RTFLOAT80U2 {
+typedef union RTFLOAT80U2
+{
 #ifdef RT_COMPILER_WITH_80BIT_LONG_DOUBLE
     /** Long double view. */
-	long double lrd;
+    long double     lrd;
 #endif
     /** Format using bitfields.  */
-	RT_GCC_EXTENSION struct {
+    RT_GCC_EXTENSION struct
+    {
 #ifdef RT_BIG_ENDIAN
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The mantissa. */
-		uint64_t u64Mantissa;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The mantissa. */
+        uint64_t                    u64Mantissa;
 #else
-	/** The mantissa. */
-		uint64_t u64Mantissa;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
+        /** The mantissa. */
+        uint64_t                    u64Mantissa;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
 #endif
-	} s;
+    } s;
 
     /** Bitfield exposing the J bit and the fraction.  */
-	RT_GCC_EXTENSION struct {
+    RT_GCC_EXTENSION struct
+    {
 #ifdef RT_BIG_ENDIAN
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The J bit, aka the integer bit. */
-		uint32_t fInteger;
-	/** The fraction, bits 32 thru 62. */
-		uint32_t u31FractionHigh:31;
-	/** The fraction, bits 0 thru 31. */
-		uint32_t u32FractionLow:32;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The J bit, aka the integer bit. */
+        uint32_t                    fInteger;
+        /** The fraction, bits 32 thru 62. */
+        uint32_t                    u31FractionHigh : 31;
+        /** The fraction, bits 0 thru 31. */
+        uint32_t                    u32FractionLow : 32;
 #else
-	/** The fraction, bits 0 thru 31. */
-		uint32_t u32FractionLow:32;
-	/** The fraction, bits 32 thru 62. */
-		uint32_t u31FractionHigh:31;
-	/** The J bit, aka the integer bit. */
-		uint32_t fInteger;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
+        /** The fraction, bits 0 thru 31. */
+        uint32_t                    u32FractionLow : 32;
+        /** The fraction, bits 32 thru 62. */
+        uint32_t                    u31FractionHigh : 31;
+        /** The J bit, aka the integer bit. */
+        uint32_t                    fInteger;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
 #endif
-	} sj;
+    } sj;
 
 #ifdef RT_COMPILER_GROKS_64BIT_BITFIELDS
     /** 64-bit bitfields exposing the J bit and the fraction.  */
-	RT_GCC_EXTENSION struct {
+    RT_GCC_EXTENSION struct
+    {
 # ifdef RT_BIG_ENDIAN
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The J bit, aka the integer bit. */
-		RT_GCC_EXTENSION uint64_t fInteger:1;
-	/** The fraction. */
-		RT_GCC_EXTENSION uint64_t u63Fraction:63;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The J bit, aka the integer bit. */
+        RT_GCC_EXTENSION uint64_t   fInteger : 1;
+        /** The fraction. */
+        RT_GCC_EXTENSION uint64_t   u63Fraction : 63;
 # else
-	/** The fraction. */
-		RT_GCC_EXTENSION uint64_t u63Fraction:63;
-	/** The J bit, aka the integer bit. */
-		RT_GCC_EXTENSION uint64_t fInteger:1;
-	/** The exponent (offseted by 16383). */
-		RT_GCC_EXTENSION uint16_t uExponent:15;
-	/** The sign indicator. */
-		RT_GCC_EXTENSION uint16_t fSign:1;
+        /** The fraction. */
+        RT_GCC_EXTENSION uint64_t   u63Fraction : 63;
+        /** The J bit, aka the integer bit. */
+        RT_GCC_EXTENSION uint64_t   fInteger : 1;
+        /** The exponent (offseted by 16383). */
+        RT_GCC_EXTENSION uint16_t   uExponent : 15;
+        /** The sign indicator. */
+        RT_GCC_EXTENSION uint16_t   fSign : 1;
 # endif
-	} sj64;
+    } sj64;
 #endif
 
     /** 64-bit view. */
-	uint64_t au64[1];
+    uint64_t    au64[1];
     /** 32-bit view. */
-	uint32_t au32[2];
+    uint32_t    au32[2];
     /** 16-bit view. */
-	uint16_t au16[5];
+    uint16_t    au16[5];
     /** 8-bit view. */
-	uint8_t au8[10];
+    uint8_t     au8[10];
 } RTFLOAT80U2;
 #pragma pack()
 /** Pointer to a extended precision floating point format union, 2nd
@@ -724,6 +763,7 @@ typedef RTFLOAT80U2 *PRTFLOAT80U2;
 typedef const RTFLOAT80U2 *PCRTFLOAT80U2;
 
 #endif /* uint16_t bitfields doesn't work */
+
 
 /** Generic function type.
  * @see PFNRT
@@ -750,16 +790,18 @@ typedef DECLCALLBACK(void) FNRT(void);
 typedef FNRT *PFNRT;
 
 /** Millisecond interval. */
-typedef uint32_t RTMSINTERVAL;
+typedef uint32_t            RTMSINTERVAL;
 /** Pointer to a millisecond interval. */
-typedef RTMSINTERVAL *PRTMSINTERVAL;
+typedef RTMSINTERVAL       *PRTMSINTERVAL;
 /** Pointer to a const millisecond interval. */
 typedef const RTMSINTERVAL *PCRTMSINTERVAL;
 
 /** Pointer to a time spec structure. */
-typedef struct RTTIMESPEC *PRTTIMESPEC;
+typedef struct RTTIMESPEC  *PRTTIMESPEC;
 /** Pointer to a const time spec structure. */
 typedef const struct RTTIMESPEC *PCRTTIMESPEC;
+
+
 
 /** @defgroup grp_rt_types_both  Common Guest and Host Context Basic Types
  * @{
@@ -767,14 +809,14 @@ typedef const struct RTTIMESPEC *PCRTTIMESPEC;
 
 /** Signed integer which can contain both GC and HC pointers. */
 #if (HC_ARCH_BITS == 32 && GC_ARCH_BITS == 32) || (HC_ARCH_BITS == 16 || GC_ARCH_BITS == 16)
-typedef int32_t RTINTPTR;
+typedef int32_t         RTINTPTR;
 #elif (HC_ARCH_BITS == 64 || GC_ARCH_BITS == 64)
-typedef int64_t RTINTPTR;
+typedef int64_t         RTINTPTR;
 #else
 #  error Unsupported HC_ARCH_BITS and/or GC_ARCH_BITS values.
 #endif
 /** Pointer to signed integer which can contain both GC and HC pointers. */
-typedef RTINTPTR *PRTINTPTR;
+typedef RTINTPTR       *PRTINTPTR;
 /** Pointer const to signed integer which can contain both GC and HC pointers. */
 typedef const RTINTPTR *PCRTINTPTR;
 /** The maximum value the RTINTPTR type can hold. */
@@ -796,14 +838,14 @@ typedef const RTINTPTR *PCRTINTPTR;
 
 /** Unsigned integer which can contain both GC and HC pointers. */
 #if (HC_ARCH_BITS == 32 && GC_ARCH_BITS == 32) || (HC_ARCH_BITS == 16 || GC_ARCH_BITS == 16)
-typedef uint32_t RTUINTPTR;
+typedef uint32_t        RTUINTPTR;
 #elif (HC_ARCH_BITS == 64 || GC_ARCH_BITS == 64)
-typedef uint64_t RTUINTPTR;
+typedef uint64_t        RTUINTPTR;
 #else
 #  error Unsupported HC_ARCH_BITS and/or GC_ARCH_BITS values.
 #endif
 /** Pointer to unsigned integer which can contain both GC and HC pointers. */
-typedef RTUINTPTR *PRTUINTPTR;
+typedef RTUINTPTR      *PRTUINTPTR;
 /** Pointer const to unsigned integer which can contain both GC and HC pointers. */
 typedef const RTUINTPTR *PCRTUINTPTR;
 /** The maximum value the RTUINTPTR type can hold. */
@@ -816,37 +858,37 @@ typedef const RTUINTPTR *PCRTUINTPTR;
 #endif
 
 /** Signed integer. */
-typedef int32_t RTINT;
+typedef int32_t         RTINT;
 /** Pointer to signed integer. */
-typedef RTINT *PRTINT;
+typedef RTINT          *PRTINT;
 /** Pointer to const signed integer. */
-typedef const RTINT *PCRTINT;
+typedef const RTINT    *PCRTINT;
 
 /** Unsigned integer. */
-typedef uint32_t RTUINT;
+typedef uint32_t        RTUINT;
 /** Pointer to unsigned integer. */
-typedef RTUINT *PRTUINT;
+typedef RTUINT         *PRTUINT;
 /** Pointer to const unsigned integer. */
-typedef const RTUINT *PCRTUINT;
+typedef const RTUINT   *PCRTUINT;
 
 /** A file offset / size (off_t). */
-typedef int64_t RTFOFF;
+typedef int64_t         RTFOFF;
 /** Pointer to a file offset / size. */
-typedef RTFOFF *PRTFOFF;
+typedef RTFOFF         *PRTFOFF;
 /** The max value for RTFOFF. */
 #define RTFOFF_MAX      INT64_MAX
 /** The min value for RTFOFF. */
 #define RTFOFF_MIN      INT64_MIN
 
 /** File mode (see iprt/fs.h). */
-typedef uint32_t RTFMODE;
+typedef uint32_t        RTFMODE;
 /** Pointer to file mode. */
-typedef RTFMODE *PRTFMODE;
+typedef RTFMODE        *PRTFMODE;
 
 /** Device unix number. */
-typedef uint32_t RTDEV;
+typedef uint32_t        RTDEV;
 /** Pointer to a device unix number. */
-typedef RTDEV *PRTDEV;
+typedef RTDEV          *PRTDEV;
 
 /** @name RTDEV Macros
  * @{  */
@@ -872,47 +914,48 @@ typedef RTDEV *PRTDEV;
 /** @}  */
 
 /** i-node number. */
-typedef uint64_t RTINODE;
+typedef uint64_t        RTINODE;
 /** Pointer to a i-node number. */
-typedef RTINODE *PRTINODE;
+typedef RTINODE        *PRTINODE;
 
 /** User id. */
-typedef uint32_t RTUID;
+typedef uint32_t        RTUID;
 /** Pointer to a user id. */
-typedef RTUID *PRTUID;
+typedef RTUID          *PRTUID;
 /** NIL user id.
  * @todo check this for portability! */
 #define NIL_RTUID       (~(RTUID)0)
 
 /** Group id. */
-typedef uint32_t RTGID;
+typedef uint32_t        RTGID;
 /** Pointer to a group id. */
-typedef RTGID *PRTGID;
+typedef RTGID          *PRTGID;
 /** NIL group id.
  * @todo check this for portability! */
 #define NIL_RTGID       (~(RTGID)0)
 
 /** I/O Port. */
-typedef uint16_t RTIOPORT;
+typedef uint16_t        RTIOPORT;
 /** Pointer to I/O Port. */
-typedef RTIOPORT *PRTIOPORT;
+typedef RTIOPORT       *PRTIOPORT;
 /** Pointer to const I/O Port. */
 typedef const RTIOPORT *PCRTIOPORT;
 
 /** Selector. */
-typedef uint16_t RTSEL;
+typedef uint16_t        RTSEL;
 /** Pointer to selector. */
-typedef RTSEL *PRTSEL;
+typedef RTSEL          *PRTSEL;
 /** Pointer to const selector. */
-typedef const RTSEL *PCRTSEL;
+typedef const RTSEL    *PCRTSEL;
 /** Max selector value. */
 #define RTSEL_MAX       UINT16_MAX
 
 /** Far 16-bit pointer. */
 #pragma pack(1)
-typedef struct RTFAR16 {
-	uint16_t off;
-	RTSEL sel;
+typedef struct RTFAR16
+{
+    uint16_t        off;
+    RTSEL           sel;
 } RTFAR16;
 #pragma pack()
 /** Pointer to Far 16-bit pointer. */
@@ -922,9 +965,10 @@ typedef const RTFAR16 *PCRTFAR16;
 
 /** Far 32-bit pointer. */
 #pragma pack(1)
-typedef struct RTFAR32 {
-	uint32_t off;
-	RTSEL sel;
+typedef struct RTFAR32
+{
+    uint32_t        off;
+    RTSEL           sel;
 } RTFAR32;
 #pragma pack()
 /** Pointer to Far 32-bit pointer. */
@@ -934,9 +978,10 @@ typedef const RTFAR32 *PCRTFAR32;
 
 /** Far 64-bit pointer. */
 #pragma pack(1)
-typedef struct RTFAR64 {
-	uint64_t off;
-	RTSEL sel;
+typedef struct RTFAR64
+{
+    uint64_t        off;
+    RTSEL           sel;
 } RTFAR64;
 #pragma pack()
 /** Pointer to Far 64-bit pointer. */
@@ -946,44 +991,46 @@ typedef const RTFAR64 *PCRTFAR64;
 
 /** @} */
 
+
 /** @defgroup grp_rt_types_hc  Host Context Basic Types
  * @{
  */
 
 /** HC Natural signed integer.
  * @deprecated silly type. */
-typedef int32_t RTHCINT;
+typedef int32_t             RTHCINT;
 /** Pointer to HC Natural signed integer.
  * @deprecated silly type. */
-typedef RTHCINT *PRTHCINT;
+typedef RTHCINT            *PRTHCINT;
 /** Pointer to const HC Natural signed integer.
  * @deprecated silly type. */
-typedef const RTHCINT *PCRTHCINT;
+typedef const RTHCINT      *PCRTHCINT;
 
 /** HC Natural unsigned integer.
  * @deprecated silly type. */
-typedef uint32_t RTHCUINT;
+typedef uint32_t            RTHCUINT;
 /** Pointer to HC Natural unsigned integer.
  * @deprecated silly type. */
-typedef RTHCUINT *PRTHCUINT;
+typedef RTHCUINT           *PRTHCUINT;
 /** Pointer to const HC Natural unsigned integer.
  * @deprecated silly type. */
-typedef const RTHCUINT *PCRTHCUINT;
+typedef const RTHCUINT     *PCRTHCUINT;
+
 
 /** Signed integer which can contain a HC pointer. */
 #if HC_ARCH_BITS == 32
-typedef int32_t RTHCINTPTR;
+typedef int32_t             RTHCINTPTR;
 #elif HC_ARCH_BITS == 64
-typedef int64_t RTHCINTPTR;
+typedef int64_t             RTHCINTPTR;
 #elif HC_ARCH_BITS == 16
-typedef int16_t RTHCINTPTR;
+typedef int16_t             RTHCINTPTR;
 #else
 # error Unsupported HC_ARCH_BITS value.
 #endif
 /** Pointer to signed integer which can contain a HC pointer. */
-typedef RTHCINTPTR *PRTHCINTPTR;
+typedef RTHCINTPTR         *PRTHCINTPTR;
 /** Pointer to const signed integer which can contain a HC pointer. */
-typedef const RTHCINTPTR *PCRTHCINTPTR;
+typedef const RTHCINTPTR   *PCRTHCINTPTR;
 /** Max RTHCINTPTR value. */
 #if HC_ARCH_BITS == 32
 # define RTHCINTPTR_MAX     INT32_MAX
@@ -1003,18 +1050,18 @@ typedef const RTHCINTPTR *PCRTHCINTPTR;
 
 /** Signed integer which can contain a HC ring-3 pointer. */
 #if R3_ARCH_BITS == 32
-typedef int32_t RTR3INTPTR;
+typedef int32_t             RTR3INTPTR;
 #elif R3_ARCH_BITS == 64
-typedef int64_t RTR3INTPTR;
+typedef int64_t             RTR3INTPTR;
 #elif R3_ARCH_BITS == 16
-typedef int16_t RTR3INTPTR;
+typedef int16_t             RTR3INTPTR;
 #else
 #  error Unsupported R3_ARCH_BITS value.
 #endif
 /** Pointer to signed integer which can contain a HC ring-3 pointer. */
-typedef RTR3INTPTR *PRTR3INTPTR;
+typedef RTR3INTPTR         *PRTR3INTPTR;
 /** Pointer to const signed integer which can contain a HC ring-3 pointer. */
-typedef const RTR3INTPTR *PCRTR3INTPTR;
+typedef const RTR3INTPTR   *PCRTR3INTPTR;
 /** Max RTR3INTPTR value. */
 #if R3_ARCH_BITS == 32
 # define RTR3INTPTR_MAX     INT32_MAX
@@ -1034,18 +1081,18 @@ typedef const RTR3INTPTR *PCRTR3INTPTR;
 
 /** Signed integer which can contain a HC ring-0 pointer. */
 #if R0_ARCH_BITS == 32
-typedef int32_t RTR0INTPTR;
+typedef int32_t             RTR0INTPTR;
 #elif R0_ARCH_BITS == 64
-typedef int64_t RTR0INTPTR;
+typedef int64_t             RTR0INTPTR;
 #elif R0_ARCH_BITS == 16
-typedef int16_t RTR0INTPTR;
+typedef int16_t             RTR0INTPTR;
 #else
 # error Unsupported R0_ARCH_BITS value.
 #endif
 /** Pointer to signed integer which can contain a HC ring-0 pointer. */
-typedef RTR0INTPTR *PRTR0INTPTR;
+typedef RTR0INTPTR         *PRTR0INTPTR;
 /** Pointer to const signed integer which can contain a HC ring-0 pointer. */
-typedef const RTR0INTPTR *PCRTR0INTPTR;
+typedef const RTR0INTPTR   *PCRTR0INTPTR;
 /** Max RTR0INTPTR value. */
 #if R0_ARCH_BITS == 32
 # define RTR0INTPTR_MAX     INT32_MAX
@@ -1063,20 +1110,21 @@ typedef const RTR0INTPTR *PCRTR0INTPTR;
 # define RTR0INTPTR_MIN     INT16_MIN
 #endif
 
+
 /** Unsigned integer which can contain a HC pointer. */
 #if HC_ARCH_BITS == 32
-typedef uint32_t RTHCUINTPTR;
+typedef uint32_t            RTHCUINTPTR;
 #elif HC_ARCH_BITS == 64
-typedef uint64_t RTHCUINTPTR;
+typedef uint64_t            RTHCUINTPTR;
 #elif HC_ARCH_BITS == 16
-typedef uint16_t RTHCUINTPTR;
+typedef uint16_t            RTHCUINTPTR;
 #else
 # error Unsupported HC_ARCH_BITS value.
 #endif
 /** Pointer to unsigned integer which can contain a HC pointer. */
-typedef RTHCUINTPTR *PRTHCUINTPTR;
+typedef RTHCUINTPTR        *PRTHCUINTPTR;
 /** Pointer to unsigned integer which can contain a HC pointer. */
-typedef const RTHCUINTPTR *PCRTHCUINTPTR;
+typedef const RTHCUINTPTR  *PCRTHCUINTPTR;
 /** Max RTHCUINTTPR value. */
 #if HC_ARCH_BITS == 32
 # define RTHCUINTPTR_MAX    UINT32_MAX
@@ -1088,18 +1136,18 @@ typedef const RTHCUINTPTR *PCRTHCUINTPTR;
 
 /** Unsigned integer which can contain a HC ring-3 pointer. */
 #if R3_ARCH_BITS == 32
-typedef uint32_t RTR3UINTPTR;
+typedef uint32_t            RTR3UINTPTR;
 #elif R3_ARCH_BITS == 64
-typedef uint64_t RTR3UINTPTR;
+typedef uint64_t            RTR3UINTPTR;
 #elif R3_ARCH_BITS == 16
-typedef uint16_t RTR3UINTPTR;
+typedef uint16_t            RTR3UINTPTR;
 #else
 # error Unsupported R3_ARCH_BITS value.
 #endif
 /** Pointer to unsigned integer which can contain a HC ring-3 pointer. */
-typedef RTR3UINTPTR *PRTR3UINTPTR;
+typedef RTR3UINTPTR        *PRTR3UINTPTR;
 /** Pointer to unsigned integer which can contain a HC ring-3 pointer. */
-typedef const RTR3UINTPTR *PCRTR3UINTPTR;
+typedef const RTR3UINTPTR  *PCRTR3UINTPTR;
 /** Max RTHCUINTTPR value. */
 #if R3_ARCH_BITS == 32
 # define RTR3UINTPTR_MAX    UINT32_MAX
@@ -1111,18 +1159,18 @@ typedef const RTR3UINTPTR *PCRTR3UINTPTR;
 
 /** Unsigned integer which can contain a HC ring-0 pointer. */
 #if R0_ARCH_BITS == 32
-typedef uint32_t RTR0UINTPTR;
+typedef uint32_t            RTR0UINTPTR;
 #elif R0_ARCH_BITS == 64
-typedef uint64_t RTR0UINTPTR;
+typedef uint64_t            RTR0UINTPTR;
 #elif R0_ARCH_BITS == 16
-typedef uint16_t RTR0UINTPTR;
+typedef uint16_t            RTR0UINTPTR;
 #else
 # error Unsupported R0_ARCH_BITS value.
 #endif
 /** Pointer to unsigned integer which can contain a HC ring-0 pointer. */
-typedef RTR0UINTPTR *PRTR0UINTPTR;
+typedef RTR0UINTPTR        *PRTR0UINTPTR;
 /** Pointer to unsigned integer which can contain a HC ring-0 pointer. */
-typedef const RTR0UINTPTR *PCRTR0UINTPTR;
+typedef const RTR0UINTPTR  *PCRTR0UINTPTR;
 /** Max RTR0UINTTPR value. */
 #if R0_ARCH_BITS == 32
 # define RTR0UINTPTR_MAX    UINT32_MAX
@@ -1132,12 +1180,13 @@ typedef const RTR0UINTPTR *PCRTR0UINTPTR;
 # define RTR0UINTPTR_MAX    UINT16_MAX
 #endif
 
+
 /** Host Physical Memory Address. */
-typedef uint64_t RTHCPHYS;
+typedef uint64_t            RTHCPHYS;
 /** Pointer to Host Physical Memory Address. */
-typedef RTHCPHYS *PRTHCPHYS;
+typedef RTHCPHYS           *PRTHCPHYS;
 /** Pointer to const Host Physical Memory Address. */
-typedef const RTHCPHYS *PCRTHCPHYS;
+typedef const RTHCPHYS     *PCRTHCPHYS;
 /** @def NIL_RTHCPHYS
  * NIL HC Physical Address.
  * NIL_RTHCPHYS is used to signal an invalid physical address, similar
@@ -1147,16 +1196,17 @@ typedef const RTHCPHYS *PCRTHCPHYS;
 /** Max RTHCPHYS value. */
 #define RTHCPHYS_MAX        UINT64_MAX
 
+
 /** HC pointer. */
 #ifndef IN_RC
-typedef void *RTHCPTR;
+typedef void *              RTHCPTR;
 #else
-typedef RTHCUINTPTR RTHCPTR;
+typedef RTHCUINTPTR         RTHCPTR;
 #endif
 /** Pointer to HC pointer. */
-typedef RTHCPTR *PRTHCPTR;
+typedef RTHCPTR            *PRTHCPTR;
 /** Pointer to const HC pointer. */
-typedef const RTHCPTR *PCRTHCPTR;
+typedef const RTHCPTR      *PCRTHCPTR;
 /** @def NIL_RTHCPTR
  * NIL HC pointer.
  */
@@ -1164,16 +1214,17 @@ typedef const RTHCPTR *PCRTHCPTR;
 /** Max RTHCPTR value. */
 #define RTHCPTR_MAX         ((RTHCPTR)RTHCUINTPTR_MAX)
 
+
 /** HC ring-3 pointer. */
 #ifdef IN_RING3
-typedef void *RTR3PTR;
+typedef void *              RTR3PTR;
 #else
-typedef RTR3UINTPTR RTR3PTR;
+typedef RTR3UINTPTR         RTR3PTR;
 #endif
 /** Pointer to HC ring-3 pointer. */
-typedef RTR3PTR *PRTR3PTR;
+typedef RTR3PTR            *PRTR3PTR;
 /** Pointer to const HC ring-3 pointer. */
-typedef const RTR3PTR *PCRTR3PTR;
+typedef const RTR3PTR      *PCRTR3PTR;
 /** @def NIL_RTR3PTR
  * NIL HC ring-3 pointer.
  */
@@ -1187,14 +1238,14 @@ typedef const RTR3PTR *PCRTR3PTR;
 
 /** HC ring-0 pointer. */
 #ifdef  IN_RING0
-typedef void *RTR0PTR;
+typedef void *              RTR0PTR;
 #else
-typedef RTR0UINTPTR RTR0PTR;
+typedef RTR0UINTPTR         RTR0PTR;
 #endif
 /** Pointer to HC ring-0 pointer. */
-typedef RTR0PTR *PRTR0PTR;
+typedef RTR0PTR            *PRTR0PTR;
 /** Pointer to const HC ring-0 pointer. */
-typedef const RTR0PTR *PCRTR0PTR;
+typedef const RTR0PTR      *PCRTR0PTR;
 /** @def NIL_RTR0PTR
  * NIL HC ring-0 pointer.
  */
@@ -1206,52 +1257,54 @@ typedef const RTR0PTR *PCRTR0PTR;
 /** Max RTR3PTR value. */
 #define RTR0PTR_MAX         ((RTR0PTR)RTR0UINTPTR_MAX)
 
+
 /** Unsigned integer register in the host context. */
 #if HC_ARCH_BITS == 32
-typedef uint32_t RTHCUINTREG;
+typedef uint32_t            RTHCUINTREG;
 #elif HC_ARCH_BITS == 64
-typedef uint64_t RTHCUINTREG;
+typedef uint64_t            RTHCUINTREG;
 #elif HC_ARCH_BITS == 16
-typedef uint16_t RTHCUINTREG;
+typedef uint16_t            RTHCUINTREG;
 #else
 # error "Unsupported HC_ARCH_BITS!"
 #endif
 /** Pointer to an unsigned integer register in the host context. */
-typedef RTHCUINTREG *PRTHCUINTREG;
+typedef RTHCUINTREG        *PRTHCUINTREG;
 /** Pointer to a const unsigned integer register in the host context. */
-typedef const RTHCUINTREG *PCRTHCUINTREG;
+typedef const RTHCUINTREG  *PCRTHCUINTREG;
 
 /** Unsigned integer register in the host ring-3 context. */
 #if R3_ARCH_BITS == 32
-typedef uint32_t RTR3UINTREG;
+typedef uint32_t            RTR3UINTREG;
 #elif R3_ARCH_BITS == 64
-typedef uint64_t RTR3UINTREG;
+typedef uint64_t            RTR3UINTREG;
 #elif R3_ARCH_BITS == 16
-typedef uint16_t RTR3UINTREG;
+typedef uint16_t            RTR3UINTREG;
 #else
 # error "Unsupported R3_ARCH_BITS!"
 #endif
 /** Pointer to an unsigned integer register in the host ring-3 context. */
-typedef RTR3UINTREG *PRTR3UINTREG;
+typedef RTR3UINTREG        *PRTR3UINTREG;
 /** Pointer to a const unsigned integer register in the host ring-3 context. */
-typedef const RTR3UINTREG *PCRTR3UINTREG;
+typedef const RTR3UINTREG  *PCRTR3UINTREG;
 
 /** Unsigned integer register in the host ring-3 context. */
 #if R0_ARCH_BITS == 32
-typedef uint32_t RTR0UINTREG;
+typedef uint32_t            RTR0UINTREG;
 #elif R0_ARCH_BITS == 64
-typedef uint64_t RTR0UINTREG;
+typedef uint64_t            RTR0UINTREG;
 #elif R0_ARCH_BITS == 16
-typedef uint16_t RTR0UINTREG;
+typedef uint16_t            RTR0UINTREG;
 #else
 # error "Unsupported R3_ARCH_BITS!"
 #endif
 /** Pointer to an unsigned integer register in the host ring-3 context. */
-typedef RTR0UINTREG *PRTR0UINTREG;
+typedef RTR0UINTREG        *PRTR0UINTREG;
 /** Pointer to a const unsigned integer register in the host ring-3 context. */
-typedef const RTR0UINTREG *PCRTR0UINTREG;
+typedef const RTR0UINTREG  *PCRTR0UINTREG;
 
 /** @} */
+
 
 /** @defgroup grp_rt_types_gc  Guest Context Basic Types
  * @{
@@ -1260,75 +1313,75 @@ typedef const RTR0UINTREG *PCRTR0UINTREG;
 /** Natural signed integer in the GC.
  * @deprecated silly type. */
 #if GC_ARCH_BITS == 32
-typedef int32_t RTGCINT;
+typedef int32_t         RTGCINT;
 #elif GC_ARCH_BITS == 64 /** @todo this isn't right, natural int is 32-bit, see RTHCINT. */
-typedef int64_t RTGCINT;
+typedef int64_t         RTGCINT;
 #endif
 /** Pointer to natural signed integer in GC.
  * @deprecated silly type. */
-typedef RTGCINT *PRTGCINT;
+typedef RTGCINT        *PRTGCINT;
 /** Pointer to const natural signed integer in GC.
  * @deprecated silly type. */
-typedef const RTGCINT *PCRTGCINT;
+typedef const RTGCINT  *PCRTGCINT;
 
 /** Natural unsigned integer in the GC.
  * @deprecated silly type. */
 #if GC_ARCH_BITS == 32
-typedef uint32_t RTGCUINT;
+typedef uint32_t        RTGCUINT;
 #elif GC_ARCH_BITS == 64 /** @todo this isn't right, natural int is 32-bit, see RTHCUINT. */
-typedef uint64_t RTGCUINT;
+typedef uint64_t        RTGCUINT;
 #endif
 /** Pointer to natural unsigned integer in GC.
  * @deprecated silly type. */
-typedef RTGCUINT *PRTGCUINT;
+typedef RTGCUINT       *PRTGCUINT;
 /** Pointer to const natural unsigned integer in GC.
  * @deprecated silly type. */
 typedef const RTGCUINT *PCRTGCUINT;
 
 /** Signed integer which can contain a GC pointer. */
 #if GC_ARCH_BITS == 32
-typedef int32_t RTGCINTPTR;
+typedef int32_t         RTGCINTPTR;
 #elif GC_ARCH_BITS == 64
-typedef int64_t RTGCINTPTR;
+typedef int64_t         RTGCINTPTR;
 #endif
 /** Pointer to signed integer which can contain a GC pointer. */
-typedef RTGCINTPTR *PRTGCINTPTR;
+typedef RTGCINTPTR     *PRTGCINTPTR;
 /** Pointer to const signed integer which can contain a GC pointer. */
 typedef const RTGCINTPTR *PCRTGCINTPTR;
 
 /** Unsigned integer which can contain a GC pointer. */
 #if GC_ARCH_BITS == 32
-typedef uint32_t RTGCUINTPTR;
+typedef uint32_t        RTGCUINTPTR;
 #elif GC_ARCH_BITS == 64
-typedef uint64_t RTGCUINTPTR;
+typedef uint64_t        RTGCUINTPTR;
 #else
 #  error Unsupported GC_ARCH_BITS value.
 #endif
 /** Pointer to unsigned integer which can contain a GC pointer. */
-typedef RTGCUINTPTR *PRTGCUINTPTR;
+typedef RTGCUINTPTR     *PRTGCUINTPTR;
 /** Pointer to unsigned integer which can contain a GC pointer. */
 typedef const RTGCUINTPTR *PCRTGCUINTPTR;
 
 /** Unsigned integer which can contain a 32 bits GC pointer. */
-typedef uint32_t RTGCUINTPTR32;
+typedef uint32_t        RTGCUINTPTR32;
 /** Pointer to unsigned integer which can contain a 32 bits GC pointer. */
-typedef RTGCUINTPTR32 *PRTGCUINTPTR32;
+typedef RTGCUINTPTR32   *PRTGCUINTPTR32;
 /** Pointer to unsigned integer which can contain a 32 bits GC pointer. */
 typedef const RTGCUINTPTR32 *PCRTGCUINTPTR32;
 
 /** Unsigned integer which can contain a 64 bits GC pointer. */
-typedef uint64_t RTGCUINTPTR64;
+typedef uint64_t        RTGCUINTPTR64;
 /** Pointer to unsigned integer which can contain a 32 bits GC pointer. */
-typedef RTGCUINTPTR64 *PRTGCUINTPTR64;
+typedef RTGCUINTPTR64   *PRTGCUINTPTR64;
 /** Pointer to unsigned integer which can contain a 32 bits GC pointer. */
 typedef const RTGCUINTPTR64 *PCRTGCUINTPTR64;
 
 /** Guest Physical Memory Address.*/
-typedef uint64_t RTGCPHYS;
+typedef uint64_t            RTGCPHYS;
 /** Pointer to Guest Physical Memory Address. */
-typedef RTGCPHYS *PRTGCPHYS;
+typedef RTGCPHYS           *PRTGCPHYS;
 /** Pointer to const Guest Physical Memory Address. */
-typedef const RTGCPHYS *PCRTGCPHYS;
+typedef const RTGCPHYS     *PCRTGCPHYS;
 /** @def NIL_RTGCPHYS
  * NIL GC Physical Address.
  * NIL_RTGCPHYS is used to signal an invalid physical address, similar
@@ -1339,12 +1392,13 @@ typedef const RTGCPHYS *PCRTGCPHYS;
 /** Max guest physical memory address value. */
 #define RTGCPHYS_MAX        UINT64_MAX
 
+
 /** Guest Physical Memory Address; limited to 32 bits.*/
-typedef uint32_t RTGCPHYS32;
+typedef uint32_t            RTGCPHYS32;
 /** Pointer to Guest Physical Memory Address. */
-typedef RTGCPHYS32 *PRTGCPHYS32;
+typedef RTGCPHYS32         *PRTGCPHYS32;
 /** Pointer to const Guest Physical Memory Address. */
-typedef const RTGCPHYS32 *PCRTGCPHYS32;
+typedef const RTGCPHYS32    *PCRTGCPHYS32;
 /** @def NIL_RTGCPHYS32
  * NIL GC Physical Address.
  * NIL_RTGCPHYS32 is used to signal an invalid physical address, similar
@@ -1353,10 +1407,11 @@ typedef const RTGCPHYS32 *PCRTGCPHYS32;
  */
 #define NIL_RTGCPHYS32     (~(RTGCPHYS32)0)
 
+
 /** Guest Physical Memory Address; limited to 64 bits.*/
-typedef uint64_t RTGCPHYS64;
+typedef uint64_t        RTGCPHYS64;
 /** Pointer to Guest Physical Memory Address. */
-typedef RTGCPHYS64 *PRTGCPHYS64;
+typedef RTGCPHYS64     *PRTGCPHYS64;
 /** Pointer to const Guest Physical Memory Address. */
 typedef const RTGCPHYS64 *PCRTGCPHYS64;
 /** @def NIL_RTGCPHYS64
@@ -1371,9 +1426,9 @@ typedef const RTGCPHYS64 *PCRTGCPHYS64;
  * Keep in mind that this type is an unsigned integer in
  * HC and void pointer in GC.
  */
-typedef RTGCUINTPTR32 RTGCPTR32;
+typedef RTGCUINTPTR32   RTGCPTR32;
 /** Pointer to a guest context pointer. */
-typedef RTGCPTR32 *PRTGCPTR32;
+typedef RTGCPTR32      *PRTGCPTR32;
 /** Pointer to a const guest context pointer. */
 typedef const RTGCPTR32 *PCRTGCPTR32;
 /** @def NIL_RTGCPTR32
@@ -1383,9 +1438,9 @@ typedef const RTGCPTR32 *PCRTGCPTR32;
 
 /** Guest context pointer, 64 bits.
  */
-typedef RTGCUINTPTR64 RTGCPTR64;
+typedef RTGCUINTPTR64   RTGCPTR64;
 /** Pointer to a guest context pointer. */
-typedef RTGCPTR64 *PRTGCPTR64;
+typedef RTGCPTR64      *PRTGCPTR64;
 /** Pointer to a const guest context pointer. */
 typedef const RTGCPTR64 *PCRTGCPTR64;
 /** @def NIL_RTGCPTR64
@@ -1398,11 +1453,11 @@ typedef const RTGCPTR64 *PCRTGCPTR64;
  * HC and void pointer in GC.
  */
 #if GC_ARCH_BITS == 64
-typedef RTGCPTR64 RTGCPTR;
+typedef RTGCPTR64       RTGCPTR;
 /** Pointer to a guest context pointer. */
-typedef PRTGCPTR64 PRTGCPTR;
+typedef PRTGCPTR64      PRTGCPTR;
 /** Pointer to a const guest context pointer. */
-typedef PCRTGCPTR64 PCRTGCPTR;
+typedef PCRTGCPTR64     PCRTGCPTR;
 /** @def NIL_RTGCPTR
  * NIL GC pointer.
  */
@@ -1410,11 +1465,11 @@ typedef PCRTGCPTR64 PCRTGCPTR;
 /** Max RTGCPTR value. */
 # define RTGCPTR_MAX    UINT64_MAX
 #elif GC_ARCH_BITS == 32
-typedef RTGCPTR32 RTGCPTR;
+typedef RTGCPTR32       RTGCPTR;
 /** Pointer to a guest context pointer. */
-typedef PRTGCPTR32 PRTGCPTR;
+typedef PRTGCPTR32      PRTGCPTR;
 /** Pointer to a const guest context pointer. */
-typedef PCRTGCPTR32 PCRTGCPTR;
+typedef PCRTGCPTR32     PCRTGCPTR;
 /** @def NIL_RTGCPTR
  * NIL GC pointer.
  */
@@ -1426,29 +1481,29 @@ typedef PCRTGCPTR32 PCRTGCPTR;
 #endif
 
 /** Unsigned integer register in the guest context. */
-typedef uint32_t RTGCUINTREG32;
+typedef uint32_t              RTGCUINTREG32;
 /** Pointer to an unsigned integer register in the guest context. */
-typedef RTGCUINTREG32 *PRTGCUINTREG32;
+typedef RTGCUINTREG32        *PRTGCUINTREG32;
 /** Pointer to a const unsigned integer register in the guest context. */
-typedef const RTGCUINTREG32 *PCRTGCUINTREG32;
+typedef const RTGCUINTREG32  *PCRTGCUINTREG32;
 
-typedef uint64_t RTGCUINTREG64;
+typedef uint64_t              RTGCUINTREG64;
 /** Pointer to an unsigned integer register in the guest context. */
-typedef RTGCUINTREG64 *PRTGCUINTREG64;
+typedef RTGCUINTREG64        *PRTGCUINTREG64;
 /** Pointer to a const unsigned integer register in the guest context. */
-typedef const RTGCUINTREG64 *PCRTGCUINTREG64;
+typedef const RTGCUINTREG64  *PCRTGCUINTREG64;
 
 #if GC_ARCH_BITS == 64
-typedef RTGCUINTREG64 RTGCUINTREG;
+typedef RTGCUINTREG64           RTGCUINTREG;
 #elif GC_ARCH_BITS == 32
-typedef RTGCUINTREG32 RTGCUINTREG;
+typedef RTGCUINTREG32           RTGCUINTREG;
 #else
 # error "Unsupported GC_ARCH_BITS!"
 #endif
 /** Pointer to an unsigned integer register in the guest context. */
-typedef RTGCUINTREG *PRTGCUINTREG;
+typedef RTGCUINTREG            *PRTGCUINTREG;
 /** Pointer to a const unsigned integer register in the guest context. */
-typedef const RTGCUINTREG *PCRTGCUINTREG;
+typedef const RTGCUINTREG      *PCRTGCUINTREG;
 
 /** @} */
 
@@ -1461,14 +1516,14 @@ typedef const RTGCUINTREG *PCRTGCUINTREG;
  * HC and void pointer in RC.
  */
 #ifdef IN_RC
-typedef void *RTRCPTR;
+typedef void *          RTRCPTR;
 #else
-typedef uint32_t RTRCPTR;
+typedef uint32_t        RTRCPTR;
 #endif
 /** Pointer to a raw mode context pointer. */
-typedef RTRCPTR *PRTRCPTR;
+typedef RTRCPTR        *PRTRCPTR;
 /** Pointer to a const raw mode context pointer. */
-typedef const RTRCPTR *PCRTRCPTR;
+typedef const RTRCPTR  *PCRTRCPTR;
 /** @def NIL_RTGCPTR
  * NIL RC pointer.
  */
@@ -1483,14 +1538,14 @@ typedef const RTRCPTR *PCRTRCPTR;
 #define RTRCPTR_MAX    ((RTRCPTR)UINT32_MAX)
 
 /** Raw mode context pointer, unsigned integer variant. */
-typedef int32_t RTRCINTPTR;
+typedef int32_t         RTRCINTPTR;
 /** @def RTRCUINTPTR_MAX
  * The maximum value a RTRCUINPTR can have.
  */
 #define RTRCUINTPTR_MAX ((RTRCUINTPTR)UINT32_MAX)
 
 /** Raw mode context pointer, signed integer variant. */
-typedef uint32_t RTRCUINTPTR;
+typedef uint32_t        RTRCUINTPTR;
 /** @def RTRCINTPTR_MIN
  * The minimum value a RTRCINPTR can have.
  */
@@ -1501,6 +1556,7 @@ typedef uint32_t RTRCUINTPTR;
 #define RTRCINTPTR_MAX ((RTRCINTPTR)INT32_MAX)
 
 /** @} */
+
 
 /** @defgroup grp_rt_types_cc  Current Context Basic Types
  * @{
@@ -1513,7 +1569,7 @@ typedef RTGCPHYS RTCCPHYS;
 typedef RTHCPHYS RTCCPHYS;
 #endif
 /** Pointer to Current Context Physical Memory Address. */
-typedef RTCCPHYS *PRTCCPHYS;
+typedef RTCCPHYS       *PRTCCPHYS;
 /** Pointer to const Current Context Physical Memory Address. */
 typedef const RTCCPHYS *PCRTCCPHYS;
 /** @def NIL_RTCCPHYS
@@ -1529,56 +1585,56 @@ typedef const RTCCPHYS *PCRTCCPHYS;
 
 /** Unsigned integer register in the current context. */
 #if ARCH_BITS == 32
-typedef uint32_t RTCCUINTREG;
+typedef uint32_t                RTCCUINTREG;
 #elif ARCH_BITS == 64
-typedef uint64_t RTCCUINTREG;
+typedef uint64_t                RTCCUINTREG;
 #elif ARCH_BITS == 16
-typedef uint16_t RTCCUINTREG;
+typedef uint16_t                RTCCUINTREG;
 #else
 # error "Unsupported ARCH_BITS!"
 #endif
 /** Pointer to an unsigned integer register in the current context. */
-typedef RTCCUINTREG *PRTCCUINTREG;
+typedef RTCCUINTREG            *PRTCCUINTREG;
 /** Pointer to a const unsigned integer register in the current context. */
-typedef RTCCUINTREG const *PCRTCCUINTREG;
+typedef RTCCUINTREG const      *PCRTCCUINTREG;
 
 /** Signed integer register in the current context. */
 #if ARCH_BITS == 32
-typedef int32_t RTCCINTREG;
+typedef int32_t                 RTCCINTREG;
 #elif ARCH_BITS == 64
-typedef int64_t RTCCINTREG;
+typedef int64_t                 RTCCINTREG;
 #elif ARCH_BITS == 16
-typedef int16_t RTCCINTREG;
+typedef int16_t                 RTCCINTREG;
 #endif
 /** Pointer to a signed integer register in the current context. */
-typedef RTCCINTREG *PRTCCINTREG;
+typedef RTCCINTREG             *PRTCCINTREG;
 /** Pointer to a const signed integer register in the current context. */
-typedef RTCCINTREG const *PCRTCCINTREG;
+typedef RTCCINTREG const       *PCRTCCINTREG;
 
 /** Unsigned integer register in the current context.
  * @remarks This is for dealing with EAX in 16-bit mode. */
 #if ARCH_BITS == 16 && defined(RT_ARCH_X86)
-typedef uint32_t RTCCUINTXREG;
+typedef uint32_t                RTCCUINTXREG;
 #else
-typedef RTCCUINTREG RTCCUINTXREG;
+typedef RTCCUINTREG             RTCCUINTXREG;
 #endif
 /** Pointer to an unsigned integer register in the current context. */
-typedef RTCCUINTREG *PRTCCUINTXREG;
+typedef RTCCUINTREG            *PRTCCUINTXREG;
 /** Pointer to a const unsigned integer register in the current context. */
-typedef RTCCUINTREG const *PCRTCCUINTXREG;
+typedef RTCCUINTREG const      *PCRTCCUINTXREG;
 
 /** Signed integer extended register in the current context.
  * @remarks This is for dealing with EAX in 16-bit mode. */
 #if ARCH_BITS == 16 && defined(RT_ARCH_X86)
-typedef int32_t RTCCINTXREG;
+typedef int32_t                 RTCCINTXREG;
 #else
-typedef RTCCINTREG RTCCINTXREG;
+typedef RTCCINTREG              RTCCINTXREG;
 #endif
 /** Pointer to a signed integer extended register in the current context. */
-typedef RTCCINTXREG *PRTCCINTXREG;
+typedef RTCCINTXREG            *PRTCCINTXREG;
 /** Pointer to a const signed integer extended register in the current
  * context. */
-typedef RTCCINTXREG const *PCRTCCINTXREG;
+typedef RTCCINTXREG const      *PCRTCCINTXREG;
 
 /** @def RTCCUINTREG_C
  * Defines a constant of RTCCUINTREG type.
@@ -1674,150 +1730,154 @@ typedef RTCCINTXREG const *PCRTCCINTXREG;
 #endif
 /** @} */
 
+
+
 /** Pointer to a big integer number. */
-typedef struct RTBIGNUM *PRTBIGNUM;
+typedef struct RTBIGNUM                            *PRTBIGNUM;
 /** Pointer to a const big integer number. */
-typedef struct RTBIGNUM const *PCRTBIGNUM;
+typedef struct RTBIGNUM const                      *PCRTBIGNUM;
+
 
 /** Pointer to a critical section. */
-typedef struct RTCRITSECT *PRTCRITSECT;
+typedef struct RTCRITSECT                          *PRTCRITSECT;
 /** Pointer to a const critical section. */
-typedef const struct RTCRITSECT *PCRTCRITSECT;
+typedef const struct RTCRITSECT                    *PCRTCRITSECT;
 
 /** Pointer to a read/write critical section. */
-typedef struct RTCRITSECTRW *PRTCRITSECTRW;
+typedef struct RTCRITSECTRW                        *PRTCRITSECTRW;
 /** Pointer to a const read/write critical section. */
-typedef const struct RTCRITSECTRW *PCRTCRITSECTRW;
+typedef const struct RTCRITSECTRW                  *PCRTCRITSECTRW;
+
 
 /** Condition variable handle. */
-typedef R3PTRTYPE(struct RTCONDVARINTERNAL *) RTCONDVAR;
+typedef R3PTRTYPE(struct RTCONDVARINTERNAL *)       RTCONDVAR;
 /** Pointer to a condition variable handle. */
-typedef RTCONDVAR *PRTCONDVAR;
+typedef RTCONDVAR                                  *PRTCONDVAR;
 /** Nil condition variable handle. */
 #define NIL_RTCONDVAR                               0
 
 /** Cryptographic (certificate) store handle. */
-typedef R3R0PTRTYPE(struct RTCRSTOREINT *) RTCRSTORE;
+typedef R3R0PTRTYPE(struct RTCRSTOREINT *)          RTCRSTORE;
 /** Pointer to a Cryptographic (certificate) store handle. */
-typedef RTCRSTORE *PRTCRSTORE;
+typedef RTCRSTORE                                  *PRTCRSTORE;
 /** Nil Cryptographic (certificate) store handle. */
 #define NIL_RTCRSTORE                               0
 
 /** Pointer to a const (store) certificate context. */
-typedef struct RTCRCERTCTX const *PCRTCRCERTCTX;
+typedef struct RTCRCERTCTX const                   *PCRTCRCERTCTX;
 
 /** Cryptographic message digest handle. */
-typedef R3R0PTRTYPE(struct RTCRDIGESTINT *) RTCRDIGEST;
+typedef R3R0PTRTYPE(struct RTCRDIGESTINT *)         RTCRDIGEST;
 /** Pointer to a cryptographic message digest handle. */
-typedef RTCRDIGEST *PRTCRDIGEST;
+typedef RTCRDIGEST                                 *PRTCRDIGEST;
 /** NIL cryptographic message digest handle. */
 #define NIL_RTCRDIGEST                              (0)
 
 /** Public key encryption schema handle. */
 typedef R3R0PTRTYPE(struct RTCRPKIXENCRYPTIONINT *) RTCRPKIXENCRYPTION;
 /** Pointer to a public key encryption schema handle. */
-typedef RTCRPKIXENCRYPTION *PRTCRPKIXENCRYPTION;
+typedef RTCRPKIXENCRYPTION                         *PRTCRPKIXENCRYPTION;
 /** NIL public key encryption schema handle */
 #define NIL_RTCRPKIXENCRYPTION                      (0)
 
 /** Public key signature schema handle. */
-typedef R3R0PTRTYPE(struct RTCRPKIXSIGNATUREINT *) RTCRPKIXSIGNATURE;
+typedef R3R0PTRTYPE(struct RTCRPKIXSIGNATUREINT *)  RTCRPKIXSIGNATURE;
 /** Pointer to a public key signature schema handle. */
-typedef RTCRPKIXSIGNATURE *PRTCRPKIXSIGNATURE;
+typedef RTCRPKIXSIGNATURE                          *PRTCRPKIXSIGNATURE;
 /** NIL public key signature schema handle */
 #define NIL_RTCRPKIXSIGNATURE                       (0)
 
 /** X.509 certificate paths builder & validator handle. */
-typedef R3R0PTRTYPE(struct RTCRX509CERTPATHSINT *) RTCRX509CERTPATHS;
+typedef R3R0PTRTYPE(struct RTCRX509CERTPATHSINT *)  RTCRX509CERTPATHS;
 /** Pointer to a certificate paths builder & validator handle. */
-typedef RTCRX509CERTPATHS *PRTCRX509CERTPATHS;
+typedef RTCRX509CERTPATHS                          *PRTCRX509CERTPATHS;
 /** Nil certificate paths builder & validator handle. */
 #define NIL_RTCRX509CERTPATHS                       0
 
 /** File handle. */
-typedef R3R0PTRTYPE(struct RTFILEINT *) RTFILE;
+typedef R3R0PTRTYPE(struct RTFILEINT *)             RTFILE;
 /** Pointer to file handle. */
-typedef RTFILE *PRTFILE;
+typedef RTFILE                                     *PRTFILE;
 /** Nil file handle. */
 #define NIL_RTFILE                                  ((RTFILE)~(RTHCINTPTR)0)
 
 /** Async I/O request handle. */
-typedef R3PTRTYPE(struct RTFILEAIOREQINTERNAL *) RTFILEAIOREQ;
+typedef R3PTRTYPE(struct RTFILEAIOREQINTERNAL *)    RTFILEAIOREQ;
 /** Pointer to an async I/O request handle. */
-typedef RTFILEAIOREQ *PRTFILEAIOREQ;
+typedef RTFILEAIOREQ                               *PRTFILEAIOREQ;
 /** Nil request handle. */
 #define NIL_RTFILEAIOREQ                            0
 
 /** Async I/O completion context handle. */
-typedef R3PTRTYPE(struct RTFILEAIOCTXINTERNAL *) RTFILEAIOCTX;
+typedef R3PTRTYPE(struct RTFILEAIOCTXINTERNAL *)    RTFILEAIOCTX;
 /** Pointer to an async I/O completion context handle. */
-typedef RTFILEAIOCTX *PRTFILEAIOCTX;
+typedef RTFILEAIOCTX                               *PRTFILEAIOCTX;
 /** Nil context handle. */
 #define NIL_RTFILEAIOCTX                            0
 
 /** Loader module handle. */
-typedef R3R0PTRTYPE(struct RTLDRMODINTERNAL *) RTLDRMOD;
+typedef R3R0PTRTYPE(struct RTLDRMODINTERNAL *)      RTLDRMOD;
 /** Pointer to a loader module handle. */
-typedef RTLDRMOD *PRTLDRMOD;
+typedef RTLDRMOD                                   *PRTLDRMOD;
 /** Nil loader module handle. */
 #define NIL_RTLDRMOD                                0
 
 /** Lock validator class handle. */
-typedef R3R0PTRTYPE(struct RTLOCKVALCLASSINT *) RTLOCKVALCLASS;
+typedef R3R0PTRTYPE(struct RTLOCKVALCLASSINT *)     RTLOCKVALCLASS;
 /** Pointer to a lock validator class handle. */
-typedef RTLOCKVALCLASS *PRTLOCKVALCLASS;
+typedef RTLOCKVALCLASS                             *PRTLOCKVALCLASS;
 /** Nil lock validator class handle. */
 #define NIL_RTLOCKVALCLASS                         ((RTLOCKVALCLASS)0)
 
 /** Ring-0 memory object handle. */
-typedef R0PTRTYPE(struct RTR0MEMOBJINTERNAL *) RTR0MEMOBJ;
+typedef R0PTRTYPE(struct RTR0MEMOBJINTERNAL *)      RTR0MEMOBJ;
 /** Pointer to a Ring-0 memory object handle. */
-typedef RTR0MEMOBJ *PRTR0MEMOBJ;
+typedef RTR0MEMOBJ                                 *PRTR0MEMOBJ;
 /** Nil ring-0 memory object handle. */
 #define NIL_RTR0MEMOBJ                              0
 
 /** Native thread handle. */
-typedef RTHCUINTPTR RTNATIVETHREAD;
+typedef RTHCUINTPTR                                 RTNATIVETHREAD;
 /** Pointer to an native thread handle. */
-typedef RTNATIVETHREAD *PRTNATIVETHREAD;
+typedef RTNATIVETHREAD                             *PRTNATIVETHREAD;
 /** Nil native thread handle. */
 #define NIL_RTNATIVETHREAD                          (~(RTNATIVETHREAD)0)
 
 /** Pipe handle. */
-typedef R3R0PTRTYPE(struct RTPIPEINTERNAL *) RTPIPE;
+typedef R3R0PTRTYPE(struct RTPIPEINTERNAL *)        RTPIPE;
 /** Pointer to a pipe handle. */
-typedef RTPIPE *PRTPIPE;
+typedef RTPIPE                                     *PRTPIPE;
 /** Nil pipe handle.
  * @remarks This is not 0 because of UNIX and OS/2 handle values. Take care! */
 #define NIL_RTPIPE                                 ((RTPIPE)RTHCUINTPTR_MAX)
 
 /** @typedef RTPOLLSET
  * Poll set handle. */
-typedef R3R0PTRTYPE(struct RTPOLLSETINTERNAL *) RTPOLLSET;
+typedef R3R0PTRTYPE(struct RTPOLLSETINTERNAL *)     RTPOLLSET;
 /** Pointer to a poll set handle. */
-typedef RTPOLLSET *PRTPOLLSET;
+typedef RTPOLLSET                                  *PRTPOLLSET;
 /** Nil poll set handle handle. */
 #define NIL_RTPOLLSET                               ((RTPOLLSET)0)
 
 /** Process identifier. */
-typedef uint32_t RTPROCESS;
+typedef uint32_t                                    RTPROCESS;
 /** Pointer to a process identifier. */
-typedef RTPROCESS *PRTPROCESS;
+typedef RTPROCESS                                  *PRTPROCESS;
 /** Nil process identifier. */
 #define NIL_RTPROCESS                               (~(RTPROCESS)0)
 
 /** Process ring-0 handle. */
-typedef RTR0UINTPTR RTR0PROCESS;
+typedef RTR0UINTPTR                                 RTR0PROCESS;
 /** Pointer to a ring-0 process handle. */
-typedef RTR0PROCESS *PRTR0PROCESS;
+typedef RTR0PROCESS                                *PRTR0PROCESS;
 /** Nil ring-0 process handle. */
 #define NIL_RTR0PROCESS                             (~(RTR0PROCESS)0)
 
 /** @typedef RTSEMEVENT
  * Event Semaphore handle. */
-typedef R3R0PTRTYPE(struct RTSEMEVENTINTERNAL *) RTSEMEVENT;
+typedef R3R0PTRTYPE(struct RTSEMEVENTINTERNAL *)    RTSEMEVENT;
 /** Pointer to an event semaphore handle. */
-typedef RTSEMEVENT *PRTSEMEVENT;
+typedef RTSEMEVENT                                 *PRTSEMEVENT;
 /** Nil event semaphore handle. */
 #define NIL_RTSEMEVENT                              0
 
@@ -1825,7 +1885,7 @@ typedef RTSEMEVENT *PRTSEMEVENT;
  * Event Multiple Release Semaphore handle. */
 typedef R3R0PTRTYPE(struct RTSEMEVENTMULTIINTERNAL *) RTSEMEVENTMULTI;
 /** Pointer to an event multiple release semaphore handle. */
-typedef RTSEMEVENTMULTI *PRTSEMEVENTMULTI;
+typedef RTSEMEVENTMULTI                            *PRTSEMEVENTMULTI;
 /** Nil multiple release event semaphore handle. */
 #define NIL_RTSEMEVENTMULTI                         0
 
@@ -1833,15 +1893,15 @@ typedef RTSEMEVENTMULTI *PRTSEMEVENTMULTI;
  * Fast mutex Semaphore handle. */
 typedef R3R0PTRTYPE(struct RTSEMFASTMUTEXINTERNAL *) RTSEMFASTMUTEX;
 /** Pointer to a fast mutex semaphore handle. */
-typedef RTSEMFASTMUTEX *PRTSEMFASTMUTEX;
+typedef RTSEMFASTMUTEX                             *PRTSEMFASTMUTEX;
 /** Nil fast mutex semaphore handle. */
 #define NIL_RTSEMFASTMUTEX                          0
 
 /** @typedef RTSEMMUTEX
  * Mutex Semaphore handle. */
-typedef R3R0PTRTYPE(struct RTSEMMUTEXINTERNAL *) RTSEMMUTEX;
+typedef R3R0PTRTYPE(struct RTSEMMUTEXINTERNAL *)    RTSEMMUTEX;
 /** Pointer to a mutex semaphore handle. */
-typedef RTSEMMUTEX *PRTSEMMUTEX;
+typedef RTSEMMUTEX                                 *PRTSEMMUTEX;
 /** Nil mutex semaphore handle. */
 #define NIL_RTSEMMUTEX                              0
 
@@ -1849,83 +1909,83 @@ typedef RTSEMMUTEX *PRTSEMMUTEX;
  * Spinning mutex Semaphore handle. */
 typedef R3R0PTRTYPE(struct RTSEMSPINMUTEXINTERNAL *) RTSEMSPINMUTEX;
 /** Pointer to a spinning mutex semaphore handle. */
-typedef RTSEMSPINMUTEX *PRTSEMSPINMUTEX;
+typedef RTSEMSPINMUTEX                             *PRTSEMSPINMUTEX;
 /** Nil spinning mutex semaphore handle. */
 #define NIL_RTSEMSPINMUTEX                          0
 
 /** @typedef RTSEMRW
  * Read/Write Semaphore handle. */
-typedef R3R0PTRTYPE(struct RTSEMRWINTERNAL *) RTSEMRW;
+typedef R3R0PTRTYPE(struct RTSEMRWINTERNAL *)       RTSEMRW;
 /** Pointer to a read/write semaphore handle. */
-typedef RTSEMRW *PRTSEMRW;
+typedef RTSEMRW                                    *PRTSEMRW;
 /** Nil read/write semaphore handle. */
 #define NIL_RTSEMRW                                 0
 
 /** @typedef RTSEMXROADS
  * Crossroads semaphore handle. */
-typedef R3R0PTRTYPE(struct RTSEMXROADSINTERNAL *) RTSEMXROADS;
+typedef R3R0PTRTYPE(struct RTSEMXROADSINTERNAL *)   RTSEMXROADS;
 /** Pointer to a crossroads semaphore handle. */
-typedef RTSEMXROADS *PRTSEMXROADS;
+typedef RTSEMXROADS                                *PRTSEMXROADS;
 /** Nil crossroads semaphore handle. */
 #define NIL_RTSEMXROADS                             ((RTSEMXROADS)0)
 
 /** Spinlock handle. */
-typedef R3R0PTRTYPE(struct RTSPINLOCKINTERNAL *) RTSPINLOCK;
+typedef R3R0PTRTYPE(struct RTSPINLOCKINTERNAL *)    RTSPINLOCK;
 /** Pointer to a spinlock handle. */
-typedef RTSPINLOCK *PRTSPINLOCK;
+typedef RTSPINLOCK                                 *PRTSPINLOCK;
 /** Nil spinlock handle. */
 #define NIL_RTSPINLOCK                              0
 
 /** Socket handle. */
-typedef R3R0PTRTYPE(struct RTSOCKETINT *) RTSOCKET;
+typedef R3R0PTRTYPE(struct RTSOCKETINT *)           RTSOCKET;
 /** Pointer to socket handle. */
-typedef RTSOCKET *PRTSOCKET;
+typedef RTSOCKET                                   *PRTSOCKET;
 /** Nil socket handle. */
 #define NIL_RTSOCKET                                ((RTSOCKET)0)
 
 /** Pointer to a RTTCPSERVER handle. */
-typedef struct RTTCPSERVER *PRTTCPSERVER;
+typedef struct RTTCPSERVER                         *PRTTCPSERVER;
 /** Pointer to a RTTCPSERVER handle. */
-typedef PRTTCPSERVER *PPRTTCPSERVER;
+typedef PRTTCPSERVER                               *PPRTTCPSERVER;
 /** Nil RTTCPSERVER handle. */
 #define NIL_RTTCPSERVER                            ((PRTTCPSERVER)0)
 
 /** Pointer to a RTUDPSERVER handle. */
-typedef struct RTUDPSERVER *PRTUDPSERVER;
+typedef struct RTUDPSERVER                         *PRTUDPSERVER;
 /** Pointer to a RTUDPSERVER handle. */
-typedef PRTUDPSERVER *PPRTUDPSERVER;
+typedef PRTUDPSERVER                               *PPRTUDPSERVER;
 /** Nil RTUDPSERVER handle. */
 #define NIL_RTUDPSERVER                            ((PRTUDPSERVER)0)
 
 /** Thread handle.*/
-typedef R3R0PTRTYPE(struct RTTHREADINT *) RTTHREAD;
+typedef R3R0PTRTYPE(struct RTTHREADINT *)           RTTHREAD;
 /** Pointer to thread handle. */
-typedef RTTHREAD *PRTTHREAD;
+typedef RTTHREAD                                   *PRTTHREAD;
 /** Nil thread handle. */
 #define NIL_RTTHREAD                                0
 
 /** Thread context switching hook handle.   */
-typedef R0PTRTYPE(struct RTTHREADCTXHOOKINT *) RTTHREADCTXHOOK;
+typedef R0PTRTYPE(struct RTTHREADCTXHOOKINT *)      RTTHREADCTXHOOK;
 /** Pointer to Thread context switching hook handle. */
-typedef RTTHREADCTXHOOK *PRTTHREADCTXHOOK;
+typedef RTTHREADCTXHOOK                            *PRTTHREADCTXHOOK;
 /** Nil Thread context switching hook handle. */
 #define NIL_RTTHREADCTXHOOK                         ((RTTHREADCTXHOOK)0)
 
 /** A TLS index. */
-typedef RTHCINTPTR RTTLS;
+typedef RTHCINTPTR                                  RTTLS;
 /** Pointer to a TLS index. */
-typedef RTTLS *PRTTLS;
+typedef RTTLS                                      *PRTTLS;
 /** Pointer to a const TLS index. */
-typedef RTTLS const *PCRTTLS;
+typedef RTTLS const                                *PCRTTLS;
 /** NIL TLS index value. */
 #define NIL_RTTLS                                   ((RTTLS)-1)
 
 /** Trace buffer handle.
  * @remarks This is not a R3/R0 type like most other handles!
  */
-typedef struct RTTRACEBUFINT *RTTRACEBUF;
+typedef struct RTTRACEBUFINT                        *RTTRACEBUF;
 /** Pointer to a trace buffer handle. */
-typedef RTTRACEBUF *PRTTRACEBUF;
+typedef RTTRACEBUF                                  *PRTTRACEBUF;
 /** Nil trace buffer handle. */
 #define NIL_RTTRACEBUF                              ((RTTRACEBUF)0)
 /** The handle of the default trace buffer.
@@ -1933,23 +1993,23 @@ typedef RTTRACEBUF *PRTTRACEBUF;
 #define RTTRACEBUF_DEFAULT                          ((RTTRACEBUF)-2)
 
 /** Handle to a simple heap. */
-typedef R3R0PTRTYPE(struct RTHEAPSIMPLEINTERNAL *) RTHEAPSIMPLE;
+typedef R3R0PTRTYPE(struct RTHEAPSIMPLEINTERNAL *)  RTHEAPSIMPLE;
 /** Pointer to a handle to a simple heap. */
-typedef RTHEAPSIMPLE *PRTHEAPSIMPLE;
+typedef RTHEAPSIMPLE                               *PRTHEAPSIMPLE;
 /** NIL simple heap handle. */
 #define NIL_RTHEAPSIMPLE                            ((RTHEAPSIMPLE)0)
 
 /** Handle to an offset based heap. */
-typedef R3R0PTRTYPE(struct RTHEAPOFFSETINTERNAL *) RTHEAPOFFSET;
+typedef R3R0PTRTYPE(struct RTHEAPOFFSETINTERNAL *)  RTHEAPOFFSET;
 /** Pointer to a handle to an offset based heap. */
-typedef RTHEAPOFFSET *PRTHEAPOFFSET;
+typedef RTHEAPOFFSET                               *PRTHEAPOFFSET;
 /** NIL offset based heap handle. */
 #define NIL_RTHEAPOFFSET                            ((RTHEAPOFFSET)0)
 
 /** Handle to an environment block. */
-typedef R3PTRTYPE(struct RTENVINTERNAL *) RTENV;
+typedef R3PTRTYPE(struct RTENVINTERNAL *)           RTENV;
 /** Pointer to a handle to an environment block. */
-typedef RTENV *PRTENV;
+typedef RTENV                                      *PRTENV;
 /** NIL simple heap handle. */
 #define NIL_RTENV                                   ((RTENV)0)
 
@@ -1957,11 +2017,11 @@ typedef RTENV *PRTENV;
  * @remarks This doesn't have to correspond to the APIC ID (intel/amd). Nor
  *          does it have to correspond to the bits in the affinity mask, at
  *          least not until we've sorted out Windows NT. */
-typedef uint32_t RTCPUID;
+typedef uint32_t                                    RTCPUID;
 /** Pointer to a CPU identifier. */
-typedef RTCPUID *PRTCPUID;
+typedef RTCPUID                                    *PRTCPUID;
 /** Pointer to a const CPU identifier. */
-typedef RTCPUID const *PCRTCPUID;
+typedef RTCPUID const                              *PCRTCPUID;
 /** Nil CPU Id. */
 #define NIL_RTCPUID                                 ((RTCPUID)~0)
 
@@ -1978,137 +2038,139 @@ typedef RTCPUID const *PCRTCPUID;
 /** A CPU set.
  * @note    Treat this as an opaque type and always use RTCpuSet* for
  *          manipulating it. */
-typedef struct RTCPUSET {
+typedef struct RTCPUSET
+{
     /** The bitmap.  */
-	uint64_t bmSet[RTCPUSET_MAX_CPUS / 64];
+    uint64_t bmSet[RTCPUSET_MAX_CPUS / 64];
 } RTCPUSET;
 /** Pointer to a CPU set. */
-typedef RTCPUSET *PRTCPUSET;
+typedef RTCPUSET                                   *PRTCPUSET;
 /** Pointer to a const CPU set. */
-typedef RTCPUSET const *PCRTCPUSET;
+typedef RTCPUSET const                             *PCRTCPUSET;
 
 /** A handle table handle. */
-typedef R3R0PTRTYPE(struct RTHANDLETABLEINT *) RTHANDLETABLE;
+typedef R3R0PTRTYPE(struct RTHANDLETABLEINT *)      RTHANDLETABLE;
 /** A pointer to a handle table handle. */
-typedef RTHANDLETABLE *PRTHANDLETABLE;
+typedef RTHANDLETABLE                              *PRTHANDLETABLE;
 /** @def NIL_RTHANDLETABLE
  * NIL handle table handle. */
 #define NIL_RTHANDLETABLE                           ((RTHANDLETABLE)0)
 
 /** A handle to a low resolution timer. */
-typedef R3R0PTRTYPE(struct RTTIMERLRINT *) RTTIMERLR;
+typedef R3R0PTRTYPE(struct RTTIMERLRINT *)          RTTIMERLR;
 /** A pointer to a low resolution timer handle. */
-typedef RTTIMERLR *PRTTIMERLR;
+typedef RTTIMERLR                                  *PRTTIMERLR;
 /** @def NIL_RTTIMERLR
  * NIL low resolution timer handle value. */
 #define NIL_RTTIMERLR                               ((RTTIMERLR)0)
 
 /** Handle to a random number generator. */
-typedef R3R0PTRTYPE(struct RTRANDINT *) RTRAND;
+typedef R3R0PTRTYPE(struct RTRANDINT *)             RTRAND;
 /** Pointer to a random number generator handle. */
-typedef RTRAND *PRTRAND;
+typedef RTRAND                                     *PRTRAND;
 /** NIL random number generator handle value. */
 #define NIL_RTRAND                                  ((RTRAND)0)
 
 /** Debug address space handle. */
-typedef R3R0PTRTYPE(struct RTDBGASINT *) RTDBGAS;
+typedef R3R0PTRTYPE(struct RTDBGASINT *)            RTDBGAS;
 /** Pointer to a debug address space handle. */
-typedef RTDBGAS *PRTDBGAS;
+typedef RTDBGAS                                    *PRTDBGAS;
 /** NIL debug address space handle. */
 #define NIL_RTDBGAS                                 ((RTDBGAS)0)
 
 /** Debug module handle. */
-typedef R3R0PTRTYPE(struct RTDBGMODINT *) RTDBGMOD;
+typedef R3R0PTRTYPE(struct RTDBGMODINT *)           RTDBGMOD;
 /** Pointer to a debug module handle. */
-typedef RTDBGMOD *PRTDBGMOD;
+typedef RTDBGMOD                                   *PRTDBGMOD;
 /** NIL debug module handle. */
 #define NIL_RTDBGMOD                                ((RTDBGMOD)0)
 
 /** Manifest handle. */
-typedef struct RTMANIFESTINT *RTMANIFEST;
+typedef struct RTMANIFESTINT                       *RTMANIFEST;
 /** Pointer to a manifest handle. */
-typedef RTMANIFEST *PRTMANIFEST;
+typedef RTMANIFEST                                 *PRTMANIFEST;
 /** NIL manifest handle. */
 #define NIL_RTMANIFEST                              ((RTMANIFEST)~(uintptr_t)0)
 
 /** Memory pool handle. */
-typedef R3R0PTRTYPE(struct RTMEMPOOLINT *) RTMEMPOOL;
+typedef R3R0PTRTYPE(struct RTMEMPOOLINT *)          RTMEMPOOL;
 /** Pointer to a memory pool handle. */
-typedef RTMEMPOOL *PRTMEMPOOL;
+typedef RTMEMPOOL                                  *PRTMEMPOOL;
 /** NIL memory pool handle. */
 #define NIL_RTMEMPOOL                               ((RTMEMPOOL)0)
 /** The default memory pool handle. */
 #define RTMEMPOOL_DEFAULT                           ((RTMEMPOOL)-2)
 
 /** String cache handle. */
-typedef R3R0PTRTYPE(struct RTSTRCACHEINT *) RTSTRCACHE;
+typedef R3R0PTRTYPE(struct RTSTRCACHEINT *)         RTSTRCACHE;
 /** Pointer to a string cache handle. */
-typedef RTSTRCACHE *PRTSTRCACHE;
+typedef RTSTRCACHE                                 *PRTSTRCACHE;
 /** NIL string cache handle. */
 #define NIL_RTSTRCACHE                              ((RTSTRCACHE)0)
 /** The default string cache handle. */
 #define RTSTRCACHE_DEFAULT                          ((RTSTRCACHE)-2)
 
+
 /** Virtual Filesystem handle. */
-typedef struct RTVFSINTERNAL *RTVFS;
+typedef struct RTVFSINTERNAL                       *RTVFS;
 /** Pointer to a VFS handle. */
-typedef RTVFS *PRTVFS;
+typedef RTVFS                                      *PRTVFS;
 /** A NIL VFS handle. */
 #define NIL_RTVFS                                   ((RTVFS)~(uintptr_t)0)
 
 /** Virtual Filesystem base object handle. */
-typedef struct RTVFSOBJINTERNAL *RTVFSOBJ;
+typedef struct RTVFSOBJINTERNAL                    *RTVFSOBJ;
 /** Pointer to a VFS base object handle. */
-typedef RTVFSOBJ *PRTVFSOBJ;
+typedef RTVFSOBJ                                   *PRTVFSOBJ;
 /** A NIL VFS base object handle. */
 #define NIL_RTVFSOBJ                                ((RTVFSOBJ)~(uintptr_t)0)
 
 /** Virtual Filesystem directory handle. */
-typedef struct RTVFSDIRINTERNAL *RTVFSDIR;
+typedef struct RTVFSDIRINTERNAL                    *RTVFSDIR;
 /** Pointer to a VFS directory handle. */
-typedef RTVFSDIR *PRTVFSDIR;
+typedef RTVFSDIR                                   *PRTVFSDIR;
 /** A NIL VFS directory handle. */
 #define NIL_RTVFSDIR                                ((RTVFSDIR)~(uintptr_t)0)
 
 /** Virtual Filesystem filesystem stream handle. */
-typedef struct RTVFSFSSTREAMINTERNAL *RTVFSFSSTREAM;
+typedef struct RTVFSFSSTREAMINTERNAL               *RTVFSFSSTREAM;
 /** Pointer to a VFS filesystem stream handle. */
-typedef RTVFSFSSTREAM *PRTVFSFSSTREAM;
+typedef RTVFSFSSTREAM                              *PRTVFSFSSTREAM;
 /** A NIL VFS filesystem stream handle. */
 #define NIL_RTVFSFSSTREAM                           ((RTVFSFSSTREAM)~(uintptr_t)0)
 
 /** Virtual Filesystem I/O stream handle. */
-typedef struct RTVFSIOSTREAMINTERNAL *RTVFSIOSTREAM;
+typedef struct RTVFSIOSTREAMINTERNAL               *RTVFSIOSTREAM;
 /** Pointer to a VFS I/O stream handle. */
-typedef RTVFSIOSTREAM *PRTVFSIOSTREAM;
+typedef RTVFSIOSTREAM                              *PRTVFSIOSTREAM;
 /** A NIL VFS I/O stream handle. */
 #define NIL_RTVFSIOSTREAM                           ((RTVFSIOSTREAM)~(uintptr_t)0)
 
 /** Virtual Filesystem file handle. */
-typedef struct RTVFSFILEINTERNAL *RTVFSFILE;
+typedef struct RTVFSFILEINTERNAL                   *RTVFSFILE;
 /** Pointer to a VFS file handle. */
-typedef RTVFSFILE *PRTVFSFILE;
+typedef RTVFSFILE                                  *PRTVFSFILE;
 /** A NIL VFS file handle. */
 #define NIL_RTVFSFILE                               ((RTVFSFILE)~(uintptr_t)0)
 
 /** Virtual Filesystem symbolic link handle. */
-typedef struct RTVFSSYMLINKINTERNAL *RTVFSSYMLINK;
+typedef struct RTVFSSYMLINKINTERNAL                *RTVFSSYMLINK;
 /** Pointer to a VFS symbolic link handle. */
-typedef RTVFSSYMLINK *PRTVFSSYMLINK;
+typedef RTVFSSYMLINK                               *PRTVFSSYMLINK;
 /** A NIL VFS symbolic link handle. */
 #define NIL_RTVFSSYMLINK                            ((RTVFSSYMLINK)~(uintptr_t)0)
 
 /** Async I/O manager handle. */
-typedef struct RTAIOMGRINT *RTAIOMGR;
+typedef struct RTAIOMGRINT                         *RTAIOMGR;
 /** Pointer to a async I/O manager handle. */
-typedef RTAIOMGR *PRTAIOMGR;
+typedef RTAIOMGR                                   *PRTAIOMGR;
 /** A NIL async I/O manager handle. */
 #define NIL_RTAIOMGR                                ((RTAIOMGR)~(uintptr_t)0)
 
 /** Async I/O manager file handle. */
-typedef struct RTAIOMGRFILEINT *RTAIOMGRFILE;
+typedef struct RTAIOMGRFILEINT                     *RTAIOMGRFILE;
 /** Pointer to a async I/O manager file handle. */
-typedef RTAIOMGRFILE *PRTAIOMGRFILE;
+typedef RTAIOMGRFILE                               *PRTAIOMGRFILE;
 /** A NIL async I/O manager file handle. */
 #define NIL_RTAIOMGRFILE                            ((RTAIOMGRFILE)~(uintptr_t)0)
 
@@ -2117,21 +2179,22 @@ typedef RTAIOMGRFILE *PRTAIOMGRFILE;
  *
  * This is usually used together with RTHANDLEUNION.
  */
-typedef enum RTHANDLETYPE {
+typedef enum RTHANDLETYPE
+{
     /** The invalid zero value. */
-	RTHANDLETYPE_INVALID = 0,
+    RTHANDLETYPE_INVALID = 0,
     /** File handle. */
-	RTHANDLETYPE_FILE,
+    RTHANDLETYPE_FILE,
     /** Pipe handle */
-	RTHANDLETYPE_PIPE,
+    RTHANDLETYPE_PIPE,
     /** Socket handle. */
-	RTHANDLETYPE_SOCKET,
+    RTHANDLETYPE_SOCKET,
     /** Thread handle. */
-	RTHANDLETYPE_THREAD,
+    RTHANDLETYPE_THREAD,
     /** The end of the valid values. */
-	RTHANDLETYPE_END,
+    RTHANDLETYPE_END,
     /** The 32-bit type blow up. */
-	RTHANDLETYPE_32BIT_HACK = 0x7fffffff
+    RTHANDLETYPE_32BIT_HACK = 0x7fffffff
 } RTHANDLETYPE;
 /** Pointer to a handle type. */
 typedef RTHANDLETYPE *PRTHANDLETYPE;
@@ -2141,15 +2204,16 @@ typedef RTHANDLETYPE *PRTHANDLETYPE;
  *
  * This is usually used together with RTHANDLETYPE or as RTHANDLE.
  */
-typedef union RTHANDLEUNION {
-	RTFILE hFile;			/**< File handle. */
-	RTPIPE hPipe;			/**< Pipe handle. */
-	RTSOCKET hSocket;		/**< Socket handle. */
-	RTTHREAD hThread;		/**< Thread handle. */
+typedef union RTHANDLEUNION
+{
+    RTFILE          hFile;              /**< File handle. */
+    RTPIPE          hPipe;              /**< Pipe handle. */
+    RTSOCKET        hSocket;            /**< Socket handle. */
+    RTTHREAD        hThread;            /**< Thread handle. */
     /** Generic integer handle value.
      * Note that RTFILE is not yet pointer sized, so accessing it via this member
      * isn't necessarily safe or fully portable. */
-	RTHCUINTPTR uInt;
+    RTHCUINTPTR     uInt;
 } RTHANDLEUNION;
 /** Pointer to a handle union. */
 typedef RTHANDLEUNION *PRTHANDLEUNION;
@@ -2159,16 +2223,18 @@ typedef RTHANDLEUNION const *PCRTHANDLEUNION;
 /**
  * Generic handle.
  */
-typedef struct RTHANDLE {
+typedef struct RTHANDLE
+{
     /** The handle type. */
-	RTHANDLETYPE enmType;
+    RTHANDLETYPE    enmType;
     /** The handle value. */
-	RTHANDLEUNION u;
+    RTHANDLEUNION   u;
 } RTHANDLE;
 /** Pointer to a generic handle. */
 typedef RTHANDLE *PRTHANDLE;
 /** Pointer to a const generic handle. */
 typedef RTHANDLE const *PCRTHANDLE;
+
 
 /**
  * Standard handles.
@@ -2176,35 +2242,38 @@ typedef RTHANDLE const *PCRTHANDLE;
  * @remarks These have the correct file descriptor values for unixy systems and
  *          can be used directly in code specific to those platforms.
  */
-typedef enum RTHANDLESTD {
+typedef enum RTHANDLESTD
+{
     /** Invalid standard handle. */
-	RTHANDLESTD_INVALID = -1,
+    RTHANDLESTD_INVALID = -1,
     /** The standard input handle. */
-	RTHANDLESTD_INPUT = 0,
+    RTHANDLESTD_INPUT = 0,
     /** The standard output handle. */
-	RTHANDLESTD_OUTPUT,
+    RTHANDLESTD_OUTPUT,
     /** The standard error handle. */
-	RTHANDLESTD_ERROR,
+    RTHANDLESTD_ERROR,
     /** The typical 32-bit type hack. */
-	RTHANDLESTD_32BIT_HACK = 0x7fffffff
+    RTHANDLESTD_32BIT_HACK = 0x7fffffff
 } RTHANDLESTD;
+
 
 /**
  * Error info.
  *
  * See RTErrInfo*.
  */
-typedef struct RTERRINFO {
+typedef struct RTERRINFO
+{
     /** Flags, see RTERRINFO_FLAGS_XXX. */
-	uint32_t fFlags;
+    uint32_t    fFlags;
     /** The status code. */
-	int32_t rc;
+    int32_t     rc;
     /** The size of the message  */
-	size_t cbMsg;
+    size_t      cbMsg;
     /** The error buffer. */
-	char *pszMsg;
+    char       *pszMsg;
     /** Reserved for future use. */
-	void *apvReserved[2];
+    void       *apvReserved[2];
 } RTERRINFO;
 /** Pointer to an error info structure. */
 typedef RTERRINFO *PRTERRINFO;
@@ -2214,16 +2283,18 @@ typedef RTERRINFO const *PCRTERRINFO;
 /**
  * Static error info structure, see RTErrInfoInitStatic.
  */
-typedef struct RTERRINFOSTATIC {
+typedef struct RTERRINFOSTATIC
+{
     /** The core error info. */
-	RTERRINFO Core;
+    RTERRINFO   Core;
     /** The static message buffer. */
-	char szMsg[3072];
+    char        szMsg[3072];
 } RTERRINFOSTATIC;
 /** Pointer to a error info buffer. */
 typedef RTERRINFOSTATIC *PRTERRINFOSTATIC;
 /** Pointer to a const static error info buffer. */
 typedef RTERRINFOSTATIC const *PCRTERRINFOSTATIC;
+
 
 /**
  * UUID data type.
@@ -2235,24 +2306,26 @@ typedef RTERRINFOSTATIC const *PCRTERRINFOSTATIC;
  *          different to many other UUID implementation, and requires
  *          conversion if you need to achieve consistent results.
  */
-typedef union RTUUID {
+typedef union RTUUID
+{
     /** 8-bit view. */
-	uint8_t au8[16];
+    uint8_t     au8[16];
     /** 16-bit view. */
-	uint16_t au16[8];
+    uint16_t    au16[8];
     /** 32-bit view. */
-	uint32_t au32[4];
+    uint32_t    au32[4];
     /** 64-bit view. */
-	uint64_t au64[2];
+    uint64_t    au64[2];
     /** The way the UUID is declared by the DCE specification. */
-	struct {
-		uint32_t u32TimeLow;
-		uint16_t u16TimeMid;
-		uint16_t u16TimeHiAndVersion;
-		uint8_t u8ClockSeqHiAndReserved;
-		uint8_t u8ClockSeqLow;
-		uint8_t au8Node[6];
-	} Gen;
+    struct
+    {
+        uint32_t    u32TimeLow;
+        uint16_t    u16TimeMid;
+        uint16_t    u16TimeHiAndVersion;
+        uint8_t     u8ClockSeqHiAndReserved;
+        uint8_t     u8ClockSeqLow;
+        uint8_t     au8Node[6];
+    } Gen;
 } RTUUID;
 /** Pointer to UUID data. */
 typedef RTUUID *PRTUUID;
@@ -2265,25 +2338,28 @@ typedef const RTUUID *PCRTUUID;
 /** UUID string maximum length. */
 #define RTUUID_STR_LENGTH       37
 
+
 /** Compression handle. */
-typedef struct RTZIPCOMP *PRTZIPCOMP;
+typedef struct RTZIPCOMP   *PRTZIPCOMP;
 /** Decompressor handle. */
 typedef struct RTZIPDECOMP *PRTZIPDECOMP;
+
 
 /**
  * Unicode Code Point.
  */
-typedef uint32_t RTUNICP;
+typedef uint32_t            RTUNICP;
 /** Pointer to an Unicode Code Point. */
-typedef RTUNICP *PRTUNICP;
+typedef RTUNICP            *PRTUNICP;
 /** Pointer to an Unicode Code Point. */
-typedef const RTUNICP *PCRTUNICP;
+typedef const RTUNICP      *PCRTUNICP;
 /** Max value a RTUNICP type can hold. */
 #define RTUNICP_MAX         ( ~(RTUNICP)0 )
 /** Invalid code point.
  * This is returned when encountered invalid encodings or invalid
  * unicode code points. */
 #define RTUNICP_INVALID     ( UINT32_C(0xfffffffe) )
+
 
 /**
  * UTF-16 character.
@@ -2293,20 +2369,22 @@ typedef const RTUNICP *PCRTUNICP;
  *          count of RTUTF16; cuc - count of unicode chars - means count of RTUNICP;
  *          and cch means count of the typedef 'char', which is assumed to be an octet.
  */
-typedef uint16_t RTUTF16;
+typedef uint16_t        RTUTF16;
 /** Pointer to a UTF-16 character. */
-typedef RTUTF16 *PRTUTF16;
+typedef RTUTF16        *PRTUTF16;
 /** Pointer to a const UTF-16 character. */
-typedef const RTUTF16 *PCRTUTF16;
+typedef const RTUTF16  *PCRTUTF16;
+
 
 /**
  * String tuple to go with the RT_STR_TUPLE macro.
  */
-typedef struct RTSTRTUPLE {
+typedef struct RTSTRTUPLE
+{
     /** The string. */
-	const char *psz;
+    const char *psz;
     /** The string length. */
-	size_t cch;
+    size_t      cch;
 } RTSTRTUPLE;
 /** Pointer to a string tuple. */
 typedef RTSTRTUPLE *PRTSTRTUPLE;
@@ -2317,6 +2395,7 @@ typedef RTSTRTUPLE const *PCRTSTRTUPLE;
  * Wait for ever if we have to.
  */
 #define RT_INDEFINITE_WAIT      (~0U)
+
 
 /**
  * Generic process callback.
@@ -2336,81 +2415,88 @@ typedef FNRTPROGRESS *PFNRTPROGRESS;
  * @param   pszFormat       The format string.
  * @param   va              Arguments for the format string.
  */
-typedef DECLCALLBACK(void) FNRTDUMPPRINTFV(void *pvUser, const char *pszFormat,
-					   va_list va) RT_IPRT_FORMAT_ATTR(2,
-									   0);
+typedef DECLCALLBACK(void) FNRTDUMPPRINTFV(void *pvUser, const char *pszFormat, va_list va) RT_IPRT_FORMAT_ATTR(2, 0);
 /** Pointer to a generic printf-like function for dumping. */
 typedef FNRTDUMPPRINTFV *PFNRTDUMPPRINTFV;
+
 
 /**
  * A point in a two dimentional coordinate system.
  */
-typedef struct RTPOINT {
+typedef struct RTPOINT
+{
     /** X coordinate. */
-	int32_t x;
+    int32_t     x;
     /** Y coordinate. */
-	int32_t y;
+    int32_t     y;
 } RTPOINT;
 /** Pointer to a point. */
 typedef RTPOINT *PRTPOINT;
 /** Pointer to a const point. */
 typedef const RTPOINT *PCRTPOINT;
 
+
 /**
  * Rectangle data type, double point.
  */
-typedef struct RTRECT {
+typedef struct RTRECT
+{
     /** left X coordinate. */
-	int32_t xLeft;
+    int32_t     xLeft;
     /** top Y coordinate. */
-	int32_t yTop;
+    int32_t     yTop;
     /** right X coordinate. (exclusive) */
-	int32_t xRight;
+    int32_t     xRight;
     /** bottom Y coordinate. (exclusive) */
-	int32_t yBottom;
+    int32_t     yBottom;
 } RTRECT;
 /** Pointer to a double point rectangle. */
 typedef RTRECT *PRTRECT;
 /** Pointer to a const double point rectangle. */
 typedef const RTRECT *PCRTRECT;
 
+
 /**
  * Rectangle data type, point + size.
  */
-typedef struct RTRECT2 {
+typedef struct RTRECT2
+{
     /** X coordinate.
      * Unless stated otherwise, this is the top left corner. */
-	int32_t x;
+    int32_t     x;
     /** Y coordinate.
      * Unless stated otherwise, this is the top left corner.  */
-	int32_t y;
+    int32_t     y;
     /** The width.
      * Unless stated otherwise, this is to the right of (x,y) and will not
      * be a negative number. */
-	int32_t cx;
+    int32_t     cx;
     /** The height.
      * Unless stated otherwise, this is down from (x,y) and will not be a
      * negative number. */
-	int32_t cy;
+    int32_t     cy;
 } RTRECT2;
 /** Pointer to a point + size rectangle. */
 typedef RTRECT2 *PRTRECT2;
 /** Pointer to a const point + size rectangle. */
 typedef const RTRECT2 *PCRTRECT2;
 
+
 /**
  * The size of a rectangle.
  */
-typedef struct RTRECTSIZE {
+typedef struct RTRECTSIZE
+{
     /** The width (along the x-axis). */
-	uint32_t cx;
+    uint32_t    cx;
     /** The height (along the y-axis). */
-	uint32_t cy;
+    uint32_t    cy;
 } RTRECTSIZE;
 /** Pointer to a rectangle size. */
 typedef RTRECTSIZE *PRTRECTSIZE;
 /** Pointer to a const rectangle size. */
 typedef const RTRECTSIZE *PCRTRECTSIZE;
+
 
 /**
  * Ethernet MAC address.
@@ -2420,30 +2506,32 @@ typedef const RTRECTSIZE *PCRTRECTSIZE;
  * and the second bit indicates locally (set) / global administered. If all
  * bits are set, it's a broadcast.
  */
-typedef union RTMAC {
+typedef union RTMAC
+{
     /** @todo add a bitfield view of this stuff. */
     /** 8-bit view. */
-	uint8_t au8[6];
+    uint8_t     au8[6];
     /** 16-bit view. */
-	uint16_t au16[3];
+    uint16_t    au16[3];
 } RTMAC;
 /** Pointer to a MAC address. */
 typedef RTMAC *PRTMAC;
 /** Pointer to a readonly MAC address. */
 typedef const RTMAC *PCRTMAC;
 
+
 /** Pointer to a lock validator record.
  * The structure definition is found in iprt/lockvalidator.h.  */
-typedef struct RTLOCKVALRECEXCL *PRTLOCKVALRECEXCL;
+typedef struct RTLOCKVALRECEXCL        *PRTLOCKVALRECEXCL;
 /** Pointer to a record of one ownership share.
  * The structure definition is found in iprt/lockvalidator.h.  */
-typedef struct RTLOCKVALRECSHRD *PRTLOCKVALRECSHRD;
+typedef struct RTLOCKVALRECSHRD        *PRTLOCKVALRECSHRD;
 /** Pointer to a lock validator source position.
  * The structure definition is found in iprt/lockvalidator.h.  */
-typedef struct RTLOCKVALSRCPOS *PRTLOCKVALSRCPOS;
+typedef struct RTLOCKVALSRCPOS         *PRTLOCKVALSRCPOS;
 /** Pointer to a const lock validator source position.
  * The structure definition is found in iprt/lockvalidator.h.  */
-typedef struct RTLOCKVALSRCPOS const *PCRTLOCKVALSRCPOS;
+typedef struct RTLOCKVALSRCPOS const   *PCRTLOCKVALSRCPOS;
 
 /** @name   Special sub-class values.
  * The range 16..UINT32_MAX is available to the user, the range 0..15 is
@@ -2461,113 +2549,119 @@ typedef struct RTLOCKVALSRCPOS const *PCRTLOCKVALSRCPOS;
 #define RTLOCKVAL_SUB_CLASS_USER        UINT32_C(16)
 /** @} */
 
+
 /**
  * Digest types.
  */
-typedef enum RTDIGESTTYPE {
+typedef enum RTDIGESTTYPE
+{
     /** Invalid digest value.  */
-	RTDIGESTTYPE_INVALID = 0,
+    RTDIGESTTYPE_INVALID = 0,
     /** Unknown digest type. */
-	RTDIGESTTYPE_UNKNOWN,
+    RTDIGESTTYPE_UNKNOWN,
     /** CRC32 checksum. */
-	RTDIGESTTYPE_CRC32,
+    RTDIGESTTYPE_CRC32,
     /** CRC64 checksum. */
-	RTDIGESTTYPE_CRC64,
+    RTDIGESTTYPE_CRC64,
     /** MD2 checksum (unsafe!). */
-	RTDIGESTTYPE_MD2,
+    RTDIGESTTYPE_MD2,
     /** MD4 checksum (unsafe!!). */
-	RTDIGESTTYPE_MD4,
+    RTDIGESTTYPE_MD4,
     /** MD5 checksum (unsafe!). */
-	RTDIGESTTYPE_MD5,
+    RTDIGESTTYPE_MD5,
     /** SHA-1 checksum (unsafe!). */
-	RTDIGESTTYPE_SHA1,
+    RTDIGESTTYPE_SHA1,
     /** SHA-224 checksum. */
-	RTDIGESTTYPE_SHA224,
+    RTDIGESTTYPE_SHA224,
     /** SHA-256 checksum. */
-	RTDIGESTTYPE_SHA256,
+    RTDIGESTTYPE_SHA256,
     /** SHA-384 checksum. */
-	RTDIGESTTYPE_SHA384,
+    RTDIGESTTYPE_SHA384,
     /** SHA-512 checksum. */
-	RTDIGESTTYPE_SHA512,
+    RTDIGESTTYPE_SHA512,
     /** SHA-512/224 checksum. */
-	RTDIGESTTYPE_SHA512T224,
+    RTDIGESTTYPE_SHA512T224,
     /** SHA-512/256 checksum. */
-	RTDIGESTTYPE_SHA512T256,
+    RTDIGESTTYPE_SHA512T256,
     /** End of valid types. */
-	RTDIGESTTYPE_END,
+    RTDIGESTTYPE_END,
     /** Usual 32-bit type blowup. */
-	RTDIGESTTYPE_32BIT_HACK = 0x7fffffff
+    RTDIGESTTYPE_32BIT_HACK = 0x7fffffff
 } RTDIGESTTYPE;
 
 /**
  * Process exit codes.
  */
-typedef enum RTEXITCODE {
+typedef enum RTEXITCODE
+{
     /** Success. */
-	RTEXITCODE_SUCCESS = 0,
+    RTEXITCODE_SUCCESS = 0,
     /** General failure. */
-	RTEXITCODE_FAILURE = 1,
+    RTEXITCODE_FAILURE = 1,
     /** Invalid arguments.  */
-	RTEXITCODE_SYNTAX = 2,
+    RTEXITCODE_SYNTAX = 2,
     /** Initialization failure (usually IPRT, but could be used for other
      *  components as well). */
-	RTEXITCODE_INIT = 3,
+    RTEXITCODE_INIT = 3,
     /** Test skipped. */
-	RTEXITCODE_SKIPPED = 4,
+    RTEXITCODE_SKIPPED = 4,
     /** The end of valid exit codes. */
-	RTEXITCODE_END,
+    RTEXITCODE_END,
     /** The usual 32-bit type hack. */
-	RTEXITCODE_32BIT_HACK = 0x7fffffff
+    RTEXITCODE_32BIT_HACK = 0x7fffffff
 } RTEXITCODE;
 
 /**
  * Range descriptor.
  */
-typedef struct RTRANGE {
+typedef struct RTRANGE
+{
     /** Start offset. */
-	uint64_t offStart;
+    uint64_t    offStart;
     /** Range size. */
-	size_t cbRange;
+    size_t      cbRange;
 } RTRANGE;
 /** Pointer to a range descriptor. */
 typedef RTRANGE *PRTRANGE;
 /** Pointer to a readonly range descriptor. */
 typedef const RTRANGE *PCRTRANGE;
 
+
 /**
  * Generic pointer union.
  */
-typedef union RTPTRUNION {
+typedef union RTPTRUNION
+{
     /** Pointer into the void. */
-	void *pv;
+    void                   *pv;
     /** As a signed integer. */
-	intptr_t i;
+    intptr_t                i;
     /** As an unsigned integer. */
-	intptr_t u;
+    intptr_t                u;
     /** Pointer to char value. */
-	char *pch;
+    char                   *pch;
     /** Pointer to char value. */
-	unsigned char *puch;
+    unsigned char          *puch;
     /** Pointer to a int value. */
-	int *pi;
+    int                    *pi;
     /** Pointer to a unsigned int value. */
-	unsigned int *pu;
+    unsigned int           *pu;
     /** Pointer to a long value. */
-	long *pl;
+    long                   *pl;
     /** Pointer to a long value. */
-	unsigned long *pul;
+    unsigned long          *pul;
     /** Pointer to a 8-bit unsigned value. */
-	uint8_t *pu8;
+    uint8_t                *pu8;
     /** Pointer to a 16-bit unsigned value. */
-	uint16_t *pu16;
+    uint16_t               *pu16;
     /** Pointer to a 32-bit unsigned value. */
-	uint32_t *pu32;
+    uint32_t               *pu32;
     /** Pointer to a 64-bit unsigned value. */
-	uint64_t *pu64;
+    uint64_t               *pu64;
     /** Pointer to a UTF-16 character. */
-	PRTUTF16 pwc;
+    PRTUTF16                pwc;
     /** Pointer to a UUID character. */
-	PRTUUID pUuid;
+    PRTUUID                 pUuid;
 } RTPTRUNION;
 /** Pointer to a pointer union. */
 typedef RTPTRUNION *PRTPTRUNION;
@@ -2575,37 +2669,38 @@ typedef RTPTRUNION *PRTPTRUNION;
 /**
  * Generic const pointer union.
  */
-typedef union RTCPTRUNION {
+typedef union RTCPTRUNION
+{
     /** Pointer into the void. */
-	void const *pv;
+    void const             *pv;
     /** As a signed integer. */
-	intptr_t i;
+    intptr_t                i;
     /** As an unsigned integer. */
-	intptr_t u;
+    intptr_t                u;
     /** Pointer to char value. */
-	char const *pch;
+    char const             *pch;
     /** Pointer to char value. */
-	unsigned char const *puch;
+    unsigned char const    *puch;
     /** Pointer to a int value. */
-	int const *pi;
+    int const              *pi;
     /** Pointer to a unsigned int value. */
-	unsigned int const *pu;
+    unsigned int const     *pu;
     /** Pointer to a long value. */
-	long const *pl;
+    long const             *pl;
     /** Pointer to a long value. */
-	unsigned long const *pul;
+    unsigned long const    *pul;
     /** Pointer to a 8-bit unsigned value. */
-	uint8_t const *pu8;
+    uint8_t const          *pu8;
     /** Pointer to a 16-bit unsigned value. */
-	uint16_t const *pu16;
+    uint16_t const         *pu16;
     /** Pointer to a 32-bit unsigned value. */
-	uint32_t const *pu32;
+    uint32_t const         *pu32;
     /** Pointer to a 64-bit unsigned value. */
-	uint64_t const *pu64;
+    uint64_t const         *pu64;
     /** Pointer to a UTF-16 character. */
-	PCRTUTF16 pwc;
+    PCRTUTF16               pwc;
     /** Pointer to a UUID character. */
-	PCRTUUID pUuid;
+    PCRTUUID                pUuid;
 } RTCPTRUNION;
 /** Pointer to a const pointer union. */
 typedef RTCPTRUNION *PRTCPTRUNION;
@@ -2613,37 +2708,38 @@ typedef RTCPTRUNION *PRTCPTRUNION;
 /**
  * Generic volatile pointer union.
  */
-typedef union RTVPTRUNION {
+typedef union RTVPTRUNION
+{
     /** Pointer into the void. */
-	void volatile *pv;
+    void volatile          *pv;
     /** As a signed integer. */
-	intptr_t i;
+    intptr_t                i;
     /** As an unsigned integer. */
-	intptr_t u;
+    intptr_t                u;
     /** Pointer to char value. */
-	char volatile *pch;
+    char volatile          *pch;
     /** Pointer to char value. */
-	unsigned char volatile *puch;
+    unsigned char volatile *puch;
     /** Pointer to a int value. */
-	int volatile *pi;
+    int volatile           *pi;
     /** Pointer to a unsigned int value. */
-	unsigned int volatile *pu;
+    unsigned int volatile  *pu;
     /** Pointer to a long value. */
-	long volatile *pl;
+    long volatile          *pl;
     /** Pointer to a long value. */
-	unsigned long volatile *pul;
+    unsigned long volatile *pul;
     /** Pointer to a 8-bit unsigned value. */
-	uint8_t volatile *pu8;
+    uint8_t volatile       *pu8;
     /** Pointer to a 16-bit unsigned value. */
-	uint16_t volatile *pu16;
+    uint16_t volatile      *pu16;
     /** Pointer to a 32-bit unsigned value. */
-	uint32_t volatile *pu32;
+    uint32_t volatile      *pu32;
     /** Pointer to a 64-bit unsigned value. */
-	uint64_t volatile *pu64;
+    uint64_t volatile      *pu64;
     /** Pointer to a UTF-16 character. */
-	RTUTF16 volatile *pwc;
+    RTUTF16 volatile       *pwc;
     /** Pointer to a UUID character. */
-	RTUUID volatile *pUuid;
+    RTUUID volatile        *pUuid;
 } RTVPTRUNION;
 /** Pointer to a const pointer union. */
 typedef RTVPTRUNION *PRTVPTRUNION;
@@ -2651,40 +2747,43 @@ typedef RTVPTRUNION *PRTVPTRUNION;
 /**
  * Generic const volatile pointer union.
  */
-typedef union RTCVPTRUNION {
+typedef union RTCVPTRUNION
+{
     /** Pointer into the void. */
-	void const volatile *pv;
+    void const volatile            *pv;
     /** As a signed integer. */
-	intptr_t i;
+    intptr_t                        i;
     /** As an unsigned integer. */
-	intptr_t u;
+    intptr_t                        u;
     /** Pointer to char value. */
-	char const volatile *pch;
+    char const volatile            *pch;
     /** Pointer to char value. */
-	unsigned char const volatile *puch;
+    unsigned char const volatile   *puch;
     /** Pointer to a int value. */
-	int const volatile *pi;
+    int const volatile             *pi;
     /** Pointer to a unsigned int value. */
-	unsigned int const volatile *pu;
+    unsigned int const volatile    *pu;
     /** Pointer to a long value. */
-	long const volatile *pl;
+    long const volatile            *pl;
     /** Pointer to a long value. */
-	unsigned long const volatile *pul;
+    unsigned long const volatile   *pul;
     /** Pointer to a 8-bit unsigned value. */
-	uint8_t const volatile *pu8;
+    uint8_t const volatile         *pu8;
     /** Pointer to a 16-bit unsigned value. */
-	uint16_t const volatile *pu16;
+    uint16_t const volatile        *pu16;
     /** Pointer to a 32-bit unsigned value. */
-	uint32_t const volatile *pu32;
+    uint32_t const volatile        *pu32;
     /** Pointer to a 64-bit unsigned value. */
-	uint64_t const volatile *pu64;
+    uint64_t const volatile        *pu64;
     /** Pointer to a UTF-16 character. */
-	RTUTF16 const volatile *pwc;
+    RTUTF16 const volatile         *pwc;
     /** Pointer to a UUID character. */
-	RTUUID const volatile *pUuid;
+    RTUUID const volatile          *pUuid;
 } RTCVPTRUNION;
 /** Pointer to a const pointer union. */
 typedef RTCVPTRUNION *PRTCVPTRUNION;
+
+
 
 #ifdef __cplusplus
 /**
@@ -2692,26 +2791,32 @@ typedef RTCVPTRUNION *PRTCVPTRUNION;
  *
  * See RTErrStrictType and RT_SUCCESS_NP.
  */
-class RTErrStrictType2 {
+class RTErrStrictType2
+{
 protected:
     /** The status code.  */
-	int32_t m_rc;
+    int32_t m_rc;
 
 public:
     /**
      * Constructor.
      * @param   rc      IPRT style status code.
      */
-	RTErrStrictType2(int32_t rc):m_rc(rc)
-{
-}
+    RTErrStrictType2(int32_t rc) : m_rc(rc)
+    {
+    }
+
     /**
      * Get the status code.
      * @returns IPRT style status code.
-     */ int32_t getValue() const {
-	return m_rc;
-}};
+     */
+    int32_t getValue() const
+    {
+        return m_rc;
+    }
+};
 #endif /* __cplusplus */
 /** @} */
 
 #endif
+

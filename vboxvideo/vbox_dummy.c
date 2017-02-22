@@ -20,9 +20,8 @@
 
 static int __init vbox_init(void)
 {
-	return -EINVAL;
+    return -EINVAL;
 }
-
 static void __exit vbox_exit(void)
 {
 }

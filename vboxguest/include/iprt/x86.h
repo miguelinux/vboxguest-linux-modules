@@ -50,51 +50,52 @@
 /**
  * EFLAGS Bits.
  */
-typedef struct X86EFLAGSBITS {
+typedef struct X86EFLAGSBITS
+{
     /** Bit 0 - CF - Carry flag - Status flag. */
-	unsigned u1CF:1;
+    unsigned    u1CF : 1;
     /** Bit 1 -  1 - Reserved flag. */
-	unsigned u1Reserved0:1;
+    unsigned    u1Reserved0 : 1;
     /** Bit 2 - PF - Parity flag - Status flag. */
-	unsigned u1PF:1;
+    unsigned    u1PF : 1;
     /** Bit 3 -  0 - Reserved flag. */
-	unsigned u1Reserved1:1;
+    unsigned    u1Reserved1 : 1;
     /** Bit 4 - AF - Auxiliary carry flag - Status flag. */
-	unsigned u1AF:1;
+    unsigned    u1AF : 1;
     /** Bit 5 -  0 - Reserved flag. */
-	unsigned u1Reserved2:1;
+    unsigned    u1Reserved2 : 1;
     /** Bit 6 - ZF - Zero flag - Status flag. */
-	unsigned u1ZF:1;
+    unsigned    u1ZF : 1;
     /** Bit 7 - SF - Signed flag - Status flag. */
-	unsigned u1SF:1;
+    unsigned    u1SF : 1;
     /** Bit 8 - TF - Trap flag - System flag. */
-	unsigned u1TF:1;
+    unsigned    u1TF : 1;
     /** Bit 9 - IF - Interrupt flag - System flag. */
-	unsigned u1IF:1;
+    unsigned    u1IF : 1;
     /** Bit 10 - DF - Direction flag - Control flag. */
-	unsigned u1DF:1;
+    unsigned    u1DF : 1;
     /** Bit 11 - OF - Overflow flag - Status flag. */
-	unsigned u1OF:1;
+    unsigned    u1OF : 1;
     /** Bit 12-13 - IOPL - I/O privilege level flag - System flag. */
-	unsigned u2IOPL:2;
+    unsigned    u2IOPL : 2;
     /** Bit 14 - NT - Nested task flag - System flag. */
-	unsigned u1NT:1;
+    unsigned    u1NT : 1;
     /** Bit 15 -  0 - Reserved flag. */
-	unsigned u1Reserved3:1;
+    unsigned    u1Reserved3 : 1;
     /** Bit 16 - RF - Resume flag - System flag. */
-	unsigned u1RF:1;
+    unsigned    u1RF : 1;
     /** Bit 17 - VM - Virtual 8086 mode - System flag. */
-	unsigned u1VM:1;
+    unsigned    u1VM : 1;
     /** Bit 18 - AC - Alignment check flag - System flag. Works with CR0.AM. */
-	unsigned u1AC:1;
+    unsigned    u1AC : 1;
     /** Bit 19 - VIF - Virtual interrupt flag - System flag. */
-	unsigned u1VIF:1;
+    unsigned    u1VIF : 1;
     /** Bit 20 - VIP - Virtual interrupt pending flag - System flag. */
-	unsigned u1VIP:1;
+    unsigned    u1VIP : 1;
     /** Bit 21 - ID - CPUID flag - System flag. If this responds to flipping CPUID is supported. */
-	unsigned u1ID:1;
+    unsigned    u1ID : 1;
     /** Bit 22-31 - 0 - Reserved flag. */
-	unsigned u10Reserved4:10;
+    unsigned    u10Reserved4 : 10;
 } X86EFLAGSBITS;
 /** Pointer to EFLAGS bits. */
 typedef X86EFLAGSBITS *PX86EFLAGSBITS;
@@ -105,21 +106,22 @@ typedef const X86EFLAGSBITS *PCX86EFLAGSBITS;
 /**
  * EFLAGS.
  */
-typedef union X86EFLAGS {
+typedef union X86EFLAGS
+{
     /** The plain unsigned view. */
-	uint32_t u;
+    uint32_t        u;
 #ifndef VBOX_FOR_DTRACE_LIB
     /** The bitfield view. */
-	X86EFLAGSBITS Bits;
+    X86EFLAGSBITS   Bits;
 #endif
     /** The 8-bit view. */
-	uint8_t au8[4];
+    uint8_t         au8[4];
     /** The 16-bit view. */
-	uint16_t au16[2];
+    uint16_t        au16[2];
     /** The 32-bit view. */
-	uint32_t au32[1];
+    uint32_t        au32[1];
     /** The 32-bit view. */
-	uint32_t u32;
+    uint32_t        u32;
 } X86EFLAGS;
 /** Pointer to EFLAGS. */
 typedef X86EFLAGS *PX86EFLAGS;
@@ -129,28 +131,30 @@ typedef const X86EFLAGS *PCX86EFLAGS;
 /**
  * RFLAGS (32 upper bits are reserved).
  */
-typedef union X86RFLAGS {
+typedef union X86RFLAGS
+{
     /** The plain unsigned view. */
-	uint64_t u;
+    uint64_t        u;
 #ifndef VBOX_FOR_DTRACE_LIB
     /** The bitfield view. */
-	X86EFLAGSBITS Bits;
+    X86EFLAGSBITS   Bits;
 #endif
     /** The 8-bit view. */
-	uint8_t au8[8];
+    uint8_t         au8[8];
     /** The 16-bit view. */
-	uint16_t au16[4];
+    uint16_t        au16[4];
     /** The 32-bit view. */
-	uint32_t au32[2];
+    uint32_t        au32[2];
     /** The 64-bit view. */
-	uint64_t au64[1];
+    uint64_t        au64[1];
     /** The 64-bit view. */
-	uint64_t u64;
+    uint64_t        u64;
 } X86RFLAGS;
 /** Pointer to RFLAGS. */
 typedef X86RFLAGS *PX86RFLAGS;
 /** Pointer to const RFLAGS. */
 typedef const X86RFLAGS *PCX86RFLAGS;
+
 
 /** @name EFLAGS
  * @{
@@ -214,77 +218,79 @@ typedef const X86RFLAGS *PCX86RFLAGS;
 #define X86_EFL_STATUS_BITS     ( X86_EFL_CF | X86_EFL_PF | X86_EFL_AF | X86_EFL_ZF | X86_EFL_SF | X86_EFL_OF )
 /** @} */
 
+
 /** CPUID Feature information - ECX.
  * CPUID query with EAX=1.
  */
 #ifndef VBOX_FOR_DTRACE_LIB
-typedef struct X86CPUIDFEATECX {
+typedef struct X86CPUIDFEATECX
+{
     /** Bit 0 - SSE3 - Supports SSE3 or not. */
-	unsigned u1SSE3:1;
+    unsigned    u1SSE3 : 1;
     /** Bit 1 - PCLMULQDQ. */
-	unsigned u1PCLMULQDQ:1;
+    unsigned    u1PCLMULQDQ : 1;
     /** Bit 2 - DS Area 64-bit layout. */
-	unsigned u1DTE64:1;
+    unsigned    u1DTE64 : 1;
     /** Bit 3 - MONITOR - Supports MONITOR/MWAIT. */
-	unsigned u1Monitor:1;
+    unsigned    u1Monitor : 1;
     /** Bit 4 - CPL-DS - CPL Qualified Debug Store. */
-	unsigned u1CPLDS:1;
+    unsigned    u1CPLDS : 1;
     /** Bit 5 - VMX - Virtual Machine Technology. */
-	unsigned u1VMX:1;
+    unsigned    u1VMX : 1;
     /** Bit 6 - SMX: Safer Mode Extensions. */
-	unsigned u1SMX:1;
+    unsigned    u1SMX : 1;
     /** Bit 7 - EST - Enh. SpeedStep Tech. */
-	unsigned u1EST:1;
+    unsigned    u1EST : 1;
     /** Bit 8 - TM2 - Terminal Monitor 2. */
-	unsigned u1TM2:1;
+    unsigned    u1TM2 : 1;
     /** Bit 9 - SSSE3 - Supplemental Streaming SIMD Extensions 3. */
-	unsigned u1SSSE3:1;
+    unsigned    u1SSSE3 : 1;
     /** Bit 10 - CNTX-ID - L1 Context ID. */
-	unsigned u1CNTXID:1;
+    unsigned    u1CNTXID : 1;
     /** Bit 11 - Reserved. */
-	unsigned u1Reserved1:1;
+    unsigned    u1Reserved1 : 1;
     /** Bit 12 - FMA. */
-	unsigned u1FMA:1;
+    unsigned    u1FMA : 1;
     /** Bit 13 - CX16 - CMPXCHG16B. */
-	unsigned u1CX16:1;
+    unsigned    u1CX16 : 1;
     /** Bit 14 - xTPR Update Control. Processor supports changing IA32_MISC_ENABLES[bit 23]. */
-	unsigned u1TPRUpdate:1;
+    unsigned    u1TPRUpdate : 1;
     /** Bit 15 - PDCM - Perf/Debug Capability MSR. */
-	unsigned u1PDCM:1;
+    unsigned    u1PDCM : 1;
     /** Bit 16 - Reserved. */
-	unsigned u1Reserved2:1;
+    unsigned    u1Reserved2 : 1;
     /** Bit 17 - PCID - Process-context identifiers. */
-	unsigned u1PCID:1;
+    unsigned    u1PCID : 1;
     /** Bit 18 - Direct Cache Access. */
-	unsigned u1DCA:1;
+    unsigned    u1DCA : 1;
     /** Bit 19 - SSE4_1 - Supports SSE4_1 or not. */
-	unsigned u1SSE4_1:1;
+    unsigned    u1SSE4_1 : 1;
     /** Bit 20 - SSE4_2 - Supports SSE4_2 or not. */
-	unsigned u1SSE4_2:1;
+    unsigned    u1SSE4_2 : 1;
     /** Bit 21 - x2APIC. */
-	unsigned u1x2APIC:1;
+    unsigned    u1x2APIC : 1;
     /** Bit 22 - MOVBE - Supports MOVBE. */
-	unsigned u1MOVBE:1;
+    unsigned    u1MOVBE : 1;
     /** Bit 23 - POPCNT - Supports POPCNT. */
-	unsigned u1POPCNT:1;
+    unsigned    u1POPCNT : 1;
     /** Bit 24 - TSC-Deadline. */
-	unsigned u1TSCDEADLINE:1;
+    unsigned    u1TSCDEADLINE : 1;
     /** Bit 25 - AES. */
-	unsigned u1AES:1;
+    unsigned    u1AES : 1;
     /** Bit 26 - XSAVE - Supports XSAVE. */
-	unsigned u1XSAVE:1;
+    unsigned    u1XSAVE : 1;
     /** Bit 27 - OSXSAVE - Supports OSXSAVE. */
-	unsigned u1OSXSAVE:1;
+    unsigned    u1OSXSAVE : 1;
     /** Bit 28 - AVX - Supports AVX instruction extensions. */
-	unsigned u1AVX:1;
+    unsigned    u1AVX : 1;
     /** Bit 29 - F16C - Supports 16-bit floating point conversion instructions. */
-	unsigned u1F16C:1;
+    unsigned    u1F16C : 1;
     /** Bit 30 - RDRAND - Supports RDRAND. */
-	unsigned u1RDRAND:1;
+    unsigned    u1RDRAND : 1;
     /** Bit 31 - Hypervisor present (we're a guest). */
-	unsigned u1HVP:1;
+    unsigned    u1HVP : 1;
 } X86CPUIDFEATECX;
-#else /* VBOX_FOR_DTRACE_LIB */
+#else  /* VBOX_FOR_DTRACE_LIB */
 typedef uint32_t X86CPUIDFEATECX;
 #endif /* VBOX_FOR_DTRACE_LIB */
 /** Pointer to CPUID Feature Information - ECX. */
@@ -292,77 +298,79 @@ typedef X86CPUIDFEATECX *PX86CPUIDFEATECX;
 /** Pointer to const CPUID Feature Information - ECX. */
 typedef const X86CPUIDFEATECX *PCX86CPUIDFEATECX;
 
+
 /** CPUID Feature Information - EDX.
  * CPUID query with EAX=1.
  */
-#ifndef VBOX_FOR_DTRACE_LIB	/* DTrace different (brain-dead from a C pov) bitfield implementation */
-typedef struct X86CPUIDFEATEDX {
+#ifndef VBOX_FOR_DTRACE_LIB /* DTrace different (brain-dead from a C pov) bitfield implementation */
+typedef struct X86CPUIDFEATEDX
+{
     /** Bit 0 - FPU - x87 FPU on Chip. */
-	unsigned u1FPU:1;
+    unsigned    u1FPU : 1;
     /** Bit 1 - VME - Virtual 8086 Mode Enhancements. */
-	unsigned u1VME:1;
+    unsigned    u1VME : 1;
     /** Bit 2 - DE - Debugging extensions. */
-	unsigned u1DE:1;
+    unsigned    u1DE : 1;
     /** Bit 3 - PSE - Page Size Extension. */
-	unsigned u1PSE:1;
+    unsigned    u1PSE : 1;
     /** Bit 4 - TSC - Time Stamp Counter. */
-	unsigned u1TSC:1;
+    unsigned    u1TSC : 1;
     /** Bit 5 - MSR - Model Specific Registers RDMSR and WRMSR Instructions. */
-	unsigned u1MSR:1;
+    unsigned    u1MSR : 1;
     /** Bit 6 - PAE - Physical Address Extension. */
-	unsigned u1PAE:1;
+    unsigned    u1PAE : 1;
     /** Bit 7 - MCE - Machine Check Exception. */
-	unsigned u1MCE:1;
+    unsigned    u1MCE : 1;
     /** Bit 8 - CX8 - CMPXCHG8B instruction. */
-	unsigned u1CX8:1;
+    unsigned    u1CX8 : 1;
     /** Bit 9 - APIC - APIC On-Chip. */
-	unsigned u1APIC:1;
+    unsigned    u1APIC : 1;
     /** Bit 10 - Reserved. */
-	unsigned u1Reserved1:1;
+    unsigned    u1Reserved1 : 1;
     /** Bit 11 - SEP - SYSENTER and SYSEXIT. */
-	unsigned u1SEP:1;
+    unsigned    u1SEP : 1;
     /** Bit 12 - MTRR - Memory Type Range Registers. */
-	unsigned u1MTRR:1;
+    unsigned    u1MTRR : 1;
     /** Bit 13 - PGE - PTE Global Bit. */
-	unsigned u1PGE:1;
+    unsigned    u1PGE : 1;
     /** Bit 14 - MCA - Machine Check Architecture. */
-	unsigned u1MCA:1;
+    unsigned    u1MCA : 1;
     /** Bit 15 - CMOV - Conditional Move Instructions. */
-	unsigned u1CMOV:1;
+    unsigned    u1CMOV : 1;
     /** Bit 16 - PAT - Page Attribute Table. */
-	unsigned u1PAT:1;
+    unsigned    u1PAT : 1;
     /** Bit 17 - PSE-36 - 36-bit Page Size Extension. */
-	unsigned u1PSE36:1;
+    unsigned    u1PSE36 : 1;
     /** Bit 18 - PSN - Processor Serial Number. */
-	unsigned u1PSN:1;
+    unsigned    u1PSN : 1;
     /** Bit 19 - CLFSH - CLFLUSH Instruction. */
-	unsigned u1CLFSH:1;
+    unsigned    u1CLFSH : 1;
     /** Bit 20 - Reserved. */
-	unsigned u1Reserved2:1;
+    unsigned    u1Reserved2 : 1;
     /** Bit 21 - DS - Debug Store. */
-	unsigned u1DS:1;
+    unsigned    u1DS : 1;
     /** Bit 22 - ACPI - Thermal Monitor and Software Controlled Clock Facilities. */
-	unsigned u1ACPI:1;
+    unsigned    u1ACPI : 1;
     /** Bit 23 - MMX - Intel MMX 'Technology'. */
-	unsigned u1MMX:1;
+    unsigned    u1MMX : 1;
     /** Bit 24 - FXSR - FXSAVE and FXRSTOR Instructions. */
-	unsigned u1FXSR:1;
+    unsigned    u1FXSR : 1;
     /** Bit 25 - SSE - SSE Support. */
-	unsigned u1SSE:1;
+    unsigned    u1SSE : 1;
     /** Bit 26 - SSE2 - SSE2 Support. */
-	unsigned u1SSE2:1;
+    unsigned    u1SSE2 : 1;
     /** Bit 27 - SS - Self Snoop. */
-	unsigned u1SS:1;
+    unsigned    u1SS : 1;
     /** Bit 28 - HTT - Hyper-Threading Technology. */
-	unsigned u1HTT:1;
+    unsigned    u1HTT : 1;
     /** Bit 29 - TM - Thermal Monitor. */
-	unsigned u1TM:1;
+    unsigned    u1TM : 1;
     /** Bit 30 - Reserved - . */
-	unsigned u1Reserved3:1;
+    unsigned    u1Reserved3 : 1;
     /** Bit 31 - PBE - Pending Break Enabled. */
-	unsigned u1PBE:1;
+    unsigned    u1PBE : 1;
 } X86CPUIDFEATEDX;
-#else /* VBOX_FOR_DTRACE_LIB */
+#else  /* VBOX_FOR_DTRACE_LIB */
 typedef uint32_t X86CPUIDFEATEDX;
 #endif /* VBOX_FOR_DTRACE_LIB */
 /** Pointer to CPUID Feature Information - EDX. */
@@ -374,18 +382,19 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
  * CPUID query with EAX=0.
  * @{
  */
-#define X86_CPUID_VENDOR_INTEL_EBX      0x756e6547	/* Genu */
-#define X86_CPUID_VENDOR_INTEL_ECX      0x6c65746e	/* ntel */
-#define X86_CPUID_VENDOR_INTEL_EDX      0x49656e69	/* ineI */
+#define X86_CPUID_VENDOR_INTEL_EBX      0x756e6547      /* Genu */
+#define X86_CPUID_VENDOR_INTEL_ECX      0x6c65746e      /* ntel */
+#define X86_CPUID_VENDOR_INTEL_EDX      0x49656e69      /* ineI */
 
-#define X86_CPUID_VENDOR_AMD_EBX        0x68747541	/* Auth */
-#define X86_CPUID_VENDOR_AMD_ECX        0x444d4163	/* cAMD */
-#define X86_CPUID_VENDOR_AMD_EDX        0x69746e65	/* enti */
+#define X86_CPUID_VENDOR_AMD_EBX        0x68747541      /* Auth */
+#define X86_CPUID_VENDOR_AMD_ECX        0x444d4163      /* cAMD */
+#define X86_CPUID_VENDOR_AMD_EDX        0x69746e65      /* enti */
 
-#define X86_CPUID_VENDOR_VIA_EBX        0x746e6543	/* Cent */
-#define X86_CPUID_VENDOR_VIA_ECX        0x736c7561	/* auls */
-#define X86_CPUID_VENDOR_VIA_EDX        0x48727561	/* aurH */
+#define X86_CPUID_VENDOR_VIA_EBX        0x746e6543      /* Cent */
+#define X86_CPUID_VENDOR_VIA_ECX        0x736c7561      /* auls */
+#define X86_CPUID_VENDOR_VIA_EDX        0x48727561      /* aurH */
 /** @} */
+
 
 /** @name CPUID Feature information.
  * CPUID query with EAX=1.
@@ -455,6 +464,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 /** ECX Bit 31 - Hypervisor Present (software only). */
 #define X86_CPUID_FEATURE_ECX_HVP       RT_BIT_32(31)
 
+
 /** Bit 0 - FPU - x87 FPU on Chip. */
 #define X86_CPUID_FEATURE_EDX_FPU       RT_BIT_32(0)
 /** Bit 1 - VME - Virtual 8086 Mode Enhancements. */
@@ -463,14 +473,14 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CPUID_FEATURE_EDX_DE        RT_BIT_32(2)
 /** Bit 3 - PSE - Page Size Extension. */
 #define X86_CPUID_FEATURE_EDX_PSE       RT_BIT_32(3)
-#define X86_CPUID_FEATURE_EDX_PSE_BIT             3	/**< Bit number for X86_CPUID_FEATURE_EDX_PSE. */
+#define X86_CPUID_FEATURE_EDX_PSE_BIT             3     /**< Bit number for X86_CPUID_FEATURE_EDX_PSE. */
 /** Bit 4 - TSC - Time Stamp Counter. */
 #define X86_CPUID_FEATURE_EDX_TSC       RT_BIT_32(4)
 /** Bit 5 - MSR - Model Specific Registers RDMSR and WRMSR Instructions. */
 #define X86_CPUID_FEATURE_EDX_MSR       RT_BIT_32(5)
 /** Bit 6 - PAE - Physical Address Extension. */
 #define X86_CPUID_FEATURE_EDX_PAE       RT_BIT_32(6)
-#define X86_CPUID_FEATURE_EDX_PAE_BIT             6	/**< Bit number for X86_CPUID_FEATURE_EDX_PAE. */
+#define X86_CPUID_FEATURE_EDX_PAE_BIT             6     /**< Bit number for X86_CPUID_FEATURE_EDX_PAE. */
 /** Bit 7 - MCE - Machine Check Exception. */
 #define X86_CPUID_FEATURE_EDX_MCE       RT_BIT_32(7)
 /** Bit 8 - CX8 - CMPXCHG8B instruction. */
@@ -526,6 +536,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 /** ECX Bit 1 - MWAITBREAK - Break mwait for external interrupt even if EFLAGS.IF=0. */
 #define X86_CPUID_MWAIT_ECX_BREAKIRQIF0    RT_BIT_32(1)
 /** @} */
+
 
 /** @name CPUID Structured Extended Feature information.
  * CPUID query with EAX=7.
@@ -587,6 +598,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 /** ECX Bit 0 - PREFETCHWT1 - Supports the PREFETCHWT1 instruction. */
 #define X86_CPUID_STEXT_FEATURE_ECX_PREFETCHWT1       RT_BIT_32(0)
 /** @} */
+
 
 /** @name CPUID Extended Feature information.
  *  CPUID query with EAX=0x80000001.
@@ -695,6 +707,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CPUID_AMD_FEATURE_ECX_TOPOEXT   RT_BIT_32(22)
 /** @} */
 
+
 /** @name CPUID AMD Feature information.
  * CPUID query with EAX=0x80000007.
  * @{
@@ -726,6 +739,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 /** Bit 12 - PA - Processor accumulator (MSR c001_007a). */
 #define X86_CPUID_AMD_ADVPOWER_EDX_PA        RT_BIT_32(12)
 /** @} */
+
 
 /** @name CR0
  * @remarks The 286 (MSW), 386 and 486 ignores attempts at setting
@@ -766,6 +780,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CR0_PAGING                      RT_BIT_32(31)
 /** @} */
 
+
 /** @name CR3
  * @{ */
 /** Bit 3 - PWT - Page-level Writes Transparent. */
@@ -779,6 +794,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 /** Bits 12-51 - - AMD64 Page directory page number. */
 #define X86_CR3_AMD64_PAGE_MASK             UINT64_C(0x000ffffffffff000)
 /** @} */
+
 
 /** @name CR4
  * @{ */
@@ -821,6 +837,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CR4_PKE                         RT_BIT_32(22)
 /** @} */
 
+
 /** @name DR6
  * @{ */
 /** Bit 0 - B0 - Breakpoint 0 condition detected. */
@@ -851,6 +868,7 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 
 /** Get the DR6.Bx bit for a the given breakpoint. */
 #define X86_DR6_B(iBp)                      RT_BIT_64(iBp)
+
 
 /** @name DR7
  * @{ */
@@ -1012,6 +1030,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define X86_DR7_INIT_VAL                    0x400
 /** @} */
 
+
 /** @name Machine Specific Registers
  * @{
  */
@@ -1027,7 +1046,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 
 #define MSR_IA32_PLATFORM_ID                0x17
 
-#ifndef MSR_IA32_APICBASE	/* qemu cpu.h kludge */
+#ifndef MSR_IA32_APICBASE /* qemu cpu.h kludge */
 # define MSR_IA32_APICBASE                  0x1b
 /** Local APIC enabled. */
 # define MSR_IA32_APICBASE_EN               RT_BIT_64(11)
@@ -1097,7 +1116,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 /** Cache control/info. */
 #define MSR_BBL_CR_CTL3                     UINT32_C(0x11e)
 
-#ifndef MSR_IA32_SYSENTER_CS	/* qemu cpu.h kludge */
+#ifndef MSR_IA32_SYSENTER_CS /* qemu cpu.h kludge */
 /** SYSENTER_CS - the R0 CS, indirectly giving R0 SS, R3 CS and R3 DS.
  * R0 SS == CS + 8
  * R3 CS == CS + 16
@@ -1170,6 +1189,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define MSR_P4_LASTBRANCH_2                 UINT32_C(0x000001dd)
 #define MSR_P4_LASTBRANCH_3                 UINT32_C(0x000001de)
 /** @} */
+
 
 #define IA32_MTRR_PHYSBASE0                 0x200
 #define IA32_MTRR_PHYSMASK0                 0x201
@@ -1362,7 +1382,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define  MSR_K6_EFER_LMA                     RT_BIT_32(10)
 /** Bit 11 - NXE - No-Execute Page Protection Enabled. (R/W) */
 #define  MSR_K6_EFER_NXE                     RT_BIT_32(11)
-#define  MSR_K6_EFER_BIT_NXE                 11	/**< Bit number of MSR_K6_EFER_NXE */
+#define  MSR_K6_EFER_BIT_NXE                 11 /**< Bit number of MSR_K6_EFER_NXE */
 /** Bit 12 - SVME - Secure VM Extension Enabled. (R/W) */
 #define  MSR_K6_EFER_SVME                    RT_BIT_32(12)
 /** Bit 13 - LMSLE - Long Mode Segment Limit Enable. (R/W?) */
@@ -1440,6 +1460,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 
 /** @} */
 
+
 /** @name Page Table / Directory / Directory Pointers / L4.
  * @{
  */
@@ -1453,6 +1474,7 @@ typedef X86PGUINT const *PCX86PGUINT;
 
 /** Number of entries in a 32-bit PT/PD. */
 #define X86_PG_ENTRIES                      1024
+
 
 /** PAE page table/page directory/pdpt/l4/l5 entry as an unsigned integer. */
 typedef uint64_t X86PGPAEUINT;
@@ -1521,6 +1543,7 @@ typedef X86PGPAEUINT const *PCX86PGPAEUINT;
  */
 #define X86_IS_CANONICAL(a_u64Addr)         ((uint64_t)(a_u64Addr) + UINT64_C(0x800000000000) < UINT64_C(0x1000000000000))
 
+
 /** @name Page Table Entry
  * @{
  */
@@ -1585,31 +1608,32 @@ typedef X86PGPAEUINT const *PCX86PGPAEUINT;
 /**
  * Page table entry.
  */
-typedef struct X86PTEBITS {
+typedef struct X86PTEBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Dirty flag.
      * Indicates that the page has been written to. */
-	uint32_t u1Dirty:1;
+    uint32_t    u1Dirty : 1;
     /** Reserved / If PAT enabled, bit 2 of the index.  */
-	uint32_t u1PAT:1;
+    uint32_t    u1PAT : 1;
     /** Global flag. (Ignored in all but final level.) */
-	uint32_t u1Global:1;
+    uint32_t    u1Global : 1;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level. */
-	uint32_t u20PageNo:20;
+    uint32_t    u20PageNo : 20;
 } X86PTEBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PTEBITS, 4);
@@ -1622,17 +1646,18 @@ typedef const X86PTEBITS *PCX86PTEBITS;
 /**
  * Page table entry.
  */
-typedef union X86PTE {
+typedef union X86PTE
+{
     /** Unsigned integer view */
-	X86PGUINT u;
+    X86PGUINT       u;
     /** Bit field view. */
-	X86PTEBITS n;
+    X86PTEBITS      n;
     /** 32-bit view. */
-	uint32_t au32[1];
+    uint32_t        au32[1];
     /** 16-bit view. */
-	uint16_t au16[2];
+    uint16_t        au16[2];
     /** 8-bit view. */
-	uint8_t au8[4];
+    uint8_t         au8[4];
 } X86PTE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PTE, 4);
@@ -1642,40 +1667,42 @@ typedef X86PTE *PX86PTE;
 /** Pointer to a const page table entry. */
 typedef const X86PTE *PCX86PTE;
 
+
 /**
  * PAE page table entry.
  */
-typedef struct X86PTEPAEBITS {
+typedef struct X86PTEPAEBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor(=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Dirty flag.
      * Indicates that the page has been written to. */
-	uint32_t u1Dirty:1;
+    uint32_t    u1Dirty : 1;
     /** Reserved / If PAT enabled, bit 2 of the index.  */
-	uint32_t u1PAT:1;
+    uint32_t    u1PAT : 1;
     /** Global flag. (Ignored in all but final level.) */
-	uint32_t u1Global:1;
+    uint32_t    u1Global : 1;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level - Low Part. Don't use this. */
-	uint32_t u20PageNoLow:20;
+    uint32_t    u20PageNoLow : 20;
     /** Physical Page number of the next level - High Part. Don't use this. */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** MBZ bits */
-	uint32_t u11Reserved:11;
+    uint32_t    u11Reserved : 11;
     /** No Execute flag. */
-	uint32_t u1NoExecute:1;
+    uint32_t    u1NoExecute : 1;
 } X86PTEPAEBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PTEPAEBITS, 8);
@@ -1688,17 +1715,18 @@ typedef const X86PTEPAEBITS *PCX86PTEPAEBITS;
 /**
  * PAE Page table entry.
  */
-typedef union X86PTEPAE {
+typedef union X86PTEPAE
+{
     /** Unsigned integer view */
-	X86PGPAEUINT u;
+    X86PGPAEUINT    u;
     /** Bit field view. */
-	X86PTEPAEBITS n;
+    X86PTEPAEBITS   n;
     /** 32-bit view. */
-	uint32_t au32[2];
+    uint32_t        au32[2];
     /** 16-bit view. */
-	uint16_t au16[4];
+    uint16_t        au16[4];
     /** 8-bit view. */
-	uint8_t au8[8];
+    uint8_t         au8[8];
 } X86PTEPAE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PTEPAE, 8);
@@ -1712,9 +1740,10 @@ typedef const X86PTEPAE *PCX86PTEPAE;
 /**
  * Page table.
  */
-typedef struct X86PT {
+typedef struct X86PT
+{
     /** PTE Array. */
-	X86PTE a[X86_PG_ENTRIES];
+    X86PTE     a[X86_PG_ENTRIES];
 } X86PT;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PT, 4096);
@@ -1729,12 +1758,14 @@ typedef const X86PT *PCX86PT;
 /** The PT index mask (apply to a shifted page address). */
 #define X86_PT_MASK                         0x3ff
 
+
 /**
  * Page directory.
  */
-typedef struct X86PTPAE {
+typedef struct X86PTPAE
+{
     /** PTE Array. */
-	X86PTEPAE a[X86_PG_PAE_ENTRIES];
+    X86PTEPAE  a[X86_PG_PAE_ENTRIES];
 } X86PTPAE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PTPAE, 4096);
@@ -1748,6 +1779,7 @@ typedef const X86PTPAE *PCX86PTPAE;
 #define X86_PT_PAE_SHIFT                    12
 /** The PAE PT index mask (apply to a shifted page address). */
 #define X86_PT_PAE_MASK                     0x1ff
+
 
 /** @name 4KB Page Directory Entry
  * @{
@@ -1788,30 +1820,31 @@ typedef const X86PTPAE *PCX86PTPAE;
 /**
  * Page directory entry.
  */
-typedef struct X86PDEBITS {
+typedef struct X86PDEBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page has been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Reserved / Ignored (dirty bit). */
-	uint32_t u1Reserved0:1;
+    uint32_t    u1Reserved0 : 1;
     /** Size bit if PSE is enabled - in any event it's 0. */
-	uint32_t u1Size:1;
+    uint32_t    u1Size : 1;
     /** Reserved / Ignored (global bit). */
-	uint32_t u1Reserved1:1;
+    uint32_t    u1Reserved1 : 1;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level. */
-	uint32_t u20PageNo:20;
+    uint32_t    u20PageNo : 20;
 } X86PDEBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDEBITS, 4);
@@ -1821,39 +1854,41 @@ typedef X86PDEBITS *PX86PDEBITS;
 /** Pointer to a const page directory entry. */
 typedef const X86PDEBITS *PCX86PDEBITS;
 
+
 /**
  * PAE page directory entry.
  */
-typedef struct X86PDEPAEBITS {
+typedef struct X86PDEPAEBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page has been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Reserved / Ignored (dirty bit). */
-	uint32_t u1Reserved0:1;
+    uint32_t    u1Reserved0 : 1;
     /** Size bit if PSE is enabled - in any event it's 0. */
-	uint32_t u1Size:1;
+    uint32_t    u1Size : 1;
     /** Reserved / Ignored (global bit). /  */
-	uint32_t u1Reserved1:1;
+    uint32_t    u1Reserved1 : 1;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level - Low Part. Don't use! */
-	uint32_t u20PageNoLow:20;
+    uint32_t    u20PageNoLow : 20;
     /** Physical Page number of the next level - High Part. Don't use! */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** MBZ bits */
-	uint32_t u11Reserved:11;
+    uint32_t    u11Reserved : 11;
     /** No Execute flag. */
-	uint32_t u1NoExecute:1;
+    uint32_t    u1NoExecute : 1;
 } X86PDEPAEBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDEPAEBITS, 8);
@@ -1864,6 +1899,7 @@ typedef X86PDEPAEBITS *PX86PDEPAEBITS;
 typedef const X86PDEPAEBITS *PCX86PDEPAEBITS;
 
 /** @} */
+
 
 /** @name 2/4MB Page Directory Entry
  * @{
@@ -1918,38 +1954,39 @@ typedef const X86PDEPAEBITS *PCX86PDEPAEBITS;
 /**
  * 4MB page directory entry.
  */
-typedef struct X86PDE4MBITS {
+typedef struct X86PDE4MBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Dirty flag.
      * Indicates that the page has been written to. */
-	uint32_t u1Dirty:1;
+    uint32_t    u1Dirty : 1;
     /** Page size flag - always 1 for 4MB entries. */
-	uint32_t u1Size:1;
+    uint32_t    u1Size : 1;
     /** Global flag.  */
-	uint32_t u1Global:1;
+    uint32_t    u1Global : 1;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Reserved / If PAT enabled, bit 2 of the index.  */
-	uint32_t u1PAT:1;
+    uint32_t    u1PAT : 1;
     /** Bits 32-39 of the page number on AMD64.
      * This AMD64 hack allows accessing 40bits of physical memory without PAE. */
-	uint32_t u8PageNoHigh:8;
+    uint32_t    u8PageNoHigh : 8;
     /** Reserved. */
-	uint32_t u1Reserved:1;
+    uint32_t    u1Reserved : 1;
     /** Physical Page number of the page. */
-	uint32_t u10PageNo:10;
+    uint32_t    u10PageNo : 10;
 } X86PDE4MBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDE4MBITS, 4);
@@ -1959,44 +1996,46 @@ typedef X86PDE4MBITS *PX86PDE4MBITS;
 /** Pointer to a const page table entry. */
 typedef const X86PDE4MBITS *PCX86PDE4MBITS;
 
+
 /**
  * 2MB PAE page directory entry.
  */
-typedef struct X86PDE2MPAEBITS {
+typedef struct X86PDE2MPAEBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor(=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Dirty flag.
      * Indicates that the page has been written to. */
-	uint32_t u1Dirty:1;
+    uint32_t    u1Dirty : 1;
     /** Page size flag - always 1 for 2MB entries. */
-	uint32_t u1Size:1;
+    uint32_t    u1Size : 1;
     /** Global flag.  */
-	uint32_t u1Global:1;
+    uint32_t    u1Global : 1;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Reserved / If PAT enabled, bit 2 of the index.  */
-	uint32_t u1PAT:1;
+    uint32_t    u1PAT : 1;
     /** Reserved. */
-	uint32_t u9Reserved:9;
+    uint32_t    u9Reserved : 9;
     /** Physical Page number of the next level - Low part. Don't use! */
-	uint32_t u10PageNoLow:10;
+    uint32_t    u10PageNoLow : 10;
     /** Physical Page number of the next level - High part. Don't use! */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** MBZ bits */
-	uint32_t u11Reserved:11;
+    uint32_t    u11Reserved : 11;
     /** No Execute flag. */
-	uint32_t u1NoExecute:1;
+    uint32_t    u1NoExecute : 1;
 } X86PDE2MPAEBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDE2MPAEBITS, 8);
@@ -2011,19 +2050,20 @@ typedef const X86PDE2MPAEBITS *PCX86PDE2MPAEBITS;
 /**
  * Page directory entry.
  */
-typedef union X86PDE {
+typedef union X86PDE
+{
     /** Unsigned integer view. */
-	X86PGUINT u;
+    X86PGUINT       u;
     /** Normal view. */
-	X86PDEBITS n;
+    X86PDEBITS      n;
     /** 4MB view (big). */
-	X86PDE4MBITS b;
+    X86PDE4MBITS    b;
     /** 8 bit unsigned integer view. */
-	uint8_t au8[4];
+    uint8_t         au8[4];
     /** 16 bit unsigned integer view. */
-	uint16_t au16[2];
+    uint16_t        au16[2];
     /** 32 bit unsigned integer view. */
-	uint32_t au32[1];
+    uint32_t        au32[1];
 } X86PDE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDE, 4);
@@ -2036,19 +2076,20 @@ typedef const X86PDE *PCX86PDE;
 /**
  * PAE page directory entry.
  */
-typedef union X86PDEPAE {
+typedef union X86PDEPAE
+{
     /** Unsigned integer view. */
-	X86PGPAEUINT u;
+    X86PGPAEUINT    u;
     /** Normal view. */
-	X86PDEPAEBITS n;
+    X86PDEPAEBITS   n;
     /** 2MB page view (big). */
-	X86PDE2MPAEBITS b;
+    X86PDE2MPAEBITS b;
     /** 8 bit unsigned integer view. */
-	uint8_t au8[8];
+    uint8_t         au8[8];
     /** 16 bit unsigned integer view. */
-	uint16_t au16[4];
+    uint16_t        au16[4];
     /** 32 bit unsigned integer view. */
-	uint32_t au32[2];
+    uint32_t        au32[2];
 } X86PDEPAE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDEPAE, 8);
@@ -2061,9 +2102,10 @@ typedef const X86PDEPAE *PCX86PDEPAE;
 /**
  * Page directory.
  */
-typedef struct X86PD {
+typedef struct X86PD
+{
     /** PDE Array. */
-	X86PDE a[X86_PG_ENTRIES];
+    X86PDE      a[X86_PG_ENTRIES];
 } X86PD;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PD, 4096);
@@ -2078,12 +2120,14 @@ typedef const X86PD *PCX86PD;
 /** The PD index mask (apply to a shifted page address). */
 #define X86_PD_MASK                         0x3ff
 
+
 /**
  * PAE page directory.
  */
-typedef struct X86PDPAE {
+typedef struct X86PDPAE
+{
     /** PDE Array. */
-	X86PDEPAE a[X86_PG_PAE_ENTRIES];
+    X86PDEPAE   a[X86_PG_PAE_ENTRIES];
 } X86PDPAE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDPAE, 4096);
@@ -2097,6 +2141,7 @@ typedef const X86PDPAE *PCX86PDPAE;
 #define X86_PD_PAE_SHIFT                    21
 /** The PAE PD index mask (apply to a shifted page address). */
 #define X86_PD_PAE_MASK                     0x1ff
+
 
 /** @name Page Directory Pointer Table Entry (PAE)
  * @{
@@ -2132,28 +2177,30 @@ typedef const X86PDPAE *PCX86PDPAE;
 /** Bits 63, 29-13 - - LM - MBZ bits for 1GB page entry when no NX. */
 #define X86_PDPE1G_LM_MBZ_MASK_NO_NX        UINT64_C(0x800000003fffe000)
 
+
 /**
  * Page directory pointer table entry.
  */
-typedef struct X86PDPEBITS {
+typedef struct X86PDPEBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Chunk of reserved bits. */
-	uint32_t u2Reserved:2;
+    uint32_t    u2Reserved : 2;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Chunk of reserved bits. */
-	uint32_t u4Reserved:4;
+    uint32_t    u4Reserved : 4;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level - Low Part. Don't use! */
-	uint32_t u20PageNoLow:20;
+    uint32_t    u20PageNoLow : 20;
     /** Physical Page number of the next level - High Part. Don't use! */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** MBZ bits */
-	uint32_t u12Reserved:12;
+    uint32_t    u12Reserved : 12;
 } X86PDPEBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDPEBITS, 8);
@@ -2166,32 +2213,33 @@ typedef const X86PDPEBITS *PCX86PTPEBITS;
 /**
  * Page directory pointer table entry. AMD64 version
  */
-typedef struct X86PDPEAMD64BITS {
+typedef struct X86PDPEAMD64BITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Chunk of reserved bits. */
-	uint32_t u3Reserved:3;
+    uint32_t    u3Reserved : 3;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level - Low Part. Don't use! */
-	uint32_t u20PageNoLow:20;
+    uint32_t    u20PageNoLow : 20;
     /** Physical Page number of the next level - High Part. Don't use! */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** MBZ bits */
-	uint32_t u11Reserved:11;
+    uint32_t    u11Reserved : 11;
     /** No Execute flag. */
-	uint32_t u1NoExecute:1;
+    uint32_t    u1NoExecute : 1;
 } X86PDPEAMD64BITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDPEAMD64BITS, 8);
@@ -2204,40 +2252,41 @@ typedef const X86PDPEAMD64BITS *PCX86PDPEAMD64BITS;
 /**
  * Page directory pointer table entry for 1GB page. (AMD64 only)
  */
-typedef struct X86PDPE1GB {
+typedef struct X86PDPE1GB
+{
     /** 0: Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** 1: Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** 2: User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** 3: Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** 4: Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** 5: Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** 6: Dirty flag for 1GB pages.  */
-	uint32_t u1Dirty:1;
+    uint32_t    u1Dirty : 1;
     /** 7: Indicates 1GB page if set. */
-	uint32_t u1Size:1;
+    uint32_t    u1Size : 1;
     /** 8: Global 1GB page. */
-	uint32_t u1Global:1;
+    uint32_t    u1Global: 1;
     /** 9-11: Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** 12: PAT bit for 1GB page. */
-	uint32_t u1PAT:1;
+    uint32_t    u1PAT : 1;
     /** 13-29: MBZ bits. */
-	uint32_t u17Reserved:17;
+    uint32_t    u17Reserved : 17;
     /** 30-31: Physical page number - Low Part. Don't use! */
-	uint32_t u2PageNoLow:2;
+    uint32_t    u2PageNoLow : 2;
     /** 32-51: Physical Page number of the next level - High Part. Don't use! */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** 52-62: MBZ bits */
-	uint32_t u11Reserved:11;
+    uint32_t    u11Reserved : 11;
     /** 63: No Execute flag. */
-	uint32_t u1NoExecute:1;
+    uint32_t    u1NoExecute : 1;
 } X86PDPE1GB;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDPE1GB, 8);
@@ -2250,21 +2299,22 @@ typedef const X86PDPE1GB *PCX86PDPE1GB;
 /**
  * Page directory pointer table entry.
  */
-typedef union X86PDPE {
+typedef union X86PDPE
+{
     /** Unsigned integer view. */
-	X86PGPAEUINT u;
+    X86PGPAEUINT    u;
     /** Normal view. */
-	X86PDPEBITS n;
+    X86PDPEBITS     n;
     /** AMD64 view. */
-	X86PDPEAMD64BITS lm;
+    X86PDPEAMD64BITS lm;
     /** AMD64 big view. */
-	X86PDPE1GB b;
+    X86PDPE1GB      b;
     /** 8 bit unsigned integer view. */
-	uint8_t au8[8];
+    uint8_t         au8[8];
     /** 16 bit unsigned integer view. */
-	uint16_t au16[4];
+    uint16_t        au16[4];
     /** 32 bit unsigned integer view. */
-	uint32_t au32[2];
+    uint32_t        au32[2];
 } X86PDPE;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDPE, 8);
@@ -2274,12 +2324,14 @@ typedef X86PDPE *PX86PDPE;
 /** Pointer to a const page directory pointer table entry. */
 typedef const X86PDPE *PCX86PDPE;
 
+
 /**
  * Page directory pointer table.
  */
-typedef struct X86PDPT {
+typedef struct X86PDPT
+{
     /** PDE Array. */
-	X86PDPE a[X86_PG_AMD64_PDPE_ENTRIES];
+    X86PDPE         a[X86_PG_AMD64_PDPE_ENTRIES];
 } X86PDPT;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PDPT, 4096);
@@ -2297,6 +2349,7 @@ typedef const X86PDPT *PCX86PDPT;
 #define X86_PDPT_MASK_AMD64        0x1ff
 
 /** @} */
+
 
 /** @name Page Map Level-4 Entry (Long Mode PAE)
  * @{
@@ -2327,32 +2380,33 @@ typedef const X86PDPT *PCX86PDPT;
 /**
  * Page Map Level-4 Entry
  */
-typedef struct X86PML4EBITS {
+typedef struct X86PML4EBITS
+{
     /** Flags whether(=1) or not the page is present. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Read(=0) / Write(=1) flag. */
-	uint32_t u1Write:1;
+    uint32_t    u1Write : 1;
     /** User(=1) / Supervisor (=0) flag. */
-	uint32_t u1User:1;
+    uint32_t    u1User : 1;
     /** Write Thru flag. If PAT enabled, bit 0 of the index. */
-	uint32_t u1WriteThru:1;
+    uint32_t    u1WriteThru : 1;
     /** Cache disabled flag. If PAT enabled, bit 1 of the index. */
-	uint32_t u1CacheDisable:1;
+    uint32_t    u1CacheDisable : 1;
     /** Accessed flag.
      * Indicates that the page have been read or written to. */
-	uint32_t u1Accessed:1;
+    uint32_t    u1Accessed : 1;
     /** Chunk of reserved bits. */
-	uint32_t u3Reserved:3;
+    uint32_t    u3Reserved : 3;
     /** Available for use to system software. */
-	uint32_t u3Available:3;
+    uint32_t    u3Available : 3;
     /** Physical Page number of the next level - Low Part. Don't use! */
-	uint32_t u20PageNoLow:20;
+    uint32_t    u20PageNoLow : 20;
     /** Physical Page number of the next level - High Part. Don't use! */
-	uint32_t u20PageNoHigh:20;
+    uint32_t    u20PageNoHigh : 20;
     /** MBZ bits */
-	uint32_t u11Reserved:11;
+    uint32_t    u11Reserved : 11;
     /** No Execute flag. */
-	uint32_t u1NoExecute:1;
+    uint32_t    u1NoExecute : 1;
 } X86PML4EBITS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PML4EBITS, 8);
@@ -2365,17 +2419,18 @@ typedef const X86PML4EBITS *PCX86PML4EBITS;
 /**
  * Page Map Level-4 Entry.
  */
-typedef union X86PML4E {
+typedef union X86PML4E
+{
     /** Unsigned integer view. */
-	X86PGPAEUINT u;
+    X86PGPAEUINT    u;
     /** Normal view. */
-	X86PML4EBITS n;
+    X86PML4EBITS    n;
     /** 8 bit unsigned integer view. */
-	uint8_t au8[8];
+    uint8_t         au8[8];
     /** 16 bit unsigned integer view. */
-	uint16_t au16[4];
+    uint16_t        au16[4];
     /** 32 bit unsigned integer view. */
-	uint32_t au32[2];
+    uint32_t        au32[2];
 } X86PML4E;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PML4E, 8);
@@ -2385,12 +2440,14 @@ typedef X86PML4E *PX86PML4E;
 /** Pointer to a const page map level-4 entry. */
 typedef const X86PML4E *PCX86PML4E;
 
+
 /**
  * Page Map Level-4.
  */
-typedef struct X86PML4 {
+typedef struct X86PML4
+{
     /** PDE Array. */
-	X86PML4E a[X86_PG_PAE_ENTRIES];
+    X86PML4E        a[X86_PG_PAE_ENTRIES];
 } X86PML4;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86PML4, 4096);
@@ -2412,30 +2469,33 @@ typedef const X86PML4 *PCX86PML4;
 /**
  * 32-bit protected mode FSTENV image.
  */
-typedef struct X86FSTENV32P {
-	uint16_t FCW;
-	uint16_t padding1;
-	uint16_t FSW;
-	uint16_t padding2;
-	uint16_t FTW;
-	uint16_t padding3;
-	uint32_t FPUIP;
-	uint16_t FPUCS;
-	uint16_t FOP;
-	uint32_t FPUDP;
-	uint16_t FPUDS;
-	uint16_t padding4;
+typedef struct X86FSTENV32P
+{
+    uint16_t    FCW;
+    uint16_t    padding1;
+    uint16_t    FSW;
+    uint16_t    padding2;
+    uint16_t    FTW;
+    uint16_t    padding3;
+    uint32_t    FPUIP;
+    uint16_t    FPUCS;
+    uint16_t    FOP;
+    uint32_t    FPUDP;
+    uint16_t    FPUDS;
+    uint16_t    padding4;
 } X86FSTENV32P;
 /** Pointer to a 32-bit protected mode FSTENV image. */
 typedef X86FSTENV32P *PX86FSTENV32P;
 /** Pointer to a const 32-bit protected mode FSTENV image. */
 typedef X86FSTENV32P const *PCX86FSTENV32P;
 
+
 /**
  * 80-bit MMX/FPU register type.
  */
-typedef struct X86FPUMMX {
-	uint8_t reg[10];
+typedef struct X86FPUMMX
+{
+    uint8_t reg[10];
 } X86FPUMMX;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86FPUMMX, 10);
@@ -2446,25 +2506,26 @@ typedef X86FPUMMX *PX86FPUMMX;
 typedef const X86FPUMMX *PCX86FPUMMX;
 
 /** FPU (x87) register. */
-typedef union X86FPUREG {
+typedef union X86FPUREG
+{
     /** MMX view. */
-	uint64_t mmx;
+    uint64_t    mmx;
     /** FPU view - todo. */
-	X86FPUMMX fpu;
+    X86FPUMMX   fpu;
     /** Extended precision floating point view. */
-	RTFLOAT80U r80;
+    RTFLOAT80U  r80;
     /** Extended precision floating point view v2 */
-	RTFLOAT80U2 r80Ex;
+    RTFLOAT80U2 r80Ex;
     /** 8-bit view. */
-	uint8_t au8[16];
+    uint8_t     au8[16];
     /** 16-bit view. */
-	uint16_t au16[8];
+    uint16_t    au16[8];
     /** 32-bit view. */
-	uint32_t au32[4];
+    uint32_t    au32[4];
     /** 64-bit view. */
-	uint64_t au64[2];
+    uint64_t    au64[2];
     /** 128-bit view. (yeah, very helpful) */
-	uint128_t au128[1];
+    uint128_t   au128[1];
 } X86FPUREG;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86FPUREG, 16);
@@ -2477,19 +2538,20 @@ typedef X86FPUREG const *PCX86FPUREG;
 /**
  * XMM register union.
  */
-typedef union X86XMMREG {
+typedef union X86XMMREG
+{
     /** XMM Register view *. */
-	uint128_t xmm;
+    uint128_t   xmm;
     /** 8-bit view. */
-	uint8_t au8[16];
+    uint8_t     au8[16];
     /** 16-bit view. */
-	uint16_t au16[8];
+    uint16_t    au16[8];
     /** 32-bit view. */
-	uint32_t au32[4];
+    uint32_t    au32[4];
     /** 64-bit view. */
-	uint64_t au64[2];
+    uint64_t    au64[2];
     /** 128-bit view. (yeah, very helpful) */
-	uint128_t au128[1];
+    uint128_t   au128[1];
 } X86XMMREG;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XMMREG, 16);
@@ -2502,19 +2564,20 @@ typedef X86XMMREG const *PCX86XMMREG;
 /**
  * YMM register union.
  */
-typedef union X86YMMREG {
+typedef union X86YMMREG
+{
     /** 8-bit view. */
-	uint8_t au8[32];
+    uint8_t     au8[32];
     /** 16-bit view. */
-	uint16_t au16[16];
+    uint16_t    au16[16];
     /** 32-bit view. */
-	uint32_t au32[8];
+    uint32_t    au32[8];
     /** 64-bit view. */
-	uint64_t au64[4];
+    uint64_t    au64[4];
     /** 128-bit view. (yeah, very helpful) */
-	uint128_t au128[2];
+    uint128_t   au128[2];
     /** XMM sub register view. */
-	X86XMMREG aXmm[2];
+    X86XMMREG   aXmm[2];
 } X86YMMREG;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86YMMREG, 32);
@@ -2527,21 +2590,22 @@ typedef X86YMMREG const *PCX86YMMREG;
 /**
  * ZMM register union.
  */
-typedef union X86ZMMREG {
+typedef union X86ZMMREG
+{
     /** 8-bit view. */
-	uint8_t au8[64];
+    uint8_t     au8[64];
     /** 16-bit view. */
-	uint16_t au16[32];
+    uint16_t    au16[32];
     /** 32-bit view. */
-	uint32_t au32[16];
+    uint32_t    au32[16];
     /** 64-bit view. */
-	uint64_t au64[8];
+    uint64_t    au64[8];
     /** 128-bit view. (yeah, very helpful) */
-	uint128_t au128[4];
+    uint128_t   au128[4];
     /** XMM sub register view. */
-	X86XMMREG aXmm[4];
+    X86XMMREG   aXmm[4];
     /** YMM sub register view. */
-	X86YMMREG aYmm[2];
+    X86YMMREG   aYmm[2];
 } X86ZMMREG;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86ZMMREG, 64);
@@ -2551,82 +2615,84 @@ typedef X86ZMMREG *PX86ZMMREG;
 /** Pointer to a const ZMM register state. */
 typedef X86ZMMREG const *PCX86ZMMREG;
 
+
 /**
  * 32-bit FPU state (aka FSAVE/FRSTOR Memory Region).
  * @todo verify this...
  */
 #pragma pack(1)
-typedef struct X86FPUSTATE {
+typedef struct X86FPUSTATE
+{
     /** 0x00 - Control word. */
-	uint16_t FCW;
+    uint16_t    FCW;
     /** 0x02 - Alignment word */
-	uint16_t Dummy1;
+    uint16_t    Dummy1;
     /** 0x04 - Status word. */
-	uint16_t FSW;
+    uint16_t    FSW;
     /** 0x06 - Alignment word */
-	uint16_t Dummy2;
+    uint16_t    Dummy2;
     /** 0x08 - Tag word */
-	uint16_t FTW;
+    uint16_t    FTW;
     /** 0x0a - Alignment word */
-	uint16_t Dummy3;
+    uint16_t    Dummy3;
 
     /** 0x0c - Instruction pointer. */
-	uint32_t FPUIP;
+    uint32_t    FPUIP;
     /** 0x10 - Code selector. */
-	uint16_t CS;
+    uint16_t    CS;
     /** 0x12 - Opcode. */
-	uint16_t FOP;
+    uint16_t    FOP;
     /** 0x14 - FOO. */
-	uint32_t FPUOO;
+    uint32_t    FPUOO;
     /** 0x18 - FOS. */
-	uint32_t FPUOS;
+    uint32_t    FPUOS;
     /** 0x1c - FPU register. */
-	X86FPUREG regs[8];
+    X86FPUREG   regs[8];
 } X86FPUSTATE;
 #pragma pack()
 /** Pointer to a FPU state. */
-typedef X86FPUSTATE *PX86FPUSTATE;
+typedef X86FPUSTATE  *PX86FPUSTATE;
 /** Pointer to a const FPU state. */
-typedef const X86FPUSTATE *PCX86FPUSTATE;
+typedef const X86FPUSTATE  *PCX86FPUSTATE;
 
 /**
  * FPU Extended state (aka FXSAVE/FXRSTORE Memory Region).
  */
 #pragma pack(1)
-typedef struct X86FXSTATE {
+typedef struct X86FXSTATE
+{
     /** 0x00 - Control word. */
-	uint16_t FCW;
+    uint16_t    FCW;
     /** 0x02 - Status word. */
-	uint16_t FSW;
+    uint16_t    FSW;
     /** 0x04 - Tag word. (The upper byte is always zero.) */
-	uint16_t FTW;
+    uint16_t    FTW;
     /** 0x06 - Opcode. */
-	uint16_t FOP;
+    uint16_t    FOP;
     /** 0x08 - Instruction pointer. */
-	uint32_t FPUIP;
+    uint32_t    FPUIP;
     /** 0x0c - Code selector. */
-	uint16_t CS;
-	uint16_t Rsrvd1;
+    uint16_t    CS;
+    uint16_t    Rsrvd1;
     /** 0x10 - Data pointer. */
-	uint32_t FPUDP;
+    uint32_t    FPUDP;
     /** 0x14 - Data segment */
-	uint16_t DS;
+    uint16_t    DS;
     /** 0x16 */
-	uint16_t Rsrvd2;
+    uint16_t    Rsrvd2;
     /** 0x18 */
-	uint32_t MXCSR;
+    uint32_t    MXCSR;
     /** 0x1c */
-	uint32_t MXCSR_MASK;
+    uint32_t    MXCSR_MASK;
     /** 0x20 - FPU registers. */
-	X86FPUREG aRegs[8];
+    X86FPUREG   aRegs[8];
     /** 0xA0 - XMM registers - 8 registers in 32 bits mode, 16 in long mode. */
-	X86XMMREG aXMM[16];
-	/* - offset 416 - */
-	uint32_t au32RsrvdRest[(464 - 416) / sizeof(uint32_t)];
-	/* - offset 464 - Software usable reserved bits. */
-	uint32_t au32RsrvdForSoftware[(512 - 464) / sizeof(uint32_t)];
-}
-X86FXSTATE;
+    X86XMMREG   aXMM[16];
+    /* - offset 416 - */
+    uint32_t    au32RsrvdRest[(464 - 416) / sizeof(uint32_t)];
+    /* - offset 464 - Software usable reserved bits. */
+    uint32_t    au32RsrvdForSoftware[(512 - 464) / sizeof(uint32_t)];
+} X86FXSTATE;
 #pragma pack()
 /** Pointer to a FPU Extended state. */
 typedef X86FXSTATE *PX86FXSTATE;
@@ -2642,8 +2708,7 @@ typedef const X86FXSTATE *PCX86FXSTATE;
 #define X86_FXSTATE_RSVD_32BIT_MAGIC    0x32b3232b
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86FXSTATE, 512);
-AssertCompileMemberOffset(X86FXSTATE, au32RsrvdForSoftware,
-			  X86_OFF_FXSTATE_RSVD);
+AssertCompileMemberOffset(X86FXSTATE, au32RsrvdForSoftware, X86_OFF_FXSTATE_RSVD);
 #endif
 
 /** @name FPU status word flags.
@@ -2689,6 +2754,7 @@ AssertCompileMemberOffset(X86FXSTATE, au32RsrvdForSoftware,
 /** FPU busy. */
 #define X86_FSW_B           RT_BIT_32(15)
 /** @} */
+
 
 /** @name FPU control word flags.
  * @{ */
@@ -2785,13 +2851,14 @@ AssertCompileMemberOffset(X86FXSTATE, au32RsrvdForSoftware,
 /**
  * XSAVE header.
  */
-typedef struct X86XSAVEHDR {
+typedef struct X86XSAVEHDR
+{
     /** XTATE_BV - Bitmap indicating whether a component is in the state. */
-	uint64_t bmXState;
+    uint64_t        bmXState;
     /** XCOMP_BC - Bitmap used by instructions applying structure compaction. */
-	uint64_t bmXComp;
+    uint64_t        bmXComp;
     /** Reserved for furture extensions, probably MBZ. */
-	uint64_t au64Reserved[6];
+    uint64_t        au64Reserved[6];
 } X86XSAVEHDR;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEHDR, 64);
@@ -2801,13 +2868,15 @@ typedef X86XSAVEHDR *PX86XSAVEHDR;
 /** Pointer to a const XSAVE header. */
 typedef X86XSAVEHDR const *PCX86XSAVEHDR;
 
+
 /**
  * The high 128-bit YMM register state (XSAVE_C_YMM).
  * (The lower 128-bits being in X86FXSTATE.)
  */
-typedef struct X86XSAVEYMMHI {
+typedef struct X86XSAVEYMMHI
+{
     /** 16 registers in 64-bit mode, 8 in 32-bit mode. */
-	X86XMMREG aYmmHi[16];
+    X86XMMREG       aYmmHi[16];
 } X86XSAVEYMMHI;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEYMMHI, 256);
@@ -2820,14 +2889,16 @@ typedef X86XSAVEYMMHI const *PCX86XSAVEYMMHI;
 /**
  * Intel MPX bound registers state (XSAVE_C_BNDREGS).
  */
-typedef struct X86XSAVEBNDREGS {
+typedef struct X86XSAVEBNDREGS
+{
     /** Array of registers (BND0...BND3). */
-	struct {
-	/** Lower bound. */
-		uint64_t uLowerBound;
-	/** Upper bound. */
-		uint64_t uUpperBound;
-	} aRegs[4];
+    struct
+    {
+        /** Lower bound. */
+        uint64_t    uLowerBound;
+        /** Upper bound. */
+        uint64_t    uUpperBound;
+    } aRegs[4];
 } X86XSAVEBNDREGS;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEBNDREGS, 64);
@@ -2840,9 +2911,10 @@ typedef X86XSAVEBNDREGS const *PCX86XSAVEBNDREGS;
 /**
  * Intel MPX bound config and status register state (XSAVE_C_BNDCSR).
  */
-typedef struct X86XSAVEBNDCFG {
-	uint64_t fConfig;
-	uint64_t fStatus;
+typedef struct X86XSAVEBNDCFG
+{
+    uint64_t        fConfig;
+    uint64_t        fStatus;
 } X86XSAVEBNDCFG;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEBNDCFG, 16);
@@ -2855,9 +2927,10 @@ typedef X86XSAVEBNDCFG *PCX86XSAVEBNDCFG;
 /**
  * AVX-512 opmask state (XSAVE_C_OPMASK).
  */
-typedef struct X86XSAVEOPMASK {
+typedef struct X86XSAVEOPMASK
+{
     /** The K0..K7 values. */
-	uint64_t aKRegs[8];
+    uint64_t    aKRegs[8];
 } X86XSAVEOPMASK;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEOPMASK, 64);
@@ -2870,9 +2943,10 @@ typedef X86XSAVEOPMASK const *PCX86XSAVEOPMASK;
 /**
  * ZMM0-15 upper 256 bits introduced in AVX-512 (XSAVE_C_ZMM_HI256).
  */
-typedef struct X86XSAVEZMMHI256 {
+typedef struct X86XSAVEZMMHI256
+{
     /** Upper 256-bits of ZMM0-15. */
-	X86YMMREG aHi256Regs[16];
+    X86YMMREG   aHi256Regs[16];
 } X86XSAVEZMMHI256;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEZMMHI256, 512);
@@ -2885,9 +2959,10 @@ typedef X86XSAVEZMMHI256 const *PCX86XSAVEZMMHI256;
 /**
  * ZMM16-31 register state introduced in AVX-512 (XSAVE_C_ZMM_16HI).
  */
-typedef struct X86XSAVEZMM16HI {
+typedef struct X86XSAVEZMM16HI
+{
     /** ZMM16 thru ZMM31. */
-	X86ZMMREG aRegs[16];
+    X86ZMMREG   aRegs[16];
 } X86XSAVEZMM16HI;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEZMM16HI, 1024);
@@ -2903,13 +2978,15 @@ typedef X86XSAVEZMM16HI const *PCX86XSAVEZMM16HI;
  * We probably won't play with this as AMD seems to be dropping from their "zen"
  * processor micro architecture.
  */
-typedef struct X86XSAVELWP {
+typedef struct X86XSAVELWP
+{
     /** Details when needed. */
-	uint64_t auLater[128 / 8];
+    uint64_t        auLater[128/8];
 } X86XSAVELWP;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVELWP, 128);
 #endif
+
 
 /**
  * x86 FPU/SSE/AVX/XXXX state.
@@ -2917,56 +2994,60 @@ AssertCompileSize(X86XSAVELWP, 128);
  * Please bump DBGFCORE_FMT_VERSION by 1 in dbgfcorefmt.h if you make any
  * changes to this structure.
  */
-typedef struct X86XSAVEAREA {
+typedef struct X86XSAVEAREA
+{
     /** The x87 and SSE region (or legacy region if you like).  */
-	X86FXSTATE x87;
+    X86FXSTATE      x87;
     /** The XSAVE header. */
-	X86XSAVEHDR Hdr;
+    X86XSAVEHDR     Hdr;
     /** Beyond the header, there isn't really a fixed layout, but we can
        generally assume the YMM (AVX) register extensions are present and
        follows immediately. */
-	union {
-	/** This is a typical layout on intel CPUs (good for debuggers). */
-		struct {
-			X86XSAVEYMMHI YmmHi;
-			X86XSAVEBNDREGS BndRegs;
-			X86XSAVEBNDCFG BndCfg;
-			uint8_t abFudgeToMatchDocs[0xB0];
-			X86XSAVEOPMASK Opmask;
-			X86XSAVEZMMHI256 ZmmHi256;
-			X86XSAVEZMM16HI Zmm16Hi;
-		} Intel;
+    union
+    {
+        /** This is a typical layout on intel CPUs (good for debuggers). */
+        struct
+        {
+            X86XSAVEYMMHI       YmmHi;
+            X86XSAVEBNDREGS     BndRegs;
+            X86XSAVEBNDCFG      BndCfg;
+            uint8_t             abFudgeToMatchDocs[0xB0];
+            X86XSAVEOPMASK      Opmask;
+            X86XSAVEZMMHI256    ZmmHi256;
+            X86XSAVEZMM16HI     Zmm16Hi;
+        } Intel;
 
-	/** This is a typical layout on AMD Bulldozer type CPUs (good for debuggers). */
-		struct {
-			X86XSAVEYMMHI YmmHi;
-			X86XSAVELWP Lwp;
-		} AmdBd;
+        /** This is a typical layout on AMD Bulldozer type CPUs (good for debuggers). */
+        struct
+        {
+            X86XSAVEYMMHI       YmmHi;
+            X86XSAVELWP         Lwp;
+        } AmdBd;
 
-	/** To enbling static deployments that have a reasonable chance of working for
+        /** To enbling static deployments that have a reasonable chance of working for
          * the next 3-6 CPU generations without running short on space, we allocate a
          * lot of extra space here, making the structure a round 8KB in size.  This
          * leaves us 7616 bytes for extended state.  The skylake xeons are likely to use
          * 2112 of these, leaving us with 5504 bytes for future Intel generations. */
-		uint8_t ab[8192 - 512 - 64];
-	} u;
+        uint8_t         ab[8192 - 512 - 64];
+    } u;
 } X86XSAVEAREA;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XSAVEAREA, 8192);
-AssertCompileMemberSize(X86XSAVEAREA, u.Intel,
-			0x840 /*2112 => total 0xa80 (2688) */ );
-AssertCompileMemberOffset(X86XSAVEAREA, Hdr, 0x200);
-AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.YmmHi, 0x240);
-AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.BndRegs, 0x340);
-AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.BndCfg, 0x380);
-AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.Opmask, 0x440 /* 1088 */ );
-AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.ZmmHi256, 0x480 /* 1152 */ );
-AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.Zmm16Hi, 0x680 /* 1664 */ );
+AssertCompileMemberSize(X86XSAVEAREA, u.Intel, 0x840 /*2112 => total 0xa80 (2688) */);
+AssertCompileMemberOffset(X86XSAVEAREA, Hdr,                0x200);
+AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.YmmHi,      0x240);
+AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.BndRegs,    0x340);
+AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.BndCfg,     0x380);
+AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.Opmask,     0x440 /* 1088 */);
+AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.ZmmHi256,   0x480 /* 1152 */);
+AssertCompileMemberOffset(X86XSAVEAREA, u.Intel.Zmm16Hi,    0x680 /* 1664 */);
 #endif
 /** Pointer to a XSAVE area. */
 typedef X86XSAVEAREA *PX86XSAVEAREA;
 /** Pointer to a const XSAVE area. */
 typedef X86XSAVEAREA const *PCX86XSAVEAREA;
+
 
 /** @name XSAVE_C_XXX - XSAVE State Components Bits.
  * @{ */
@@ -3012,6 +3093,8 @@ typedef X86XSAVEAREA const *PCX86XSAVEAREA;
 #define XSAVE_C_LWP             RT_BIT_64(XSAVE_C_LWP_BIT)
 /** @} */
 
+
+
 /** @name Selector Descriptor
  * @{
  */
@@ -3020,29 +3103,30 @@ typedef X86XSAVEAREA const *PCX86XSAVEAREA;
 /**
  * Descriptor attributes (as seen by VT-x).
  */
-typedef struct X86DESCATTRBITS {
+typedef struct X86DESCATTRBITS
+{
     /** 00 - Segment Type. */
-	unsigned u4Type:4;
+    unsigned    u4Type : 4;
     /** 04 - Descriptor Type. System(=0) or code/data selector */
-	unsigned u1DescType:1;
+    unsigned    u1DescType : 1;
     /** 05 - Descriptor Privilege level. */
-	unsigned u2Dpl:2;
+    unsigned    u2Dpl : 2;
     /** 07 - Flags selector present(=1) or not. */
-	unsigned u1Present:1;
+    unsigned    u1Present : 1;
     /** 08 - Segment limit 16-19. */
-	unsigned u4LimitHigh:4;
+    unsigned    u4LimitHigh : 4;
     /** 0c - Available for system software. */
-	unsigned u1Available:1;
+    unsigned    u1Available : 1;
     /** 0d - 32 bits mode: Reserved - 0, long mode: Long Attribute Bit. */
-	unsigned u1Long:1;
+    unsigned    u1Long : 1;
     /** 0e - This flags meaning depends on the segment type. Try make sense out
      * of the intel manual yourself.  */
-	unsigned u1DefBig:1;
+    unsigned    u1DefBig : 1;
     /** 0f - Granularity of the limit. If set 4KB granularity is used, if
      * clear byte. */
-	unsigned u1Granularity:1;
+    unsigned    u1Granularity : 1;
     /** 10 - "Unusable" selector, special Intel (VT-x only?) bit. */
-	unsigned u1Unusable:1;
+    unsigned    u1Unusable : 1;
 } X86DESCATTRBITS;
 #endif /* !VBOX_FOR_DTRACE_LIB */
 
@@ -3062,12 +3146,13 @@ typedef struct X86DESCATTRBITS {
 /** @}  */
 
 #pragma pack(1)
-typedef union X86DESCATTR {
+typedef union X86DESCATTR
+{
     /** Unsigned integer view. */
-	uint32_t u;
+    uint32_t           u;
 #ifndef VBOX_FOR_DTRACE_LIB
     /** Normal view. */
-	X86DESCATTRBITS n;
+    X86DESCATTRBITS    n;
 #endif
 } X86DESCATTR;
 #pragma pack()
@@ -3082,36 +3167,37 @@ typedef const X86DESCATTR *PCX86DESCATTR;
  * Generic descriptor table entry
  */
 #pragma pack(1)
-typedef struct X86DESCGENERIC {
+typedef struct X86DESCGENERIC
+{
     /** 00 - Limit - Low word. */
-	unsigned u16LimitLow:16;
+    unsigned    u16LimitLow : 16;
     /** 10 - Base address - low word.
      * Don't try set this to 24 because MSC is doing stupid things then. */
-	unsigned u16BaseLow:16;
+    unsigned    u16BaseLow : 16;
     /** 20 - Base address - first 8 bits of high word. */
-	unsigned u8BaseHigh1:8;
+    unsigned    u8BaseHigh1 : 8;
     /** 28 - Segment Type. */
-	unsigned u4Type:4;
+    unsigned    u4Type : 4;
     /** 2c - Descriptor Type. System(=0) or code/data selector */
-	unsigned u1DescType:1;
+    unsigned    u1DescType : 1;
     /** 2d - Descriptor Privilege level. */
-	unsigned u2Dpl:2;
+    unsigned    u2Dpl : 2;
     /** 2f - Flags selector present(=1) or not. */
-	unsigned u1Present:1;
+    unsigned    u1Present : 1;
     /** 30 - Segment limit 16-19. */
-	unsigned u4LimitHigh:4;
+    unsigned    u4LimitHigh : 4;
     /** 34 - Available for system software. */
-	unsigned u1Available:1;
+    unsigned    u1Available : 1;
     /** 35 - 32 bits mode: Reserved - 0, long mode: Long Attribute Bit. */
-	unsigned u1Long:1;
+    unsigned    u1Long : 1;
     /** 36 - This flags meaning depends on the segment type. Try make sense out
      * of the intel manual yourself.  */
-	unsigned u1DefBig:1;
+    unsigned    u1DefBig : 1;
     /** 37 - Granularity of the limit. If set 4KB granularity is used, if
      * clear byte. */
-	unsigned u1Granularity:1;
+    unsigned    u1Granularity : 1;
     /** 38 - Base address - highest 8 bits. */
-	unsigned u8BaseHigh2:8;
+    unsigned    u8BaseHigh2 : 8;
 } X86DESCGENERIC;
 #pragma pack()
 /** Pointer to a generic descriptor entry. */
@@ -3136,6 +3222,7 @@ typedef const X86DESCGENERIC *PCX86DESCGENERIC;
 #define X86DESCGENERIC_BIT_OFF_BASE_HIGH2       (56)  /**< Bit offset of X86DESCGENERIC::u8BaseHigh2. */
 /** @}  */
 
+
 /** @name LAR mask
  * @{ */
 #define X86LAR_F_TYPE            UINT16_C(    0x0f00)
@@ -3149,32 +3236,34 @@ typedef const X86DESCGENERIC *PCX86DESCGENERIC;
 #define X86LAR_F_G               UINT32_C(0x00800000)
 /** @}  */
 
+
 /**
  * Call-, Interrupt-, Trap- or Task-gate descriptor (legacy).
  */
-typedef struct X86DESCGATE {
+typedef struct X86DESCGATE
+{
     /** 00 - Target code segment offset - Low word.
      * Ignored if task-gate. */
-	unsigned u16OffsetLow:16;
+    unsigned    u16OffsetLow : 16;
     /** 10 - Target code segment selector for call-, interrupt- and trap-gates,
      * TSS selector if task-gate. */
-	unsigned u16Sel:16;
+    unsigned    u16Sel : 16;
     /** 20 - Number of parameters for a call-gate.
      * Ignored if interrupt-, trap- or task-gate. */
-	unsigned u4ParmCount:4;
+    unsigned    u4ParmCount : 4;
     /** 24 - Reserved / ignored. */
-	unsigned u4Reserved:4;
+    unsigned    u4Reserved : 4;
     /** 28 - Segment Type. */
-	unsigned u4Type:4;
+    unsigned    u4Type : 4;
     /** 2c - Descriptor Type (0 = system). */
-	unsigned u1DescType:1;
+    unsigned    u1DescType : 1;
     /** 2d - Descriptor Privilege level. */
-	unsigned u2Dpl:2;
+    unsigned    u2Dpl : 2;
     /** 2f - Flags selector present(=1) or not. */
-	unsigned u1Present:1;
+    unsigned    u1Present : 1;
     /** 30 - Target code segment offset - High word.
      * Ignored if task-gate. */
-	unsigned u16OffsetHigh:16;
+    unsigned    u16OffsetHigh : 16;
 } X86DESCGATE;
 /** Pointer to a Call-, Interrupt-, Trap- or Task-gate descriptor entry. */
 typedef X86DESCGATE *PX86DESCGATE;
@@ -3187,24 +3276,25 @@ typedef const X86DESCGATE *PCX86DESCGATE;
  * Descriptor table entry.
  */
 #pragma pack(1)
-typedef union X86DESC {
+typedef union X86DESC
+{
 #ifndef VBOX_FOR_DTRACE_LIB
     /** Generic descriptor view. */
-	X86DESCGENERIC Gen;
+    X86DESCGENERIC  Gen;
     /** Gate descriptor view. */
-	X86DESCGATE Gate;
+    X86DESCGATE     Gate;
 #endif
 
     /** 8 bit unsigned integer view. */
-	uint8_t au8[8];
+    uint8_t         au8[8];
     /** 16 bit unsigned integer view. */
-	uint16_t au16[4];
+    uint16_t        au16[4];
     /** 32 bit unsigned integer view. */
-	uint32_t au32[2];
+    uint32_t        au32[2];
     /** 64 bit unsigned integer view. */
-	uint64_t au64[1];
+    uint64_t        au64[1];
     /** Unsigned integer view. */
-	uint64_t u;
+    uint64_t        u;
 } X86DESC;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86DESC, 8);
@@ -3254,41 +3344,42 @@ typedef const X86DESC *PCX86DESC;
  * Note: most of these bits have no meaning in long mode.
  */
 #pragma pack(1)
-typedef struct X86DESC64GENERIC {
+typedef struct X86DESC64GENERIC
+{
     /** Limit - Low word - *IGNORED*. */
-	uint32_t u16LimitLow:16;
+    uint32_t    u16LimitLow : 16;
     /** Base address - low word. - *IGNORED*
      * Don't try set this to 24 because MSC is doing stupid things then. */
-	uint32_t u16BaseLow:16;
+    uint32_t    u16BaseLow : 16;
     /** Base address - first 8 bits of high word. - *IGNORED* */
-	uint32_t u8BaseHigh1:8;
+    uint32_t    u8BaseHigh1 : 8;
     /** Segment Type. */
-	uint32_t u4Type:4;
+    uint32_t    u4Type : 4;
     /** Descriptor Type. System(=0) or code/data selector */
-	uint32_t u1DescType:1;
+    uint32_t    u1DescType : 1;
     /** Descriptor Privilege level. */
-	uint32_t u2Dpl:2;
+    uint32_t    u2Dpl : 2;
     /** Flags selector present(=1) or not. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Segment limit 16-19. - *IGNORED* */
-	uint32_t u4LimitHigh:4;
+    uint32_t    u4LimitHigh : 4;
     /** Available for system software. - *IGNORED* */
-	uint32_t u1Available:1;
+    uint32_t    u1Available : 1;
     /** Long mode flag. */
-	uint32_t u1Long:1;
+    uint32_t    u1Long : 1;
     /** This flags meaning depends on the segment type. Try make sense out
      * of the intel manual yourself.  */
-	uint32_t u1DefBig:1;
+    uint32_t    u1DefBig : 1;
     /** Granularity of the limit. If set 4KB granularity is used, if
      * clear byte. - *IGNORED* */
-	uint32_t u1Granularity:1;
+    uint32_t    u1Granularity : 1;
     /** Base address - highest 8 bits. - *IGNORED* */
-	uint32_t u8BaseHigh2:8;
+    uint32_t    u8BaseHigh2 : 8;
     /** Base address - bits 63-32. */
-	uint32_t u32BaseHigh3:32;
-	uint32_t u8Reserved:8;
-	uint32_t u5Zeros:5;
-	uint32_t u19Reserved:19;
+    uint32_t    u32BaseHigh3    : 32;
+    uint32_t    u8Reserved      : 8;
+    uint32_t    u5Zeros         : 5;
+    uint32_t    u19Reserved     : 19;
 } X86DESC64GENERIC;
 #pragma pack()
 /** Pointer to a generic descriptor entry. */
@@ -3302,41 +3393,42 @@ typedef const X86DESC64GENERIC *PCX86DESC64GENERIC;
  * @remarks This is, save a couple of comments, identical to X86DESC64GENERIC...
  */
 #pragma pack(1)
-typedef struct X86DESC64SYSTEM {
+typedef struct X86DESC64SYSTEM
+{
     /** Limit - Low word. */
-	uint32_t u16LimitLow:16;
+    uint32_t    u16LimitLow     : 16;
     /** Base address - low word.
      * Don't try set this to 24 because MSC is doing stupid things then. */
-	uint32_t u16BaseLow:16;
+    uint32_t    u16BaseLow      : 16;
     /** Base address - first 8 bits of high word. */
-	uint32_t u8BaseHigh1:8;
+    uint32_t    u8BaseHigh1     : 8;
     /** Segment Type. */
-	uint32_t u4Type:4;
+    uint32_t    u4Type          : 4;
     /** Descriptor Type. System(=0) or code/data selector */
-	uint32_t u1DescType:1;
+    uint32_t    u1DescType      : 1;
     /** Descriptor Privilege level. */
-	uint32_t u2Dpl:2;
+    uint32_t    u2Dpl           : 2;
     /** Flags selector present(=1) or not. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present       : 1;
     /** Segment limit 16-19. */
-	uint32_t u4LimitHigh:4;
+    uint32_t    u4LimitHigh     : 4;
     /** Available for system software. */
-	uint32_t u1Available:1;
+    uint32_t    u1Available     : 1;
     /** Reserved - 0. */
-	uint32_t u1Reserved:1;
+    uint32_t    u1Reserved      : 1;
     /** This flags meaning depends on the segment type. Try make sense out
      * of the intel manual yourself.  */
-	uint32_t u1DefBig:1;
+    uint32_t    u1DefBig        : 1;
     /** Granularity of the limit. If set 4KB granularity is used, if
      * clear byte. */
-	uint32_t u1Granularity:1;
+    uint32_t    u1Granularity   : 1;
     /** Base address - bits 31-24. */
-	uint32_t u8BaseHigh2:8;
+    uint32_t    u8BaseHigh2     : 8;
     /** Base address - bits 63-32. */
-	uint32_t u32BaseHigh3:32;
-	uint32_t u8Reserved:8;
-	uint32_t u5Zeros:5;
-	uint32_t u19Reserved:19;
+    uint32_t    u32BaseHigh3    : 32;
+    uint32_t    u8Reserved      : 8;
+    uint32_t    u5Zeros         : 5;
+    uint32_t    u19Reserved     : 19;
 } X86DESC64SYSTEM;
 #pragma pack()
 /** Pointer to a system descriptor entry. */
@@ -3347,33 +3439,34 @@ typedef const X86DESC64SYSTEM *PCX86DESC64SYSTEM;
 /**
  * Call-, Interrupt-, Trap- or Task-gate descriptor (64-bit).
  */
-typedef struct X86DESC64GATE {
+typedef struct X86DESC64GATE
+{
     /** Target code segment offset - Low word. */
-	uint32_t u16OffsetLow:16;
+    uint32_t    u16OffsetLow : 16;
     /** Target code segment selector. */
-	uint32_t u16Sel:16;
+    uint32_t    u16Sel : 16;
     /** Interrupt stack table for interrupt- and trap-gates.
      * Ignored by call-gates. */
-	uint32_t u3IST:3;
+    uint32_t    u3IST : 3;
     /** Reserved / ignored. */
-	uint32_t u5Reserved:5;
+    uint32_t    u5Reserved : 5;
     /** Segment Type. */
-	uint32_t u4Type:4;
+    uint32_t    u4Type : 4;
     /** Descriptor Type (0 = system). */
-	uint32_t u1DescType:1;
+    uint32_t    u1DescType : 1;
     /** Descriptor Privilege level. */
-	uint32_t u2Dpl:2;
+    uint32_t    u2Dpl : 2;
     /** Flags selector present(=1) or not. */
-	uint32_t u1Present:1;
+    uint32_t    u1Present : 1;
     /** Target code segment offset - High word.
      * Ignored if task-gate. */
-	uint32_t u16OffsetHigh:16;
+    uint32_t    u16OffsetHigh : 16;
     /** Target code segment offset - Top dword.
      * Ignored if task-gate. */
-	uint32_t u32OffsetTop:32;
+    uint32_t    u32OffsetTop : 32;
     /** Reserved / ignored / must be zero.
      * For call-gates bits 8 thru 12 must be zero, the other gates ignores this. */
-	uint32_t u32Reserved:32;
+    uint32_t    u32Reserved : 32;
 } X86DESC64GATE;
 AssertCompileSize(X86DESC64GATE, 16);
 /** Pointer to a Call-, Interrupt-, Trap- or Task-gate descriptor entry. */
@@ -3387,24 +3480,25 @@ typedef const X86DESC64GATE *PCX86DESC64GATE;
  * Descriptor table entry.
  */
 #pragma pack(1)
-typedef union X86DESC64 {
+typedef union X86DESC64
+{
 #ifndef VBOX_FOR_DTRACE_LIB
     /** Generic descriptor view. */
-	X86DESC64GENERIC Gen;
+    X86DESC64GENERIC    Gen;
     /** System descriptor view. */
-	X86DESC64SYSTEM System;
+    X86DESC64SYSTEM     System;
     /** Gate descriptor view. */
-	X86DESC64GATE Gate;
+    X86DESC64GATE       Gate;
 #endif
 
     /** 8 bit unsigned integer view. */
-	uint8_t au8[16];
+    uint8_t             au8[16];
     /** 16 bit unsigned integer view. */
-	uint16_t au16[8];
+    uint16_t            au16[8];
     /** 32 bit unsigned integer view. */
-	uint32_t au32[4];
+    uint32_t            au32[4];
     /** 64 bit unsigned integer view. */
-	uint64_t au64[2];
+    uint64_t            au64[2];
 } X86DESC64;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86DESC64, 16);
@@ -3424,27 +3518,30 @@ typedef const X86DESC64 *PCX86DESC64;
          | (           (a_pDesc)->Gen.u8BaseHigh1   << 16) \
          | (           (a_pDesc)->Gen.u16BaseLow         ) )
 
+
+
 /** @name Host system descriptor table entry - Use with care!
  * @{ */
 /** Host system descriptor table entry. */
 #if HC_ARCH_BITS == 64
-typedef X86DESC64 X86DESCHC;
+typedef X86DESC64   X86DESCHC;
 #else
-typedef X86DESC X86DESCHC;
+typedef X86DESC     X86DESCHC;
 #endif
 /** Pointer to a host system descriptor table entry. */
 #if HC_ARCH_BITS == 64
-typedef PX86DESC64 PX86DESCHC;
+typedef PX86DESC64  PX86DESCHC;
 #else
-typedef PX86DESC PX86DESCHC;
+typedef PX86DESC    PX86DESCHC;
 #endif
 /** Pointer to a const host system descriptor table entry. */
 #if HC_ARCH_BITS == 64
 typedef PCX86DESC64 PCX86DESCHC;
 #else
-typedef PCX86DESC PCX86DESCHC;
+typedef PCX86DESC   PCX86DESCHC;
 #endif
 /** @} */
+
 
 /** @name Selector Descriptor Types.
  * @{
@@ -3503,6 +3600,7 @@ typedef PCX86DESC PCX86DESCHC;
 #define X86_SEL_TYPE_ER_CONF_ACC           (6 | X86_SEL_TYPE_CODE | X86_SEL_TYPE_ACCESSED)
 /** @} */
 
+
 /** @name System Selector Types.
  * @{ */
 /** The TSS busy bit mask. */
@@ -3560,6 +3658,7 @@ typedef PCX86DESC PCX86DESCHC;
 
 /** @} */
 
+
 /** @name Descriptor Table Entry Flag Masks.
  * These are for the 2nd 32-bit word of a descriptor.
  * @{ */
@@ -3582,6 +3681,7 @@ typedef PCX86DESC PCX86DESCHC;
 
 /** @} */
 
+
 /** @name Task Segments.
  * @{
  */
@@ -3600,51 +3700,52 @@ typedef PCX86DESC PCX86DESCHC;
  * 16-bit Task Segment (TSS).
  */
 #pragma pack(1)
-typedef struct X86TSS16 {
+typedef struct X86TSS16
+{
     /** Back link to previous task. (static) */
-	RTSEL selPrev;
+    RTSEL       selPrev;
     /** Ring-0 stack pointer. (static) */
-	uint16_t sp0;
+    uint16_t    sp0;
     /** Ring-0 stack segment. (static) */
-	RTSEL ss0;
+    RTSEL       ss0;
     /** Ring-1 stack pointer. (static) */
-	uint16_t sp1;
+    uint16_t    sp1;
     /** Ring-1 stack segment. (static) */
-	RTSEL ss1;
+    RTSEL       ss1;
     /** Ring-2 stack pointer. (static) */
-	uint16_t sp2;
+    uint16_t    sp2;
     /** Ring-2 stack segment. (static) */
-	RTSEL ss2;
+    RTSEL       ss2;
     /** IP before task switch. */
-	uint16_t ip;
+    uint16_t    ip;
     /** FLAGS before task switch. */
-	uint16_t flags;
+    uint16_t    flags;
     /** AX before task switch. */
-	uint16_t ax;
+    uint16_t    ax;
     /** CX before task switch. */
-	uint16_t cx;
+    uint16_t    cx;
     /** DX before task switch. */
-	uint16_t dx;
+    uint16_t    dx;
     /** BX before task switch. */
-	uint16_t bx;
+    uint16_t    bx;
     /** SP before task switch. */
-	uint16_t sp;
+    uint16_t    sp;
     /** BP before task switch. */
-	uint16_t bp;
+    uint16_t    bp;
     /** SI before task switch. */
-	uint16_t si;
+    uint16_t    si;
     /** DI before task switch. */
-	uint16_t di;
+    uint16_t    di;
     /** ES before task switch. */
-	RTSEL es;
+    RTSEL       es;
     /** CS before task switch. */
-	RTSEL cs;
+    RTSEL       cs;
     /** SS before task switch. */
-	RTSEL ss;
+    RTSEL       ss;
     /** DS before task switch. */
-	RTSEL ds;
+    RTSEL       ds;
     /** LDTR before task switch. */
-	RTSEL selLdt;
+    RTSEL       selLdt;
 } X86TSS16;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86TSS16, X86_SEL_TYPE_SYS_286_TSS_LIMIT_MIN + 1);
@@ -3655,77 +3756,79 @@ typedef X86TSS16 *PX86TSS16;
 /** Pointer to a const 16-bit task segment. */
 typedef const X86TSS16 *PCX86TSS16;
 
+
 /**
  * 32-bit Task Segment (TSS).
  */
 #pragma pack(1)
-typedef struct X86TSS32 {
+typedef struct X86TSS32
+{
     /** Back link to previous task. (static) */
-	RTSEL selPrev;
-	uint16_t padding1;
+    RTSEL       selPrev;
+    uint16_t    padding1;
     /** Ring-0 stack pointer. (static) */
-	uint32_t esp0;
+    uint32_t    esp0;
     /** Ring-0 stack segment. (static) */
-	RTSEL ss0;
-	uint16_t padding_ss0;
+    RTSEL       ss0;
+    uint16_t    padding_ss0;
     /** Ring-1 stack pointer. (static) */
-	uint32_t esp1;
+    uint32_t    esp1;
     /** Ring-1 stack segment. (static) */
-	RTSEL ss1;
-	uint16_t padding_ss1;
+    RTSEL       ss1;
+    uint16_t    padding_ss1;
     /** Ring-2 stack pointer. (static) */
-	uint32_t esp2;
+    uint32_t    esp2;
     /** Ring-2 stack segment. (static) */
-	RTSEL ss2;
-	uint16_t padding_ss2;
+    RTSEL       ss2;
+    uint16_t    padding_ss2;
     /** Page directory for the task. (static) */
-	uint32_t cr3;
+    uint32_t    cr3;
     /** EIP before task switch. */
-	uint32_t eip;
+    uint32_t    eip;
     /** EFLAGS before task switch. */
-	uint32_t eflags;
+    uint32_t    eflags;
     /** EAX before task switch. */
-	uint32_t eax;
+    uint32_t    eax;
     /** ECX before task switch. */
-	uint32_t ecx;
+    uint32_t    ecx;
     /** EDX before task switch. */
-	uint32_t edx;
+    uint32_t    edx;
     /** EBX before task switch. */
-	uint32_t ebx;
+    uint32_t    ebx;
     /** ESP before task switch. */
-	uint32_t esp;
+    uint32_t    esp;
     /** EBP before task switch. */
-	uint32_t ebp;
+    uint32_t    ebp;
     /** ESI before task switch. */
-	uint32_t esi;
+    uint32_t    esi;
     /** EDI before task switch. */
-	uint32_t edi;
+    uint32_t    edi;
     /** ES before task switch. */
-	RTSEL es;
-	uint16_t padding_es;
+    RTSEL       es;
+    uint16_t    padding_es;
     /** CS before task switch. */
-	RTSEL cs;
-	uint16_t padding_cs;
+    RTSEL       cs;
+    uint16_t    padding_cs;
     /** SS before task switch. */
-	RTSEL ss;
-	uint16_t padding_ss;
+    RTSEL       ss;
+    uint16_t    padding_ss;
     /** DS before task switch. */
-	RTSEL ds;
-	uint16_t padding_ds;
+    RTSEL       ds;
+    uint16_t    padding_ds;
     /** FS before task switch. */
-	RTSEL fs;
-	uint16_t padding_fs;
+    RTSEL       fs;
+    uint16_t    padding_fs;
     /** GS before task switch. */
-	RTSEL gs;
-	uint16_t padding_gs;
+    RTSEL       gs;
+    uint16_t    padding_gs;
     /** LDTR before task switch. */
-	RTSEL selLdt;
-	uint16_t padding_ldt;
+    RTSEL       selLdt;
+    uint16_t    padding_ldt;
     /** Debug trap flag */
-	uint16_t fDebugTrap;
+    uint16_t    fDebugTrap;
     /** Offset relative to the TSS of the start of the I/O Bitmap
      * and the end of the interrupt redirection bitmap. */
-	uint16_t offIoBitmap;
+    uint16_t    offIoBitmap;
 } X86TSS32;
 #pragma pack()
 /** Pointer to task segment. */
@@ -3742,30 +3845,31 @@ AssertCompileMemberOffset(X86TSS32, offIoBitmap, 102);
  * 64-bit Task segment.
  */
 #pragma pack(1)
-typedef struct X86TSS64 {
+typedef struct X86TSS64
+{
     /** Reserved. */
-	uint32_t u32Reserved;
+    uint32_t    u32Reserved;
     /** Ring-0 stack pointer. (static) */
-	uint64_t rsp0;
+    uint64_t    rsp0;
     /** Ring-1 stack pointer. (static) */
-	uint64_t rsp1;
+    uint64_t    rsp1;
     /** Ring-2 stack pointer. (static) */
-	uint64_t rsp2;
+    uint64_t    rsp2;
     /** Reserved. */
-	uint32_t u32Reserved2[2];
-	/* IST */
-	uint64_t ist1;
-	uint64_t ist2;
-	uint64_t ist3;
-	uint64_t ist4;
-	uint64_t ist5;
-	uint64_t ist6;
-	uint64_t ist7;
-	/* Reserved. */
-	uint16_t u16Reserved[5];
+    uint32_t    u32Reserved2[2];
+    /* IST */
+    uint64_t    ist1;
+    uint64_t    ist2;
+    uint64_t    ist3;
+    uint64_t    ist4;
+    uint64_t    ist5;
+    uint64_t    ist6;
+    uint64_t    ist7;
+    /* Reserved. */
+    uint16_t    u16Reserved[5];
     /** Offset relative to the TSS of the start of the I/O Bitmap
      * and the end of the interrupt redirection bitmap. */
-	uint16_t offIoBitmap;
+    uint16_t    offIoBitmap;
 } X86TSS64;
 #pragma pack()
 /** Pointer to a 64-bit task segment. */
@@ -3777,6 +3881,7 @@ AssertCompileSize(X86TSS64, X86_SEL_TYPE_SYS_386_TSS_LIMIT_MIN + 1);
 #endif
 
 /** @} */
+
 
 /** @name Selectors.
  * @{
@@ -3817,53 +3922,55 @@ AssertCompileSize(X86TSS64, X86_SEL_TYPE_SYS_386_TSS_LIMIT_MIN + 1);
 
 /** @} */
 
+
 /**
  * x86 Exceptions/Faults/Traps.
  */
-typedef enum X86XCPT {
+typedef enum X86XCPT
+{
     /** \#DE - Divide error. */
-	X86_XCPT_DE = 0x00,
+    X86_XCPT_DE = 0x00,
     /** \#DB - Debug event (single step, DRx, ..) */
-	X86_XCPT_DB = 0x01,
+    X86_XCPT_DB = 0x01,
     /** NMI - Non-Maskable Interrupt */
-	X86_XCPT_NMI = 0x02,
+    X86_XCPT_NMI = 0x02,
     /** \#BP - Breakpoint (INT3). */
-	X86_XCPT_BP = 0x03,
+    X86_XCPT_BP = 0x03,
     /** \#OF - Overflow (INTO). */
-	X86_XCPT_OF = 0x04,
+    X86_XCPT_OF = 0x04,
     /** \#BR - Bound range exceeded (BOUND). */
-	X86_XCPT_BR = 0x05,
+    X86_XCPT_BR = 0x05,
     /** \#UD - Undefined opcode. */
-	X86_XCPT_UD = 0x06,
+    X86_XCPT_UD = 0x06,
     /** \#NM - Device not available (math coprocessor device). */
-	X86_XCPT_NM = 0x07,
+    X86_XCPT_NM = 0x07,
     /** \#DF - Double fault. */
-	X86_XCPT_DF = 0x08,
+    X86_XCPT_DF = 0x08,
     /** ??? - Coprocessor segment overrun (obsolete). */
-	X86_XCPT_CO_SEG_OVERRUN = 0x09,
+    X86_XCPT_CO_SEG_OVERRUN = 0x09,
     /** \#TS - Taskswitch (TSS). */
-	X86_XCPT_TS = 0x0a,
+    X86_XCPT_TS = 0x0a,
     /** \#NP - Segment no present. */
-	X86_XCPT_NP = 0x0b,
+    X86_XCPT_NP = 0x0b,
     /** \#SS - Stack segment fault. */
-	X86_XCPT_SS = 0x0c,
+    X86_XCPT_SS = 0x0c,
     /** \#GP - General protection fault. */
-	X86_XCPT_GP = 0x0d,
+    X86_XCPT_GP = 0x0d,
     /** \#PF - Page fault. */
-	X86_XCPT_PF = 0x0e,
-	/* 0x0f is reserved (to avoid conflict with spurious interrupts in BIOS setup). */
+    X86_XCPT_PF = 0x0e,
+    /* 0x0f is reserved (to avoid conflict with spurious interrupts in BIOS setup). */
     /** \#MF - Math fault (FPU). */
-	X86_XCPT_MF = 0x10,
+    X86_XCPT_MF = 0x10,
     /** \#AC - Alignment check. */
-	X86_XCPT_AC = 0x11,
+    X86_XCPT_AC = 0x11,
     /** \#MC - Machine check. */
-	X86_XCPT_MC = 0x12,
+    X86_XCPT_MC = 0x12,
     /** \#XF - SIMD Floating-Pointer Exception. */
-	X86_XCPT_XF = 0x13,
+    X86_XCPT_XF = 0x13,
     /** \#VE - Virtualization Exception. */
-	X86_XCPT_VE = 0x14,
+    X86_XCPT_VE = 0x14,
     /** \#SX - Security Exception. */
-	X86_XCPT_SX = 0x1f
+    X86_XCPT_SX = 0x1f
 } X86XCPT;
 /** Pointer to a x86 exception code. */
 typedef X86XCPT *PX86XCPT;
@@ -3871,6 +3978,7 @@ typedef X86XCPT *PX86XCPT;
 typedef const X86XCPT *PCX86XCPT;
 /** The maximum exception value. */
 #define X86_XCPT_MAX                (X86_XCPT_SX)
+
 
 /** @name Trap Error Codes
  * @{
@@ -3886,6 +3994,7 @@ typedef const X86XCPT *PCX86XCPT;
 /** Shift for getting the selector table index (C type index). */
 #define X86_TRAP_ERR_SEL_SHIFT      3
 /** @} */
+
 
 /** @name \#PF Trap Error Codes
  * @{
@@ -3908,11 +4017,12 @@ typedef const X86XCPT *PCX86XCPT;
 /**
  * 16-bit IDTR.
  */
-typedef struct X86IDTR16 {
+typedef struct X86IDTR16
+{
     /** Offset. */
-	uint16_t offSel;
+    uint16_t    offSel;
     /** Selector. */
-	uint16_t uSel;
+    uint16_t    uSel;
 } X86IDTR16, *PX86IDTR16;
 #pragma pack()
 
@@ -3920,14 +4030,15 @@ typedef struct X86IDTR16 {
 /**
  * 32-bit IDTR/GDTR.
  */
-typedef struct X86XDTR32 {
+typedef struct X86XDTR32
+{
     /** Size of the descriptor table. */
-	uint16_t cb;
+    uint16_t    cb;
     /** Address of the descriptor table. */
 #ifndef VBOX_FOR_DTRACE_LIB
-	uint32_t uAddr;
+    uint32_t    uAddr;
 #else
-	uint16_t au16Addr[2];
+    uint16_t    au16Addr[2];
 #endif
 } X86XDTR32, *PX86XDTR32;
 #pragma pack()
@@ -3936,17 +4047,19 @@ typedef struct X86XDTR32 {
 /**
  * 64-bit IDTR/GDTR.
  */
-typedef struct X86XDTR64 {
+typedef struct X86XDTR64
+{
     /** Size of the descriptor table. */
-	uint16_t cb;
+    uint16_t    cb;
     /** Address of the descriptor table. */
 #ifndef VBOX_FOR_DTRACE_LIB
-	uint64_t uAddr;
+    uint64_t    uAddr;
 #else
-	uint16_t au16Addr[4];
+    uint16_t    au16Addr[4];
 #endif
 } X86XDTR64, *PX86XDTR64;
 #pragma pack()
+
 
 /** @name ModR/M
  * @{ */
@@ -3958,12 +4071,9 @@ typedef struct X86XDTR64 {
 #define X86_MODRM_MOD_SMASK     UINT8_C(0x03)
 #define X86_MODRM_MOD_SHIFT     6
 #ifndef VBOX_FOR_DTRACE_LIB
-AssertCompile((X86_MODRM_RM_MASK | X86_MODRM_REG_MASK | X86_MODRM_MOD_MASK) ==
-	      0xff);
-AssertCompile((X86_MODRM_REG_MASK >> X86_MODRM_REG_SHIFT) ==
-	      X86_MODRM_REG_SMASK);
-AssertCompile((X86_MODRM_MOD_MASK >> X86_MODRM_MOD_SHIFT) ==
-	      X86_MODRM_MOD_SMASK);
+AssertCompile((X86_MODRM_RM_MASK | X86_MODRM_REG_MASK | X86_MODRM_MOD_MASK) == 0xff);
+AssertCompile((X86_MODRM_REG_MASK >> X86_MODRM_REG_SHIFT) == X86_MODRM_REG_SMASK);
+AssertCompile((X86_MODRM_MOD_MASK >> X86_MODRM_MOD_SHIFT) == X86_MODRM_MOD_SMASK);
 #endif
 /** @} */
 
@@ -3977,12 +4087,9 @@ AssertCompile((X86_MODRM_MOD_MASK >> X86_MODRM_MOD_SHIFT) ==
 #define X86_SIB_SCALE_SMASK   UINT8_C(0x03)
 #define X86_SIB_SCALE_SHIFT   6
 #ifndef VBOX_FOR_DTRACE_LIB
-AssertCompile((X86_SIB_BASE_MASK | X86_SIB_INDEX_MASK | X86_SIB_SCALE_MASK) ==
-	      0xff);
-AssertCompile((X86_SIB_INDEX_MASK >> X86_SIB_INDEX_SHIFT) ==
-	      X86_SIB_INDEX_SMASK);
-AssertCompile((X86_SIB_SCALE_MASK >> X86_SIB_SCALE_SHIFT) ==
-	      X86_SIB_SCALE_SMASK);
+AssertCompile((X86_SIB_BASE_MASK | X86_SIB_INDEX_MASK | X86_SIB_SCALE_MASK) == 0xff);
+AssertCompile((X86_SIB_INDEX_MASK >> X86_SIB_INDEX_SHIFT) == X86_SIB_INDEX_SMASK);
+AssertCompile((X86_SIB_SCALE_MASK >> X86_SIB_SCALE_SHIFT) == X86_SIB_SCALE_SMASK);
 #endif
 /** @} */
 
@@ -4018,6 +4125,7 @@ AssertCompile((X86_SIB_SCALE_MASK >> X86_SIB_SCALE_SHIFT) ==
 /** Segment register count. */
 #define X86_SREG_COUNT          6
 
+
 /** @name X86_OP_XXX - Prefixes
  * @{ */
 #define X86_OP_PRF_CS           UINT8_C(0x2e)
@@ -4037,6 +4145,8 @@ AssertCompile((X86_SIB_SCALE_MASK >> X86_SIB_SCALE_SHIFT) ==
 #define X86_OP_REX_W            UINT8_C(0x48)
 /** @} */
 
+
 /** @} */
 
 #endif
+

@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -32,10 +33,10 @@
 
 #include <iprt/stdarg.h>
 
-RTDECL(void) RTAssertMsg1Weak(const char *pszExpr, unsigned uLine,
-			      const char *pszFile, const char *pszFunction)
-{
-	RTAssertMsg1(pszExpr, uLine, pszFile, pszFunction);
-}
 
+RTDECL(void) RTAssertMsg1Weak(const char *pszExpr, unsigned uLine, const char *pszFile, const char *pszFunction)
+{
+    RTAssertMsg1(pszExpr, uLine, pszFile, pszFunction);
+}
 RT_EXPORT_SYMBOL(RTAssertMsg1Weak);
+

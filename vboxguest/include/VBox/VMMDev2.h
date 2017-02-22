@@ -28,9 +28,11 @@
 
 #include <iprt/assert.h>
 
+
 /** @addtogroup grp_vmmdev
  * @{
  */
+
 
 /**
  * Seamless mode.
@@ -48,10 +50,11 @@
  *       expand it, we'll expand it. If not, we must redefine the field to a
  *       uint8_t and a 3 byte padding.
  */
-typedef enum {
-	VMMDev_Seamless_Disabled = 0,	      /**< normal mode; entire guest desktop displayed. */
-	VMMDev_Seamless_Visible_Region = 1,   /**< visible region mode; only top-level guest windows displayed. */
-	VMMDev_Seamless_Host_Window = 2	      /**< windowed mode; each top-level guest window is represented in a host window. */
+typedef enum
+{
+    VMMDev_Seamless_Disabled         = 0,     /**< normal mode; entire guest desktop displayed. */
+    VMMDev_Seamless_Visible_Region   = 1,     /**< visible region mode; only top-level guest windows displayed. */
+    VMMDev_Seamless_Host_Window      = 2      /**< windowed mode; each top-level guest window is represented in a host window. */
 } VMMDevSeamlessMode;
 
 /**
@@ -61,23 +64,25 @@ typedef enum {
  *
  * @ingroup grp_vmmdev_req
  */
-typedef enum {
-	VMMDevCpuEventType_Invalid = 0,
-	VMMDevCpuEventType_None = 1,
-	VMMDevCpuEventType_Plug = 2,
-	VMMDevCpuEventType_Unplug = 3,
-	VMMDevCpuEventType_SizeHack = 0x7fffffff
+typedef enum
+{
+    VMMDevCpuEventType_Invalid  = 0,
+    VMMDevCpuEventType_None     = 1,
+    VMMDevCpuEventType_Plug     = 2,
+    VMMDevCpuEventType_Unplug   = 3,
+    VMMDevCpuEventType_SizeHack = 0x7fffffff
 } VMMDevCpuEventType;
 
 /**
  * HGCM service location types.
  * @ingroup grp_vmmdev_req
  */
-typedef enum {
-	VMMDevHGCMLoc_Invalid = 0,
-	VMMDevHGCMLoc_LocalHost = 1,
-	VMMDevHGCMLoc_LocalHost_Existing = 2,
-	VMMDevHGCMLoc_SizeHack = 0x7fffffff
+typedef enum
+{
+    VMMDevHGCMLoc_Invalid    = 0,
+    VMMDevHGCMLoc_LocalHost  = 1,
+    VMMDevHGCMLoc_LocalHost_Existing = 2,
+    VMMDevHGCMLoc_SizeHack   = 0x7fffffff
 } HGCMServiceLocationType;
 AssertCompileSize(HGCMServiceLocationType, 4);
 
@@ -85,9 +90,9 @@ AssertCompileSize(HGCMServiceLocationType, 4);
  * HGCM host service location.
  * @ingroup grp_vmmdev_req
  */
-typedef struct {
-	char achName[128];
-		       /**< This is really szName. */
+typedef struct
+{
+    char achName[128]; /**< This is really szName. */
 } HGCMServiceLocationHost;
 AssertCompileSize(HGCMServiceLocationHost, 128);
 
@@ -95,15 +100,17 @@ AssertCompileSize(HGCMServiceLocationHost, 128);
  * HGCM service location.
  * @ingroup grp_vmmdev_req
  */
-typedef struct HGCMSERVICELOCATION {
+typedef struct HGCMSERVICELOCATION
+{
     /** Type of the location. */
-	HGCMServiceLocationType type;
+    HGCMServiceLocationType type;
 
-	union {
-		HGCMServiceLocationHost host;
-	} u;
+    union
+    {
+        HGCMServiceLocationHost host;
+    } u;
 } HGCMServiceLocation;
-AssertCompileSize(HGCMServiceLocation, 128 + 4);
+AssertCompileSize(HGCMServiceLocation, 128+4);
 
 /* forward declarations: */
 struct VMMDevReqMousePointer;
@@ -112,3 +119,4 @@ struct VMMDevMemory;
 /** @} */
 
 #endif
+

@@ -25,6 +25,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -36,20 +37,17 @@
 #include <iprt/err.h>
 #include <iprt/assert.h>
 
-RTDECL(int) RTSemEventMultiWaitNoResume(RTSEMEVENTMULTI hEventMultiSem,
-					RTMSINTERVAL cMillies)
-{
-	int rc;
-	if (cMillies == RT_INDEFINITE_WAIT)
-		rc = RTSemEventMultiWaitEx(hEventMultiSem,
-					   RTSEMWAIT_FLAGS_NORESUME |
-					   RTSEMWAIT_FLAGS_INDEFINITE, 0);
-	else
-		rc = RTSemEventMultiWaitEx(hEventMultiSem,
-					   RTSEMWAIT_FLAGS_NORESUME |
-					   RTSEMWAIT_FLAGS_RELATIVE |
-					   RTSEMWAIT_FLAGS_MILLISECS, cMillies);
-	return rc;
-}
 
+RTDECL(int) RTSemEventMultiWaitNoResume(RTSEMEVENTMULTI hEventMultiSem, RTMSINTERVAL cMillies)
+{
+    int rc;
+    if (cMillies == RT_INDEFINITE_WAIT)
+        rc = RTSemEventMultiWaitEx(hEventMultiSem, RTSEMWAIT_FLAGS_NORESUME | RTSEMWAIT_FLAGS_INDEFINITE, 0);
+    else
+        rc = RTSemEventMultiWaitEx(hEventMultiSem,
+                                   RTSEMWAIT_FLAGS_NORESUME | RTSEMWAIT_FLAGS_RELATIVE | RTSEMWAIT_FLAGS_MILLISECS,
+                                   cMillies);
+    return rc;
+}
 RT_EXPORT_SYMBOL(RTSemEventMultiWaitNoResume);
+

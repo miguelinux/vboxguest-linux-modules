@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -31,6 +32,7 @@
 #include "internal/iprt.h"
 
 #include <iprt/stdarg.h>
+
 
 /**
  * Write to a logger instance, defaulting to the release one.
@@ -47,16 +49,15 @@
  * @param   ...         Format arguments.
  * @remark  This is a worker function for LogRelIt.
  */
-RTDECL(void) RTLogRelLogger(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
-			    const char *pszFormat, ...)
+RTDECL(void) RTLogRelLogger(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup, const char *pszFormat, ...)
 {
-	va_list args;
-	va_start(args, pszFormat);
-	RTLogRelLoggerV(pLogger, fFlags, iGroup, pszFormat, args);
-	va_end(args);
+    va_list args;
+    va_start(args, pszFormat);
+    RTLogRelLoggerV(pLogger, fFlags, iGroup, pszFormat, args);
+    va_end(args);
 }
-
 RT_EXPORT_SYMBOL(RTLogRelLogger);
+
 
 /**
  * printf like function for writing to the default release log.
@@ -68,10 +69,10 @@ RT_EXPORT_SYMBOL(RTLogRelLogger);
  */
 RTDECL(void) RTLogRelPrintf(const char *pszFormat, ...)
 {
-	va_list args;
-	va_start(args, pszFormat);
-	RTLogRelPrintfV(pszFormat, args);
-	va_end(args);
+    va_list args;
+    va_start(args, pszFormat);
+    RTLogRelPrintfV(pszFormat, args);
+    va_end(args);
 }
-
 RT_EXPORT_SYMBOL(RTLogRelPrintf);
+

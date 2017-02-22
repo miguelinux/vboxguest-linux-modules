@@ -30,9 +30,11 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt    IPRT C/C++ APIs
  * @{
  */
+
 /** @defgroup grp_rt_initterm  RTInit/RTTerm - Initialization and Termination
  *
  * APIs for initializing and terminating the IPRT, optionally it can also
@@ -42,6 +44,7 @@ RT_C_DECLS_BEGIN
  *
  * @{
  */
+
 #ifdef IN_RING3
 /** @name RTR3Init flags (RTR3INIT_XXX).
  * @{ */
@@ -57,6 +60,7 @@ RT_C_DECLS_BEGIN
  * shared libraries in the application directory. Mainly windows loader mess. */
 #define RTR3INIT_FLAGS_STANDALONE_APP RT_BIT(4)
 /** @} */
+
 /** @name RTR3InitEx version
  * @{ */
 /** Version 1. */
@@ -64,6 +68,7 @@ RT_C_DECLS_BEGIN
 /** The current version. */
 #define RTR3INIT_VER_CUR            RTR3INIT_VER_1
 /** @} */
+
 /**
  * Initializes the runtime library.
  *
@@ -104,8 +109,7 @@ RTR3DECL(int) RTR3InitDll(uint32_t fFlags);
  * @param   pszProgramPath  The program path.  Pass NULL if we're to figure it
  *                          out ourselves.
  */
-RTR3DECL(int) RTR3InitEx(uint32_t iVersion, uint32_t fFlags, int cArgs,
-			 char ***ppapszArgs, const char *pszProgramPath);
+RTR3DECL(int) RTR3InitEx(uint32_t iVersion, uint32_t fFlags, int cArgs, char ***ppapszArgs, const char *pszProgramPath);
 
 /**
  * Terminates the runtime library.
@@ -125,6 +129,7 @@ RTR3DECL(bool) RTR3InitIsInitialized(void);
  */
 RTR3DECL(bool) RTR3InitIsUnobtrusive(void);
 #endif /* IN_RING3 */
+
 
 #ifdef IN_RING0
 /**
@@ -165,18 +170,20 @@ RTRCDECL(int) RTRCInit(uint64_t u64ProgramStartNanoTS);
 RTRCDECL(void) RTRCTerm(void);
 #endif
 
+
 /**
  * Termination reason.
  */
-typedef enum RTTERMREASON {
+typedef enum RTTERMREASON
+{
     /** Normal exit. iStatus contains the exit code. */
-	RTTERMREASON_EXIT = 1,
+    RTTERMREASON_EXIT = 1,
     /** Any abnormal exit. iStatus is 0 and has no meaning. */
-	RTTERMREASON_ABEND,
+    RTTERMREASON_ABEND,
     /** Killed by a signal. The iStatus contains the signal number. */
-	RTTERMREASON_SIGNAL,
+    RTTERMREASON_SIGNAL,
     /** The IPRT module is being unloaded. iStatus is 0 and has no meaning. */
-	RTTERMREASON_UNLOAD
+    RTTERMREASON_UNLOAD
 } RTTERMREASON;
 
 /** Whether lazy clean up is Okay or not.
@@ -186,6 +193,7 @@ typedef enum RTTERMREASON {
  * resource leaks. */
 #define RTTERMREASON_IS_LAZY_CLEANUP_OK(enmReason)  ((enmReason) != RTTERMREASON_UNLOAD)
 
+
 /**
  * IPRT termination callback function.
  *
@@ -193,10 +201,10 @@ typedef enum RTTERMREASON {
  * @param   iStatus             The meaning of this depends on enmReason.
  * @param   pvUser              User argument passed to RTTermRegisterCallback.
  */
-typedef DECLCALLBACK(void) FNRTTERMCALLBACK(RTTERMREASON enmReason,
-					    int32_t iStatus, void *pvUser);
+typedef DECLCALLBACK(void) FNRTTERMCALLBACK(RTTERMREASON enmReason, int32_t iStatus, void *pvUser);
 /** Pointer to an IPRT termination callback function. */
 typedef FNRTTERMCALLBACK *PFNRTTERMCALLBACK;
+
 
 /**
  * Registers a termination callback.
@@ -230,8 +238,7 @@ RTDECL(int) RTTermRegisterCallback(PFNRTTERMCALLBACK pfnCallback, void *pvUser);
  * @param   pfnCallback         The callback function.
  * @param   pvUser              The user argument for the callback.
  */
-RTDECL(int) RTTermDeregisterCallback(PFNRTTERMCALLBACK pfnCallback,
-				     void *pvUser);
+RTDECL(int) RTTermDeregisterCallback(PFNRTTERMCALLBACK pfnCallback, void *pvUser);
 
 /**
  * Runs the termination callback queue.
@@ -250,4 +257,7 @@ RTDECL(void) RTTermRunCallbacks(RTTERMREASON enmReason, int32_t iStatus);
 /** @} */
 
 RT_C_DECLS_END
+
+
 #endif
+

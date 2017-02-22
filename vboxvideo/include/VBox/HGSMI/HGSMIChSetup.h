@@ -29,15 +29,16 @@
 #include <VBox/HGSMI/HGSMI.h>
 
 /* HGSMI setup and configuration channel commands and data structures. */
-#define HGSMI_CC_HOST_FLAGS_LOCATION 0	/* Tell the host the location of HGSMIHOSTFLAGS structure,
-					 * where the host can write information about pending
-					 * buffers, etc, and which can be quickly polled by
-					 * the guest without a need to port IO.
-					 */
+#define HGSMI_CC_HOST_FLAGS_LOCATION 0 /* Tell the host the location of HGSMIHOSTFLAGS structure,
+                                        * where the host can write information about pending
+                                        * buffers, etc, and which can be quickly polled by
+                                        * the guest without a need to port IO.
+                                        */
 
-typedef struct HGSMIBUFFERLOCATION {
-	HGSMIOFFSET offLocation;
-	HGSMISIZE cbLocation;
+typedef struct HGSMIBUFFERLOCATION
+{
+    HGSMIOFFSET offLocation;
+    HGSMISIZE   cbLocation;
 } HGSMIBUFFERLOCATION;
 AssertCompileSize(HGSMIBUFFERLOCATION, 8);
 
@@ -60,15 +61,17 @@ AssertCompileSize(HGSMIBUFFERLOCATION, 8);
  * VGAState::lock only.  @see VBVACONF32. */
 #define HGSMIHOSTFLAGS_CURSOR_CAPABILITIES UINT32_C(0x40)
 
-typedef struct HGSMIHOSTFLAGS {
-	/* host flags can be accessed and modified in multiple threads concurrently,
-	 * e.g. CrOpenGL HGCM and GUI threads when to completing HGSMI 3D and Video Accel respectively,
-	 * EMT thread when dealing with HGSMI command processing, etc.
-	 * Besides settings/cleaning flags atomically, some each flag has its own special sync restrictions,
-	 * see commants for flags definitions above */
-	volatile uint32_t u32HostFlags;
-	uint32_t au32Reserved[3];
+typedef struct HGSMIHOSTFLAGS
+{
+    /* host flags can be accessed and modified in multiple threads concurrently,
+     * e.g. CrOpenGL HGCM and GUI threads when to completing HGSMI 3D and Video Accel respectively,
+     * EMT thread when dealing with HGSMI command processing, etc.
+     * Besides settings/cleaning flags atomically, some each flag has its own special sync restrictions,
+     * see commants for flags definitions above */
+    volatile uint32_t u32HostFlags;
+    uint32_t au32Reserved[3];
 } HGSMIHOSTFLAGS;
 AssertCompileSize(HGSMIHOSTFLAGS, 16);
 
 #endif
+

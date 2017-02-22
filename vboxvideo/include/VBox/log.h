@@ -35,6 +35,7 @@
 
 #include <iprt/log.h>
 
+
 /** @defgroup grp_rt_vbox_log    VBox Logging
  * @ingroup grp_rt_vbox
  * @{
@@ -54,739 +55,741 @@
  *         If anyone might be wondering what the alphabet looks like:
  *              A B C D E F G H I J K L M N O P Q R S T U V W X Y Z _
  */
-typedef enum LOGGROUP {
+typedef enum LOGGROUP
+{
     /** The default VBox group. */
-	LOG_GROUP_DEFAULT = RTLOGGROUP_FIRST_USER,
+    LOG_GROUP_DEFAULT = RTLOGGROUP_FIRST_USER,
     /** Audio mixer group. */
-	LOG_GROUP_AUDIO_MIXER,
+    LOG_GROUP_AUDIO_MIXER,
     /** Audio mixer buffer group. */
-	LOG_GROUP_AUDIO_MIXER_BUFFER,
+    LOG_GROUP_AUDIO_MIXER_BUFFER,
     /** Auto-logon group. */
-	LOG_GROUP_AUTOLOGON,
+    LOG_GROUP_AUTOLOGON,
     /** CFGM group. */
-	LOG_GROUP_CFGM,
+    LOG_GROUP_CFGM,
     /** CPUM group. */
-	LOG_GROUP_CPUM,
+    LOG_GROUP_CPUM,
     /** CSAM group. */
-	LOG_GROUP_CSAM,
+    LOG_GROUP_CSAM,
     /** Debug Console group. */
-	LOG_GROUP_DBGC,
+    LOG_GROUP_DBGC,
     /** DBGF group. */
-	LOG_GROUP_DBGF,
+    LOG_GROUP_DBGF,
     /** DBGF info group. */
-	LOG_GROUP_DBGF_INFO,
+    LOG_GROUP_DBGF_INFO,
     /** The debugger gui. */
-	LOG_GROUP_DBGG,
+    LOG_GROUP_DBGG,
     /** Generic Device group. */
-	LOG_GROUP_DEV,
+    LOG_GROUP_DEV,
     /** AC97 Device group. */
-	LOG_GROUP_DEV_AC97,
+    LOG_GROUP_DEV_AC97,
     /** ACPI Device group. */
-	LOG_GROUP_DEV_ACPI,
+    LOG_GROUP_DEV_ACPI,
     /** AHCI Device group. */
-	LOG_GROUP_DEV_AHCI,
+    LOG_GROUP_DEV_AHCI,
     /** APIC Device group. */
-	LOG_GROUP_DEV_APIC,
+    LOG_GROUP_DEV_APIC,
     /** BusLogic SCSI host adapter group. */
-	LOG_GROUP_DEV_BUSLOGIC,
+    LOG_GROUP_DEV_BUSLOGIC,
     /** DMA Controller group. */
-	LOG_GROUP_DEV_DMA,
+    LOG_GROUP_DEV_DMA,
     /** Gigabit Ethernet Device group. */
-	LOG_GROUP_DEV_E1000,
+    LOG_GROUP_DEV_E1000,
     /** Extensible Firmware Interface Device group. */
-	LOG_GROUP_DEV_EFI,
+    LOG_GROUP_DEV_EFI,
     /** USB EHCI Device group. */
-	LOG_GROUP_DEV_EHCI,
+    LOG_GROUP_DEV_EHCI,
     /** Floppy Controller Device group. */
-	LOG_GROUP_DEV_FDC,
+    LOG_GROUP_DEV_FDC,
     /** Guest Interface Manager Device group. */
-	LOG_GROUP_DEV_GIM,
+    LOG_GROUP_DEV_GIM,
     /** HDA Device group. */
-	LOG_GROUP_DEV_HDA,
+    LOG_GROUP_DEV_HDA,
     /** HDA Codec Device group. */
-	LOG_GROUP_DEV_HDA_CODEC,
+    LOG_GROUP_DEV_HDA_CODEC,
     /** High Precision Event Timer Device group. */
-	LOG_GROUP_DEV_HPET,
+    LOG_GROUP_DEV_HPET,
     /** IDE Device group. */
-	LOG_GROUP_DEV_IDE,
+    LOG_GROUP_DEV_IDE,
     /** I/O APIC Device group. */
-	LOG_GROUP_DEV_IOAPIC,
+    LOG_GROUP_DEV_IOAPIC,
     /** The internal networking IP stack Device group. */
-	LOG_GROUP_DEV_INIP,
+    LOG_GROUP_DEV_INIP,
     /** KeyBoard Controller Device group. */
-	LOG_GROUP_DEV_KBD,
+    LOG_GROUP_DEV_KBD,
     /** Low Pin Count Device group. */
-	LOG_GROUP_DEV_LPC,
+    LOG_GROUP_DEV_LPC,
     /** LsiLogic SCSI controller Device group. */
-	LOG_GROUP_DEV_LSILOGICSCSI,
+    LOG_GROUP_DEV_LSILOGICSCSI,
     /** NVMe Device group. */
-	LOG_GROUP_DEV_NVME,
+    LOG_GROUP_DEV_NVME,
     /** USB OHCI Device group. */
-	LOG_GROUP_DEV_OHCI,
+    LOG_GROUP_DEV_OHCI,
     /** Parallel Device group */
-	LOG_GROUP_DEV_PARALLEL,
+    LOG_GROUP_DEV_PARALLEL,
     /** PC Device group. */
-	LOG_GROUP_DEV_PC,
+    LOG_GROUP_DEV_PC,
     /** PC Architecture Device group. */
-	LOG_GROUP_DEV_PC_ARCH,
+    LOG_GROUP_DEV_PC_ARCH,
     /** PC BIOS Device group. */
-	LOG_GROUP_DEV_PC_BIOS,
+    LOG_GROUP_DEV_PC_BIOS,
     /** PCI Device group. */
-	LOG_GROUP_DEV_PCI,
+    LOG_GROUP_DEV_PCI,
     /** PCI Raw Device group. */
-	LOG_GROUP_DEV_PCI_RAW,
+    LOG_GROUP_DEV_PCI_RAW,
     /** PCNet Device group. */
-	LOG_GROUP_DEV_PCNET,
+    LOG_GROUP_DEV_PCNET,
     /** PIC Device group. */
-	LOG_GROUP_DEV_PIC,
+    LOG_GROUP_DEV_PIC,
     /** PIT Device group. */
-	LOG_GROUP_DEV_PIT,
+    LOG_GROUP_DEV_PIT,
     /** RTC Device group. */
-	LOG_GROUP_DEV_RTC,
+    LOG_GROUP_DEV_RTC,
     /** SB16 Device group. */
-	LOG_GROUP_DEV_SB16,
+    LOG_GROUP_DEV_SB16,
     /** Serial Device group */
-	LOG_GROUP_DEV_SERIAL,
+    LOG_GROUP_DEV_SERIAL,
     /** System Management Controller Device group. */
-	LOG_GROUP_DEV_SMC,
+    LOG_GROUP_DEV_SMC,
     /** VGA Device group. */
-	LOG_GROUP_DEV_VGA,
+    LOG_GROUP_DEV_VGA,
     /** Virtio PCI Device group. */
-	LOG_GROUP_DEV_VIRTIO,
+    LOG_GROUP_DEV_VIRTIO,
     /** Virtio Network Device group. */
-	LOG_GROUP_DEV_VIRTIO_NET,
+    LOG_GROUP_DEV_VIRTIO_NET,
     /** VMM Device group. */
-	LOG_GROUP_DEV_VMM,
+    LOG_GROUP_DEV_VMM,
     /** VMM Device group for backdoor logging. */
-	LOG_GROUP_DEV_VMM_BACKDOOR,
+    LOG_GROUP_DEV_VMM_BACKDOOR,
     /** VMM Device group for logging guest backdoor logging to stderr. */
-	LOG_GROUP_DEV_VMM_STDERR,
+    LOG_GROUP_DEV_VMM_STDERR,
     /** VMSVGA Device group. */
-	LOG_GROUP_DEV_VMSVGA,
+    LOG_GROUP_DEV_VMSVGA,
     /** USB xHCI Device group. */
-	LOG_GROUP_DEV_XHCI,
+    LOG_GROUP_DEV_XHCI,
     /** Disassembler group. */
-	LOG_GROUP_DIS,
+    LOG_GROUP_DIS,
     /** Generic driver group. */
-	LOG_GROUP_DRV,
+    LOG_GROUP_DRV,
     /** ACPI driver group */
-	LOG_GROUP_DRV_ACPI,
+    LOG_GROUP_DRV_ACPI,
     /** Audio driver group */
-	LOG_GROUP_DRV_AUDIO,
+    LOG_GROUP_DRV_AUDIO,
     /** Block driver group. */
-	LOG_GROUP_DRV_BLOCK,
+    LOG_GROUP_DRV_BLOCK,
     /** Char driver group. */
-	LOG_GROUP_DRV_CHAR,
+    LOG_GROUP_DRV_CHAR,
     /** Disk integrity driver group. */
-	LOG_GROUP_DRV_DISK_INTEGRITY,
+    LOG_GROUP_DRV_DISK_INTEGRITY,
     /** Video Display driver group. */
-	LOG_GROUP_DRV_DISPLAY,
+    LOG_GROUP_DRV_DISPLAY,
     /** Floppy media driver group. */
-	LOG_GROUP_DRV_FLOPPY,
+    LOG_GROUP_DRV_FLOPPY,
     /** Host Audio driver group. */
-	LOG_GROUP_DRV_HOST_AUDIO,
+    LOG_GROUP_DRV_HOST_AUDIO,
     /** Host Base block driver group. */
-	LOG_GROUP_DRV_HOST_BASE,
+    LOG_GROUP_DRV_HOST_BASE,
     /** Host DVD block driver group. */
-	LOG_GROUP_DRV_HOST_DVD,
+    LOG_GROUP_DRV_HOST_DVD,
     /** Host floppy block driver group. */
-	LOG_GROUP_DRV_HOST_FLOPPY,
+    LOG_GROUP_DRV_HOST_FLOPPY,
     /** Host Parallel Driver group */
-	LOG_GROUP_DRV_HOST_PARALLEL,
+    LOG_GROUP_DRV_HOST_PARALLEL,
     /** Host Serial Driver Group */
-	LOG_GROUP_DRV_HOST_SERIAL,
+    LOG_GROUP_DRV_HOST_SERIAL,
     /** The internal networking transport driver group. */
-	LOG_GROUP_DRV_INTNET,
+    LOG_GROUP_DRV_INTNET,
     /** ISO (CD/DVD) media driver group. */
-	LOG_GROUP_DRV_ISO,
+    LOG_GROUP_DRV_ISO,
     /** Keyboard Queue driver group. */
-	LOG_GROUP_DRV_KBD_QUEUE,
+    LOG_GROUP_DRV_KBD_QUEUE,
     /** lwIP IP stack driver group. */
-	LOG_GROUP_DRV_LWIP,
+    LOG_GROUP_DRV_LWIP,
     /** Video Miniport driver group. */
-	LOG_GROUP_DRV_MINIPORT,
+    LOG_GROUP_DRV_MINIPORT,
     /** Mouse driver group. */
-	LOG_GROUP_DRV_MOUSE,
+    LOG_GROUP_DRV_MOUSE,
     /** Mouse Queue driver group. */
-	LOG_GROUP_DRV_MOUSE_QUEUE,
+    LOG_GROUP_DRV_MOUSE_QUEUE,
     /** Named Pipe stream driver group. */
-	LOG_GROUP_DRV_NAMEDPIPE,
+    LOG_GROUP_DRV_NAMEDPIPE,
     /** NAT network transport driver group */
-	LOG_GROUP_DRV_NAT,
+    LOG_GROUP_DRV_NAT,
     /** Raw image driver group */
-	LOG_GROUP_DRV_RAW_IMAGE,
+    LOG_GROUP_DRV_RAW_IMAGE,
     /** SCSI driver group. */
-	LOG_GROUP_DRV_SCSI,
+    LOG_GROUP_DRV_SCSI,
     /** Host SCSI driver group. */
-	LOG_GROUP_DRV_SCSIHOST,
+    LOG_GROUP_DRV_SCSIHOST,
     /** TCP socket stream driver group. */
-	LOG_GROUP_DRV_TCP,
+    LOG_GROUP_DRV_TCP,
     /** Async transport driver group */
-	LOG_GROUP_DRV_TRANSPORT_ASYNC,
+    LOG_GROUP_DRV_TRANSPORT_ASYNC,
     /** TUN network transport driver group */
-	LOG_GROUP_DRV_TUN,
+    LOG_GROUP_DRV_TUN,
     /** UDP socket stream driver group. */
-	LOG_GROUP_DRV_UDP,
+    LOG_GROUP_DRV_UDP,
     /** UDP tunnet network transport driver group. */
-	LOG_GROUP_DRV_UDPTUNNEL,
+    LOG_GROUP_DRV_UDPTUNNEL,
     /** USB Proxy driver group. */
-	LOG_GROUP_DRV_USBPROXY,
+    LOG_GROUP_DRV_USBPROXY,
     /** VBoxHDD media driver group. */
-	LOG_GROUP_DRV_VBOXHDD,
+    LOG_GROUP_DRV_VBOXHDD,
     /** VBox HDD container media driver group. */
-	LOG_GROUP_DRV_VD,
+    LOG_GROUP_DRV_VD,
     /** VRDE audio driver group. */
-	LOG_GROUP_DRV_VRDE_AUDIO,
+    LOG_GROUP_DRV_VRDE_AUDIO,
     /** Virtual Switch transport driver group */
-	LOG_GROUP_DRV_VSWITCH,
+    LOG_GROUP_DRV_VSWITCH,
     /** VUSB driver group */
-	LOG_GROUP_DRV_VUSB,
+    LOG_GROUP_DRV_VUSB,
     /** EM group. */
-	LOG_GROUP_EM,
+    LOG_GROUP_EM,
     /** FTM group. */
-	LOG_GROUP_FTM,
+    LOG_GROUP_FTM,
     /** GIM group. */
-	LOG_GROUP_GIM,
+    LOG_GROUP_GIM,
     /** GMM group. */
-	LOG_GROUP_GMM,
+    LOG_GROUP_GMM,
     /** Guest control. */
-	LOG_GROUP_GUEST_CONTROL,
+    LOG_GROUP_GUEST_CONTROL,
     /** Guest drag'n drop. */
-	LOG_GROUP_GUEST_DND,
+    LOG_GROUP_GUEST_DND,
     /** GUI group. */
-	LOG_GROUP_GUI,
+    LOG_GROUP_GUI,
     /** GVMM group. */
-	LOG_GROUP_GVMM,
+    LOG_GROUP_GVMM,
     /** HGCM group */
-	LOG_GROUP_HGCM,
+    LOG_GROUP_HGCM,
     /** HGSMI group */
-	LOG_GROUP_HGSMI,
+    LOG_GROUP_HGSMI,
     /** HM group. */
-	LOG_GROUP_HM,
+    LOG_GROUP_HM,
     /** IEM group. */
-	LOG_GROUP_IEM,
+    LOG_GROUP_IEM,
     /** IOM group. */
-	LOG_GROUP_IOM,
+    LOG_GROUP_IOM,
     /** XPCOM IPC group. */
-	LOG_GROUP_IPC,
+    LOG_GROUP_IPC,
     /** lwIP group. */
-	LOG_GROUP_LWIP,
+    LOG_GROUP_LWIP,
     /** lwIP group, api_lib.c API_LIB_DEBUG */
-	LOG_GROUP_LWIP_API_LIB,
+    LOG_GROUP_LWIP_API_LIB,
     /** lwIP group, api_msg.c API_MSG_DEBUG */
-	LOG_GROUP_LWIP_API_MSG,
+    LOG_GROUP_LWIP_API_MSG,
     /** lwIP group, etharp.c ETHARP_DEBUG */
-	LOG_GROUP_LWIP_ETHARP,
+    LOG_GROUP_LWIP_ETHARP,
     /** lwIP group, icmp.c ICMP_DEBUG */
-	LOG_GROUP_LWIP_ICMP,
+    LOG_GROUP_LWIP_ICMP,
     /** lwIP group, igmp.c IGMP_DEBUG */
-	LOG_GROUP_LWIP_IGMP,
+    LOG_GROUP_LWIP_IGMP,
     /** lwIP group, inet.c INET_DEBUG */
-	LOG_GROUP_LWIP_INET,
+    LOG_GROUP_LWIP_INET,
     /** lwIP group, IP_DEBUG (sic!) */
-	LOG_GROUP_LWIP_IP4,
+    LOG_GROUP_LWIP_IP4,
     /** lwIP group, ip_frag.c IP_REASS_DEBUG (sic!) */
-	LOG_GROUP_LWIP_IP4_REASS,
+    LOG_GROUP_LWIP_IP4_REASS,
     /** lwIP group, IP6_DEBUG */
-	LOG_GROUP_LWIP_IP6,
+    LOG_GROUP_LWIP_IP6,
     /** lwIP group, mem.c MEM_DEBUG */
-	LOG_GROUP_LWIP_MEM,
+    LOG_GROUP_LWIP_MEM,
     /** lwIP group, memp.c MEMP_DEBUG */
-	LOG_GROUP_LWIP_MEMP,
+    LOG_GROUP_LWIP_MEMP,
     /** lwIP group, netif.c NETIF_DEBUG */
-	LOG_GROUP_LWIP_NETIF,
+    LOG_GROUP_LWIP_NETIF,
     /** lwIP group, pbuf.c PBUF_DEBUG */
-	LOG_GROUP_LWIP_PBUF,
+    LOG_GROUP_LWIP_PBUF,
     /** lwIP group, raw.c RAW_DEBUG */
-	LOG_GROUP_LWIP_RAW,
+    LOG_GROUP_LWIP_RAW,
     /** lwIP group, sockets.c SOCKETS_DEBUG */
-	LOG_GROUP_LWIP_SOCKETS,
+    LOG_GROUP_LWIP_SOCKETS,
     /** lwIP group, SYS_DEBUG */
-	LOG_GROUP_LWIP_SYS,
+    LOG_GROUP_LWIP_SYS,
     /** lwIP group, TCP_DEBUG */
-	LOG_GROUP_LWIP_TCP,
+    LOG_GROUP_LWIP_TCP,
     /** lwIP group, tcpip.c TCPIP_DEBUG */
-	LOG_GROUP_LWIP_TCPIP,
+    LOG_GROUP_LWIP_TCPIP,
     /** lwIP group, TCP_CWND_DEBUG (congestion window) */
-	LOG_GROUP_LWIP_TCP_CWND,
+    LOG_GROUP_LWIP_TCP_CWND,
     /** lwIP group, tcp_in.c TCP_FR_DEBUG (fast retransmit) */
-	LOG_GROUP_LWIP_TCP_FR,
+    LOG_GROUP_LWIP_TCP_FR,
     /** lwIP group, tcp_in.c TCP_INPUT_DEBUG */
-	LOG_GROUP_LWIP_TCP_INPUT,
+    LOG_GROUP_LWIP_TCP_INPUT,
     /** lwIP group, tcp_out.c TCP_OUTPUT_DEBUG */
-	LOG_GROUP_LWIP_TCP_OUTPUT,
+    LOG_GROUP_LWIP_TCP_OUTPUT,
     /** lwIP group, TCP_QLEN_DEBUG */
-	LOG_GROUP_LWIP_TCP_QLEN,
+    LOG_GROUP_LWIP_TCP_QLEN,
     /** lwIP group, TCP_RST_DEBUG */
-	LOG_GROUP_LWIP_TCP_RST,
+    LOG_GROUP_LWIP_TCP_RST,
     /** lwIP group, TCP_RTO_DEBUG (retransmit) */
-	LOG_GROUP_LWIP_TCP_RTO,
+    LOG_GROUP_LWIP_TCP_RTO,
     /** lwIP group, tcp_in.c TCP_WND_DEBUG (window updates) */
-	LOG_GROUP_LWIP_TCP_WND,
+    LOG_GROUP_LWIP_TCP_WND,
     /** lwIP group, timers.c TIMERS_DEBUG */
-	LOG_GROUP_LWIP_TIMERS,
+    LOG_GROUP_LWIP_TIMERS,
     /** lwIP group, udp.c UDP_DEBUG */
-	LOG_GROUP_LWIP_UDP,
+    LOG_GROUP_LWIP_UDP,
     /** Main group. */
-	LOG_GROUP_MAIN,
+    LOG_GROUP_MAIN,
     /** Main group, IAdditionsFacility. */
-	LOG_GROUP_MAIN_ADDITIONSFACILITY,
+    LOG_GROUP_MAIN_ADDITIONSFACILITY,
     /** Main group, IAdditionsStateChangedEvent. */
-	LOG_GROUP_MAIN_ADDITIONSSTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_ADDITIONSSTATECHANGEDEVENT,
     /** Main group, IAppliance. */
-	LOG_GROUP_MAIN_APPLIANCE,
+    LOG_GROUP_MAIN_APPLIANCE,
     /** Main group, IAudioAdapter. */
-	LOG_GROUP_MAIN_AUDIOADAPTER,
+    LOG_GROUP_MAIN_AUDIOADAPTER,
     /** Main group, IBandwidthControl. */
-	LOG_GROUP_MAIN_BANDWIDTHCONTROL,
+    LOG_GROUP_MAIN_BANDWIDTHCONTROL,
     /** Main group, IBandwidthGroup. */
-	LOG_GROUP_MAIN_BANDWIDTHGROUP,
+    LOG_GROUP_MAIN_BANDWIDTHGROUP,
     /** Main group, IBandwidthGroupChangedEvent. */
-	LOG_GROUP_MAIN_BANDWIDTHGROUPCHANGEDEVENT,
+    LOG_GROUP_MAIN_BANDWIDTHGROUPCHANGEDEVENT,
     /** Main group, IBIOSSettings. */
-	LOG_GROUP_MAIN_BIOSSETTINGS,
+    LOG_GROUP_MAIN_BIOSSETTINGS,
     /** Main group, ICanShowWindowEvent. */
-	LOG_GROUP_MAIN_CANSHOWWINDOWEVENT,
+    LOG_GROUP_MAIN_CANSHOWWINDOWEVENT,
     /** Main group, ICertificate. */
-	LOG_GROUP_MAIN_CERTIFICATE,
+    LOG_GROUP_MAIN_CERTIFICATE,
     /** Main group, IClipboardModeChangedEvent. */
-	LOG_GROUP_MAIN_CLIPBOARDMODECHANGEDEVENT,
+    LOG_GROUP_MAIN_CLIPBOARDMODECHANGEDEVENT,
     /** Main group, IConsole. */
-	LOG_GROUP_MAIN_CONSOLE,
+    LOG_GROUP_MAIN_CONSOLE,
     /** Main group, ICPUChangedEvent. */
-	LOG_GROUP_MAIN_CPUCHANGEDEVENT,
+    LOG_GROUP_MAIN_CPUCHANGEDEVENT,
     /** Main group, ICPUExecutionCapChangedEvent. */
-	LOG_GROUP_MAIN_CPUEXECUTIONCAPCHANGEDEVENT,
+    LOG_GROUP_MAIN_CPUEXECUTIONCAPCHANGEDEVENT,
     /** Main group, IDHCPServer. */
-	LOG_GROUP_MAIN_DHCPSERVER,
+    LOG_GROUP_MAIN_DHCPSERVER,
     /** Main group, IDirectory. */
-	LOG_GROUP_MAIN_DIRECTORY,
+    LOG_GROUP_MAIN_DIRECTORY,
     /** Main group, IDisplay. */
-	LOG_GROUP_MAIN_DISPLAY,
+    LOG_GROUP_MAIN_DISPLAY,
     /** Main group, IDisplaySourceBitmap. */
-	LOG_GROUP_MAIN_DISPLAYSOURCEBITMAP,
+    LOG_GROUP_MAIN_DISPLAYSOURCEBITMAP,
     /** Main group, IDnDBase. */
-	LOG_GROUP_MAIN_DNDBASE,
+    LOG_GROUP_MAIN_DNDBASE,
     /** Main group, IDnDModeChangedEvent. */
-	LOG_GROUP_MAIN_DNDMODECHANGEDEVENT,
+    LOG_GROUP_MAIN_DNDMODECHANGEDEVENT,
     /** Main group, IDnDSource. */
-	LOG_GROUP_MAIN_DNDSOURCE,
+    LOG_GROUP_MAIN_DNDSOURCE,
     /** Main group, IDnDTarget. */
-	LOG_GROUP_MAIN_DNDTARGET,
+    LOG_GROUP_MAIN_DNDTARGET,
     /** Main group, IEmulatedUSB. */
-	LOG_GROUP_MAIN_EMULATEDUSB,
+    LOG_GROUP_MAIN_EMULATEDUSB,
     /** Main group, IEvent. */
-	LOG_GROUP_MAIN_EVENT,
+    LOG_GROUP_MAIN_EVENT,
     /** Main group, IEventListener. */
-	LOG_GROUP_MAIN_EVENTLISTENER,
+    LOG_GROUP_MAIN_EVENTLISTENER,
     /** Main group, IEventSource. */
-	LOG_GROUP_MAIN_EVENTSOURCE,
+    LOG_GROUP_MAIN_EVENTSOURCE,
     /** Main group, IEventSourceChangedEvent. */
-	LOG_GROUP_MAIN_EVENTSOURCECHANGEDEVENT,
+    LOG_GROUP_MAIN_EVENTSOURCECHANGEDEVENT,
     /** Main group, IExtPack. */
-	LOG_GROUP_MAIN_EXTPACK,
+    LOG_GROUP_MAIN_EXTPACK,
     /** Main group, IExtPackBase. */
-	LOG_GROUP_MAIN_EXTPACKBASE,
+    LOG_GROUP_MAIN_EXTPACKBASE,
     /** Main group, IExtPackFile. */
-	LOG_GROUP_MAIN_EXTPACKFILE,
+    LOG_GROUP_MAIN_EXTPACKFILE,
     /** Main group, IExtPackManager. */
-	LOG_GROUP_MAIN_EXTPACKMANAGER,
+    LOG_GROUP_MAIN_EXTPACKMANAGER,
     /** Main group, IExtPackPlugIn. */
-	LOG_GROUP_MAIN_EXTPACKPLUGIN,
+    LOG_GROUP_MAIN_EXTPACKPLUGIN,
     /** Main group, IExtraDataCanChangeEvent. */
-	LOG_GROUP_MAIN_EXTRADATACANCHANGEEVENT,
+    LOG_GROUP_MAIN_EXTRADATACANCHANGEEVENT,
     /** Main group, IExtraDataChangedEvent. */
-	LOG_GROUP_MAIN_EXTRADATACHANGEDEVENT,
+    LOG_GROUP_MAIN_EXTRADATACHANGEDEVENT,
     /** Main group, IFile. */
-	LOG_GROUP_MAIN_FILE,
+    LOG_GROUP_MAIN_FILE,
     /** Main group, IFramebuffer. */
-	LOG_GROUP_MAIN_FRAMEBUFFER,
+    LOG_GROUP_MAIN_FRAMEBUFFER,
     /** Main group, IFramebufferOverlay. */
-	LOG_GROUP_MAIN_FRAMEBUFFEROVERLAY,
+    LOG_GROUP_MAIN_FRAMEBUFFEROVERLAY,
     /** Main group, IFsObjInfo. */
-	LOG_GROUP_MAIN_FSOBJINFO,
+    LOG_GROUP_MAIN_FSOBJINFO,
     /** Main group, IGuest. */
-	LOG_GROUP_MAIN_GUEST,
+    LOG_GROUP_MAIN_GUEST,
     /** Main group, IGuestDirectory. */
-	LOG_GROUP_MAIN_GUESTDIRECTORY,
+    LOG_GROUP_MAIN_GUESTDIRECTORY,
     /** Main group, IGuestDnDSource. */
-	LOG_GROUP_MAIN_GUESTDNDSOURCE,
+    LOG_GROUP_MAIN_GUESTDNDSOURCE,
     /** Main group, IGuestDnDTarget. */
-	LOG_GROUP_MAIN_GUESTDNDTARGET,
+    LOG_GROUP_MAIN_GUESTDNDTARGET,
     /** Main group, IGuestErrorInfo. */
-	LOG_GROUP_MAIN_GUESTERRORINFO,
+    LOG_GROUP_MAIN_GUESTERRORINFO,
     /** Main group, IGuestFile. */
-	LOG_GROUP_MAIN_GUESTFILE,
+    LOG_GROUP_MAIN_GUESTFILE,
     /** Main group, IGuestFileEvent. */
-	LOG_GROUP_MAIN_GUESTFILEEVENT,
+    LOG_GROUP_MAIN_GUESTFILEEVENT,
     /** Main group, IGuestFileIOEvent. */
-	LOG_GROUP_MAIN_GUESTFILEIOEVENT,
+    LOG_GROUP_MAIN_GUESTFILEIOEVENT,
     /** Main group, IGuestFileOffsetChangedEvent. */
-	LOG_GROUP_MAIN_GUESTFILEOFFSETCHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTFILEOFFSETCHANGEDEVENT,
     /** Main group, IGuestFileReadEvent. */
-	LOG_GROUP_MAIN_GUESTFILEREADEVENT,
+    LOG_GROUP_MAIN_GUESTFILEREADEVENT,
     /** Main group, IGuestFileRegisteredEvent. */
-	LOG_GROUP_MAIN_GUESTFILEREGISTEREDEVENT,
+    LOG_GROUP_MAIN_GUESTFILEREGISTEREDEVENT,
     /** Main group, IGuestFileStateChangedEvent. */
-	LOG_GROUP_MAIN_GUESTFILESTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTFILESTATECHANGEDEVENT,
     /** Main group, IGuestFileWriteEvent. */
-	LOG_GROUP_MAIN_GUESTFILEWRITEEVENT,
+    LOG_GROUP_MAIN_GUESTFILEWRITEEVENT,
     /** Main group, IGuestFsObjInfo. */
-	LOG_GROUP_MAIN_GUESTFSOBJINFO,
+    LOG_GROUP_MAIN_GUESTFSOBJINFO,
     /** Main group, IGuestKeyboardEvent. */
-	LOG_GROUP_MAIN_GUESTKEYBOARDEVENT,
+    LOG_GROUP_MAIN_GUESTKEYBOARDEVENT,
     /** Main group, IGuestMonitorChangedEvent. */
-	LOG_GROUP_MAIN_GUESTMONITORCHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTMONITORCHANGEDEVENT,
     /** Main group, IGuestMouseEvent. */
-	LOG_GROUP_MAIN_GUESTMOUSEEVENT,
+    LOG_GROUP_MAIN_GUESTMOUSEEVENT,
     /** Main group, IGuestMultiTouchEvent. */
-	LOG_GROUP_MAIN_GUESTMULTITOUCHEVENT,
+    LOG_GROUP_MAIN_GUESTMULTITOUCHEVENT,
     /** Main group, IGuestOSType. */
-	LOG_GROUP_MAIN_GUESTOSTYPE,
+    LOG_GROUP_MAIN_GUESTOSTYPE,
     /** Main group, IGuestProcess. */
-	LOG_GROUP_MAIN_GUESTPROCESS,
+    LOG_GROUP_MAIN_GUESTPROCESS,
     /** Main group, IGuestProcessEvent. */
-	LOG_GROUP_MAIN_GUESTPROCESSEVENT,
+    LOG_GROUP_MAIN_GUESTPROCESSEVENT,
     /** Main group, IGuestProcessInputNotifyEvent. */
-	LOG_GROUP_MAIN_GUESTPROCESSINPUTNOTIFYEVENT,
+    LOG_GROUP_MAIN_GUESTPROCESSINPUTNOTIFYEVENT,
     /** Main group, IGuestProcessIOEvent. */
-	LOG_GROUP_MAIN_GUESTPROCESSIOEVENT,
+    LOG_GROUP_MAIN_GUESTPROCESSIOEVENT,
     /** Main group, IGuestProcessOutputEvent. */
-	LOG_GROUP_MAIN_GUESTPROCESSOUTPUTEVENT,
+    LOG_GROUP_MAIN_GUESTPROCESSOUTPUTEVENT,
     /** Main group, IGuestProcessRegisteredEvent. */
-	LOG_GROUP_MAIN_GUESTPROCESSREGISTEREDEVENT,
+    LOG_GROUP_MAIN_GUESTPROCESSREGISTEREDEVENT,
     /** Main group, IGuestProcessStateChangedEvent. */
-	LOG_GROUP_MAIN_GUESTPROCESSSTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTPROCESSSTATECHANGEDEVENT,
     /** Main group, IGuestPropertyChangedEvent. */
-	LOG_GROUP_MAIN_GUESTPROPERTYCHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTPROPERTYCHANGEDEVENT,
     /** Main group, IGuestScreenInfo. */
-	LOG_GROUP_MAIN_GUESTSCREENINFO,
+    LOG_GROUP_MAIN_GUESTSCREENINFO,
     /** Main group, IGuestSession. */
-	LOG_GROUP_MAIN_GUESTSESSION,
+    LOG_GROUP_MAIN_GUESTSESSION,
     /** Main group, IGuestSessionEvent. */
-	LOG_GROUP_MAIN_GUESTSESSIONEVENT,
+    LOG_GROUP_MAIN_GUESTSESSIONEVENT,
     /** Main group, IGuestSessionRegisteredEvent. */
-	LOG_GROUP_MAIN_GUESTSESSIONREGISTEREDEVENT,
+    LOG_GROUP_MAIN_GUESTSESSIONREGISTEREDEVENT,
     /** Main group, IGuestSessionStateChangedEvent. */
-	LOG_GROUP_MAIN_GUESTSESSIONSTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTSESSIONSTATECHANGEDEVENT,
     /** Main group, IGuestUserStateChangedEvent. */
-	LOG_GROUP_MAIN_GUESTUSERSTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_GUESTUSERSTATECHANGEDEVENT,
     /** Main group, IHost. */
-	LOG_GROUP_MAIN_HOST,
+    LOG_GROUP_MAIN_HOST,
     /** Main group, IHostNameResolutionConfigurationChangeEvent. */
-	LOG_GROUP_MAIN_HOSTNAMERESOLUTIONCONFIGURATIONCHANGEEVENT,
+    LOG_GROUP_MAIN_HOSTNAMERESOLUTIONCONFIGURATIONCHANGEEVENT,
     /** Main group, IHostNetworkInterface. */
-	LOG_GROUP_MAIN_HOSTNETWORKINTERFACE,
+    LOG_GROUP_MAIN_HOSTNETWORKINTERFACE,
     /** Main group, IHostPCIDevicePlugEvent. */
-	LOG_GROUP_MAIN_HOSTPCIDEVICEPLUGEVENT,
+    LOG_GROUP_MAIN_HOSTPCIDEVICEPLUGEVENT,
     /** Main group, IHostUSBDevice. */
-	LOG_GROUP_MAIN_HOSTUSBDEVICE,
+    LOG_GROUP_MAIN_HOSTUSBDEVICE,
     /** Main group, IHostUSBDeviceFilter. */
-	LOG_GROUP_MAIN_HOSTUSBDEVICEFILTER,
+    LOG_GROUP_MAIN_HOSTUSBDEVICEFILTER,
     /** Main group, IHostVideoInputDevice. */
-	LOG_GROUP_MAIN_HOSTVIDEOINPUTDEVICE,
+    LOG_GROUP_MAIN_HOSTVIDEOINPUTDEVICE,
     /** Main group, IInternalMachineControl. */
-	LOG_GROUP_MAIN_INTERNALMACHINECONTROL,
+    LOG_GROUP_MAIN_INTERNALMACHINECONTROL,
     /** Main group, IInternalSessionControl. */
-	LOG_GROUP_MAIN_INTERNALSESSIONCONTROL,
+    LOG_GROUP_MAIN_INTERNALSESSIONCONTROL,
     /** Main group, IKeyboard. */
-	LOG_GROUP_MAIN_KEYBOARD,
+    LOG_GROUP_MAIN_KEYBOARD,
     /** Main group, IKeyboardLedsChangedEvent. */
-	LOG_GROUP_MAIN_KEYBOARDLEDSCHANGEDEVENT,
+    LOG_GROUP_MAIN_KEYBOARDLEDSCHANGEDEVENT,
     /** Main group, IMachine. */
-	LOG_GROUP_MAIN_MACHINE,
+    LOG_GROUP_MAIN_MACHINE,
     /** Main group, IMachineDataChangedEvent. */
-	LOG_GROUP_MAIN_MACHINEDATACHANGEDEVENT,
+    LOG_GROUP_MAIN_MACHINEDATACHANGEDEVENT,
     /** Main group, IMachineDebugger. */
-	LOG_GROUP_MAIN_MACHINEDEBUGGER,
+    LOG_GROUP_MAIN_MACHINEDEBUGGER,
     /** Main group, IMachineEvent. */
-	LOG_GROUP_MAIN_MACHINEEVENT,
+    LOG_GROUP_MAIN_MACHINEEVENT,
     /** Main group, IMachineRegisteredEvent. */
-	LOG_GROUP_MAIN_MACHINEREGISTEREDEVENT,
+    LOG_GROUP_MAIN_MACHINEREGISTEREDEVENT,
     /** Main group, IMachineStateChangedEvent. */
-	LOG_GROUP_MAIN_MACHINESTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_MACHINESTATECHANGEDEVENT,
     /** Main group, IMedium. */
-	LOG_GROUP_MAIN_MEDIUM,
+    LOG_GROUP_MAIN_MEDIUM,
     /** Main group, IMediumAttachment. */
-	LOG_GROUP_MAIN_MEDIUMATTACHMENT,
+    LOG_GROUP_MAIN_MEDIUMATTACHMENT,
     /** Main group, IMediumChangedEvent. */
-	LOG_GROUP_MAIN_MEDIUMCHANGEDEVENT,
+    LOG_GROUP_MAIN_MEDIUMCHANGEDEVENT,
     /** Main group, IMediumConfigChangedEvent. */
-	LOG_GROUP_MAIN_MEDIUMCONFIGCHANGEDEVENT,
+    LOG_GROUP_MAIN_MEDIUMCONFIGCHANGEDEVENT,
     /** Main group, IMediumFormat. */
-	LOG_GROUP_MAIN_MEDIUMFORMAT,
+    LOG_GROUP_MAIN_MEDIUMFORMAT,
     /** Main group, IMediumRegisteredEvent. */
-	LOG_GROUP_MAIN_MEDIUMREGISTEREDEVENT,
+    LOG_GROUP_MAIN_MEDIUMREGISTEREDEVENT,
     /** Main group, IMouse. */
-	LOG_GROUP_MAIN_MOUSE,
+    LOG_GROUP_MAIN_MOUSE,
     /** Main group, IMouseCapabilityChangedEvent. */
-	LOG_GROUP_MAIN_MOUSECAPABILITYCHANGEDEVENT,
+    LOG_GROUP_MAIN_MOUSECAPABILITYCHANGEDEVENT,
     /** Main group, IMousePointerShape. */
-	LOG_GROUP_MAIN_MOUSEPOINTERSHAPE,
+    LOG_GROUP_MAIN_MOUSEPOINTERSHAPE,
     /** Main group, IMousePointerShapeChangedEvent. */
-	LOG_GROUP_MAIN_MOUSEPOINTERSHAPECHANGEDEVENT,
+    LOG_GROUP_MAIN_MOUSEPOINTERSHAPECHANGEDEVENT,
     /** Main group, INATEngine. */
-	LOG_GROUP_MAIN_NATENGINE,
+    LOG_GROUP_MAIN_NATENGINE,
     /** Main group, INATNetwork. */
-	LOG_GROUP_MAIN_NATNETWORK,
+    LOG_GROUP_MAIN_NATNETWORK,
     /** Main group, INATNetworkAlterEvent. */
-	LOG_GROUP_MAIN_NATNETWORKALTEREVENT,
+    LOG_GROUP_MAIN_NATNETWORKALTEREVENT,
     /** Main group, INATNetworkChangedEvent. */
-	LOG_GROUP_MAIN_NATNETWORKCHANGEDEVENT,
+    LOG_GROUP_MAIN_NATNETWORKCHANGEDEVENT,
     /** Main group, INATNetworkCreationDeletionEvent. */
-	LOG_GROUP_MAIN_NATNETWORKCREATIONDELETIONEVENT,
+    LOG_GROUP_MAIN_NATNETWORKCREATIONDELETIONEVENT,
     /** Main group, INATNetworkPortForwardEvent. */
-	LOG_GROUP_MAIN_NATNETWORKPORTFORWARDEVENT,
+    LOG_GROUP_MAIN_NATNETWORKPORTFORWARDEVENT,
     /** Main group, INATNetworkSettingEvent. */
-	LOG_GROUP_MAIN_NATNETWORKSETTINGEVENT,
+    LOG_GROUP_MAIN_NATNETWORKSETTINGEVENT,
     /** Main group, INATNetworkStartStopEvent. */
-	LOG_GROUP_MAIN_NATNETWORKSTARTSTOPEVENT,
+    LOG_GROUP_MAIN_NATNETWORKSTARTSTOPEVENT,
     /** Main group, INATRedirectEvent. */
-	LOG_GROUP_MAIN_NATREDIRECTEVENT,
+    LOG_GROUP_MAIN_NATREDIRECTEVENT,
     /** Main group, INetworkAdapter. */
-	LOG_GROUP_MAIN_NETWORKADAPTER,
+    LOG_GROUP_MAIN_NETWORKADAPTER,
     /** Main group, INetworkAdapterChangedEvent. */
-	LOG_GROUP_MAIN_NETWORKADAPTERCHANGEDEVENT,
+    LOG_GROUP_MAIN_NETWORKADAPTERCHANGEDEVENT,
     /** Main group, IParallelPort. */
-	LOG_GROUP_MAIN_PARALLELPORT,
+    LOG_GROUP_MAIN_PARALLELPORT,
     /** Main group, IParallelPortChangedEvent. */
-	LOG_GROUP_MAIN_PARALLELPORTCHANGEDEVENT,
+    LOG_GROUP_MAIN_PARALLELPORTCHANGEDEVENT,
     /** Main group, IPCIAddress. */
-	LOG_GROUP_MAIN_PCIADDRESS,
+    LOG_GROUP_MAIN_PCIADDRESS,
     /** Main group, IPCIDeviceAttachment. */
-	LOG_GROUP_MAIN_PCIDEVICEATTACHMENT,
+    LOG_GROUP_MAIN_PCIDEVICEATTACHMENT,
     /** Main group, IPerformanceCollector. */
-	LOG_GROUP_MAIN_PERFORMANCECOLLECTOR,
+    LOG_GROUP_MAIN_PERFORMANCECOLLECTOR,
     /** Main group, IPerformanceMetric. */
-	LOG_GROUP_MAIN_PERFORMANCEMETRIC,
+    LOG_GROUP_MAIN_PERFORMANCEMETRIC,
     /** Main group, IProcess. */
-	LOG_GROUP_MAIN_PROCESS,
+    LOG_GROUP_MAIN_PROCESS,
     /** Main group, IProgress. */
-	LOG_GROUP_MAIN_PROGRESS,
+    LOG_GROUP_MAIN_PROGRESS,
     /** Main group, IReusableEvent. */
-	LOG_GROUP_MAIN_REUSABLEEVENT,
+    LOG_GROUP_MAIN_REUSABLEEVENT,
     /** Main group, IRuntimeErrorEvent. */
-	LOG_GROUP_MAIN_RUNTIMEERROREVENT,
+    LOG_GROUP_MAIN_RUNTIMEERROREVENT,
     /** Main group, ISerialPort. */
-	LOG_GROUP_MAIN_SERIALPORT,
+    LOG_GROUP_MAIN_SERIALPORT,
     /** Main group, ISerialPortChangedEvent. */
-	LOG_GROUP_MAIN_SERIALPORTCHANGEDEVENT,
+    LOG_GROUP_MAIN_SERIALPORTCHANGEDEVENT,
     /** Main group, ISession. */
-	LOG_GROUP_MAIN_SESSION,
+    LOG_GROUP_MAIN_SESSION,
     /** Main group, ISessionStateChangedEvent. */
-	LOG_GROUP_MAIN_SESSIONSTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_SESSIONSTATECHANGEDEVENT,
     /** Main group, ISharedFolder. */
-	LOG_GROUP_MAIN_SHAREDFOLDER,
+    LOG_GROUP_MAIN_SHAREDFOLDER,
     /** Main group, ISharedFolderChangedEvent. */
-	LOG_GROUP_MAIN_SHAREDFOLDERCHANGEDEVENT,
+    LOG_GROUP_MAIN_SHAREDFOLDERCHANGEDEVENT,
     /** Main group, IShowWindowEvent. */
-	LOG_GROUP_MAIN_SHOWWINDOWEVENT,
+    LOG_GROUP_MAIN_SHOWWINDOWEVENT,
     /** Main group, ISnapshot. */
-	LOG_GROUP_MAIN_SNAPSHOT,
+    LOG_GROUP_MAIN_SNAPSHOT,
     /** Main group, ISnapshotChangedEvent. */
-	LOG_GROUP_MAIN_SNAPSHOTCHANGEDEVENT,
+    LOG_GROUP_MAIN_SNAPSHOTCHANGEDEVENT,
     /** Main group, ISnapshotDeletedEvent. */
-	LOG_GROUP_MAIN_SNAPSHOTDELETEDEVENT,
+    LOG_GROUP_MAIN_SNAPSHOTDELETEDEVENT,
     /** Main group, ISnapshotEvent. */
-	LOG_GROUP_MAIN_SNAPSHOTEVENT,
+    LOG_GROUP_MAIN_SNAPSHOTEVENT,
     /** Main group, ISnapshotTakenEvent. */
-	LOG_GROUP_MAIN_SNAPSHOTRESTOREDEVENT,
+    LOG_GROUP_MAIN_SNAPSHOTRESTOREDEVENT,
     /** Main group, ISnapshotRestoredEvent. */
-	LOG_GROUP_MAIN_SNAPSHOTTAKENEVENT,
+    LOG_GROUP_MAIN_SNAPSHOTTAKENEVENT,
     /** Main group, IStateChangedEvent. */
-	LOG_GROUP_MAIN_STATECHANGEDEVENT,
+    LOG_GROUP_MAIN_STATECHANGEDEVENT,
     /** Main group, IStorageController. */
-	LOG_GROUP_MAIN_STORAGECONTROLLER,
+    LOG_GROUP_MAIN_STORAGECONTROLLER,
     /** Main group, IStorageControllerChangedEvent. */
-	LOG_GROUP_MAIN_STORAGECONTROLLERCHANGEDEVENT,
+    LOG_GROUP_MAIN_STORAGECONTROLLERCHANGEDEVENT,
     /** Main group, IStorageDeviceChangedEvent. */
-	LOG_GROUP_MAIN_STORAGEDEVICECHANGEDEVENT,
+    LOG_GROUP_MAIN_STORAGEDEVICECHANGEDEVENT,
     /** Main group, ISystemProperties. */
-	LOG_GROUP_MAIN_SYSTEMPROPERTIES,
+    LOG_GROUP_MAIN_SYSTEMPROPERTIES,
     /** Main group, IToken. */
-	LOG_GROUP_MAIN_TOKEN,
+    LOG_GROUP_MAIN_TOKEN,
     /** Main group, IUSBController. */
-	LOG_GROUP_MAIN_USBCONTROLLER,
+    LOG_GROUP_MAIN_USBCONTROLLER,
     /** Main group, IUSBControllerChangedEvent. */
-	LOG_GROUP_MAIN_USBCONTROLLERCHANGEDEVENT,
+    LOG_GROUP_MAIN_USBCONTROLLERCHANGEDEVENT,
     /** Main group, IUSBDevice. */
-	LOG_GROUP_MAIN_USBDEVICE,
+    LOG_GROUP_MAIN_USBDEVICE,
     /** Main group, IUSBDeviceFilter. */
-	LOG_GROUP_MAIN_USBDEVICEFILTER,
+    LOG_GROUP_MAIN_USBDEVICEFILTER,
     /** Main group, IUSBDeviceFilters. */
-	LOG_GROUP_MAIN_USBDEVICEFILTERS,
+    LOG_GROUP_MAIN_USBDEVICEFILTERS,
     /** Main group, IUSBDeviceStateChangedEvent. */
-	LOG_GROUP_MAIN_USBDEVICESTATECHANGEDEVENT,
+    LOG_GROUP_MAIN_USBDEVICESTATECHANGEDEVENT,
     /** Main group, IUSBProxyBackend. */
-	LOG_GROUP_MAIN_USBPROXYBACKEND,
+    LOG_GROUP_MAIN_USBPROXYBACKEND,
     /** Main group, IVBoxSVCAvailabilityChangedEvent. */
-	LOG_GROUP_MAIN_VBOXSVCAVAILABILITYCHANGEDEVENT,
+    LOG_GROUP_MAIN_VBOXSVCAVAILABILITYCHANGEDEVENT,
     /** Main group, IVetoEvent. */
-	LOG_GROUP_MAIN_VETOEVENT,
+    LOG_GROUP_MAIN_VETOEVENT,
     /** Main group, IVFSExplorer. */
-	LOG_GROUP_MAIN_VFSEXPLORER,
+    LOG_GROUP_MAIN_VFSEXPLORER,
     /** Main group, IVideoCaptureChangedEvent. */
-	LOG_GROUP_MAIN_VIDEOCAPTURECHANGEDEVENT,
+    LOG_GROUP_MAIN_VIDEOCAPTURECHANGEDEVENT,
     /** Main group, IVirtualBox. */
-	LOG_GROUP_MAIN_VIRTUALBOX,
+    LOG_GROUP_MAIN_VIRTUALBOX,
     /** Main group, IVirtualBoxClient. */
-	LOG_GROUP_MAIN_VIRTUALBOXCLIENT,
+    LOG_GROUP_MAIN_VIRTUALBOXCLIENT,
     /** Main group, IVirtualSystemDescription. */
-	LOG_GROUP_MAIN_VIRTUALSYSTEMDESCRIPTION,
+    LOG_GROUP_MAIN_VIRTUALSYSTEMDESCRIPTION,
     /** Main group, IVRDEServer. */
-	LOG_GROUP_MAIN_VRDESERVER,
+    LOG_GROUP_MAIN_VRDESERVER,
     /** Main group, IVRDEServerChangedEvent. */
-	LOG_GROUP_MAIN_VRDESERVERCHANGEDEVENT,
+    LOG_GROUP_MAIN_VRDESERVERCHANGEDEVENT,
     /** Main group, IVRDEServerInfo. */
-	LOG_GROUP_MAIN_VRDESERVERINFO,
+    LOG_GROUP_MAIN_VRDESERVERINFO,
     /** Main group, IVRDEServerInfoChangedEvent. */
-	LOG_GROUP_MAIN_VRDESERVERINFOCHANGEDEVENT,
+    LOG_GROUP_MAIN_VRDESERVERINFOCHANGEDEVENT,
     /** Misc. group intended for external use only. */
-	LOG_GROUP_MISC,
+    LOG_GROUP_MISC,
     /** MM group. */
-	LOG_GROUP_MM,
+    LOG_GROUP_MM,
     /** MM group. */
-	LOG_GROUP_MM_HEAP,
+    LOG_GROUP_MM_HEAP,
     /** MM group. */
-	LOG_GROUP_MM_HYPER,
+    LOG_GROUP_MM_HYPER,
     /** MM Hypervisor Heap group. */
-	LOG_GROUP_MM_HYPER_HEAP,
+    LOG_GROUP_MM_HYPER_HEAP,
     /** MM Physical/Ram group. */
-	LOG_GROUP_MM_PHYS,
+    LOG_GROUP_MM_PHYS,
     /** MM Page pool group. */
-	LOG_GROUP_MM_POOL,
+    LOG_GROUP_MM_POOL,
     /** The NAT service group */
-	LOG_GROUP_NAT_SERVICE,
+    LOG_GROUP_NAT_SERVICE,
     /** The network adaptor driver group. */
-	LOG_GROUP_NET_ADP_DRV,
+    LOG_GROUP_NET_ADP_DRV,
     /** The network filter driver group. */
-	LOG_GROUP_NET_FLT_DRV,
+    LOG_GROUP_NET_FLT_DRV,
     /** The common network service group */
-	LOG_GROUP_NET_SERVICE,
+    LOG_GROUP_NET_SERVICE,
     /** Network traffic shaper driver group. */
-	LOG_GROUP_NET_SHAPER,
+    LOG_GROUP_NET_SHAPER,
     /** PATM group. */
-	LOG_GROUP_PATM,
+    LOG_GROUP_PATM,
     /** PDM group. */
-	LOG_GROUP_PDM,
+    LOG_GROUP_PDM,
     /** PDM Async completion group. */
-	LOG_GROUP_PDM_ASYNC_COMPLETION,
+    LOG_GROUP_PDM_ASYNC_COMPLETION,
     /** PDM Block cache group. */
-	LOG_GROUP_PDM_BLK_CACHE,
+    LOG_GROUP_PDM_BLK_CACHE,
     /** PDM Device group. */
-	LOG_GROUP_PDM_DEVICE,
+    LOG_GROUP_PDM_DEVICE,
     /** PDM Driver group. */
-	LOG_GROUP_PDM_DRIVER,
+    LOG_GROUP_PDM_DRIVER,
     /** PDM Loader group. */
-	LOG_GROUP_PDM_LDR,
+    LOG_GROUP_PDM_LDR,
     /** PDM Loader group. */
-	LOG_GROUP_PDM_QUEUE,
+    LOG_GROUP_PDM_QUEUE,
     /** PGM group. */
-	LOG_GROUP_PGM,
+    LOG_GROUP_PGM,
     /** PGM dynamic mapping group. */
-	LOG_GROUP_PGM_DYNMAP,
+    LOG_GROUP_PGM_DYNMAP,
     /** PGM physical group. */
-	LOG_GROUP_PGM_PHYS,
+    LOG_GROUP_PGM_PHYS,
     /** PGM physical access group. */
-	LOG_GROUP_PGM_PHYS_ACCESS,
+    LOG_GROUP_PGM_PHYS_ACCESS,
     /** PGM shadow page pool group. */
-	LOG_GROUP_PGM_POOL,
+    LOG_GROUP_PGM_POOL,
     /** PGM shared paging group. */
-	LOG_GROUP_PGM_SHARED,
+    LOG_GROUP_PGM_SHARED,
     /** REM group. */
-	LOG_GROUP_REM,
+    LOG_GROUP_REM,
     /** REM disassembly handler group. */
-	LOG_GROUP_REM_DISAS,
+    LOG_GROUP_REM_DISAS,
     /** REM access handler group. */
-	LOG_GROUP_REM_HANDLER,
+    LOG_GROUP_REM_HANDLER,
     /** REM I/O port access group. */
-	LOG_GROUP_REM_IOPORT,
+    LOG_GROUP_REM_IOPORT,
     /** REM MMIO access group. */
-	LOG_GROUP_REM_MMIO,
+    LOG_GROUP_REM_MMIO,
     /** REM Printf. */
-	LOG_GROUP_REM_PRINTF,
+    LOG_GROUP_REM_PRINTF,
     /** REM running group. */
-	LOG_GROUP_REM_RUN,
+    LOG_GROUP_REM_RUN,
     /** SELM group. */
-	LOG_GROUP_SELM,
+    LOG_GROUP_SELM,
     /** Shared clipboard host service group. */
-	LOG_GROUP_SHARED_CLIPBOARD,
+    LOG_GROUP_SHARED_CLIPBOARD,
     /** Chromium OpenGL host service group. */
-	LOG_GROUP_SHARED_CROPENGL,
+    LOG_GROUP_SHARED_CROPENGL,
     /** Shared folders host service group. */
-	LOG_GROUP_SHARED_FOLDERS,
+    LOG_GROUP_SHARED_FOLDERS,
     /** OpenGL host service group. */
-	LOG_GROUP_SHARED_OPENGL,
+    LOG_GROUP_SHARED_OPENGL,
     /** The internal networking service group. */
-	LOG_GROUP_SRV_INTNET,
+    LOG_GROUP_SRV_INTNET,
     /** SSM group. */
-	LOG_GROUP_SSM,
+    LOG_GROUP_SSM,
     /** STAM group. */
-	LOG_GROUP_STAM,
+    LOG_GROUP_STAM,
     /** SUP group. */
-	LOG_GROUP_SUP,
+    LOG_GROUP_SUP,
     /** SUPport driver group. */
-	LOG_GROUP_SUP_DRV,
+    LOG_GROUP_SUP_DRV,
     /** TM group. */
-	LOG_GROUP_TM,
+    LOG_GROUP_TM,
     /** TRPM group. */
-	LOG_GROUP_TRPM,
+    LOG_GROUP_TRPM,
     /** USB cardreader group. */
-	LOG_GROUP_USB_CARDREADER,
+    LOG_GROUP_USB_CARDREADER,
     /** USB driver group. */
-	LOG_GROUP_USB_DRV,
+    LOG_GROUP_USB_DRV,
     /** USBFilter group. */
-	LOG_GROUP_USB_FILTER,
+    LOG_GROUP_USB_FILTER,
     /** USB keyboard device group. */
-	LOG_GROUP_USB_KBD,
+    LOG_GROUP_USB_KBD,
     /** USB mouse/tablet device group. */
-	LOG_GROUP_USB_MOUSE,
+    LOG_GROUP_USB_MOUSE,
     /** MSD USB device group. */
-	LOG_GROUP_USB_MSD,
+    LOG_GROUP_USB_MSD,
     /** USB remote support. */
-	LOG_GROUP_USB_REMOTE,
+    LOG_GROUP_USB_REMOTE,
     /** USB webcam. */
-	LOG_GROUP_USB_WEBCAM,
+    LOG_GROUP_USB_WEBCAM,
     /** VBox Guest Additions Driver (VBoxGuest). */
-	LOG_GROUP_VGDRV,
+    LOG_GROUP_VGDRV,
     /** VBox Guest Additions Library. */
-	LOG_GROUP_VBGL,
+    LOG_GROUP_VBGL,
     /** Generic virtual disk layer. */
-	LOG_GROUP_VD,
+    LOG_GROUP_VD,
     /** DMG virtual disk backend. */
-	LOG_GROUP_VD_DMG,
+    LOG_GROUP_VD_DMG,
     /** iSCSI virtual disk backend. */
-	LOG_GROUP_VD_ISCSI,
+    LOG_GROUP_VD_ISCSI,
     /** Parallels HDD virtual disk backend. */
-	LOG_GROUP_VD_PARALLELS,
+    LOG_GROUP_VD_PARALLELS,
     /** QCOW virtual disk backend. */
-	LOG_GROUP_VD_QCOW,
+    LOG_GROUP_VD_QCOW,
     /** QED virtual disk backend. */
-	LOG_GROUP_VD_QED,
+    LOG_GROUP_VD_QED,
     /** Raw virtual disk backend. */
-	LOG_GROUP_VD_RAW,
+    LOG_GROUP_VD_RAW,
     /** VDI virtual disk backend. */
-	LOG_GROUP_VD_VDI,
+    LOG_GROUP_VD_VDI,
     /** VHD virtual disk backend. */
-	LOG_GROUP_VD_VHD,
+    LOG_GROUP_VD_VHD,
     /** VHDX virtual disk backend. */
-	LOG_GROUP_VD_VHDX,
+    LOG_GROUP_VD_VHDX,
     /** VMDK virtual disk backend. */
-	LOG_GROUP_VD_VMDK,
+    LOG_GROUP_VD_VMDK,
     /** VM group. */
-	LOG_GROUP_VM,
+    LOG_GROUP_VM,
     /** VMM group. */
-	LOG_GROUP_VMM,
+    LOG_GROUP_VMM,
     /** VRDE group */
-	LOG_GROUP_VRDE,
+    LOG_GROUP_VRDE,
     /** VRDP group */
-	LOG_GROUP_VRDP,
+    LOG_GROUP_VRDP,
     /** VSCSI group */
-	LOG_GROUP_VSCSI,
+    LOG_GROUP_VSCSI,
     /** Webservice group. */
-	LOG_GROUP_WEBSERVICE
-	    /* !!!ALPHABETICALLY!!! */
+    LOG_GROUP_WEBSERVICE
+    /* !!!ALPHABETICALLY!!! */
 } VBOX_LOGGROUP;
+
 
 /** @def VBOX_LOGGROUP_NAMES
  * VirtualBox Logging group names.

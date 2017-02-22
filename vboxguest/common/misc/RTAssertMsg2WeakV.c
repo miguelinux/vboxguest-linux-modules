@@ -24,15 +24,17 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
 #include <iprt/assert.h>
 #include "internal/iprt.h"
 
+
 RTDECL(void) RTAssertMsg2WeakV(const char *pszFormat, va_list va)
 {
-	RTAssertMsg2V(pszFormat, va);
+    RTAssertMsg2V(pszFormat, va);
 }
-
 RT_EXPORT_SYMBOL(RTAssertMsg2WeakV);
+

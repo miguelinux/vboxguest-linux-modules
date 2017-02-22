@@ -30,13 +30,17 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt_heap       RTHeap - Heap Implementations
  * @ingroup grp_rt
  * @{
  */
+
+
 /** @defgroup grp_rt_heap_simple    RTHeapSimple - Simple Heap
  * @{
  */
+
 /**
  * Initializes the heap.
  *
@@ -45,8 +49,7 @@ RT_C_DECLS_BEGIN
  * @param   pvMemory    Pointer to the heap memory.
  * @param   cbMemory    The size of the heap memory.
  */
-RTDECL(int) RTHeapSimpleInit(PRTHEAPSIMPLE pHeap, void *pvMemory,
-			     size_t cbMemory);
+RTDECL(int) RTHeapSimpleInit(PRTHEAPSIMPLE pHeap, void *pvMemory, size_t cbMemory);
 
 /**
  * Merge two simple heaps into one.
@@ -59,8 +62,7 @@ RTDECL(int) RTHeapSimpleInit(PRTHEAPSIMPLE pHeap, void *pvMemory,
  * @param   Heap2       Handle to the second heap.
  * @remark  This API isn't implemented yet.
  */
-RTDECL(int) RTHeapSimpleMerge(PRTHEAPSIMPLE pHeap, RTHEAPSIMPLE Heap1,
-			      RTHEAPSIMPLE Heap2);
+RTDECL(int) RTHeapSimpleMerge(PRTHEAPSIMPLE pHeap, RTHEAPSIMPLE Heap1, RTHEAPSIMPLE Heap2);
 
 /**
  * Relocater the heap internal structures after copying it to a new location.
@@ -90,8 +92,7 @@ RTDECL(int) RTHeapSimpleRelocate(RTHEAPSIMPLE hHeap, uintptr_t offDelta);
  * @param   cbAlignment The requested heap block alignment. Pass 0 for default alignment.
  *                      Must be a power of 2.
  */
-RTDECL(void *) RTHeapSimpleAlloc(RTHEAPSIMPLE Heap, size_t cb,
-				 size_t cbAlignment);
+RTDECL(void *) RTHeapSimpleAlloc(RTHEAPSIMPLE Heap, size_t cb, size_t cbAlignment);
 
 /**
  * Allocates zeroed memory from the specified simple heap.
@@ -104,8 +105,7 @@ RTDECL(void *) RTHeapSimpleAlloc(RTHEAPSIMPLE Heap, size_t cb,
  * @param   cbAlignment The requested heap block alignment. Pass 0 for default alignment.
  *                      Must be a power of 2.
  */
-RTDECL(void *) RTHeapSimpleAllocZ(RTHEAPSIMPLE Heap, size_t cb,
-				  size_t cbAlignment);
+RTDECL(void *) RTHeapSimpleAllocZ(RTHEAPSIMPLE Heap, size_t cb, size_t cbAlignment);
 
 /**
  * Reallocates / Allocates / Frees a heap block.
@@ -117,8 +117,7 @@ RTDECL(void *) RTHeapSimpleAllocZ(RTHEAPSIMPLE Heap, size_t cb,
  *                      Must be a power of 2.
  * @remark  This API isn't implemented yet.
  */
-RTDECL(void *) RTHeapSimpleRealloc(RTHEAPSIMPLE Heap, void *pv, size_t cbNew,
-				   size_t cbAlignment);
+RTDECL(void *) RTHeapSimpleRealloc(RTHEAPSIMPLE Heap, void *pv, size_t cbNew, size_t cbAlignment);
 
 /**
  * Reallocates / Allocates / Frees a heap block, zeroing any new bits.
@@ -130,8 +129,7 @@ RTDECL(void *) RTHeapSimpleRealloc(RTHEAPSIMPLE Heap, void *pv, size_t cbNew,
  *                      Must be a power of 2.
  * @remark  This API isn't implemented yet.
  */
-RTDECL(void *) RTHeapSimpleReallocZ(RTHEAPSIMPLE Heap, void *pv, size_t cbNew,
-				    size_t cbAlignment);
+RTDECL(void *) RTHeapSimpleReallocZ(RTHEAPSIMPLE Heap, void *pv, size_t cbNew, size_t cbAlignment);
 
 /**
  * Frees memory allocated from a simple heap.
@@ -182,8 +180,7 @@ RTDECL(size_t) RTHeapSimpleGetFreeSize(RTHEAPSIMPLE Heap);
  * @param   pszFormat   IPRT format string.
  * @param   ...         Format arguments.
  */
-typedef DECLCALLBACK(void) FNRTHEAPSIMPLEPRINTF(const char *pszFormat,
-						...) RT_IPRT_FORMAT_ATTR(1, 2);
+typedef DECLCALLBACK(void) FNRTHEAPSIMPLEPRINTF(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
 /** Pointer to a FNRTHEAPSIMPLEPRINTF function. */
 typedef FNRTHEAPSIMPLEPRINTF *PFNRTHEAPSIMPLEPRINTF;
 
@@ -193,10 +190,11 @@ typedef FNRTHEAPSIMPLEPRINTF *PFNRTHEAPSIMPLEPRINTF;
  * @param   Heap        The heap handle.
  * @param   pfnPrintf   Printf like function that groks IPRT formatting.
  */
-RTDECL(void) RTHeapSimpleDump(RTHEAPSIMPLE Heap,
-			      PFNRTHEAPSIMPLEPRINTF pfnPrintf);
+RTDECL(void) RTHeapSimpleDump(RTHEAPSIMPLE Heap, PFNRTHEAPSIMPLEPRINTF pfnPrintf);
 
 /** @}  */
+
+
 
 /** @defgroup grp_rt_heap_offset    RTHeapOffset - Offset Based Heap
  *
@@ -214,8 +212,7 @@ RTDECL(void) RTHeapSimpleDump(RTHEAPSIMPLE Heap,
  * @param   pvMemory    Pointer to the heap memory.
  * @param   cbMemory    The size of the heap memory.
  */
-RTDECL(int) RTHeapOffsetInit(PRTHEAPOFFSET phHeap, void *pvMemory,
-			     size_t cbMemory);
+RTDECL(int) RTHeapOffsetInit(PRTHEAPOFFSET phHeap, void *pvMemory, size_t cbMemory);
 
 /**
  * Merge two simple heaps into one.
@@ -228,8 +225,7 @@ RTDECL(int) RTHeapOffsetInit(PRTHEAPOFFSET phHeap, void *pvMemory,
  * @param   hHeap2      Handle to the second heap.
  * @remark  This API isn't implemented yet.
  */
-RTDECL(int) RTHeapOffsetMerge(PRTHEAPOFFSET phHeap, RTHEAPOFFSET hHeap1,
-			      RTHEAPOFFSET hHeap2);
+RTDECL(int) RTHeapOffsetMerge(PRTHEAPOFFSET phHeap, RTHEAPOFFSET hHeap1, RTHEAPOFFSET hHeap2);
 
 /**
  * Allocates memory from the specified simple heap.
@@ -242,8 +238,7 @@ RTDECL(int) RTHeapOffsetMerge(PRTHEAPOFFSET phHeap, RTHEAPOFFSET hHeap1,
  * @param   cbAlignment The requested heap block alignment. Pass 0 for default alignment.
  *                      Must be a power of 2.
  */
-RTDECL(void *) RTHeapOffsetAlloc(RTHEAPOFFSET hHeap, size_t cb,
-				 size_t cbAlignment);
+RTDECL(void *) RTHeapOffsetAlloc(RTHEAPOFFSET hHeap, size_t cb, size_t cbAlignment);
 
 /**
  * Allocates zeroed memory from the specified simple heap.
@@ -256,8 +251,7 @@ RTDECL(void *) RTHeapOffsetAlloc(RTHEAPOFFSET hHeap, size_t cb,
  * @param   cbAlignment The requested heap block alignment. Pass 0 for default
  *                      alignment. Must be a power of 2.
  */
-RTDECL(void *) RTHeapOffsetAllocZ(RTHEAPOFFSET hHeap, size_t cb,
-				  size_t cbAlignment);
+RTDECL(void *) RTHeapOffsetAllocZ(RTHEAPOFFSET hHeap, size_t cb, size_t cbAlignment);
 
 /**
  * Reallocates / Allocates / Frees a heap block.
@@ -272,8 +266,7 @@ RTDECL(void *) RTHeapOffsetAllocZ(RTHEAPOFFSET hHeap, size_t cb,
  *                      alignment. Must be a power of 2.
  * @remark  This API isn't implemented yet.
  */
-RTDECL(void *) RTHeapOffsetRealloc(RTHEAPOFFSET hHeap, void *pv, size_t cbNew,
-				   size_t cbAlignment);
+RTDECL(void *) RTHeapOffsetRealloc(RTHEAPOFFSET hHeap, void *pv, size_t cbNew, size_t cbAlignment);
 
 /**
  * Reallocates / Allocates / Frees a heap block, zeroing any new bits.
@@ -288,8 +281,7 @@ RTDECL(void *) RTHeapOffsetRealloc(RTHEAPOFFSET hHeap, void *pv, size_t cbNew,
  *                      alignment. Must be a power of 2.
  * @remark  This API isn't implemented yet.
  */
-RTDECL(void *) RTHeapOffsetReallocZ(RTHEAPOFFSET hHeap, void *pv, size_t cbNew,
-				    size_t cbAlignment);
+RTDECL(void *) RTHeapOffsetReallocZ(RTHEAPOFFSET hHeap, void *pv, size_t cbNew, size_t cbAlignment);
 
 /**
  * Frees memory allocated from a simple heap.
@@ -343,8 +335,7 @@ RTDECL(size_t) RTHeapOffsetGetFreeSize(RTHEAPOFFSET hHeap);
  * @param   pszFormat   IPRT format string.
  * @param   ...         Format arguments.
  */
-typedef DECLCALLBACK(void) FNRTHEAPOFFSETPRINTF(const char *pszFormat,
-						...) RT_IPRT_FORMAT_ATTR(1, 2);
+typedef DECLCALLBACK(void) FNRTHEAPOFFSETPRINTF(const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(1, 2);
 /** Pointer to a FNRTHEAPOFFSETPRINTF function. */
 typedef FNRTHEAPOFFSETPRINTF *PFNRTHEAPOFFSETPRINTF;
 
@@ -354,11 +345,12 @@ typedef FNRTHEAPOFFSETPRINTF *PFNRTHEAPOFFSETPRINTF;
  * @param   hHeap       The heap handle.
  * @param   pfnPrintf   Printf like function that groks IPRT formatting.
  */
-RTDECL(void) RTHeapOffsetDump(RTHEAPOFFSET hHeap,
-			      PFNRTHEAPOFFSETPRINTF pfnPrintf);
+RTDECL(void) RTHeapOffsetDump(RTHEAPOFFSET hHeap, PFNRTHEAPOFFSETPRINTF pfnPrintf);
 
 /** @}  */
 
 /** @}  */
 RT_C_DECLS_END
+
 #endif
+

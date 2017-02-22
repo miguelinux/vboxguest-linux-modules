@@ -30,25 +30,29 @@
 #include <iprt/types.h>
 #include <iprt/assert.h>
 #include <iprt/stdarg.h>
-#include <iprt/err.h>		/* for VINF_SUCCESS */
+#include <iprt/err.h> /* for VINF_SUCCESS */
 #if defined(RT_OS_LINUX) && defined(__KERNEL__)
-RT_C_DECLS_BEGIN
-# define new newhack		/* string.h: strreplace */
+  RT_C_DECLS_BEGIN
+# define new newhack /* string.h: strreplace */
 # include <linux/string.h>
 # undef new
-    RT_C_DECLS_END
+  RT_C_DECLS_END
+
 #elif defined(IN_XF86_MODULE) && !defined(NO_ANSIC)
-RT_C_DECLS_BEGIN
+  RT_C_DECLS_BEGIN
 # include "xf86_ansic.h"
-    RT_C_DECLS_END
+  RT_C_DECLS_END
+
 #elif defined(RT_OS_FREEBSD) && defined(_KERNEL)
-RT_C_DECLS_BEGIN
+  RT_C_DECLS_BEGIN
 # include <sys/libkern.h>
-    RT_C_DECLS_END
+  RT_C_DECLS_END
+
 #elif defined(RT_OS_NETBSD) && defined(_KERNEL)
-RT_C_DECLS_BEGIN
+  RT_C_DECLS_BEGIN
 # include <lib/libkern/libkern.h>
-    RT_C_DECLS_END
+  RT_C_DECLS_END
+
 #elif defined(RT_OS_SOLARIS) && defined(_KERNEL)
   /*
    * Same case as with FreeBSD kernel:
@@ -73,22 +77,31 @@ RT_C_DECLS_BEGIN
  * IPRT instead of the operating environment.
  */
 #if defined(RT_OS_DARWIN) && defined(KERNEL)
-RT_C_DECLS_BEGIN void *memchr(const void *pv, int ch, size_t cb);
+RT_C_DECLS_BEGIN
+void *memchr(const void *pv, int ch, size_t cb);
 char *strpbrk(const char *pszStr, const char *pszChars);
 RT_C_DECLS_END
 #endif
+
 #if defined(RT_OS_FREEBSD) && defined(_KERNEL)
-RT_C_DECLS_BEGIN char *strpbrk(const char *pszStr, const char *pszChars);
+RT_C_DECLS_BEGIN
+char *strpbrk(const char *pszStr, const char *pszChars);
 RT_C_DECLS_END
 #endif
+
 #if defined(RT_OS_NETBSD) && defined(_KERNEL)
-RT_C_DECLS_BEGIN char *strpbrk(const char *pszStr, const char *pszChars);
+RT_C_DECLS_BEGIN
+char *strpbrk(const char *pszStr, const char *pszChars);
 RT_C_DECLS_END
 #endif
+
 #if (!defined(RT_OS_LINUX) || !defined(_GNU_SOURCE)) && !defined(RT_OS_FREEBSD) && !defined(RT_OS_NETBSD)
-RT_C_DECLS_BEGIN void *memrchr(const char *pv, int ch, size_t cb);
+RT_C_DECLS_BEGIN
+void *memrchr(const char *pv, int ch, size_t cb);
 RT_C_DECLS_END
 #endif
+
+
 /** @def RT_USE_RTC_3629
  * When defined the UTF-8 range will stop at  0x10ffff.  If not defined, the
  * range stops at 0x7fffffff.
@@ -96,6 +109,8 @@ RT_C_DECLS_END
 #ifdef DOXYGEN_RUNNING
 # define RT_USE_RTC_3629
 #endif
+
+
 /**
  * Byte zero the specified object.
  *
@@ -111,6 +126,7 @@ RT_C_DECLS_END
  * @ingroup grp_rt_cdefs
  */
 #define RT_ZERO(Obj)        RT_BZERO(&(Obj), sizeof(Obj))
+
 /**
  * Byte zero the specified memory area.
  *
@@ -127,16 +143,24 @@ RT_C_DECLS_END
  * @ingroup grp_rt_cdefs
  */
 #define RT_BZERO(pv, cb)    do { memset((pv), 0, cb); } while (0)
+
+
+
 /** @defgroup grp_rt_str    RTStr - String Manipulation
  * Mostly UTF-8 related helpers where the standard string functions won't do.
  * @ingroup grp_rt
  * @{
  */
-    RT_C_DECLS_BEGIN
+
+RT_C_DECLS_BEGIN
+
+
 /**
  * The maximum string length.
  */
 #define RTSTR_MAX       (~(size_t)0)
+
+
 /** @def RTSTR_TAG
  * The default allocation tag used by the RTStr allocation APIs.
  *
@@ -147,7 +171,10 @@ RT_C_DECLS_END
 #if !defined(RTSTR_TAG) || defined(DOXYGEN_RUNNING)
 # define RTSTR_TAG      (__FILE__)
 #endif
+
+
 #ifdef IN_RING3
+
 /**
  * Allocates tmp buffer with default tag, translates pszString from UTF8 to
  * current codepage.
@@ -158,6 +185,7 @@ RT_C_DECLS_END
  * @param   pszString       UTF-8 string to convert.
  */
 #define RTStrUtf8ToCurrentCP(ppszString, pszString)     RTStrUtf8ToCurrentCPTag((ppszString), (pszString), RTSTR_TAG)
+
 /**
  * Allocates tmp buffer with custom tag, translates pszString from UTF8 to
  * current codepage.
@@ -169,8 +197,7 @@ RT_C_DECLS_END
  * @param   pszString       UTF-8 string to convert.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR3DECL(int) RTStrUtf8ToCurrentCPTag(char **ppszString, const char *pszString,
-				      const char *pszTag);
+RTR3DECL(int)  RTStrUtf8ToCurrentCPTag(char **ppszString, const char *pszString, const char *pszTag);
 
 /**
  * Allocates tmp buffer, translates pszString from current codepage to UTF-8.
@@ -191,8 +218,7 @@ RTR3DECL(int) RTStrUtf8ToCurrentCPTag(char **ppszString, const char *pszString,
  * @param   pszString       Native string to convert.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTR3DECL(int) RTStrCurrentCPToUtf8Tag(char **ppszString, const char *pszString,
-				      const char *pszTag);
+RTR3DECL(int)  RTStrCurrentCPToUtf8Tag(char **ppszString, const char *pszString, const char *pszTag);
 
 #endif /* IN_RING3 */
 
@@ -203,7 +229,7 @@ RTR3DECL(int) RTStrCurrentCPToUtf8Tag(char **ppszString, const char *pszString,
  * @param   pszString      Pointer to buffer with string to free.
  *                         NULL is accepted.
  */
-RTDECL(void) RTStrFree(char *pszString);
+RTDECL(void)  RTStrFree(char *pszString);
 
 /**
  * Allocates a new copy of the given UTF-8 string (default tag).
@@ -241,8 +267,7 @@ RTDECL(char *) RTStrDupTag(const char *pszString, const char *pszTag);
  * @param   pszString       UTF-8 string to duplicate.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrDupExTag(char **ppszString, const char *pszString,
-			  const char *pszTag);
+RTDECL(int)  RTStrDupExTag(char **ppszString, const char *pszString, const char *pszTag);
 
 /**
  * Allocates a new copy of the given UTF-8 substring (default tag).
@@ -263,8 +288,7 @@ RTDECL(int) RTStrDupExTag(char **ppszString, const char *pszString,
  *                          the terminator.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(char *) RTStrDupNTag(const char *pszString, size_t cchMax,
-			    const char *pszTag);
+RTDECL(char *) RTStrDupNTag(const char *pszString, size_t cchMax, const char *pszTag);
 
 /**
  * Appends a string onto an existing IPRT allocated string (default tag).
@@ -295,8 +319,7 @@ RTDECL(char *) RTStrDupNTag(const char *pszString, size_t cchMax,
  *                              are quietly ignored.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrAAppendTag(char **ppsz, const char *pszAppend,
-			    const char *pszTag);
+RTDECL(int) RTStrAAppendTag(char **ppsz, const char *pszAppend, const char *pszTag);
 
 /**
  * Appends N bytes from a strings onto an existing IPRT allocated string
@@ -339,8 +362,7 @@ RTDECL(int) RTStrAAppendTag(char **ppsz, const char *pszAppend,
  *                              of @a pszAppend without having to strlen it.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrAAppendNTag(char **ppsz, const char *pszAppend,
-			     size_t cchAppend, const char *pszTag);
+RTDECL(int) RTStrAAppendNTag(char **ppsz, const char *pszAppend, size_t cchAppend, const char *pszTag);
 
 /**
  * Appends one or more strings onto an existing IPRT allocated string.
@@ -383,8 +405,7 @@ RTDECL(int) RTStrAAppendNTag(char **ppsz, const char *pszAppend,
  *                              the string in the first argument.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrAAppendExNVTag(char **ppsz, size_t cPairs, va_list va,
-				const char *pszTag);
+RTDECL(int) RTStrAAppendExNVTag(char **ppsz, size_t cPairs, va_list va, const char *pszTag);
 
 /**
  * Appends one or more strings onto an existing IPRT allocated string
@@ -408,12 +429,12 @@ RTDECL(int) RTStrAAppendExNVTag(char **ppsz, size_t cPairs, va_list va,
  */
 DECLINLINE(int) RTStrAAppendExN(char **ppsz, size_t cPairs, ...)
 {
-	int rc;
-	va_list va;
-	va_start(va, cPairs);
-	rc = RTStrAAppendExNVTag(ppsz, cPairs, va, RTSTR_TAG);
-	va_end(va);
-	return rc;
+    int     rc;
+    va_list va;
+    va_start(va, cPairs);
+    rc = RTStrAAppendExNVTag(ppsz, cPairs, va, RTSTR_TAG);
+    va_end(va);
+    return rc;
 }
 
 /**
@@ -437,15 +458,14 @@ DECLINLINE(int) RTStrAAppendExN(char **ppsz, size_t cPairs, ...)
  *                              (size_t) pairs.  The strings will be appended to
  *                              the string in the first argument.
  */
-DECLINLINE(int)RTStrAAppendExNTag(char **ppsz, const char *pszTag,
-				  size_t cPairs, ...)
+DECLINLINE(int) RTStrAAppendExNTag(char **ppsz, const char *pszTag, size_t cPairs, ...)
 {
-	int rc;
-	va_list va;
-	va_start(va, cPairs);
-	rc = RTStrAAppendExNVTag(ppsz, cPairs, va, pszTag);
-	va_end(va);
-	return rc;
+    int     rc;
+    va_list va;
+    va_start(va, cPairs);
+    rc = RTStrAAppendExNVTag(ppsz, cPairs, va, pszTag);
+    va_end(va);
+    return rc;
 }
 
 /**
@@ -483,7 +503,7 @@ DECLINLINE(int)RTStrAAppendExNTag(char **ppsz, const char *pszTag,
  *                              assert on you.
  * @param   pszTag              Allocation tag used for statistics and such.
  */
-RTDECL(int)RTStrATruncateTag(char **ppsz, size_t cchNew, const char *pszTag);
+RTDECL(int) RTStrATruncateTag(char **ppsz, size_t cchNew, const char *pszTag);
 
 /**
  * Allocates memory for string storage (default tag).
@@ -668,8 +688,7 @@ RTDECL(int) RTStrValidateEncoding(const char *psz);
  *                      process the entire string.
  * @param   fFlags      Combination of RTSTR_VALIDATE_ENCODING_XXX flags.
  */
-RTDECL(int) RTStrValidateEncodingEx(const char *psz, size_t cch,
-				    uint32_t fFlags);
+RTDECL(int) RTStrValidateEncodingEx(const char *psz, size_t cch, uint32_t fFlags);
 
 /**
  * Checks if the UTF-8 encoding is valid.
@@ -704,8 +723,7 @@ RTDECL(size_t) RTStrPurgeEncoding(char *psz);
  *                         and the union of these ranges forms the white list.
  * @param   chReplacement  The ASCII replacement character.
  */
-RTDECL(ssize_t) RTStrPurgeComplementSet(char *psz, PCRTUNICP puszValidPairs,
-					char chReplacement);
+RTDECL(ssize_t) RTStrPurgeComplementSet(char *psz, PCRTUNICP puszValidPairs, char chReplacement);
 
 /**
  * Gets the number of code points the string is made up of, excluding
@@ -731,7 +749,7 @@ RTDECL(size_t) RTStrUniLen(const char *psz);
  * @param   pcuc        Where to store the code point count.
  *                      This is undefined on failure.
  */
-RTDECL(int) RTStrUniLenEx(const char *psz, size_t cch, size_t * pcuc);
+RTDECL(int) RTStrUniLenEx(const char *psz, size_t cch, size_t *pcuc);
 
 /**
  * Translate a UTF-8 string into an unicode string (i.e. RTUNICPs), allocating the string buffer.
@@ -741,7 +759,7 @@ RTDECL(int) RTStrUniLenEx(const char *psz, size_t cch, size_t * pcuc);
  * @param   ppUniString     Receives pointer to the allocated unicode string.
  *                          The returned string must be freed using RTUniFree().
  */
-RTDECL(int) RTStrToUni(const char *pszString, PRTUNICP * ppUniString);
+RTDECL(int) RTStrToUni(const char *pszString, PRTUNICP *ppUniString);
 
 /**
  * Translates pszString from UTF-8 to an array of code points, allocating the result
@@ -766,8 +784,7 @@ RTDECL(int) RTStrToUni(const char *pszString, PRTUNICP * ppUniString);
  *                          VERR_NO_STR_MEMORY will it contain a valid string
  *                          length that can be used to resize the buffer.
  */
-RTDECL(int) RTStrToUniEx(const char *pszString, size_t cchString,
-			 PRTUNICP * ppaCps, size_t cCps, size_t * pcCps);
+RTDECL(int)  RTStrToUniEx(const char *pszString, size_t cchString, PRTUNICP *ppaCps, size_t cCps, size_t *pcCps);
 
 /**
  * Calculates the length of the string in RTUTF16 items.
@@ -795,7 +812,7 @@ RTDECL(size_t) RTStrCalcUtf16Len(const char *psz);
  * @param   pcwc        Where to store the string length. Optional.
  *                      This is undefined on failure.
  */
-RTDECL(int) RTStrCalcUtf16LenEx(const char *psz, size_t cch, size_t * pcwc);
+RTDECL(int) RTStrCalcUtf16LenEx(const char *psz, size_t cch, size_t *pcwc);
 
 /**
  * Translate a UTF-8 string into a UTF-16 allocating the result buffer (default
@@ -818,8 +835,7 @@ RTDECL(int) RTStrCalcUtf16LenEx(const char *psz, size_t cch, size_t * pcwc);
  *                          The returned string must be freed using RTUtf16Free().
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrToUtf16Tag(const char *pszString, PRTUTF16 * ppwszString,
-			    const char *pszTag);
+RTDECL(int) RTStrToUtf16Tag(const char *pszString, PRTUTF16 *ppwszString, const char *pszTag);
 
 /**
  * Translates pszString from UTF-8 to UTF-16, allocating the result buffer if requested.
@@ -870,9 +886,8 @@ RTDECL(int) RTStrToUtf16Tag(const char *pszString, PRTUTF16 * ppwszString,
  *                          length that can be used to resize the buffer.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrToUtf16ExTag(const char *pszString, size_t cchString,
-			      PRTUTF16 * ppwsz, size_t cwc, size_t * pcwc,
-			      const char *pszTag);
+RTDECL(int)  RTStrToUtf16ExTag(const char *pszString, size_t cchString, PRTUTF16 *ppwsz, size_t cwc, size_t *pcwc, const char *pszTag);
+
 
 /**
  * Calculates the length of the string in Latin-1 characters.
@@ -903,7 +918,7 @@ RTDECL(size_t) RTStrCalcLatin1Len(const char *psz);
  * @param   pcch        Where to store the string length. Optional.
  *                      This is undefined on failure.
  */
-RTDECL(int) RTStrCalcLatin1LenEx(const char *psz, size_t cch, size_t * pcch);
+RTDECL(int) RTStrCalcLatin1LenEx(const char *psz, size_t cch, size_t *pcch);
 
 /**
  * Translate a UTF-8 string into a Latin-1 allocating the result buffer (default
@@ -926,8 +941,7 @@ RTDECL(int) RTStrCalcLatin1LenEx(const char *psz, size_t cch, size_t * pcch);
  *                          The returned string must be freed using RTStrFree().
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrToLatin1Tag(const char *pszString, char **ppszString,
-			     const char *pszTag);
+RTDECL(int) RTStrToLatin1Tag(const char *pszString, char **ppszString, const char *pszTag);
 
 /**
  * Translates pszString from UTF-8 to Latin-1, allocating the result buffer if requested.
@@ -986,9 +1000,7 @@ RTDECL(int) RTStrToLatin1Tag(const char *pszString, char **ppszString,
  *                          length that can be used to resize the buffer.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrToLatin1ExTag(const char *pszString, size_t cchString,
-			       char **ppsz, size_t cch, size_t * pcch,
-			       const char *pszTag);
+RTDECL(int)  RTStrToLatin1ExTag(const char *pszString, size_t cchString, char **ppsz, size_t cch, size_t *pcch, const char *pszTag);
 
 /**
  * Get the unicode code point at the given string position.
@@ -1025,8 +1037,7 @@ RTDECL(int) RTStrGetCpExInternal(const char **ppsz, PRTUNICP pCp);
  * @param   pCp         Where to store the unicode code point.
  *                      Stores RTUNICP_INVALID if the encoding is invalid.
  */
-RTDECL(int) RTStrGetCpNExInternal(const char **ppsz, size_t * pcch,
-				  PRTUNICP pCp);
+RTDECL(int) RTStrGetCpNExInternal(const char **ppsz, size_t *pcch, PRTUNICP pCp);
 
 /**
  * Put the unicode code point at the given string position
@@ -1060,10 +1071,10 @@ RTDECL(char *) RTStrPutCpInternal(char *psz, RTUNICP CodePoint);
  */
 DECLINLINE(RTUNICP) RTStrGetCp(const char *psz)
 {
-	const unsigned char uch = *(const unsigned char *)psz;
-	if (!(uch & RT_BIT(7)))
-		return uch;
-	return RTStrGetCpInternal(psz);
+    const unsigned char uch = *(const unsigned char *)psz;
+    if (!(uch & RT_BIT(7)))
+        return uch;
+    return RTStrGetCpInternal(psz);
 }
 
 /**
@@ -1080,15 +1091,16 @@ DECLINLINE(RTUNICP) RTStrGetCp(const char *psz)
  *          the most frequent and simplest sequence, the rest is
  *          handled by RTStrGetCpExInternal().
  */
-DECLINLINE(int)RTStrGetCpEx(const char **ppsz, PRTUNICP pCp)
+DECLINLINE(int) RTStrGetCpEx(const char **ppsz, PRTUNICP pCp)
 {
-	const unsigned char uch = **(const unsigned char **)ppsz;
-	if (!(uch & RT_BIT(7))) {
-		(*ppsz)++;
-		*pCp = uch;
-		return VINF_SUCCESS;
-	}
-	return RTStrGetCpExInternal(ppsz, pCp);
+    const unsigned char uch = **(const unsigned char **)ppsz;
+    if (!(uch & RT_BIT(7)))
+    {
+        (*ppsz)++;
+        *pCp = uch;
+        return VINF_SUCCESS;
+    }
+    return RTStrGetCpExInternal(ppsz, pCp);
 }
 
 /**
@@ -1110,18 +1122,20 @@ DECLINLINE(int)RTStrGetCpEx(const char **ppsz, PRTUNICP pCp)
  *          the most frequent and simplest sequence, the rest is
  *          handled by RTStrGetCpNExInternal().
  */
-DECLINLINE(int)RTStrGetCpNEx(const char **ppsz, size_t * pcch, PRTUNICP pCp)
+DECLINLINE(int) RTStrGetCpNEx(const char **ppsz, size_t *pcch, PRTUNICP pCp)
 {
-	if (RT_LIKELY(*pcch != 0)) {
-		const unsigned char uch = **(const unsigned char **)ppsz;
-		if (!(uch & RT_BIT(7))) {
-			(*ppsz)++;
-			(*pcch)--;
-			*pCp = uch;
-			return VINF_SUCCESS;
-		}
-	}
-	return RTStrGetCpNExInternal(ppsz, pcch, pCp);
+    if (RT_LIKELY(*pcch != 0))
+    {
+        const unsigned char uch = **(const unsigned char **)ppsz;
+        if (!(uch & RT_BIT(7)))
+        {
+            (*ppsz)++;
+            (*pcch)--;
+            *pCp = uch;
+            return VINF_SUCCESS;
+        }
+    }
+    return RTStrGetCpNExInternal(ppsz, pcch, pCp);
 }
 
 /**
@@ -1136,24 +1150,24 @@ DECLINLINE(int)RTStrGetCpNEx(const char **ppsz, size_t * pcch, PRTUNICP pCp)
  */
 DECLINLINE(size_t) RTStrCpSize(RTUNICP CodePoint)
 {
-	if (CodePoint < 0x00000080)
-		return 1;
-	if (CodePoint < 0x00000800)
-		return 2;
-	if (CodePoint < 0x00010000)
-		return 3;
+    if (CodePoint < 0x00000080)
+        return 1;
+    if (CodePoint < 0x00000800)
+        return 2;
+    if (CodePoint < 0x00010000)
+        return 3;
 #ifdef RT_USE_RTC_3629
-	if (CodePoint < 0x00011000)
-		return 4;
+    if (CodePoint < 0x00011000)
+        return 4;
 #else
-	if (CodePoint < 0x00200000)
-		return 4;
-	if (CodePoint < 0x04000000)
-		return 5;
-	if (CodePoint < 0x7fffffff)
-		return 6;
+    if (CodePoint < 0x00200000)
+        return 4;
+    if (CodePoint < 0x04000000)
+        return 5;
+    if (CodePoint < 0x7fffffff)
+        return 6;
 #endif
-	return 0;
+    return 0;
 }
 
 /**
@@ -1174,13 +1188,14 @@ DECLINLINE(size_t) RTStrCpSize(RTUNICP CodePoint)
  *          the most frequent and simplest sequence, the rest is
  *          handled by RTStrPutCpInternal().
  */
-DECLINLINE(char *)RTStrPutCp(char *psz, RTUNICP CodePoint)
+DECLINLINE(char *) RTStrPutCp(char *psz, RTUNICP CodePoint)
 {
-	if (CodePoint < 0x80) {
-		*psz++ = (unsigned char)CodePoint;
-		return psz;
-	}
-	return RTStrPutCpInternal(psz, CodePoint);
+    if (CodePoint < 0x80)
+    {
+        *psz++ = (unsigned char)CodePoint;
+        return psz;
+    }
+    return RTStrPutCpInternal(psz, CodePoint);
 }
 
 /**
@@ -1190,11 +1205,11 @@ DECLINLINE(char *)RTStrPutCp(char *psz, RTUNICP CodePoint)
  * @param   psz     Pointer to the current code point.
  * @remark  This will not move the next valid code point, only past the current one.
  */
-DECLINLINE(char *)RTStrNextCp(const char *psz)
+DECLINLINE(char *) RTStrNextCp(const char *psz)
 {
-	RTUNICP Cp;
-	RTStrGetCpEx(&psz, &Cp);
-	return (char *)psz;
+    RTUNICP Cp;
+    RTStrGetCpEx(&psz, &Cp);
+    return (char *)psz;
 }
 
 /**
@@ -1206,6 +1221,7 @@ DECLINLINE(char *)RTStrNextCp(const char *psz)
  * @param   psz         Pointer to the current code point.
  */
 RTDECL(char *) RTStrPrevCp(const char *pszStart, const char *psz);
+
 
 /** @page pg_rt_str_format  The IPRT Format Strings
  *
@@ -1389,7 +1405,7 @@ RTDECL(char *) RTStrPrevCp(const char *pszStart, const char *psz);
  *
  */
 
-#ifndef DECLARED_FNRTSTROUTPUT	/* duplicated in iprt/log.h */
+#ifndef DECLARED_FNRTSTROUTPUT          /* duplicated in iprt/log.h */
 # define DECLARED_FNRTSTROUTPUT
 /**
  * Output callback.
@@ -1399,8 +1415,7 @@ RTDECL(char *) RTStrPrevCp(const char *pszStart, const char *psz);
  * @param   pachChars   Pointer to an array of utf-8 characters.
  * @param   cbChars     Number of bytes in the character array pointed to by pachChars.
  */
-typedef DECLCALLBACK(size_t) FNRTSTROUTPUT(void *pvArg, const char *pachChars,
-					   size_t cbChars);
+typedef DECLCALLBACK(size_t) FNRTSTROUTPUT(void *pvArg, const char *pachChars, size_t cbChars);
 /** Pointer to callback function. */
 typedef FNRTSTROUTPUT *PFNRTSTROUTPUT;
 #endif
@@ -1439,6 +1454,7 @@ typedef FNRTSTROUTPUT *PFNRTSTROUTPUT;
     : sizeof(type) * 8 == 128 ? RTSTR_F_128BIT \
     : 0)
 
+
 /**
  * Callback to format non-standard format specifiers.
  *
@@ -1454,14 +1470,12 @@ typedef FNRTSTROUTPUT *PFNRTSTROUTPUT;
  * @param   fFlags          Flags (RTSTR_NTFS_*).
  * @param   chArgSize       The argument size specifier, 'l' or 'L'.
  */
-typedef DECLCALLBACK(size_t) FNSTRFORMAT(void *pvArg, PFNRTSTROUTPUT pfnOutput,
-					 void *pvArgOutput,
-					 const char **ppszFormat,
-					 va_list * pArgs, int cchWidth,
-					 int cchPrecision, unsigned fFlags,
-					 char chArgSize);
+typedef DECLCALLBACK(size_t) FNSTRFORMAT(void *pvArg, PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
+                                         const char **ppszFormat, va_list *pArgs, int cchWidth,
+                                         int cchPrecision, unsigned fFlags, char chArgSize);
 /** Pointer to a FNSTRFORMAT() function. */
 typedef FNSTRFORMAT *PFNSTRFORMAT;
+
 
 /**
  * Partial implementation of a printf like formatter.
@@ -1478,10 +1492,8 @@ typedef FNSTRFORMAT *PFNSTRFORMAT;
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   InArgs      Argument list.
  */
-RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
-			    PFNSTRFORMAT pfnFormat, void *pvArgFormat,
-			    const char *pszFormat,
-			    va_list InArgs) RT_IPRT_FORMAT_ATTR(5, 0);
+RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, PFNSTRFORMAT pfnFormat, void *pvArgFormat,
+                            const char *pszFormat, va_list InArgs) RT_IPRT_FORMAT_ATTR(5, 0);
 
 /**
  * Partial implementation of a printf like formatter.
@@ -1498,10 +1510,8 @@ RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         Argument list.
  */
-RTDECL(size_t) RTStrFormat(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
-			   PFNSTRFORMAT pfnFormat, void *pvArgFormat,
-			   const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(5,
-									   6);
+RTDECL(size_t) RTStrFormat(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, PFNSTRFORMAT pfnFormat, void *pvArgFormat,
+                           const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(5, 6);
 
 /**
  * Formats an integer number according to the parameters.
@@ -1514,9 +1524,8 @@ RTDECL(size_t) RTStrFormat(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(int) RTStrFormatNumber(char *psz, uint64_t u64Value, unsigned int uiBase,
-			      signed int cchWidth, signed int cchPrecision,
-			      unsigned int fFlags);
+RTDECL(int) RTStrFormatNumber(char *psz, uint64_t u64Value, unsigned int uiBase, signed int cchWidth, signed int cchPrecision,
+                              unsigned int fFlags);
 
 /**
  * Formats an unsigned 8-bit number.
@@ -1530,9 +1539,8 @@ RTDECL(int) RTStrFormatNumber(char *psz, uint64_t u64Value, unsigned int uiBase,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatU8(char *pszBuf, size_t cbBuf, uint8_t u8Value,
-			      unsigned int uiBase, signed int cchWidth,
-			      signed int cchPrecision, uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatU8(char *pszBuf, size_t cbBuf, uint8_t u8Value, unsigned int uiBase,
+                              signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
 
 /**
  * Formats an unsigned 16-bit number.
@@ -1546,9 +1554,8 @@ RTDECL(ssize_t) RTStrFormatU8(char *pszBuf, size_t cbBuf, uint8_t u8Value,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatU16(char *pszBuf, size_t cbBuf, uint16_t u16Value,
-			       unsigned int uiBase, signed int cchWidth,
-			       signed int cchPrecision, uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatU16(char *pszBuf, size_t cbBuf, uint16_t u16Value, unsigned int uiBase,
+                               signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
 
 /**
  * Formats an unsigned 32-bit number.
@@ -1562,9 +1569,8 @@ RTDECL(ssize_t) RTStrFormatU16(char *pszBuf, size_t cbBuf, uint16_t u16Value,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatU32(char *pszBuf, size_t cbBuf, uint32_t u32Value,
-			       unsigned int uiBase, signed int cchWidth,
-			       signed int cchPrecision, uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatU32(char *pszBuf, size_t cbBuf, uint32_t u32Value, unsigned int uiBase,
+                               signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
 
 /**
  * Formats an unsigned 64-bit number.
@@ -1578,9 +1584,8 @@ RTDECL(ssize_t) RTStrFormatU32(char *pszBuf, size_t cbBuf, uint32_t u32Value,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatU64(char *pszBuf, size_t cbBuf, uint64_t u64Value,
-			       unsigned int uiBase, signed int cchWidth,
-			       signed int cchPrecision, uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatU64(char *pszBuf, size_t cbBuf, uint64_t u64Value, unsigned int uiBase,
+                               signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
 
 /**
  * Formats an unsigned 128-bit number.
@@ -1594,10 +1599,8 @@ RTDECL(ssize_t) RTStrFormatU64(char *pszBuf, size_t cbBuf, uint64_t u64Value,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatU128(char *pszBuf, size_t cbBuf,
-				PCRTUINT128U pu128Value, unsigned int uiBase,
-				signed int cchWidth, signed int cchPrecision,
-				uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatU128(char *pszBuf, size_t cbBuf, PCRTUINT128U pu128Value, unsigned int uiBase,
+                                signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
 
 /**
  * Formats an 80-bit extended floating point number.
@@ -1610,9 +1613,8 @@ RTDECL(ssize_t) RTStrFormatU128(char *pszBuf, size_t cbBuf,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatR80(char *pszBuf, size_t cbBuf,
-			       PCRTFLOAT80U pr80Value, signed int cchWidth,
-			       signed int cchPrecision, uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatR80(char *pszBuf, size_t cbBuf, PCRTFLOAT80U pr80Value, signed int cchWidth,
+                               signed int cchPrecision, uint32_t fFlags);
 
 /**
  * Formats an 80-bit extended floating point number, version 2.
@@ -1625,9 +1627,10 @@ RTDECL(ssize_t) RTStrFormatR80(char *pszBuf, size_t cbBuf,
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
  */
-RTDECL(ssize_t) RTStrFormatR80u2(char *pszBuf, size_t cbBuf,
-				 PCRTFLOAT80U2 pr80Value, signed int cchWidth,
-				 signed int cchPrecision, uint32_t fFlags);
+RTDECL(ssize_t) RTStrFormatR80u2(char *pszBuf, size_t cbBuf, PCRTFLOAT80U2 pr80Value, signed int cchWidth,
+                                 signed int cchPrecision, uint32_t fFlags);
+
+
 
 /**
  * Callback for formatting a type.
@@ -1647,14 +1650,13 @@ RTDECL(ssize_t) RTStrFormatR80u2(char *pszBuf, size_t cbBuf,
  * @param   fFlags          Flags (NTFS_*).
  * @param   pvUser          The user argument.
  */
-typedef DECLCALLBACK(size_t) FNRTSTRFORMATTYPE(PFNRTSTROUTPUT pfnOutput,
-					       void *pvArgOutput,
-					       const char *pszType,
-					       void const *pvValue,
-					       int cchWidth, int cchPrecision,
-					       unsigned fFlags, void *pvUser);
+typedef DECLCALLBACK(size_t) FNRTSTRFORMATTYPE(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
+                                               const char *pszType, void const *pvValue,
+                                               int cchWidth, int cchPrecision, unsigned fFlags,
+                                               void *pvUser);
 /** Pointer to a FNRTSTRFORMATTYPE. */
 typedef FNRTSTRFORMATTYPE *PFNRTSTRFORMATTYPE;
+
 
 /**
  * Register a format handler for a type.
@@ -1675,9 +1677,7 @@ typedef FNRTSTRFORMATTYPE *PFNRTSTRFORMATTYPE;
  * @param   pvUser          The user argument to pass to the handler. See RTStrFormatTypeSetUser
  *                          for how to update this later.
  */
-RTDECL(int) RTStrFormatTypeRegister(const char *pszType,
-				    PFNRTSTRFORMATTYPE pfnHandler,
-				    void *pvUser);
+RTDECL(int) RTStrFormatTypeRegister(const char *pszType, PFNRTSTRFORMATTYPE pfnHandler, void *pvUser);
 
 /**
  * Deregisters a format type.
@@ -1707,6 +1707,7 @@ RTDECL(int) RTStrFormatTypeDeregister(const char *pszType);
  */
 RTDECL(int) RTStrFormatTypeSetUser(const char *pszType, void *pvUser);
 
+
 /**
  * String printf.
  *
@@ -1717,9 +1718,7 @@ RTDECL(int) RTStrFormatTypeSetUser(const char *pszType, void *pvUser);
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   args        The format argument.
  */
-RTDECL(size_t) RTStrPrintfV(char *pszBuffer, size_t cchBuffer,
-			    const char *pszFormat,
-			    va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
+RTDECL(size_t) RTStrPrintfV(char *pszBuffer, size_t cchBuffer, const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
 
 /**
  * String printf.
@@ -1731,9 +1730,8 @@ RTDECL(size_t) RTStrPrintfV(char *pszBuffer, size_t cchBuffer,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
  */
-RTDECL(size_t) RTStrPrintf(char *pszBuffer, size_t cchBuffer,
-			   const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3,
-									   4);
+RTDECL(size_t) RTStrPrintf(char *pszBuffer, size_t cchBuffer, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
+
 
 /**
  * String printf with custom formatting.
@@ -1747,10 +1745,8 @@ RTDECL(size_t) RTStrPrintf(char *pszBuffer, size_t cchBuffer,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   args        The format argument.
  */
-RTDECL(size_t) RTStrPrintfExV(PFNSTRFORMAT pfnFormat, void *pvArg,
-			      char *pszBuffer, size_t cchBuffer,
-			      const char *pszFormat,
-			      va_list args) RT_IPRT_FORMAT_ATTR(5, 0);
+RTDECL(size_t) RTStrPrintfExV(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuffer, size_t cchBuffer,
+                              const char *pszFormat, va_list args)  RT_IPRT_FORMAT_ATTR(5, 0);
 
 /**
  * String printf with custom formatting.
@@ -1764,10 +1760,9 @@ RTDECL(size_t) RTStrPrintfExV(PFNSTRFORMAT pfnFormat, void *pvArg,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
  */
-RTDECL(size_t) RTStrPrintfEx(PFNSTRFORMAT pfnFormat, void *pvArg,
-			     char *pszBuffer, size_t cchBuffer,
-			     const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(5,
-									     6);
+RTDECL(size_t) RTStrPrintfEx(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuffer, size_t cchBuffer,
+                             const char *pszFormat, ...)  RT_IPRT_FORMAT_ATTR(5, 6);
+
 
 /**
  * Allocating string printf (default tag).
@@ -1796,9 +1791,7 @@ RTDECL(size_t) RTStrPrintfEx(PFNSTRFORMAT pfnFormat, void *pvArg,
  * @param   args        The format argument.
  * @param   pszTag      Allocation tag used for statistics and such.
  */
-RTDECL(int) RTStrAPrintfVTag(char **ppszBuffer, const char *pszFormat,
-			     va_list args,
-			     const char *pszTag) RT_IPRT_FORMAT_ATTR(2, 0);
+RTDECL(int) RTStrAPrintfVTag(char **ppszBuffer, const char *pszFormat, va_list args, const char *pszTag) RT_IPRT_FORMAT_ATTR(2, 0);
 
 /**
  * Allocating string printf.
@@ -1812,16 +1805,14 @@ RTDECL(int) RTStrAPrintfVTag(char **ppszBuffer, const char *pszFormat,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
  */
-DECLINLINE(int) RT_IPRT_FORMAT_ATTR(2, 3) RTStrAPrintf(char **ppszBuffer,
-						       const char *pszFormat,
-						       ...)
+DECLINLINE(int) RT_IPRT_FORMAT_ATTR(2, 3) RTStrAPrintf(char **ppszBuffer, const char *pszFormat, ...)
 {
-	int cbRet;
-	va_list va;
-	va_start(va, pszFormat);
-	cbRet = RTStrAPrintfVTag(ppszBuffer, pszFormat, va, RTSTR_TAG);
-	va_end(va);
-	return cbRet;
+    int     cbRet;
+    va_list va;
+    va_start(va, pszFormat);
+    cbRet = RTStrAPrintfVTag(ppszBuffer, pszFormat, va, RTSTR_TAG);
+    va_end(va);
+    return cbRet;
 }
 
 /**
@@ -1837,17 +1828,14 @@ DECLINLINE(int) RT_IPRT_FORMAT_ATTR(2, 3) RTStrAPrintf(char **ppszBuffer,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
  */
-DECLINLINE(int)RT_IPRT_FORMAT_ATTR(3, 4) RTStrAPrintfTag(char **ppszBuffer,
-							 const char *pszTag,
-							 const char *pszFormat,
-							 ...)
+DECLINLINE(int) RT_IPRT_FORMAT_ATTR(3, 4) RTStrAPrintfTag(char **ppszBuffer, const char *pszTag, const char *pszFormat, ...)
 {
-	int cbRet;
-	va_list va;
-	va_start(va, pszFormat);
-	cbRet = RTStrAPrintfVTag(ppszBuffer, pszFormat, va, pszTag);
-	va_end(va);
-	return cbRet;
+    int     cbRet;
+    va_list va;
+    va_start(va, pszFormat);
+    cbRet = RTStrAPrintfVTag(ppszBuffer, pszFormat, va, pszTag);
+    va_end(va);
+    return cbRet;
 }
 
 /**
@@ -1869,8 +1857,7 @@ DECLINLINE(int)RT_IPRT_FORMAT_ATTR(3, 4) RTStrAPrintfTag(char **ppszBuffer,
  * @param   args        The format argument.
  * @param   pszTag      Allocation tag used for statistics and such.
  */
-RTDECL(char *)RTStrAPrintf2VTag(const char *pszFormat, va_list args,
-				const char *pszTag) RT_IPRT_FORMAT_ATTR(1, 0);
+RTDECL(char *) RTStrAPrintf2VTag(const char *pszFormat, va_list args, const char *pszTag) RT_IPRT_FORMAT_ATTR(1, 0);
 
 /**
  * Allocating string printf, version 2 (default tag).
@@ -1880,16 +1867,14 @@ RTDECL(char *)RTStrAPrintf2VTag(const char *pszFormat, va_list args,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
  */
-DECLINLINE(char *) RT_IPRT_FORMAT_ATTR(1,
-				       2) RTStrAPrintf2(const char *pszFormat,
-							...)
+DECLINLINE(char *) RT_IPRT_FORMAT_ATTR(1, 2) RTStrAPrintf2(const char *pszFormat, ...)
 {
-	char *pszRet;
-	va_list va;
-	va_start(va, pszFormat);
-	pszRet = RTStrAPrintf2VTag(pszFormat, va, RTSTR_TAG);
-	va_end(va);
-	return pszRet;
+    char   *pszRet;
+    va_list va;
+    va_start(va, pszFormat);
+    pszRet = RTStrAPrintf2VTag(pszFormat, va, RTSTR_TAG);
+    va_end(va);
+    return pszRet;
 }
 
 /**
@@ -1901,16 +1886,14 @@ DECLINLINE(char *) RT_IPRT_FORMAT_ATTR(1,
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
  */
-DECLINLINE(char *)RT_IPRT_FORMAT_ATTR(2, 3) RTStrAPrintf2Tag(const char *pszTag,
-							     const char
-							     *pszFormat, ...)
+DECLINLINE(char *) RT_IPRT_FORMAT_ATTR(2, 3) RTStrAPrintf2Tag(const char *pszTag, const char *pszFormat, ...)
 {
-	char *pszRet;
-	va_list va;
-	va_start(va, pszFormat);
-	pszRet = RTStrAPrintf2VTag(pszFormat, va, pszTag);
-	va_end(va);
-	return pszRet;
+    char   *pszRet;
+    va_list va;
+    va_start(va, pszFormat);
+    pszRet = RTStrAPrintf2VTag(pszFormat, va, pszTag);
+    va_end(va);
+    return pszRet;
 }
 
 /**
@@ -1919,7 +1902,7 @@ DECLINLINE(char *)RT_IPRT_FORMAT_ATTR(2, 3) RTStrAPrintf2Tag(const char *pszTag,
  * @returns Pointer to first non-blank char in the string.
  * @param   psz     The string to strip.
  */
-RTDECL(char *)RTStrStrip(char *psz);
+RTDECL(char *) RTStrStrip(char *psz);
 
 /**
  * Strips blankspaces from the start of the string.
@@ -1966,8 +1949,7 @@ RTDECL(int) RTStrCopy(char *pszDst, size_t cbDst, const char *pszSrc);
  *                              copy from the source string, not counting the
  *                              terminator as usual.
  */
-RTDECL(int) RTStrCopyEx(char *pszDst, size_t cbDst, const char *pszSrc,
-			size_t cchSrcMax);
+RTDECL(int) RTStrCopyEx(char *pszDst, size_t cbDst, const char *pszSrc, size_t cchSrcMax);
 
 /**
  * String copy with overflow handling and buffer advancing.
@@ -1986,7 +1968,7 @@ RTDECL(int) RTStrCopyEx(char *pszDst, size_t cbDst, const char *pszSrc,
  *                              the buffer pointer.
  * @param   pszSrc              The source string.  NULL is not OK.
  */
-RTDECL(int) RTStrCopyP(char **ppszDst, size_t * pcbDst, const char *pszSrc);
+RTDECL(int) RTStrCopyP(char **ppszDst, size_t *pcbDst, const char *pszSrc);
 
 /**
  * String copy with overflow handling.
@@ -2008,8 +1990,7 @@ RTDECL(int) RTStrCopyP(char **ppszDst, size_t * pcbDst, const char *pszSrc);
  *                              copy from the source string, not counting the
  *                              terminator as usual.
  */
-RTDECL(int) RTStrCopyPEx(char **ppszDst, size_t * pcbDst, const char *pszSrc,
-			 size_t cchSrcMax);
+RTDECL(int) RTStrCopyPEx(char **ppszDst, size_t *pcbDst, const char *pszSrc, size_t cchSrcMax);
 
 /**
  * String concatenation with overflow handling.
@@ -2040,8 +2021,7 @@ RTDECL(int) RTStrCat(char *pszDst, size_t cbDst, const char *pszSrc);
  *                              copy from the source string, not counting the
  *                              terminator as usual.
  */
-RTDECL(int) RTStrCatEx(char *pszDst, size_t cbDst, const char *pszSrc,
-		       size_t cchSrcMax);
+RTDECL(int) RTStrCatEx(char *pszDst, size_t cbDst, const char *pszSrc, size_t cchSrcMax);
 
 /**
  * String concatenation with overflow handling.
@@ -2060,7 +2040,7 @@ RTDECL(int) RTStrCatEx(char *pszDst, size_t cbDst, const char *pszSrc,
  *                              the buffer pointer.
  * @param   pszSrc              The source string.  NULL is not OK.
  */
-RTDECL(int) RTStrCatP(char **ppszDst, size_t * pcbDst, const char *pszSrc);
+RTDECL(int) RTStrCatP(char **ppszDst, size_t *pcbDst, const char *pszSrc);
 
 /**
  * String concatenation with overflow handling and buffer advancing.
@@ -2082,8 +2062,7 @@ RTDECL(int) RTStrCatP(char **ppszDst, size_t * pcbDst, const char *pszSrc);
  *                              copy from the source string, not counting the
  *                              terminator as usual.
  */
-RTDECL(int) RTStrCatPEx(char **ppszDst, size_t * pcbDst, const char *pszSrc,
-			size_t cchSrcMax);
+RTDECL(int) RTStrCatPEx(char **ppszDst, size_t *pcbDst, const char *pszSrc, size_t cchSrcMax);
 
 /**
  * Performs a case sensitive string compare between two UTF-8 strings.
@@ -2283,11 +2262,13 @@ RTDECL(size_t) RTStrNLen(const char *pszString, size_t cchMax);
  *                      terminator. This is set to cchMax if the terminator
  *                      isn't found.
  */
-RTDECL(int) RTStrNLenEx(const char *pszString, size_t cchMax, size_t * pcch);
+RTDECL(int) RTStrNLenEx(const char *pszString, size_t cchMax, size_t *pcch);
 
 RT_C_DECLS_END
+
 /** The maximum size argument of a memchr call. */
 #define RTSTR_MEMCHR_MAX            ((~(size_t)0 >> 1) - 15)
+
 /**
  * Find the zero terminator in a string with a limited length.
  *
@@ -2300,17 +2281,17 @@ RT_C_DECLS_END
 #if defined(__cplusplus) && !defined(DOXYGEN_RUNNING)
 DECLINLINE(char const *) RTStrEnd(char const *pszString, size_t cchMax)
 {
-	/* Avoid potential issues with memchr seen in glibc.
-	 * See sysdeps/x86_64/memchr.S in glibc versions older than 2.11 */
-	while (cchMax > RTSTR_MEMCHR_MAX) {
-		char const *pszRet =
-		    (char const *)memchr(pszString, '\0', RTSTR_MEMCHR_MAX);
-		if (RT_LIKELY(pszRet))
-			return pszRet;
-		pszString += RTSTR_MEMCHR_MAX;
-		cchMax -= RTSTR_MEMCHR_MAX;
-	}
-	return (char const *)memchr(pszString, '\0', cchMax);
+    /* Avoid potential issues with memchr seen in glibc.
+     * See sysdeps/x86_64/memchr.S in glibc versions older than 2.11 */
+    while (cchMax > RTSTR_MEMCHR_MAX)
+    {
+        char const *pszRet = (char const *)memchr(pszString, '\0', RTSTR_MEMCHR_MAX);
+        if (RT_LIKELY(pszRet))
+            return pszRet;
+        pszString += RTSTR_MEMCHR_MAX;
+        cchMax    -= RTSTR_MEMCHR_MAX;
+    }
+    return (char const *)memchr(pszString, '\0', cchMax);
 }
 
 DECLINLINE(char *) RTStrEnd(char *pszString, size_t cchMax)
@@ -2318,20 +2299,21 @@ DECLINLINE(char *) RTStrEnd(char *pszString, size_t cchMax)
 DECLINLINE(char *) RTStrEnd(const char *pszString, size_t cchMax)
 #endif
 {
-	/* Avoid potential issues with memchr seen in glibc.
-	 * See sysdeps/x86_64/memchr.S in glibc versions older than 2.11 */
-	while (cchMax > RTSTR_MEMCHR_MAX) {
-		char *pszRet =
-		    (char *)memchr(pszString, '\0', RTSTR_MEMCHR_MAX);
-		if (RT_LIKELY(pszRet))
-			return pszRet;
-		pszString += RTSTR_MEMCHR_MAX;
-		cchMax -= RTSTR_MEMCHR_MAX;
-	}
-	return (char *)memchr(pszString, '\0', cchMax);
+    /* Avoid potential issues with memchr seen in glibc.
+     * See sysdeps/x86_64/memchr.S in glibc versions older than 2.11 */
+    while (cchMax > RTSTR_MEMCHR_MAX)
+    {
+        char *pszRet = (char *)memchr(pszString, '\0', RTSTR_MEMCHR_MAX);
+        if (RT_LIKELY(pszRet))
+            return pszRet;
+        pszString += RTSTR_MEMCHR_MAX;
+        cchMax    -= RTSTR_MEMCHR_MAX;
+    }
+    return (char *)memchr(pszString, '\0', cchMax);
 }
 
 RT_C_DECLS_BEGIN
+
 /**
  * Finds the offset at which a simple character first occurs in a string.
  *
@@ -2341,12 +2323,14 @@ RT_C_DECLS_BEGIN
  */
 DECLINLINE(size_t) RTStrOffCharOrTerm(const char *pszHaystack, char chNeedle)
 {
-	const char *psz = pszHaystack;
-	char ch;
-	while ((ch = *psz) != chNeedle && ch != '\0')
-		psz++;
-	return psz - pszHaystack;
+    const char *psz = pszHaystack;
+    char ch;
+    while (   (ch = *psz) != chNeedle
+           && ch != '\0')
+        psz++;
+    return psz - pszHaystack;
 }
+
 
 /**
  * Matches a simple string pattern.
@@ -2358,8 +2342,7 @@ DECLINLINE(size_t) RTStrOffCharOrTerm(const char *pszHaystack, char chNeedle)
  *                      mark matches exactly one character.
  * @param  pszString    The string to match against the pattern.
  */
-RTDECL(bool) RTStrSimplePatternMatch(const char *pszPattern,
-				     const char *pszString);
+RTDECL(bool) RTStrSimplePatternMatch(const char *pszPattern, const char *pszString);
 
 /**
  * Matches a simple string pattern, neither which needs to be zero terminated.
@@ -2380,7 +2363,7 @@ RTDECL(bool) RTStrSimplePatternMatch(const char *pszPattern,
  *                      length and wish to match up to the string terminator.
  */
 RTDECL(bool) RTStrSimplePatternNMatch(const char *pszPattern, size_t cchPattern,
-				      const char *pszString, size_t cchString);
+                                      const char *pszString, size_t cchString);
 
 /**
  * Matches multiple patterns against a string.
@@ -2399,11 +2382,9 @@ RTDECL(bool) RTStrSimplePatternNMatch(const char *pszPattern, size_t cchPattern,
  *                      matched. If no match, this will be set to RTSTR_MAX.
  *                      This is optional, NULL is fine.
  */
-RTDECL(bool) RTStrSimplePatternMultiMatch(const char *pszPatterns,
-					  size_t cchPatterns,
-					  const char *pszString,
-					  size_t cchString,
-					  size_t * poffPattern);
+RTDECL(bool) RTStrSimplePatternMultiMatch(const char *pszPatterns, size_t cchPatterns,
+                                          const char *pszString, size_t cchString,
+                                          size_t *poffPattern);
 
 /**
  * Compares two version strings RTStrICmp fashion.
@@ -2424,6 +2405,7 @@ RTDECL(bool) RTStrSimplePatternMultiMatch(const char *pszPatterns,
  * @param   pszVer2     Second version string to compare first version with.
  */
 RTDECL(int) RTStrVersionCompare(const char *pszVer1, const char *pszVer2);
+
 
 /** @defgroup rt_str_conv   String To/From Number Conversions
  * @{ */
@@ -2446,8 +2428,7 @@ RTDECL(int) RTStrVersionCompare(const char *pszVer1, const char *pszVer2);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu64        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt64Ex(const char *pszValue, char **ppszNext,
-			    unsigned uBase, uint64_t * pu64);
+RTDECL(int) RTStrToUInt64Ex(const char *pszValue, char **ppszNext, unsigned uBase, uint64_t *pu64);
 
 /**
  * Converts a string representation of a number to a 64-bit unsigned number,
@@ -2467,8 +2448,7 @@ RTDECL(int) RTStrToUInt64Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu64        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt64Full(const char *pszValue, unsigned uBase,
-			      uint64_t * pu64);
+RTDECL(int) RTStrToUInt64Full(const char *pszValue, unsigned uBase, uint64_t *pu64);
 
 /**
  * Converts a string representation of a number to a 64-bit unsigned number.
@@ -2498,8 +2478,7 @@ RTDECL(uint64_t) RTStrToUInt64(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu32        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt32Ex(const char *pszValue, char **ppszNext,
-			    unsigned uBase, uint32_t * pu32);
+RTDECL(int) RTStrToUInt32Ex(const char *pszValue, char **ppszNext, unsigned uBase, uint32_t *pu32);
 
 /**
  * Converts a string representation of a number to a 32-bit unsigned number,
@@ -2519,8 +2498,7 @@ RTDECL(int) RTStrToUInt32Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu32        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt32Full(const char *pszValue, unsigned uBase,
-			      uint32_t * pu32);
+RTDECL(int) RTStrToUInt32Full(const char *pszValue, unsigned uBase, uint32_t *pu32);
 
 /**
  * Converts a string representation of a number to a 64-bit unsigned number.
@@ -2550,8 +2528,7 @@ RTDECL(uint32_t) RTStrToUInt32(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu16        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt16Ex(const char *pszValue, char **ppszNext,
-			    unsigned uBase, uint16_t * pu16);
+RTDECL(int) RTStrToUInt16Ex(const char *pszValue, char **ppszNext, unsigned uBase, uint16_t *pu16);
 
 /**
  * Converts a string representation of a number to a 16-bit unsigned number,
@@ -2571,8 +2548,7 @@ RTDECL(int) RTStrToUInt16Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu16        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt16Full(const char *pszValue, unsigned uBase,
-			      uint16_t * pu16);
+RTDECL(int) RTStrToUInt16Full(const char *pszValue, unsigned uBase, uint16_t *pu16);
 
 /**
  * Converts a string representation of a number to a 16-bit unsigned number.
@@ -2602,8 +2578,7 @@ RTDECL(uint16_t) RTStrToUInt16(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu8         Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt8Ex(const char *pszValue, char **ppszNext,
-			   unsigned uBase, uint8_t * pu8);
+RTDECL(int) RTStrToUInt8Ex(const char *pszValue, char **ppszNext, unsigned uBase, uint8_t *pu8);
 
 /**
  * Converts a string representation of a number to a 8-bit unsigned number,
@@ -2623,8 +2598,7 @@ RTDECL(int) RTStrToUInt8Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pu8         Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToUInt8Full(const char *pszValue, unsigned uBase,
-			     uint8_t * pu8);
+RTDECL(int) RTStrToUInt8Full(const char *pszValue, unsigned uBase, uint8_t *pu8);
 
 /**
  * Converts a string representation of a number to a 8-bit unsigned number.
@@ -2653,8 +2627,7 @@ RTDECL(uint8_t) RTStrToUInt8(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi64        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt64Ex(const char *pszValue, char **ppszNext,
-			   unsigned uBase, int64_t * pi64);
+RTDECL(int) RTStrToInt64Ex(const char *pszValue, char **ppszNext, unsigned uBase, int64_t *pi64);
 
 /**
  * Converts a string representation of a number to a 64-bit signed number,
@@ -2673,8 +2646,7 @@ RTDECL(int) RTStrToInt64Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi64        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt64Full(const char *pszValue, unsigned uBase,
-			     int64_t * pi64);
+RTDECL(int) RTStrToInt64Full(const char *pszValue, unsigned uBase, int64_t *pi64);
 
 /**
  * Converts a string representation of a number to a 64-bit signed number.
@@ -2703,8 +2675,7 @@ RTDECL(int64_t) RTStrToInt64(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi32        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt32Ex(const char *pszValue, char **ppszNext,
-			   unsigned uBase, int32_t * pi32);
+RTDECL(int) RTStrToInt32Ex(const char *pszValue, char **ppszNext, unsigned uBase, int32_t *pi32);
 
 /**
  * Converts a string representation of a number to a 32-bit signed number,
@@ -2723,8 +2694,7 @@ RTDECL(int) RTStrToInt32Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi32        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt32Full(const char *pszValue, unsigned uBase,
-			     int32_t * pi32);
+RTDECL(int) RTStrToInt32Full(const char *pszValue, unsigned uBase, int32_t *pi32);
 
 /**
  * Converts a string representation of a number to a 32-bit signed number.
@@ -2753,8 +2723,7 @@ RTDECL(int32_t) RTStrToInt32(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi16        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt16Ex(const char *pszValue, char **ppszNext,
-			   unsigned uBase, int16_t * pi16);
+RTDECL(int) RTStrToInt16Ex(const char *pszValue, char **ppszNext, unsigned uBase, int16_t *pi16);
 
 /**
  * Converts a string representation of a number to a 16-bit signed number,
@@ -2773,8 +2742,7 @@ RTDECL(int) RTStrToInt16Ex(const char *pszValue, char **ppszNext,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi16        Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt16Full(const char *pszValue, unsigned uBase,
-			     int16_t * pi16);
+RTDECL(int) RTStrToInt16Full(const char *pszValue, unsigned uBase, int16_t *pi16);
 
 /**
  * Converts a string representation of a number to a 16-bit signed number.
@@ -2803,8 +2771,7 @@ RTDECL(int16_t) RTStrToInt16(const char *pszValue);
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi8         Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt8Ex(const char *pszValue, char **ppszNext, unsigned uBase,
-			  int8_t * pi8);
+RTDECL(int) RTStrToInt8Ex(const char *pszValue, char **ppszNext, unsigned uBase, int8_t *pi8);
 
 /**
  * Converts a string representation of a number to a 8-bit signed number,
@@ -2823,7 +2790,7 @@ RTDECL(int) RTStrToInt8Ex(const char *pszValue, char **ppszNext, unsigned uBase,
  *                      If 0 the function will look for known prefixes before defaulting to 10.
  * @param   pi8         Where to store the converted number. (optional)
  */
-RTDECL(int) RTStrToInt8Full(const char *pszValue, unsigned uBase, int8_t * pi8);
+RTDECL(int) RTStrToInt8Full(const char *pszValue, unsigned uBase, int8_t *pi8);
 
 /**
  * Converts a string representation of a number to a 8-bit signed number.
@@ -2851,8 +2818,7 @@ RTDECL(int8_t) RTStrToInt8(const char *pszValue);
  * @param   fFlags      Combination of RTSTRPRINTHEXBYTES_F_XXX values.
  * @sa      RTUtf16PrintHexBytes.
  */
-RTDECL(int) RTStrPrintHexBytes(char *pszBuf, size_t cbBuf, void const *pv,
-			       size_t cb, uint32_t fFlags);
+RTDECL(int) RTStrPrintHexBytes(char *pszBuf, size_t cbBuf, void const *pv, size_t cb, uint32_t fFlags);
 /** @name RTSTRPRINTHEXBYTES_F_XXX - flags for RTStrPrintHexBytes and RTUtf16PritnHexBytes.
  * @{ */
 /** Upper case hex digits, the default is lower case. */
@@ -2881,10 +2847,10 @@ RTDECL(int) RTStrPrintHexBytes(char *pszBuf, size_t cbBuf, void const *pv,
  * @param   cb          The size of the output buffer.
  * @param   fFlags      Must be zero, reserved for future use.
  */
-RTDECL(int) RTStrConvertHexBytes(char const *pszHex, void *pv, size_t cb,
-				 uint32_t fFlags);
+RTDECL(int) RTStrConvertHexBytes(char const *pszHex, void *pv, size_t cb, uint32_t fFlags);
 
 /** @} */
+
 
 /** @defgroup rt_str_space  Unique String Space
  * @{
@@ -2898,27 +2864,29 @@ typedef PRTSTRSPACECORE *PPRTSTRSPACECORE;
 /**
  * String name space container node core.
  */
-typedef struct RTSTRSPACECORE {
+typedef struct RTSTRSPACECORE
+{
     /** Hash key. Don't touch. */
-	uint32_t Key;
+    uint32_t        Key;
     /** Pointer to the left leaf node. Don't touch. */
-	PRTSTRSPACECORE pLeft;
+    PRTSTRSPACECORE pLeft;
     /** Pointer to the left right node. Don't touch. */
-	PRTSTRSPACECORE pRight;
+    PRTSTRSPACECORE pRight;
     /** Pointer to the list of string with the same key. Don't touch. */
-	PRTSTRSPACECORE pList;
+    PRTSTRSPACECORE pList;
     /** Height of this tree: max(heigth(left), heigth(right)) + 1. Don't touch */
-	unsigned char uchHeight;
+    unsigned char   uchHeight;
     /** The string length. Read only! */
-	size_t cchString;
+    size_t          cchString;
     /** Pointer to the string. Read only! */
-	const char *pszString;
+    const char     *pszString;
 } RTSTRSPACECORE;
 
 /** String space. (Initialize with NULL.) */
-typedef PRTSTRSPACECORE RTSTRSPACE;
+typedef PRTSTRSPACECORE     RTSTRSPACE;
 /** Pointer to a string space. */
-typedef PPRTSTRSPACECORE PRTSTRSPACE;
+typedef PPRTSTRSPACECORE    PRTSTRSPACE;
+
 
 /**
  * Inserts a string into a unique string space.
@@ -2938,8 +2906,7 @@ RTDECL(bool) RTStrSpaceInsert(PRTSTRSPACE pStrSpace, PRTSTRSPACECORE pStr);
  * @param   pStrSpace       The space to remove it from.
  * @param   pszString       The string to remove.
  */
-RTDECL(PRTSTRSPACECORE) RTStrSpaceRemove(PRTSTRSPACE pStrSpace,
-					 const char *pszString);
+RTDECL(PRTSTRSPACECORE) RTStrSpaceRemove(PRTSTRSPACE pStrSpace, const char *pszString);
 
 /**
  * Gets a string from a unique string space.
@@ -2949,8 +2916,7 @@ RTDECL(PRTSTRSPACECORE) RTStrSpaceRemove(PRTSTRSPACE pStrSpace,
  * @param   pStrSpace       The space to get it from.
  * @param   pszString       The string to get.
  */
-RTDECL(PRTSTRSPACECORE) RTStrSpaceGet(PRTSTRSPACE pStrSpace,
-				      const char *pszString);
+RTDECL(PRTSTRSPACECORE) RTStrSpaceGet(PRTSTRSPACE pStrSpace, const char *pszString);
 
 /**
  * Gets a string from a unique string space.
@@ -2963,8 +2929,7 @@ RTDECL(PRTSTRSPACECORE) RTStrSpaceGet(PRTSTRSPACE pStrSpace,
  *                          RTSTR_MAX is ok and makes it behave just like
  *                          RTStrSpaceGet.
  */
-RTDECL(PRTSTRSPACECORE) RTStrSpaceGetN(PRTSTRSPACE pStrSpace,
-				       const char *pszString, size_t cchMax);
+RTDECL(PRTSTRSPACECORE) RTStrSpaceGetN(PRTSTRSPACE pStrSpace, const char *pszString, size_t cchMax);
 
 /**
  * Callback function for RTStrSpaceEnumerate() and RTStrSpaceDestroy().
@@ -2974,8 +2939,7 @@ RTDECL(PRTSTRSPACECORE) RTStrSpaceGetN(PRTSTRSPACE pStrSpace,
  * @param   pStr        The string node
  * @param   pvUser      The user specified argument.
  */
-typedef DECLCALLBACK(int) FNRTSTRSPACECALLBACK(PRTSTRSPACECORE pStr,
-					       void *pvUser);
+typedef DECLCALLBACK(int)   FNRTSTRSPACECALLBACK(PRTSTRSPACECORE pStr, void *pvUser);
 /** Pointer to callback function for RTStrSpaceEnumerate() and RTStrSpaceDestroy(). */
 typedef FNRTSTRSPACECALLBACK *PFNRTSTRSPACECALLBACK;
 
@@ -2991,8 +2955,7 @@ typedef FNRTSTRSPACECALLBACK *PFNRTSTRSPACECALLBACK;
  * @param   pfnCallback     The callback.
  * @param   pvUser          The user argument.
  */
-RTDECL(int) RTStrSpaceDestroy(PRTSTRSPACE pStrSpace,
-			      PFNRTSTRSPACECALLBACK pfnCallback, void *pvUser);
+RTDECL(int) RTStrSpaceDestroy(PRTSTRSPACE pStrSpace, PFNRTSTRSPACECALLBACK pfnCallback, void *pvUser);
 
 /**
  * Enumerates the string space.
@@ -3005,11 +2968,10 @@ RTDECL(int) RTStrSpaceDestroy(PRTSTRSPACE pStrSpace,
  * @param   pfnCallback     The callback.
  * @param   pvUser          The user argument.
  */
-RTDECL(int) RTStrSpaceEnumerate(PRTSTRSPACE pStrSpace,
-				PFNRTSTRSPACECALLBACK pfnCallback,
-				void *pvUser);
+RTDECL(int) RTStrSpaceEnumerate(PRTSTRSPACE pStrSpace, PFNRTSTRSPACECALLBACK pfnCallback, void *pvUser);
 
 /** @} */
+
 
 /** @defgroup rt_str_hash       Sting hashing
  * @{ */
@@ -3020,7 +2982,7 @@ RTDECL(int) RTStrSpaceEnumerate(PRTSTRSPACE pStrSpace,
  * @returns String hash.
  * @param   pszString       The string to hash.
  */
-RTDECL(uint32_t) RTStrHash1(const char *pszString);
+RTDECL(uint32_t)    RTStrHash1(const char *pszString);
 
 /**
  * Hashes the given string using algorithm \#1.
@@ -3031,7 +2993,7 @@ RTDECL(uint32_t) RTStrHash1(const char *pszString);
  *                          terminator character is encountered first. Passing
  *                          RTSTR_MAX is fine.
  */
-RTDECL(uint32_t) RTStrHash1N(const char *pszString, size_t cchString);
+RTDECL(uint32_t)    RTStrHash1N(const char *pszString, size_t cchString);
 
 /**
  * Hashes the given strings as if they were concatenated using algorithm \#1.
@@ -3043,7 +3005,7 @@ RTDECL(uint32_t) RTStrHash1N(const char *pszString, size_t cchString);
  *                          (size_t) pairs.  Passing RTSTR_MAX as the size is
  *                          fine.
  */
-RTDECL(uint32_t) RTStrHash1ExN(size_t cPairs,...);
+RTDECL(uint32_t)    RTStrHash1ExN(size_t cPairs, ...);
 
 /**
  * Hashes the given strings as if they were concatenated using algorithm \#1.
@@ -3054,11 +3016,13 @@ RTDECL(uint32_t) RTStrHash1ExN(size_t cPairs,...);
  *                          (size_t) pairs.  Passing RTSTR_MAX as the size is
  *                          fine.
  */
-RTDECL(uint32_t) RTStrHash1ExNV(size_t cPairs, va_list va);
+RTDECL(uint32_t)    RTStrHash1ExNV(size_t cPairs, va_list va);
 
 /** @}  */
 
 /** @} */
 
 RT_C_DECLS_END
+
 #endif
+

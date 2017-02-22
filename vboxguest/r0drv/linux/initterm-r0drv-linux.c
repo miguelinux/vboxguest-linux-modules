@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -32,6 +33,7 @@
 #include <iprt/err.h>
 #include <iprt/assert.h>
 #include "internal/initterm.h"
+
 
 /*********************************************************************************************************************************
 *   Global Variables                                                                                                             *
@@ -43,11 +45,13 @@ static struct workqueue_struct *g_prtR0LnxWorkQueue;
 static DECLARE_TASK_QUEUE(g_rtR0LnxWorkQueue);
 #endif
 
+
 /*********************************************************************************************************************************
 *   Internal Functions                                                                                                           *
 *********************************************************************************************************************************/
 /* in alloc-r0drv0-linux.c */
 DECLHIDDEN(void) rtR0MemExecCleanup(void);
+
 
 /**
  * Pushes an item onto the IPRT work queue.
@@ -56,26 +60,25 @@ DECLHIDDEN(void) rtR0MemExecCleanup(void);
  * @param   pfnWorker           The callback function.  It will be called back
  *                              with @a pWork as argument.
  */
-DECLHIDDEN(void) rtR0LnxWorkqueuePush(RTR0LNXWORKQUEUEITEM * pWork,
-				      void (*pfnWorker) (RTR0LNXWORKQUEUEITEM
-							 *))
+DECLHIDDEN(void) rtR0LnxWorkqueuePush(RTR0LNXWORKQUEUEITEM *pWork, void (*pfnWorker)(RTR0LNXWORKQUEUEITEM *))
 {
-	IPRT_LINUX_SAVE_EFL_AC();
+    IPRT_LINUX_SAVE_EFL_AC();
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 41)
 # if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20)
-	INIT_WORK(pWork, pfnWorker);
+    INIT_WORK(pWork, pfnWorker);
 # else
-	INIT_WORK(pWork, pfnWorker, pWork);
+    INIT_WORK(pWork, pfnWorker, pWork);
 # endif
-	queue_work(g_prtR0LnxWorkQueue, pWork);
+    queue_work(g_prtR0LnxWorkQueue, pWork);
 #else
-	INIT_TQUEUE(pWork, (void (*)(void *))pfnWorker, pWork);
-	queue_task(pWork, &g_rtR0LnxWorkQueue);
+    INIT_TQUEUE(pWork, (void (*)(void *))pfnWorker, pWork);
+    queue_task(pWork, &g_rtR0LnxWorkQueue);
 #endif
 
-	IPRT_LINUX_RESTORE_EFL_AC();
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
+
 
 /**
  * Flushes all items in the IPRT work queue.
@@ -85,47 +88,50 @@ DECLHIDDEN(void) rtR0LnxWorkqueuePush(RTR0LNXWORKQUEUEITEM * pWork,
  */
 DECLHIDDEN(void) rtR0LnxWorkqueueFlush(void)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
+    IPRT_LINUX_SAVE_EFL_AC();
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 41)
-	flush_workqueue(g_prtR0LnxWorkQueue);
+    flush_workqueue(g_prtR0LnxWorkQueue);
 #else
-	run_task_queue(&g_rtR0LnxWorkQueue);
+    run_task_queue(&g_rtR0LnxWorkQueue);
 #endif
 
-	IPRT_LINUX_RESTORE_EFL_AC();
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
+
 
 DECLHIDDEN(int) rtR0InitNative(void)
 {
-	int rc = VINF_SUCCESS;
-	IPRT_LINUX_SAVE_EFL_AC();
+    int rc = VINF_SUCCESS;
+    IPRT_LINUX_SAVE_EFL_AC();
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 41)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 13)
-	g_prtR0LnxWorkQueue = create_workqueue("iprt-VBoxWQueue");
-#else
-	g_prtR0LnxWorkQueue = create_workqueue("iprt-VBoxQ");
-#endif
-	if (!g_prtR0LnxWorkQueue)
-		rc = VERR_NO_MEMORY;
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 13)
+    g_prtR0LnxWorkQueue = create_workqueue("iprt-VBoxWQueue");
+ #else
+    g_prtR0LnxWorkQueue = create_workqueue("iprt-VBoxQ");
+ #endif
+    if (!g_prtR0LnxWorkQueue)
+        rc = VERR_NO_MEMORY;
 #endif
 
-	IPRT_LINUX_RESTORE_EFL_AC();
-	return rc;
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return rc;
 }
 
-DECLHIDDEN(void)rtR0TermNative(void)
+
+DECLHIDDEN(void) rtR0TermNative(void)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
+    IPRT_LINUX_SAVE_EFL_AC();
 
-	rtR0LnxWorkqueueFlush();
+    rtR0LnxWorkqueueFlush();
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 41)
-	destroy_workqueue(g_prtR0LnxWorkQueue);
-	g_prtR0LnxWorkQueue = NULL;
+    destroy_workqueue(g_prtR0LnxWorkQueue);
+    g_prtR0LnxWorkQueue = NULL;
 #endif
 
-	rtR0MemExecCleanup();
+    rtR0MemExecCleanup();
 
-	IPRT_LINUX_RESTORE_EFL_AC();
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
+

@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -55,57 +56,55 @@
 # include <stdio.h>
 #endif
 
+
 /*********************************************************************************************************************************
 *   Global Variables                                                                                                             *
 *********************************************************************************************************************************/
 #ifdef IN_RC
 /** Default release logger instance. */
-extern "C" DECLIMPORT(RTLOGGERRC) g_RelLogger;
+extern "C" DECLIMPORT(RTLOGGERRC)   g_RelLogger;
 #else /* !IN_RC */
 /** Default release logger instance. */
-static PRTLOGGER g_pRelLogger;
+static PRTLOGGER                    g_pRelLogger;
 #endif /* !IN_RC */
 
-RTDECL(PRTLOGGER) RTLogRelGetDefaultInstance(void)
+
+RTDECL(PRTLOGGER)   RTLogRelGetDefaultInstance(void)
 {
 #ifdef IN_RC
-	return &g_RelLogger;
+    return &g_RelLogger;
 #else /* !IN_RC */
-	return g_pRelLogger;
+    return g_pRelLogger;
 #endif /* !IN_RC */
 }
-
 RT_EXPORT_SYMBOL(RTLogRelGetDefaultInstance);
 
-RTDECL(PRTLOGGER) RTLogRelGetDefaultInstanceEx(uint32_t fFlagsAndGroup)
+
+RTDECL(PRTLOGGER)   RTLogRelGetDefaultInstanceEx(uint32_t fFlagsAndGroup)
 {
 #ifdef IN_RC
-	PRTLOGGER pLogger = &g_RelLogger;
+    PRTLOGGER pLogger = &g_RelLogger;
 #else /* !IN_RC */
-	PRTLOGGER pLogger = g_pRelLogger;
+    PRTLOGGER pLogger = g_pRelLogger;
 #endif /* !IN_RC */
-	if (pLogger) {
-		if (pLogger->fFlags & RTLOGFLAGS_DISABLED)
-			pLogger = NULL;
-		else {
-			uint16_t const fFlags = RT_LO_U16(fFlagsAndGroup);
-			uint16_t const iGroup = RT_HI_U16(fFlagsAndGroup);
-			if (iGroup != UINT16_MAX
-			    &&
-			    ((pLogger->
-			      afGroups[iGroup <
-				       pLogger->
-				       cGroups ? iGroup : 0] & (fFlags |
-								(uint32_t)
-								RTLOGGRPFLAGS_ENABLED))
-			     != (fFlags | (uint32_t) RTLOGGRPFLAGS_ENABLED)))
-				pLogger = NULL;
-		}
-	}
-	return pLogger;
+    if (pLogger)
+    {
+        if (pLogger->fFlags & RTLOGFLAGS_DISABLED)
+            pLogger = NULL;
+        else
+        {
+            uint16_t const fFlags = RT_LO_U16(fFlagsAndGroup);
+            uint16_t const iGroup = RT_HI_U16(fFlagsAndGroup);
+            if (   iGroup != UINT16_MAX
+                 && (   (pLogger->afGroups[iGroup < pLogger->cGroups ? iGroup : 0] & (fFlags | (uint32_t)RTLOGGRPFLAGS_ENABLED))
+                     != (fFlags | (uint32_t)RTLOGGRPFLAGS_ENABLED)))
+            pLogger = NULL;
+        }
+    }
+    return pLogger;
 }
-
 RT_EXPORT_SYMBOL(RTLogRelGetDefaultInstanceEx);
+
 
 #ifndef IN_RC
 /**
@@ -116,11 +115,11 @@ RT_EXPORT_SYMBOL(RTLogRelGetDefaultInstanceEx);
  */
 RTDECL(PRTLOGGER) RTLogRelSetDefaultInstance(PRTLOGGER pLogger)
 {
-	return ASMAtomicXchgPtrT(&g_pRelLogger, pLogger, PRTLOGGER);
+    return ASMAtomicXchgPtrT(&g_pRelLogger, pLogger, PRTLOGGER);
 }
-
 RT_EXPORT_SYMBOL(RTLogRelSetDefaultInstance);
 #endif /* !IN_RC */
+
 
 /**
  * Write to a logger instance, defaulting to the release one.
@@ -136,21 +135,21 @@ RT_EXPORT_SYMBOL(RTLogRelSetDefaultInstance);
  * @param   pszFormat   Format string.
  * @param   args        Format arguments.
  */
-RTDECL(void)RTLogRelLoggerV(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup,
-			    const char *pszFormat, va_list args)
+RTDECL(void) RTLogRelLoggerV(PRTLOGGER pLogger, unsigned fFlags, unsigned iGroup, const char *pszFormat, va_list args)
 {
-	/*
-	 * A NULL logger means default instance.
-	 */
-	if (!pLogger) {
-		pLogger = RTLogRelGetDefaultInstance();
-		if (!pLogger)
-			return;
-	}
-	RTLogLoggerExV(pLogger, fFlags, iGroup, pszFormat, args);
+    /*
+     * A NULL logger means default instance.
+     */
+    if (!pLogger)
+    {
+        pLogger = RTLogRelGetDefaultInstance();
+        if (!pLogger)
+            return;
+    }
+    RTLogLoggerExV(pLogger, fFlags, iGroup, pszFormat, args);
 }
-
 RT_EXPORT_SYMBOL(RTLogRelLoggerV);
+
 
 /**
  * vprintf like function for writing to the default release log.
@@ -160,12 +159,12 @@ RT_EXPORT_SYMBOL(RTLogRelLoggerV);
  *
  * @remark The API doesn't support formatting of floating point numbers at the moment.
  */
-RTDECL(void)RTLogRelPrintfV(const char *pszFormat, va_list args)
+RTDECL(void) RTLogRelPrintfV(const char *pszFormat, va_list args)
 {
-	RTLogRelLoggerV(NULL, 0, ~0U, pszFormat, args);
+    RTLogRelLoggerV(NULL, 0, ~0U, pszFormat, args);
 }
-
 RT_EXPORT_SYMBOL(RTLogRelPrintfV);
+
 
 /**
  * Changes the buffering setting of the default release logger.
@@ -177,10 +176,10 @@ RT_EXPORT_SYMBOL(RTLogRelPrintfV);
  */
 RTDECL(bool) RTLogRelSetBuffering(bool fBuffered)
 {
-	PRTLOGGER pLogger = RTLogRelGetDefaultInstance();
-	if (pLogger)
-		return RTLogSetBuffering(pLogger, fBuffered);
-	return false;
+    PRTLOGGER pLogger = RTLogRelGetDefaultInstance();
+    if (pLogger)
+        return RTLogSetBuffering(pLogger, fBuffered);
+    return false;
 }
-
 RT_EXPORT_SYMBOL(RTLogRelSetBuffering);
+

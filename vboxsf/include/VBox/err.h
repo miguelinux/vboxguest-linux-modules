@@ -29,6 +29,7 @@
 #include <VBox/cdefs.h>
 #include <iprt/err.h>
 
+
 /** @defgroup grp_err       VBox Error Codes
  * @{
  */
@@ -90,6 +91,7 @@
 /** This VirtualBox build does not support raw-mode. */
 #define VERR_RAW_MODE_NOT_SUPPORTED         (-1023)
 /** @} */
+
 
 /** @name Execution Monitor/Manager (EM) Status Codes
  *
@@ -250,6 +252,7 @@
 #define VERR_EM_GUEST_CPU_HANG              (-1158)
 /** @} */
 
+
 /** @name Debugging Facility (DBGF) DBGF Status Codes
  * @{
  */
@@ -305,6 +308,7 @@
 /** No trace buffer available, please change the VM config. */
 #define VERR_DBGF_NO_TRACE_BUFFER           (-1220)
 /** @} */
+
 
 /** @name Patch Manager (PATM) Status Codes
  * @{
@@ -372,6 +376,7 @@
 
 /** @} */
 
+
 /** @name Code Scanning and Analysis Manager (CSAM) Status Codes
  * @{
  */
@@ -386,6 +391,7 @@
 /** The CSAM is not used because we're using HM and VT-x/AMD-V. */
 #define VERR_CSAM_HM_IPE                    (-1504)
 /** @} */
+
 
 /** @name Page Monitor/Manager (PGM) Status Codes
  * @{
@@ -516,6 +522,7 @@
 /** Internal processing error \#1 in page access handler code. */
 #define VERR_PGM_HANDLER_IPE_1                  (-1647)
 
+
 /** pgmPhysPageMapCommon encountered PGMPAGETYPE_MMIO2_ALIAS_MMIO. */
 #define VERR_PGM_MAP_MMIO2_ALIAS_MMIO           (-1651)
 /** Guest mappings are disabled. */
@@ -590,6 +597,7 @@
 #define VERR_PGM_PHYS_MMIO_EX_IPE               (-1685)
 /** @} */
 
+
 /** @name Memory Monitor (MM) Status Codes
  * @{
  */
@@ -601,6 +609,7 @@
 /** A bad trap type ended up in mmGCRamTrap0eHandler. */
 #define VERR_MM_BAD_TRAP_TYPE_IPE               (-1702)
 /** @} */
+
 
 /** @name CPU Monitor (CPUM) Status Codes
  * @{
@@ -642,6 +651,7 @@
 /** Indicates that we modified the host CR0 (FPU related). */
 #define VINF_CPUM_HOST_CR0_MODIFIED             (1766)
 /** @} */
+
 
 /** @name Save State Manager (SSM) Status Codes
  * @{
@@ -798,6 +808,7 @@
 #define VERR_SSM_FIELD_LOAD_ONLY_TRANSFORMATION (-1879)
 /** @} */
 
+
 /** @name Virtual Machine (VM) Status Codes
  * @{
  */
@@ -859,6 +870,7 @@
 #define VERR_VM_REQUEST_KILLED                  (-1919)
 /** @} */
 
+
 /** @name VBox Remote Desktop Protocol (VRDP) Status Codes
  * @{
  */
@@ -897,6 +909,7 @@
 #define VINF_VRDP_OUTPUT_ENABLE             2013
 /** @} */
 
+
 /** @name Configuration Manager (CFGM) Status Codes
  * @{
  */
@@ -934,6 +947,7 @@
 #define VERR_CFGM_IPE_1                     (-2165)
 /** @} */
 
+
 /** @name Time Manager (TM) Status Codes
  * @{
  */
@@ -963,6 +977,7 @@
 #define VERR_TM_VIRTUAL_TICKING_IPE         (-2211)
 /** @} */
 
+
 /** @name Recompiled Execution Manager (REM) Status Codes
  * @{
  */
@@ -980,6 +995,7 @@
 /** The REM could not find any breakpoint on the specified address. */
 #define VERR_REM_BP_NOT_FOUND               (-2306)
 /** @} */
+
 
 /** @name Trap Manager / Monitor (TRPM) Status Codes
  * @{
@@ -1009,6 +1025,7 @@
 /** Got into a part of TRPM that is not used when HM (VT-x/AMD-V) is enabled. */
 #define VERR_TRPM_HM_IPE                    (-2410)
 /** @} */
+
 
 /** @name Selector Manager / Monitor (SELM) Status Code
  * @{
@@ -1041,6 +1058,7 @@
 /** Got into a part of SELM that is not used when HM (VT-x/AMD-V) is enabled. */
 #define VERR_SELM_HM_IPE                    (-2509)
 /** @} */
+
 
 /** @name I/O Manager / Monitor (IOM) Status Code
  * @{
@@ -1132,6 +1150,7 @@
 #define VERR_IOM_FF_STATUS_IPE              (-2638)
 /** @} */
 
+
 /** @name Virtual Machine Monitor (VMM) Status Codes
  * @{
  */
@@ -1178,6 +1197,7 @@
  * log for details. */
 #define VERR_VMM_SMAP_BUT_AC_CLEAR          (-2717)
 /** @} */
+
 
 /** @name Pluggable Device and Driver Manager (PDM) Status Codes
  * @{
@@ -1474,6 +1494,7 @@
 #define VERR_PDM_MEDIAEX_IOREQ_INVALID_STATE        (-2899)
 /** @} */
 
+
 /** @name Host-Guest Communication Manager (HGCM) Status Codes
  * @{
  */
@@ -1496,6 +1517,7 @@
 
 /** @} */
 
+
 /** @name Network Address Translation Driver (DrvNAT) Status Codes
  * @{
  */
@@ -1509,6 +1531,7 @@
  * service on the computer. */
 #define VERR_NAT_REDIR_SETUP                        (-3002)
 /** @} */
+
 
 /** @name HostIF Driver (DrvTUN) Status Codes
  * @{
@@ -1527,6 +1550,7 @@
 /** The Host Interface Networking terminate program failed. */
 #define VERR_HOSTIF_TERM_FAILED                     (-3105)
 /** @} */
+
 
 /** @name VBox HDD Container (VD) Status Codes
  * @{
@@ -1643,6 +1667,7 @@
 
 /** @} */
 
+
 /** @name VBox Guest Library (VBGL) Status Codes
  * @{
  */
@@ -1653,6 +1678,7 @@
 /** IOCtl to VBoxGuest driver failed. */
 #define VERR_VBGL_IOCTL_FAILED                      (-3302)
 /** @} */
+
 
 /** @name VBox USB (VUSB) Status Codes
  * @{
@@ -1684,6 +1710,7 @@
 #define VERR_VUSB_USB_DEVICE_PERMISSION             (-3408)
 /** @} */
 
+
 /** @name VBox VGA Status Codes
  * @{
  */
@@ -1693,6 +1720,7 @@
 /** The display connector is resizing. */
 #define VINF_VGA_RESIZE_IN_PROGRESS                 (3501)
 /** @} */
+
 
 /** @name Internal Networking Status Codes
  * @{
@@ -1722,6 +1750,7 @@
 /** Failed to get underlying link ID. */
 #define VERR_INTNET_FLT_LOWER_LINK_ID_NOT_FOUND     (-3611)
 /** @} */
+
 
 /** @name Support Driver Status Codes
  * @{
@@ -1832,6 +1861,7 @@
 #define VERR_SUPDRV_NOT_BUDDING_VM_PROCESS_2        (-3749)
 /** @} */
 
+
 /** @name Support Library Status Codes
  * @{
  */
@@ -1889,6 +1919,7 @@
 /** Unable to establish trusted of VM process (5). */
 #define VERR_SUPLIB_NT_PROCESS_UNTRUSTED_5          (-3775)
 /** @} */
+
 
 /** @name VBox GMM Status Codes
  * @{
@@ -1964,6 +1995,7 @@
 #define VERR_GMM_SHARED_MODULE_BAD_REGIONS_SIZE     (-3831)
 /** @} */
 
+
 /** @name VBox GVM Status Codes
  * @{
  */
@@ -1976,6 +2008,7 @@
 /** RTThreadYield was called during a GVMMR0SchedPoll call. */
 #define VINF_GVM_YIELDED                            3903
 /** @} */
+
 
 /** @name VBox VMX Status Codes
  * @{
@@ -2056,6 +2089,7 @@
 #define VERR_VMX_MSR_SMX_VMX_ENABLE_FAILED          (-4036)
 /** @} */
 
+
 /** @name VBox SVM Status Codes
  * @{
  */
@@ -2092,6 +2126,7 @@
 /** Internal SVM processing error no 5. */
 #define VERR_SVM_IPE_5                              (-4065)
 /** @} */
+
 
 /** @name VBox HM Status Codes
  * @{
@@ -2134,6 +2169,7 @@
 #define VINF_HM_DOUBLE_FAULT                        4117
 /** @} */
 
+
 /** @name VBox Disassembler Status Codes
  * @{
  */
@@ -2151,6 +2187,7 @@
 #define VERR_DIS_TOO_LONG_INSTR                     (-4206)
 /** @} */
 
+
 /** @name VBox Webservice Status Codes
  * @{
  */
@@ -2165,6 +2202,7 @@
 /** Unsupported interface for managed object reference */
 #define VERR_WEB_UNSUPPORTED_INTERFACE              (-4304)
 /** @} */
+
 
 /** @name VBox PARAV Status Codes
  * @{
@@ -2181,6 +2219,7 @@
 #define VINF_VHWA_CMD_PENDING                       4500
 
 /** @} */
+
 
 /** @name VBox COM error codes
  *
@@ -2264,6 +2303,7 @@
 #define VERR_FAM_CONNECTION_LOST                    (-5003)
 /** @} */
 
+
 /** @name PCI Passtrhough Status Codes
  * @{
  */
@@ -2277,6 +2317,7 @@
  * PCI passthrough currently works only if nested paging is active. */
 #define VERR_PCI_PASSTHROUGH_NO_NESTED_PAGING       (-5102)
 /** @} */
+
 
 /** @name GVMM Status Codes
  * @{
@@ -2292,6 +2333,7 @@
 /** Internal processing error \#2 in the GVMM code. */
 #define VERR_GVMM_IPE_2                             (-5204)
 /** @} */
+
 
 /** @name IEM Status Codes
  * @{ */
@@ -2331,6 +2373,7 @@
 /** Internal processing error \#9 in the IEM code. */
 #define VERR_IEM_IPE_9                              (-5399)
 /** @} */
+
 
 /** @name DBGC Status Codes
  *  @{ */
@@ -2408,6 +2451,7 @@
 /** Syntax error - buggy parser. */
 #define VERR_DBGC_PARSE_BUG                         (VERR_DBGC_PARSE_LOWEST + 25)
 /** @} */
+
 
 /** @name Support driver/library shared verification status codes.
  * @{  */
@@ -2623,6 +2667,7 @@
 #define VERR_EXTPACK_VBOX_VERSION_MISMATCH          (-6001)
 /** @} */
 
+
 /** @name VBox Guest Control Status Codes
  * @{
  */
@@ -2635,6 +2680,7 @@
 /** Started guest process terminated with an exit code <> 0. */
 #define VWRN_GSTCTL_PROCESS_EXIT_CODE               6221
 /** @} */
+
 
 /** @name GIM Status Codes
  * @{
@@ -2679,6 +2725,7 @@
 #define VERR_GIM_INVALID_HYPERCALL_INSTR            (-6318)
 /** @} */
 
+
 /** @name Main API Status Codes
  * @{
  */
@@ -2690,12 +2737,14 @@
 #define VERR_MAIN_CONFIG_CONSTRUCTOR_IPE            (-6401)
 /** @} */
 
+
 /** @name VBox Drag and Drop Status Codes
  * @{
  */
 /** Guest side reported an error. */
 #define VERR_GSTDND_GUEST_ERROR                     (-6500)
 /** @} */
+
 
 /** @name Audio Status Codes
  * @{
@@ -2712,6 +2761,7 @@
 #define VERR_AUDIO_STREAM_PENDING_DISABLE           (-6603)
 /** @} */
 
+
 /** @name APIC Status Codes
  * @{
  */
@@ -2727,4 +2777,6 @@
 
 /** @} */
 
+
 #endif
+

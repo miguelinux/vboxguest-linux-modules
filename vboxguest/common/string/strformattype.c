@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Global Variables                                                                                                             *
 *********************************************************************************************************************************/
@@ -36,6 +37,7 @@
 #include <iprt/asm.h>
 #include "internal/string.h"
 
+
 /*********************************************************************************************************************************
 *   Defined Constants And Macros                                                                                                 *
 *********************************************************************************************************************************/
@@ -45,6 +47,7 @@
 #ifdef RTSTRFORMATTYPE_WITH_LOCKING
 # define RTSTRFORMATTYPE_LOCK_OFFSET    0x7fff0000
 #endif
+
 
 /*********************************************************************************************************************************
 *   Structures and Typedefs                                                                                                      *
@@ -56,38 +59,40 @@
  * do the bothersome relocating. This of course assumes that all the relevant
  * code stays within the same mapping.
  */
-typedef struct RTSTRDYNFMT {
+typedef struct RTSTRDYNFMT
+{
     /** The length of the type. */
-	uint8_t cchType;
+    uint8_t             cchType;
     /** The type name. */
-	char szType[47];
+    char                szType[47];
     /** The handler function.
      * In GC the offset is relative to g_aTypes[0], so that &g_aTypes[0] + offHandler
      * gives the actual address. */
 #ifdef IN_RC
-	int32_t offHandler;
+    int32_t             offHandler;
 #else
-	PFNRTSTRFORMATTYPE pfnHandler;
+    PFNRTSTRFORMATTYPE  pfnHandler;
 #endif
     /** Callback argument. */
-	void *volatile pvUser;
+    void * volatile     pvUser;
 #if ARCH_BITS == 32
     /** Size alignment padding. */
-	char abPadding[8];
+    char                abPadding[8];
 #endif
 } RTSTRDYNFMT;
 AssertCompileSizeAlignment(RTSTRDYNFMT, 32);
 typedef RTSTRDYNFMT *PRTSTRDYNFMT;
 typedef RTSTRDYNFMT const *PCRTSTRDYNFMT;
 
+
 /*********************************************************************************************************************************
 *   Global Variables                                                                                                             *
 *********************************************************************************************************************************/
 /** The registered types, sorted for binary lookup.
  * We use a static array here because it avoids RTMemAlloc dependencies+leaks. */
-static RTSTRDYNFMT g_aTypes[64];
+static RTSTRDYNFMT      g_aTypes[64];
 /** The number of registered types. */
-static uint32_t g_cTypes = 0;
+static uint32_t         g_cTypes = 0;
 #ifdef RTSTRFORMATTYPE_WITH_LOCKING
 /** This is just a thing we assert/spin on.
  * Zero == unlocked, negative == write locked, positive == read locked.
@@ -97,6 +102,7 @@ static uint32_t g_cTypes = 0;
 static int32_t volatile g_i32Spinlock = 0;
 #endif
 
+
 /**
  * Locks the stuff for updating.
  *
@@ -105,21 +111,19 @@ static int32_t volatile g_i32Spinlock = 0;
 DECLINLINE(void) rtstrFormatTypeWriteLock(void)
 {
 #if defined(RTSTRFORMATTYPE_WITH_LOCKING)
-	if (RT_UNLIKELY
-	    (!ASMAtomicCmpXchgS32
-	     (&g_i32Spinlock, -RTSTRFORMATTYPE_LOCK_OFFSET, 0))) {
-		unsigned volatile i;
+    if (RT_UNLIKELY(!ASMAtomicCmpXchgS32(&g_i32Spinlock, -RTSTRFORMATTYPE_LOCK_OFFSET, 0)))
+    {
+        unsigned volatile i;
 
-		AssertFailed();
-		for (i = 0;; i++)
-			if (!g_i32Spinlock
-			    && ASMAtomicCmpXchgS32(&g_i32Spinlock,
-						   -RTSTRFORMATTYPE_LOCK_OFFSET,
-						   0))
-				break;
-	}
+        AssertFailed();
+        for (i = 0;; i++)
+            if (    !g_i32Spinlock
+                &&  ASMAtomicCmpXchgS32(&g_i32Spinlock, -RTSTRFORMATTYPE_LOCK_OFFSET, 0))
+                break;
+    }
 #endif
 }
+
 
 /**
  * Undoing rtstrFormatTypeWriteLock.
@@ -127,10 +131,11 @@ DECLINLINE(void) rtstrFormatTypeWriteLock(void)
 DECLINLINE(void) rtstrFormatTypeWriteUnlock(void)
 {
 #if defined(RTSTRFORMATTYPE_WITH_LOCKING)
-	Assert(g_i32Spinlock < 0);
-	ASMAtomicAddS32(&g_i32Spinlock, RTSTRFORMATTYPE_LOCK_OFFSET);
+    Assert(g_i32Spinlock < 0);
+    ASMAtomicAddS32(&g_i32Spinlock, RTSTRFORMATTYPE_LOCK_OFFSET);
 #endif
 }
+
 
 /**
  * Locks the stuff for reading.
@@ -140,16 +145,18 @@ DECLINLINE(void) rtstrFormatTypeWriteUnlock(void)
 DECLINLINE(void) rtstrFormatTypeReadLock(void)
 {
 #if defined(RTSTRFORMATTYPE_WITH_LOCKING)
-	if (RT_UNLIKELY(ASMAtomicIncS32(&g_i32Spinlock) < 0)) {
-		unsigned volatile i;
+    if (RT_UNLIKELY(ASMAtomicIncS32(&g_i32Spinlock) < 0))
+    {
+        unsigned volatile i;
 
-		AssertFailed();
-		for (i = 0;; i++)
-			if (ASMAtomicUoReadS32(&g_i32Spinlock) > 0)
-				break;
-	}
+        AssertFailed();
+        for (i = 0;; i++)
+            if (ASMAtomicUoReadS32(&g_i32Spinlock) > 0)
+                break;
+    }
 #endif
 }
+
 
 /**
  * Undoing rtstrFormatTypeReadLock.
@@ -157,10 +164,11 @@ DECLINLINE(void) rtstrFormatTypeReadLock(void)
 DECLINLINE(void) rtstrFormatTypeReadUnlock(void)
 {
 #if defined(RTSTRFORMATTYPE_WITH_LOCKING)
-	Assert(g_i32Spinlock > 0);
-	ASMAtomicDecS32(&g_i32Spinlock);
+    Assert(g_i32Spinlock > 0);
+    ASMAtomicDecS32(&g_i32Spinlock);
 #endif
 }
+
 
 /**
  * Compares a type string with a type entry, the string doesn't need to be terminated.
@@ -170,18 +178,19 @@ DECLINLINE(void) rtstrFormatTypeReadUnlock(void)
  * @param   cchType     The number of chars in @a pszType to compare.
  * @param   pType       The type entry to compare with.
  */
-DECLINLINE(int) rtstrFormatTypeCompare(const char *pszType, size_t cchType,
-				       PCRTSTRDYNFMT pType)
+DECLINLINE(int) rtstrFormatTypeCompare(const char *pszType, size_t cchType, PCRTSTRDYNFMT pType)
 {
-	size_t cch = RT_MIN(cchType, pType->cchType);
-	int iDiff = memcmp(pszType, pType->szType, cch);
-	if (!iDiff) {
-		if (cchType == pType->cchType)
-			return 0;
-		iDiff = cchType < pType->cchType ? -1 : 1;
-	}
-	return iDiff;
+    size_t cch = RT_MIN(cchType, pType->cchType);
+    int iDiff = memcmp(pszType, pType->szType, cch);
+    if (!iDiff)
+    {
+        if (cchType == pType->cchType)
+            return 0;
+        iDiff = cchType < pType->cchType ? -1 : 1;
+    }
+    return iDiff;
 }
+
 
 /**
  * Looks up a type entry.
@@ -192,29 +201,30 @@ DECLINLINE(int) rtstrFormatTypeCompare(const char *pszType, size_t cchType,
  */
 DECLINLINE(int32_t) rtstrFormatTypeLookup(const char *pszType, size_t cchType)
 {
-	/*
-	 * Lookup the type - binary search.
-	 */
-	int32_t iStart = 0;
-	int32_t iEnd = g_cTypes - 1;
-	int32_t i = iEnd / 2;
-	for (;;) {
-		int iDiff =
-		    rtstrFormatTypeCompare(pszType, cchType, &g_aTypes[i]);
-		if (!iDiff)
-			return i;
-		if (iEnd == iStart)
-			break;
-		if (iDiff < 0)
-			iEnd = i - 1;
-		else
-			iStart = i + 1;
-		if (iEnd < iStart)
-			break;
-		i = iStart + (iEnd - iStart) / 2;
-	}
-	return -1;
+    /*
+     * Lookup the type - binary search.
+     */
+    int32_t iStart = 0;
+    int32_t iEnd   = g_cTypes - 1;
+    int32_t i      = iEnd / 2;
+    for (;;)
+    {
+        int iDiff = rtstrFormatTypeCompare(pszType, cchType, &g_aTypes[i]);
+        if (!iDiff)
+            return i;
+        if (iEnd == iStart)
+            break;
+        if (iDiff < 0)
+            iEnd = i - 1;
+        else
+            iStart = i + 1;
+        if (iEnd < iStart)
+            break;
+        i = iStart + (iEnd - iStart) / 2;
+    }
+    return -1;
 }
+
 
 /**
  * Register a format handler for a type.
@@ -235,76 +245,74 @@ DECLINLINE(int32_t) rtstrFormatTypeLookup(const char *pszType, size_t cchType)
  * @param   pvUser          The user argument to pass to the handler. See RTStrFormatTypeSetUser
  *                          for how to update this later.
  */
-RTDECL(int)RTStrFormatTypeRegister(const char *pszType,
-				   PFNRTSTRFORMATTYPE pfnHandler, void *pvUser)
+RTDECL(int) RTStrFormatTypeRegister(const char *pszType, PFNRTSTRFORMATTYPE pfnHandler, void *pvUser)
 {
-	int rc;
-	size_t cchType;
-	uint32_t cTypes;
+    int rc;
+    size_t cchType;
+    uint32_t cTypes;
 
-	/*
-	 * Validate input.
-	 */
-	AssertPtr(pfnHandler);
-	AssertPtr(pszType);
-	cchType = strlen(pszType);
-	AssertReturn(cchType < RT_SIZEOFMEMB(RTSTRDYNFMT, szType),
-		     VERR_INVALID_PARAMETER);
+    /*
+     * Validate input.
+     */
+    AssertPtr(pfnHandler);
+    AssertPtr(pszType);
+    cchType = strlen(pszType);
+    AssertReturn(cchType < RT_SIZEOFMEMB(RTSTRDYNFMT, szType), VERR_INVALID_PARAMETER);
 
-	/*
-	 * Try add it.
-	 */
-	rtstrFormatTypeWriteLock();
+    /*
+     * Try add it.
+     */
+    rtstrFormatTypeWriteLock();
 
-	/* check that there are empty slots. */
-	cTypes = g_cTypes;
-	if (cTypes < RT_ELEMENTS(g_aTypes)) {
-		/* find where to insert it. */
-		uint32_t i = 0;
-		rc = VINF_SUCCESS;
-		while (i < cTypes) {
-			int iDiff =
-			    rtstrFormatTypeCompare(pszType, cchType,
-						   &g_aTypes[i]);
-			if (!iDiff) {
-				rc = VERR_ALREADY_EXISTS;
-				break;
-			}
-			if (iDiff < 0)
-				break;
-			i++;
-		}
-		if (RT_SUCCESS(rc)) {
-			/* make room. */
-			uint32_t cToMove = cTypes - i;
-			if (cToMove)
-				memmove(&g_aTypes[i + 1], &g_aTypes[i],
-					cToMove * sizeof(g_aTypes[i]));
+    /* check that there are empty slots. */
+    cTypes = g_cTypes;
+    if (cTypes < RT_ELEMENTS(g_aTypes))
+    {
+        /* find where to insert it. */
+        uint32_t i = 0;
+        rc = VINF_SUCCESS;
+        while (i < cTypes)
+        {
+            int iDiff = rtstrFormatTypeCompare(pszType, cchType, &g_aTypes[i]);
+            if (!iDiff)
+            {
+                rc = VERR_ALREADY_EXISTS;
+                break;
+            }
+            if (iDiff < 0)
+                break;
+            i++;
+        }
+        if (RT_SUCCESS(rc))
+        {
+            /* make room. */
+            uint32_t cToMove = cTypes - i;
+            if (cToMove)
+                memmove(&g_aTypes[i + 1], &g_aTypes[i], cToMove * sizeof(g_aTypes[i]));
 
-			/* insert the new entry. */
-			memset(&g_aTypes[i], 0, sizeof(g_aTypes[i]));
-			memcpy(&g_aTypes[i].szType[0], pszType, cchType + 1);
-			g_aTypes[i].cchType = (uint8_t) cchType;
-			g_aTypes[i].pvUser = pvUser;
+            /* insert the new entry. */
+            memset(&g_aTypes[i], 0, sizeof(g_aTypes[i]));
+            memcpy(&g_aTypes[i].szType[0], pszType, cchType + 1);
+            g_aTypes[i].cchType = (uint8_t)cchType;
+            g_aTypes[i].pvUser = pvUser;
 #ifdef IN_RC
-			g_aTypes[i].offHandler =
-			    (intptr_t) pfnHandler - (intptr_t) & g_aTypes[0];
+            g_aTypes[i].offHandler = (intptr_t)pfnHandler - (intptr_t)&g_aTypes[0];
 #else
-			g_aTypes[i].pfnHandler = pfnHandler;
+            g_aTypes[i].pfnHandler = pfnHandler;
 #endif
-			ASMAtomicIncU32(&g_cTypes);
-			rc = VINF_SUCCESS;
-		}
-	} else
-		rc = VERR_TOO_MANY_OPEN_FILES;
-				       /** @todo fix error code */
+            ASMAtomicIncU32(&g_cTypes);
+            rc = VINF_SUCCESS;
+        }
+    }
+    else
+        rc = VERR_TOO_MANY_OPEN_FILES; /** @todo fix error code */
 
-	rtstrFormatTypeWriteUnlock();
+    rtstrFormatTypeWriteUnlock();
 
-	return rc;
+    return rc;
 }
-
 RT_EXPORT_SYMBOL(RTStrFormatTypeRegister);
+
 
 /**
  * Deregisters a format type.
@@ -318,37 +326,38 @@ RT_EXPORT_SYMBOL(RTStrFormatTypeRegister);
  *
  * @param   pszType     The type to deregister.
  */
-RTDECL(int)RTStrFormatTypeDeregister(const char *pszType)
+RTDECL(int) RTStrFormatTypeDeregister(const char *pszType)
 {
-	int32_t i;
+    int32_t i;
 
-	/*
-	 * Validate input.
-	 */
-	AssertPtr(pszType);
+    /*
+     * Validate input.
+     */
+    AssertPtr(pszType);
 
-	/*
-	 * Locate the entry and remove it.
-	 */
-	rtstrFormatTypeWriteLock();
-	i = rtstrFormatTypeLookup(pszType, strlen(pszType));
-	if (i >= 0) {
-		const uint32_t cTypes = g_cTypes;
-		int32_t cToMove = cTypes - i - 1;
-		if (cToMove > 0)
-			memmove(&g_aTypes[i], &g_aTypes[i + 1],
-				cToMove * sizeof(g_aTypes[i]));
-		memset(&g_aTypes[cTypes - 1], 0, sizeof(g_aTypes[0]));
-		ASMAtomicDecU32(&g_cTypes);
-	}
-	rtstrFormatTypeWriteUnlock();
+    /*
+     * Locate the entry and remove it.
+     */
+    rtstrFormatTypeWriteLock();
+    i = rtstrFormatTypeLookup(pszType, strlen(pszType));
+    if (i >= 0)
+    {
+        const uint32_t cTypes = g_cTypes;
+        int32_t cToMove = cTypes - i - 1;
+        if (cToMove > 0)
+            memmove(&g_aTypes[i], &g_aTypes[i + 1], cToMove * sizeof(g_aTypes[i]));
+        memset(&g_aTypes[cTypes - 1], 0, sizeof(g_aTypes[0]));
+        ASMAtomicDecU32(&g_cTypes);
+    }
+    rtstrFormatTypeWriteUnlock();
 
-	Assert(i >= 0);
-	return i >= 0 ? VINF_SUCCESS : VERR_FILE_NOT_FOUND;
-				/** @todo fix status code */
+    Assert(i >= 0);
+    return i >= 0
+         ? VINF_SUCCESS
+         : VERR_FILE_NOT_FOUND; /** @todo fix status code */
 }
-
 RT_EXPORT_SYMBOL(RTStrFormatTypeDeregister);
+
 
 /**
  * Sets the user argument for a type.
@@ -362,32 +371,33 @@ RT_EXPORT_SYMBOL(RTStrFormatTypeDeregister);
  * @param   pszType     The type to update.
  * @param   pvUser      The new user argument value.
  */
-RTDECL(int)RTStrFormatTypeSetUser(const char *pszType, void *pvUser)
+RTDECL(int) RTStrFormatTypeSetUser(const char *pszType, void *pvUser)
 {
-	int32_t i;
+    int32_t i;
 
-	/*
-	 * Validate input.
-	 */
-	AssertPtr(pszType);
+    /*
+     * Validate input.
+     */
+    AssertPtr(pszType);
 
-	/*
-	 * Locate the entry and update it.
-	 */
-	rtstrFormatTypeReadLock();
+    /*
+     * Locate the entry and update it.
+     */
+    rtstrFormatTypeReadLock();
 
-	i = rtstrFormatTypeLookup(pszType, strlen(pszType));
-	if (i >= 0)
-		ASMAtomicWritePtr(&g_aTypes[i].pvUser, pvUser);
+    i = rtstrFormatTypeLookup(pszType, strlen(pszType));
+    if (i >= 0)
+        ASMAtomicWritePtr(&g_aTypes[i].pvUser, pvUser);
 
-	rtstrFormatTypeReadUnlock();
+    rtstrFormatTypeReadUnlock();
 
-	Assert(i >= 0);
-	return i >= 0 ? VINF_SUCCESS : VERR_FILE_NOT_FOUND;
-				/** @todo fix status code */
+    Assert(i >= 0);
+    return i >= 0
+         ? VINF_SUCCESS
+         : VERR_FILE_NOT_FOUND; /** @todo fix status code */
 }
-
 RT_EXPORT_SYMBOL(RTStrFormatTypeSetUser);
+
 
 /**
  * Formats a type using a registered callback handler.
@@ -405,63 +415,62 @@ RT_EXPORT_SYMBOL(RTStrFormatTypeSetUser);
  * @param   fFlags          Flags (RTSTR_NTFS_*).
  * @param   chArgSize       The argument size specifier, 'l' or 'L'.
  */
-DECLHIDDEN(size_t) rtstrFormatType(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
-				   const char **ppszFormat, va_list * pArgs,
-				   int cchWidth, int cchPrecision,
-				   unsigned fFlags, char chArgSize)
+DECLHIDDEN(size_t) rtstrFormatType(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, const char **ppszFormat,
+                                   va_list *pArgs, int cchWidth, int cchPrecision, unsigned fFlags, char chArgSize)
 {
-	size_t cch;
-	int32_t i;
-	char const *pszTypeEnd;
-	char const *pszType;
-	char ch;
-	void *pvValue = va_arg(*pArgs, void *);
-	NOREF(chArgSize);
+    size_t      cch;
+    int32_t     i;
+    char const *pszTypeEnd;
+    char const *pszType;
+    char        ch;
+    void       *pvValue = va_arg(*pArgs, void *);
+    NOREF(chArgSize);
 
-	/*
-	 * Parse out the type.
-	 */
-	pszType = *ppszFormat + 2;
-	*ppszFormat = pszType;
-	Assert(pszType[-1] == '[');
-	Assert(pszType[-2] == 'R');
-	pszTypeEnd = pszType;
-	while ((ch = *pszTypeEnd) != ']') {
-		AssertReturn(ch != '\0', 0);
-		AssertReturn(ch != '%', 0);
-		AssertReturn(ch != '[', 0);
-		pszTypeEnd++;
-	}
-	*ppszFormat = pszTypeEnd + 1;
+    /*
+     * Parse out the type.
+     */
+    pszType = *ppszFormat + 2;
+    *ppszFormat = pszType;
+    Assert(pszType[-1] == '[');
+    Assert(pszType[-2] == 'R');
+    pszTypeEnd = pszType;
+    while ((ch = *pszTypeEnd) != ']')
+    {
+        AssertReturn(ch != '\0', 0);
+        AssertReturn(ch != '%', 0);
+        AssertReturn(ch != '[', 0);
+        pszTypeEnd++;
+    }
+    *ppszFormat = pszTypeEnd + 1;
 
-	/*
-	 * Locate the entry and call the handler.
-	 */
-	rtstrFormatTypeReadLock();
+    /*
+     * Locate the entry and call the handler.
+     */
+    rtstrFormatTypeReadLock();
 
-	i = rtstrFormatTypeLookup(pszType, pszTypeEnd - pszType);
-	if (RT_LIKELY(i >= 0)) {
+    i = rtstrFormatTypeLookup(pszType, pszTypeEnd - pszType);
+    if (RT_LIKELY(i >= 0))
+    {
 #ifdef IN_RC
-		PFNRTSTRFORMATTYPE pfnHandler =
-		    (PFNRTSTRFORMATTYPE) ((intptr_t) & g_aTypes[0] +
-					  g_aTypes[i].offHandler);
+        PFNRTSTRFORMATTYPE pfnHandler = (PFNRTSTRFORMATTYPE)((intptr_t)&g_aTypes[0] + g_aTypes[i].offHandler);
 #else
-		PFNRTSTRFORMATTYPE pfnHandler = g_aTypes[i].pfnHandler;
+        PFNRTSTRFORMATTYPE pfnHandler = g_aTypes[i].pfnHandler;
 #endif
-		void *pvUser = ASMAtomicReadPtr(&g_aTypes[i].pvUser);
+        void *pvUser = ASMAtomicReadPtr(&g_aTypes[i].pvUser);
 
-		rtstrFormatTypeReadUnlock();
+        rtstrFormatTypeReadUnlock();
 
-		cch =
-		    pfnHandler(pfnOutput, pvArgOutput, g_aTypes[i].szType,
-			       pvValue, cchWidth, cchPrecision, fFlags, pvUser);
-	} else {
-		rtstrFormatTypeReadUnlock();
+        cch = pfnHandler(pfnOutput, pvArgOutput, g_aTypes[i].szType, pvValue, cchWidth, cchPrecision, fFlags, pvUser);
+    }
+    else
+    {
+        rtstrFormatTypeReadUnlock();
 
-		cch = pfnOutput(pvArgOutput, RT_STR_TUPLE("<missing:%R["));
-		cch += pfnOutput(pvArgOutput, pszType, pszTypeEnd - pszType);
-		cch += pfnOutput(pvArgOutput, RT_STR_TUPLE("]>"));
-	}
+        cch  = pfnOutput(pvArgOutput, RT_STR_TUPLE("<missing:%R["));
+        cch += pfnOutput(pvArgOutput, pszType, pszTypeEnd - pszType);
+        cch += pfnOutput(pvArgOutput, RT_STR_TUPLE("]>"));
+    }
 
-	return cch;
+    return cch;
 }
+

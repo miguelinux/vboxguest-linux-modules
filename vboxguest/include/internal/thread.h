@@ -41,76 +41,81 @@
 #endif
 
 RT_C_DECLS_BEGIN
+
+
 /** Max thread name length. */
 #define RTTHREAD_NAME_LEN       16
 #ifdef IPRT_WITH_GENERIC_TLS
 /** The number of TLS entries for the generic implementation. */
 # define RTTHREAD_TLS_ENTRIES   64
 #endif
+
 /**
  * Internal representation of a thread.
  */
-    typedef struct RTTHREADINT {
+typedef struct RTTHREADINT
+{
     /** Avl node core - the key is the native thread id. */
-	AVLPVNODECORE Core;
+    AVLPVNODECORE           Core;
     /** Magic value (RTTHREADINT_MAGIC). */
-	uint32_t u32Magic;
+    uint32_t                u32Magic;
     /** Reference counter. */
-	uint32_t volatile cRefs;
+    uint32_t volatile       cRefs;
     /** The current thread state. */
-	RTTHREADSTATE volatile enmState;
+    RTTHREADSTATE volatile  enmState;
     /** Set when really sleeping. */
-	bool volatile fReallySleeping;
+    bool volatile           fReallySleeping;
 #if defined(RT_OS_WINDOWS) && defined(IN_RING3)
     /** The thread handle
      * This is not valid until the create function has returned! */
-	uintptr_t hThread;
+    uintptr_t               hThread;
 #endif
 #if defined(RT_OS_LINUX) && defined(IN_RING3)
     /** The thread ID.
      * This is not valid before rtThreadMain has been called by the new thread.  */
-	pid_t tid;
+    pid_t                   tid;
 #endif
 #if defined(RT_OS_SOLARIS) && defined(IN_RING0)
     /** Debug thread ID needed for thread_join. */
-	uint64_t tid;
+    uint64_t                tid;
 #endif
     /** The user event semaphore. */
-	RTSEMEVENTMULTI EventUser;
+    RTSEMEVENTMULTI         EventUser;
     /** The terminated event semaphore. */
-	RTSEMEVENTMULTI EventTerminated;
+    RTSEMEVENTMULTI         EventTerminated;
     /** The thread type. */
-	RTTHREADTYPE enmType;
+    RTTHREADTYPE            enmType;
     /** The thread creation flags. (RTTHREADFLAGS) */
-	unsigned fFlags;
+    unsigned                fFlags;
     /** Internal flags. (RTTHREADINT_FLAGS_ *) */
-	uint32_t fIntFlags;
+    uint32_t                fIntFlags;
     /** The result code. */
-	int rc;
+    int                     rc;
     /** Thread function. */
-	PFNRTTHREAD pfnThread;
+    PFNRTTHREAD             pfnThread;
     /** Thread function argument. */
-	void *pvUser;
+    void                   *pvUser;
     /** Actual stack size. */
-	size_t cbStack;
+    size_t                  cbStack;
 #ifdef IN_RING3
     /** The lock validator data. */
-	RTLOCKVALPERTHREAD LockValidator;
-#endif				/* IN_RING3 */
+    RTLOCKVALPERTHREAD      LockValidator;
+#endif /* IN_RING3 */
 #ifdef RT_WITH_ICONV_CACHE
     /** Handle cache for iconv.
      * @remarks ASSUMES sizeof(void *) >= sizeof(iconv_t). */
-	void *ahIconvs[RTSTRICONV_END];
+    void *ahIconvs[RTSTRICONV_END];
 #endif
 #ifdef IPRT_WITH_GENERIC_TLS
     /** The TLS entries for this thread. */
-	void *apvTlsEntries[RTTHREAD_TLS_ENTRIES];
+    void                   *apvTlsEntries[RTTHREAD_TLS_ENTRIES];
 #endif
     /** Thread name. */
-	char szName[RTTHREAD_NAME_LEN];
+    char                    szName[RTTHREAD_NAME_LEN];
 } RTTHREADINT;
 /** Pointer to the internal representation of a thread. */
 typedef RTTHREADINT *PRTTHREADINT;
+
 
 /** @name RTTHREADINT::fIntFlags Masks and Bits.
  * @{ */
@@ -127,6 +132,7 @@ typedef RTTHREADINT *PRTTHREADINT;
 /** Set if it's the main thread. */
 #define RTTHREADINT_FLAGS_MAIN       RT_BIT(3)
 /** @} */
+
 
 /**
  * Initialize the native part of the thread management.
@@ -155,8 +161,7 @@ DECLHIDDEN(void) rtThreadNativeReInitObtrusive(void);
  * @param   pThreadInt      The thread data structure for the thread.
  * @param   pNativeThread   Where to store the native thread identifier.
  */
-DECLHIDDEN(int) rtThreadNativeCreate(PRTTHREADINT pThreadInt,
-				     PRTNATIVETHREAD pNativeThread);
+DECLHIDDEN(int) rtThreadNativeCreate(PRTTHREADINT pThreadInt, PRTNATIVETHREAD pNativeThread);
 
 /**
  * Adopts a thread, this is called immediately after allocating the
@@ -184,6 +189,7 @@ DECLHIDDEN(void) rtThreadNativeDestroy(PRTTHREADINT pThread);
 DECLHIDDEN(void) rtThreadNativeWaitKludge(PRTTHREADINT pThread);
 #endif
 
+
 /**
  * Sets the priority of the thread according to the thread type
  * and current process priority.
@@ -196,8 +202,7 @@ DECLHIDDEN(void) rtThreadNativeWaitKludge(PRTTHREADINT pThread);
  * @param   enmType     The thread type.
  * @remark  Located in sched.
  */
-DECLHIDDEN(int) rtThreadNativeSetPriority(PRTTHREADINT pThread,
-					  RTTHREADTYPE enmType);
+DECLHIDDEN(int) rtThreadNativeSetPriority(PRTTHREADINT pThread, RTTHREADTYPE enmType);
 
 #ifdef IN_RING3
 # ifdef RT_OS_WINDOWS
@@ -217,27 +222,25 @@ DECLHIDDEN(void) rtThreadNativeInformDebugger(PRTTHREADINT pThread);
 # endif
 #endif /* IN_RING3 */
 
+
 /* thread.cpp */
-DECLCALLBACK(DECLHIDDEN(int)) rtThreadMain(PRTTHREADINT pThread,
-					   RTNATIVETHREAD NativeThread,
-					   const char *pszThreadName);
-DECLHIDDEN(uint32_t) rtThreadRelease(PRTTHREADINT pThread);
-DECLHIDDEN(void) rtThreadTerminate(PRTTHREADINT pThread, int rc);
+DECLCALLBACK(DECLHIDDEN(int)) rtThreadMain(PRTTHREADINT pThread, RTNATIVETHREAD NativeThread, const char *pszThreadName);
+DECLHIDDEN(uint32_t)     rtThreadRelease(PRTTHREADINT pThread);
+DECLHIDDEN(void)         rtThreadTerminate(PRTTHREADINT pThread, int rc);
 DECLHIDDEN(PRTTHREADINT) rtThreadGetByNative(RTNATIVETHREAD NativeThread);
 DECLHIDDEN(PRTTHREADINT) rtThreadGet(RTTHREAD Thread);
-DECLHIDDEN(int) rtThreadInit(void);
+DECLHIDDEN(int)          rtThreadInit(void);
 #ifdef IN_RING3
-DECLHIDDEN(void) rtThreadReInitObtrusive(void);
+DECLHIDDEN(void)         rtThreadReInitObtrusive(void);
 #endif
-DECLHIDDEN(void) rtThreadTerm(void);
-DECLHIDDEN(void) rtThreadInsert(PRTTHREADINT pThread,
-				RTNATIVETHREAD NativeThread);
+DECLHIDDEN(void)         rtThreadTerm(void);
+DECLHIDDEN(void)         rtThreadInsert(PRTTHREADINT pThread, RTNATIVETHREAD NativeThread);
 #ifdef IN_RING3
-DECLHIDDEN(int) rtThreadDoSetProcPriority(RTPROCPRIORITY enmPriority);
+DECLHIDDEN(int)          rtThreadDoSetProcPriority(RTPROCPRIORITY enmPriority);
 #endif /* !IN_RING0 */
 #ifdef IPRT_WITH_GENERIC_TLS
-DECLHIDDEN(void) rtThreadClearTlsEntry(RTTLS iTls);
-DECLHIDDEN(void) rtThreadTlsDestruction(PRTTHREADINT pThread);	/* in tls-generic.cpp */
+DECLHIDDEN(void)         rtThreadClearTlsEntry(RTTLS iTls);
+DECLHIDDEN(void)         rtThreadTlsDestruction(PRTTHREADINT pThread); /* in tls-generic.cpp */
 #endif
 
 #ifdef ___iprt_asm_h
@@ -250,7 +253,7 @@ DECLHIDDEN(void) rtThreadTlsDestruction(PRTTHREADINT pThread);	/* in tls-generic
  */
 DECLINLINE(RTTHREADSTATE) rtThreadGetState(PRTTHREADINT pThread)
 {
-	return pThread->enmState;
+    return pThread->enmState;
 }
 
 /**
@@ -259,14 +262,14 @@ DECLINLINE(RTTHREADSTATE) rtThreadGetState(PRTTHREADINT pThread)
  * @param   pThread             The thread.
  * @param   enmNewState         The new thread state.
  */
-DECLINLINE(void)rtThreadSetState(PRTTHREADINT pThread,
-				 RTTHREADSTATE enmNewState)
+DECLINLINE(void) rtThreadSetState(PRTTHREADINT pThread, RTTHREADSTATE enmNewState)
 {
-	AssertCompile(sizeof(pThread->enmState) == sizeof(uint32_t));
-	ASMAtomicWriteU32((uint32_t volatile *)&pThread->enmState, enmNewState);
+    AssertCompile(sizeof(pThread->enmState) == sizeof(uint32_t));
+    ASMAtomicWriteU32((uint32_t volatile *)&pThread->enmState, enmNewState);
 }
 
 #endif
 
 RT_C_DECLS_END
+
 #endif

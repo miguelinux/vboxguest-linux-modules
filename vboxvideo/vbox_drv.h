@@ -92,51 +92,51 @@
 struct vbox_fbdev;
 
 struct vbox_private {
-	struct drm_device *dev;
+    struct drm_device *dev;
 
-	uint8_t __iomem *mapped_vram;
-	HGSMIGUESTCOMMANDCONTEXT submit_info;
-	struct VBVABUFFERCONTEXT *vbva_info;
-	bool any_pitch;
-	unsigned num_crtcs;
-	bool vga2_clone;
+    uint8_t __iomem *mapped_vram;
+    HGSMIGUESTCOMMANDCONTEXT submit_info;
+    struct VBVABUFFERCONTEXT *vbva_info;
+    bool any_pitch;
+    unsigned num_crtcs;
+    bool vga2_clone;
     /** Amount of available VRAM, including space used for buffers. */
-	uint32_t full_vram_size;
+    uint32_t full_vram_size;
     /** Amount of available VRAM, not including space used for buffers. */
-	uint32_t available_vram_size;
+    uint32_t available_vram_size;
     /** Offset of mapped VRAM area in full VRAM. */
-	uint32_t vram_map_start;
+    uint32_t vram_map_start;
     /** Offset to the host flags in the VRAM. */
-	uint32_t host_flags_offset;
+    uint32_t host_flags_offset;
     /** Array of structures for receiving mode hints. */
-	VBVAMODEHINT *last_mode_hints;
+    VBVAMODEHINT *last_mode_hints;
 
-	struct vbox_fbdev *fbdev;
+    struct vbox_fbdev *fbdev;
 
-	int fb_mtrr;
+    int fb_mtrr;
 
-	struct {
-		struct drm_global_reference mem_global_ref;
-		struct ttm_bo_global_ref bo_global_ref;
-		struct ttm_bo_device bdev;
-		bool mm_initialised;
-	} ttm;
+    struct {
+        struct drm_global_reference mem_global_ref;
+        struct ttm_bo_global_ref bo_global_ref;
+        struct ttm_bo_device bdev;
+        bool mm_initialised;
+    } ttm;
 
-	struct mutex hw_mutex;
-	bool isr_installed;
+    struct mutex hw_mutex;
+    bool isr_installed;
     /** We decide whether or not user-space supports display hot-plug
      * depending on whether they react to a hot-plug event after the initial
      * mode query. */
-	bool initial_mode_queried;
-	struct work_struct hotplug_work;
-	uint32_t input_mapping_width;
-	uint32_t input_mapping_height;
-	uint32_t cursor_width;
-	uint32_t cursor_height;
-	uint32_t cursor_hot_x;
-	uint32_t cursor_hot_y;
-	size_t cursor_data_size;
-	uint8_t cursor_data[CURSOR_DATA_SIZE];
+    bool initial_mode_queried;
+    struct work_struct hotplug_work;
+    uint32_t input_mapping_width;
+    uint32_t input_mapping_height;
+    uint32_t cursor_width;
+    uint32_t cursor_height;
+    uint32_t cursor_hot_x;
+    uint32_t cursor_hot_y;
+    size_t cursor_data_size;
+    uint8_t cursor_data[CURSOR_DATA_SIZE];
 };
 
 #undef CURSOR_PIXEL_COUNT
@@ -154,42 +154,42 @@ struct vbox_gem_object;
 #endif
 
 struct vbox_connector {
-	struct drm_connector base;
-	char name[32];
-	struct vbox_crtc *vbox_crtc;
-	struct {
-		uint16_t width;
-		uint16_t height;
-		bool disconnected;
-	} mode_hint;
+    struct drm_connector base;
+    char name[32];
+    struct vbox_crtc *vbox_crtc;
+    struct {
+        uint16_t width;
+        uint16_t height;
+        bool disconnected;
+    } mode_hint;
 };
 
 struct vbox_crtc {
-	struct drm_crtc base;
-	bool blanked;
-	bool disconnected;
-	unsigned crtc_id;
-	uint32_t fb_offset;
-	bool cursor_enabled;
+    struct drm_crtc base;
+    bool blanked;
+    bool disconnected;
+    unsigned crtc_id;
+    uint32_t fb_offset;
+    bool cursor_enabled;
 };
 
 struct vbox_encoder {
-	struct drm_encoder base;
+    struct drm_encoder base;
 };
 
 struct vbox_framebuffer {
-	struct drm_framebuffer base;
-	struct drm_gem_object *obj;
+    struct drm_framebuffer base;
+    struct drm_gem_object *obj;
 };
 
 struct vbox_fbdev {
-	struct drm_fb_helper helper;
-	struct vbox_framebuffer afb;
-	void *sysram;
-	int size;
-	struct ttm_bo_kmap_obj mapping;
-	int x1, y1, x2, y2;	/* dirty rect */
-	spinlock_t dirty_lock;
+    struct drm_fb_helper helper;
+    struct vbox_framebuffer afb;
+    void *sysram;
+    int size;
+    struct ttm_bo_kmap_obj mapping;
+    int x1, y1, x2, y2; /* dirty rect */
+    spinlock_t dirty_lock;
 };
 
 #define to_vbox_crtc(x) container_of(x, struct vbox_crtc, base)
@@ -217,16 +217,16 @@ void vbox_disable_accel(struct vbox_private *vbox);
 void vbox_report_caps(struct vbox_private *vbox);
 
 void vbox_framebuffer_dirty_rectangles(struct drm_framebuffer *fb,
-				       struct drm_clip_rect *rects,
-				       unsigned num_rects);
+                                       struct drm_clip_rect *rects,
+                                       unsigned num_rects);
 
 int vbox_framebuffer_init(struct drm_device *dev,
-			  struct vbox_framebuffer *vbox_fb,
+             struct vbox_framebuffer *vbox_fb,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0)
-			  const
+             const
 #endif
-			  struct DRM_MODE_FB_CMD *mode_cmd,
-			  struct drm_gem_object *obj);
+             struct DRM_MODE_FB_CMD *mode_cmd,
+             struct drm_gem_object *obj);
 
 int vbox_fbdev_init(struct drm_device *dev);
 void vbox_fbdev_fini(struct drm_device *dev);
@@ -234,38 +234,42 @@ void vbox_fbdev_set_suspend(struct drm_device *dev, int state);
 void vbox_fbdev_set_base(struct vbox_private *vbox, unsigned long gpu_addr);
 
 struct vbox_bo {
-	struct ttm_buffer_object bo;
-	struct ttm_placement placement;
-	struct ttm_bo_kmap_obj kmap;
-	struct drm_gem_object gem;
+    struct ttm_buffer_object bo;
+    struct ttm_placement placement;
+    struct ttm_bo_kmap_obj kmap;
+    struct drm_gem_object gem;
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0)
-	u32 placements[3];
+    u32 placements[3];
 #else
-	struct ttm_place placements[3];
+    struct ttm_place placements[3];
 #endif
-	int pin_count;
+    int pin_count;
 };
 #define gem_to_vbox_bo(gobj) container_of((gobj), struct vbox_bo, gem)
 
-static inline struct vbox_bo *vbox_bo(struct ttm_buffer_object *bo)
+static inline struct vbox_bo *
+vbox_bo(struct ttm_buffer_object *bo)
 {
-	return container_of(bo, struct vbox_bo, bo);
+    return container_of(bo, struct vbox_bo, bo);
 }
+
 
 #define to_vbox_obj(x) container_of(x, struct vbox_gem_object, base)
 
 extern int vbox_dumb_create(struct drm_file *file,
-			    struct drm_device *dev,
-			    struct drm_mode_create_dumb *args);
+               struct drm_device *dev,
+               struct drm_mode_create_dumb *args);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0)
 extern int vbox_dumb_destroy(struct drm_file *file,
-			     struct drm_device *dev, uint32_t handle);
+                struct drm_device *dev,
+                uint32_t handle);
 #endif
 
 extern void vbox_gem_free_object(struct drm_gem_object *obj);
 extern int vbox_dumb_mmap_offset(struct drm_file *file,
-				 struct drm_device *dev,
-				 uint32_t handle, uint64_t * offset);
+                struct drm_device *dev,
+                uint32_t handle,
+                uint64_t *offset);
 
 #define DRM_FILE_PAGE_OFFSET (0x10000000ULL >> PAGE_SHIFT)
 
@@ -273,34 +277,36 @@ int vbox_mm_init(struct vbox_private *vbox);
 void vbox_mm_fini(struct vbox_private *vbox);
 
 int vbox_bo_create(struct drm_device *dev, int size, int align,
-		   uint32_t flags, struct vbox_bo **pvboxbo);
+          uint32_t flags, struct vbox_bo **pvboxbo);
 
 int vbox_gem_create(struct drm_device *dev,
-		    u32 size, bool iskernel, struct drm_gem_object **obj);
+           u32 size, bool iskernel,
+           struct drm_gem_object **obj);
 
-int vbox_bo_pin(struct vbox_bo *bo, u32 pl_flag, u64 * gpu_addr);
+int vbox_bo_pin(struct vbox_bo *bo, u32 pl_flag, u64 *gpu_addr);
 int vbox_bo_unpin(struct vbox_bo *bo);
 
 static inline int vbox_bo_reserve(struct vbox_bo *bo, bool no_wait)
 {
-	int ret;
+    int ret;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
-	ret = ttm_bo_reserve(&bo->bo, true, no_wait, NULL);
+    ret = ttm_bo_reserve(&bo->bo, true, no_wait, NULL);
 #else
-	ret = ttm_bo_reserve(&bo->bo, true, no_wait, false, 0);
+    ret = ttm_bo_reserve(&bo->bo, true, no_wait, false, 0);
 #endif
-	if (ret) {
-		if (ret != -ERESTARTSYS && ret != -EBUSY)
-			DRM_ERROR("reserve failed %p\n", bo);
-		return ret;
-	}
-	return 0;
+    if (ret)
+    {
+        if (ret != -ERESTARTSYS && ret != -EBUSY)
+            DRM_ERROR("reserve failed %p\n", bo);
+        return ret;
+    }
+    return 0;
 }
 
 static inline void vbox_bo_unreserve(struct vbox_bo *bo)
 {
-	ttm_bo_unreserve(&bo->bo);
+    ttm_bo_unreserve(&bo->bo);
 }
 
 void vbox_ttm_placement(struct vbox_bo *bo, int domain);

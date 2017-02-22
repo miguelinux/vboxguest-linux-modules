@@ -27,6 +27,7 @@
 #ifndef _kAVLDestroy_h_
 #define _kAVLDestroy_h_
 
+
 /**
  * Destroys the specified tree, starting with the root node and working our way down.
  *
@@ -39,70 +40,71 @@
  * @param   pfnCallBack     Pointer to callback function.
  * @param   pvUser          User parameter passed on to the callback function.
  */
-KAVL_DECL(int) KAVL_FN(Destroy) (PPKAVLNODECORE ppTree,
-				 PKAVLCALLBACK pfnCallBack, void *pvUser)
+KAVL_DECL(int) KAVL_FN(Destroy)(PPKAVLNODECORE ppTree, PKAVLCALLBACK pfnCallBack, void *pvUser)
 {
-	unsigned cEntries;
-	PKAVLNODECORE apEntries[KAVL_MAX_STACK];
-	int rc;
+    unsigned        cEntries;
+    PKAVLNODECORE   apEntries[KAVL_MAX_STACK];
+    int             rc;
 
-	if (*ppTree == KAVL_NULL)
-		return VINF_SUCCESS;
+    if (*ppTree == KAVL_NULL)
+        return VINF_SUCCESS;
 
-	cEntries = 1;
-	apEntries[0] = KAVL_GET_POINTER(ppTree);
-	while (cEntries > 0) {
-		/*
-		 * Process the subtrees first.
-		 */
-		PKAVLNODECORE pNode = apEntries[cEntries - 1];
-		if (pNode->pLeft != KAVL_NULL)
-			apEntries[cEntries++] = KAVL_GET_POINTER(&pNode->pLeft);
-		else if (pNode->pRight != KAVL_NULL)
-			apEntries[cEntries++] =
-			    KAVL_GET_POINTER(&pNode->pRight);
-		else {
+    cEntries = 1;
+    apEntries[0] = KAVL_GET_POINTER(ppTree);
+    while (cEntries > 0)
+    {
+        /*
+         * Process the subtrees first.
+         */
+        PKAVLNODECORE pNode = apEntries[cEntries - 1];
+        if (pNode->pLeft != KAVL_NULL)
+            apEntries[cEntries++] = KAVL_GET_POINTER(&pNode->pLeft);
+        else if (pNode->pRight != KAVL_NULL)
+            apEntries[cEntries++] = KAVL_GET_POINTER(&pNode->pRight);
+        else
+        {
 #ifdef KAVL_EQUAL_ALLOWED
-			/*
-			 * Process nodes with the same key.
-			 */
-			while (pNode->pList != KAVL_NULL) {
-				PKAVLNODECORE pEqual =
-				    KAVL_GET_POINTER(&pNode->pList);
-				KAVL_SET_POINTER(&pNode->pList,
-						 KAVL_GET_POINTER_NULL(&pEqual->
-								       pList));
-				pEqual->pList = KAVL_NULL;
+            /*
+             * Process nodes with the same key.
+             */
+            while (pNode->pList != KAVL_NULL)
+            {
+                PKAVLNODECORE pEqual = KAVL_GET_POINTER(&pNode->pList);
+                KAVL_SET_POINTER(&pNode->pList, KAVL_GET_POINTER_NULL(&pEqual->pList));
+                pEqual->pList = KAVL_NULL;
 
-				rc = pfnCallBack(pEqual, pvUser);
-				if (rc != VINF_SUCCESS)
-					return rc;
-			}
+                rc = pfnCallBack(pEqual, pvUser);
+                if (rc != VINF_SUCCESS)
+                    return rc;
+            }
 #endif
 
-			/*
-			 * Unlink the node.
-			 */
-			if (--cEntries > 0) {
-				PKAVLNODECORE pParent = apEntries[cEntries - 1];
-				if (KAVL_GET_POINTER(&pParent->pLeft) == pNode)
-					pParent->pLeft = KAVL_NULL;
-				else
-					pParent->pRight = KAVL_NULL;
-			} else
-				*ppTree = KAVL_NULL;
+            /*
+             * Unlink the node.
+             */
+            if (--cEntries > 0)
+            {
+                PKAVLNODECORE pParent = apEntries[cEntries - 1];
+                if (KAVL_GET_POINTER(&pParent->pLeft) == pNode)
+                    pParent->pLeft = KAVL_NULL;
+                else
+                    pParent->pRight = KAVL_NULL;
+            }
+            else
+                *ppTree = KAVL_NULL;
 
-			kASSERT(pNode->pLeft == KAVL_NULL);
-			kASSERT(pNode->pRight == KAVL_NULL);
-			rc = pfnCallBack(pNode, pvUser);
-			if (rc != VINF_SUCCESS)
-				return rc;
-		}
-	}			/* while */
+            kASSERT(pNode->pLeft == KAVL_NULL);
+            kASSERT(pNode->pRight == KAVL_NULL);
+            rc = pfnCallBack(pNode, pvUser);
+            if (rc != VINF_SUCCESS)
+                return rc;
+        }
+    } /* while */
 
-	kASSERT(*ppTree == KAVL_NULL);
+    kASSERT(*ppTree == KAVL_NULL);
 
-	return VINF_SUCCESS;
+    return VINF_SUCCESS;
 }
 
 #endif
+

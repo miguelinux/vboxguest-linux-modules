@@ -30,6 +30,7 @@
 #include <iprt/string.h>
 
 RT_C_DECLS_BEGIN
+
 /** @def RTSTR_STRICT
  * Enables strict assertions on bad string encodings.
  */
@@ -37,6 +38,7 @@ RT_C_DECLS_BEGIN
 # define RTSTR_STRICT
 #endif
 /*#define RTSTR_STRICT*/
+
 #ifdef RTSTR_STRICT
 # define RTStrAssertMsgFailed(msg)              AssertMsgFailed(msg)
 # define RTStrAssertMsgReturn(expr, msg, rc)    AssertMsgReturn(expr, msg, rc)
@@ -44,14 +46,11 @@ RT_C_DECLS_BEGIN
 # define RTStrAssertMsgFailed(msg)              do { } while (0)
 # define RTStrAssertMsgReturn(expr, msg, rc)    do { if (!(expr)) return rc; } while (0)
 #endif
-DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
-				 const char **ppszFormat, va_list * pArgs,
-				 int cchWidth, int cchPrecision,
-				 unsigned fFlags, char chArgSize);
-DECLHIDDEN(size_t) rtstrFormatType(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
-				   const char **ppszFormat, va_list * pArgs,
-				   int cchWidth, int cchPrecision,
-				   unsigned fFlags, char chArgSize);
+
+DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, const char **ppszFormat, va_list *pArgs,
+                                 int cchWidth, int cchPrecision, unsigned fFlags, char chArgSize);
+DECLHIDDEN(size_t) rtstrFormatType(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, const char **ppszFormat, va_list *pArgs,
+                                   int cchWidth, int cchPrecision, unsigned fFlags, char chArgSize);
 
 #ifdef RT_WITH_ICONV_CACHE
 DECLHIDDEN(void) rtStrIconvCacheInit(struct RTTHREADINT *pThread);
@@ -61,30 +60,29 @@ DECLHIDDEN(void) rtStrIconvCacheDestroy(struct RTTHREADINT *pThread);
 /**
  * Indexes into RTTHREADINT::ahIconvs
  */
-typedef enum RTSTRICONV {
+typedef enum RTSTRICONV
+{
     /** UTF-8 to the locale codeset (LC_CTYPE). */
-	RTSTRICONV_UTF8_TO_LOCALE = 0,
+    RTSTRICONV_UTF8_TO_LOCALE = 0,
     /** The locale codeset (LC_CTYPE) to UTF-8. */
-	RTSTRICONV_LOCALE_TO_UTF8,
+    RTSTRICONV_LOCALE_TO_UTF8,
     /** UTF-8 to the filesystem codeset - if different from the locale codeset. */
-	RTSTRICONV_UTF8_TO_FS,
+    RTSTRICONV_UTF8_TO_FS,
     /** The filesystem codeset to UTF-8. */
-	RTSTRICONV_FS_TO_UTF8,
+    RTSTRICONV_FS_TO_UTF8,
     /** The end of the valid indexes. */
-	RTSTRICONV_END
+    RTSTRICONV_END
 } RTSTRICONV;
 
-DECLHIDDEN(int) rtStrConvert(const char *pchInput, size_t cchInput,
-			     const char *pszInputCS, char **ppszOutput,
-			     size_t cbOutput, const char *pszOutputCS,
-			     unsigned cFactor, RTSTRICONV enmCacheIdx);
+DECLHIDDEN(int) rtStrConvert(const char *pchInput, size_t cchInput, const char *pszInputCS,
+                             char **ppszOutput, size_t cbOutput, const char *pszOutputCS,
+                             unsigned cFactor, RTSTRICONV enmCacheIdx);
 DECLHIDDEN(const char *) rtStrGetLocaleCodeset(void);
-DECLHIDDEN(int) rtUtf8Length(const char *psz, size_t cch, size_t * pcuc,
-			     size_t * pcchActual);
+DECLHIDDEN(int) rtUtf8Length(const char *psz, size_t cch, size_t *pcuc, size_t *pcchActual);
 
-DECLHIDDEN(int) rtStrToIpAddr6Str(const char *psz, char *pszAddrOut,
-				  size_t addrOutSize, char *pszPortOut,
-				  size_t portOutSize, bool followRfc);
+DECLHIDDEN(int) rtStrToIpAddr6Str(const char *psz, char *pszAddrOut, size_t addrOutSize, char *pszPortOut, size_t portOutSize, bool followRfc);
 
 RT_C_DECLS_END
+
 #endif
+

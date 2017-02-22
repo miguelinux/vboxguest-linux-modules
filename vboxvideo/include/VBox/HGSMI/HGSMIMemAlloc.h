@@ -25,11 +25,13 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 #ifndef ___VBox_HGSMI_HGSMIMemAlloc_h
 #define ___VBox_HGSMI_HGSMIMemAlloc_h
 
 #include <VBox/HGSMI/HGSMIDefs.h>
 #include <iprt/list.h>
+
 
 /* Descriptor. */
 #define HGSMI_MA_DESC_OFFSET_MASK UINT32_C(0xFFFFFFE0)
@@ -48,46 +50,51 @@
 /* HGSMI_MA_DESC_ORDER_BASE must correspond to HGSMI_MA_DESC_OFFSET_MASK. */
 AssertCompile((~HGSMI_MA_DESC_OFFSET_MASK + 1) == HGSMI_MA_BLOCK_SIZE_MIN);
 
-typedef struct HGSMIMABLOCK {
-	RTLISTNODE nodeBlock;
-	RTLISTNODE nodeFree;
-	HGSMIOFFSET descriptor;
+
+typedef struct HGSMIMABLOCK
+{
+    RTLISTNODE nodeBlock;
+    RTLISTNODE nodeFree;
+    HGSMIOFFSET descriptor;
 } HGSMIMABLOCK;
 
-typedef struct HGSMIMADATA {
-	HGSMIAREA area;
-	HGSMIENV env;
-	HGSMISIZE cbMaxBlock;
+typedef struct HGSMIMADATA
+{
+    HGSMIAREA area;
+    HGSMIENV env;
+    HGSMISIZE cbMaxBlock;
 
-	uint32_t cBlocks;	/* How many blocks in the listBlocks. */
-	RTLISTANCHOR listBlocks;	/* All memory blocks, sorted. */
-	RTLISTANCHOR aListFreeBlocks[HGSMI_MA_DESC_ORDER_MASK + 1];	/* For free blocks of each order. */
+    uint32_t cBlocks;                                           /* How many blocks in the listBlocks. */
+    RTLISTANCHOR listBlocks;                                    /* All memory blocks, sorted. */
+    RTLISTANCHOR aListFreeBlocks[HGSMI_MA_DESC_ORDER_MASK + 1]; /* For free blocks of each order. */
 } HGSMIMADATA;
 
 RT_C_DECLS_BEGIN
-    int HGSMIMAInit(HGSMIMADATA * pMA, const HGSMIAREA * pArea,
-		    HGSMIOFFSET * paDescriptors, uint32_t cDescriptors,
-		    HGSMISIZE cbMaxBlock, const HGSMIENV * pEnv);
-void HGSMIMAUninit(HGSMIMADATA * pMA);
 
-void *HGSMIMAAlloc(HGSMIMADATA * pMA, HGSMISIZE cb);
-void HGSMIMAFree(HGSMIMADATA * pMA, void *pv);
+int HGSMIMAInit(HGSMIMADATA *pMA, const HGSMIAREA *pArea,
+                HGSMIOFFSET *paDescriptors, uint32_t cDescriptors, HGSMISIZE cbMaxBlock,
+                const HGSMIENV *pEnv);
+void HGSMIMAUninit(HGSMIMADATA *pMA);
 
-HGSMIMABLOCK *HGSMIMASearchOffset(HGSMIMADATA * pMA, HGSMIOFFSET off);
+void *HGSMIMAAlloc(HGSMIMADATA *pMA, HGSMISIZE cb);
+void HGSMIMAFree(HGSMIMADATA *pMA, void *pv);
+
+HGSMIMABLOCK *HGSMIMASearchOffset(HGSMIMADATA *pMA, HGSMIOFFSET off);
 
 uint32_t HGSMIPopCnt32(uint32_t u32);
 
 DECLINLINE(HGSMISIZE) HGSMIMAOrder2Size(HGSMIOFFSET order)
 {
-	return (UINT32_C(1) << (HGSMI_MA_DESC_ORDER_BASE + order));
+    return (UINT32_C(1) << (HGSMI_MA_DESC_ORDER_BASE + order));
 }
 
 DECLINLINE(HGSMIOFFSET) HGSMIMASize2Order(HGSMISIZE cb)
 {
-	HGSMIOFFSET order = HGSMIPopCnt32(cb - 1) - HGSMI_MA_DESC_ORDER_BASE;
-	Assert(HGSMIMAOrder2Size(order) == cb);
-	return order;
+    HGSMIOFFSET order = HGSMIPopCnt32(cb - 1) - HGSMI_MA_DESC_ORDER_BASE;
+    Assert(HGSMIMAOrder2Size(order) == cb);
+    return order;
 }
 
 RT_C_DECLS_END
+
 #endif /* !___VBox_HGSMI_HGSMIMemAlloc_h */

@@ -28,6 +28,7 @@
 
 #include <iprt/cdefs.h>
 
+
 /*
  * Use the stdint.h on systems that have one.
  */
@@ -67,7 +68,7 @@
 #  define INT32_C(Value)    (Value)
 #  undef  UINT32_C
 #  define UINT32_C(Value)   (Value ## U)
-# endif	/* 64-bit darwin kludge. */
+# endif /* 64-bit darwin kludge. */
 
 #elif defined(RT_OS_FREEBSD) && defined(_KERNEL)
 
@@ -116,80 +117,74 @@
     /* x-bit types */
 #  if defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86) || defined(RT_ARCH_SPARC) || defined(RT_ARCH_SPARC64)
 #   if !defined(_INT8_T_DECLARED)   && !defined(_INT8_T)
-typedef signed char int8_t;
+typedef signed char         int8_t;
 #   endif
 #   if !defined(_UINT8_T_DECLARED)  && !defined(_UINT8_T)
-typedef unsigned char uint8_t;
+typedef unsigned char       uint8_t;
 #   endif
 #   if !defined(_INT16_T_DECLARED)  && !defined(_INT16_T)
-typedef signed short int16_t;
+typedef signed short        int16_t;
 #   endif
 #   if !defined(_UINT16_T_DECLARED) && !defined(_UINT16_T)
-typedef unsigned short uint16_t;
+typedef unsigned short      uint16_t;
 #   endif
 #   if !defined(_INT32_T_DECLARED)  && !defined(_INT32_T)
 #    if ARCH_BITS != 16
-typedef signed int int32_t;
+typedef signed int          int32_t;
 #    else
-typedef signed long int32_t;
+typedef signed long         int32_t;
 #    endif
 #   endif
 #   if !defined(_UINT32_T_DECLARED) && !defined(_UINT32_T)
 #    if ARCH_BITS != 16
-typedef unsigned int uint32_t;
+typedef unsigned int        uint32_t;
 #    else
-typedef unsigned long uint32_t;
+typedef unsigned long       uint32_t;
 #    endif
 #   endif
 #   if defined(_MSC_VER)
 #    if !defined(_INT64_T_DECLARED)  && !defined(_INT64_T)
-typedef signed _int64 int64_t;
+typedef signed _int64       int64_t;
 #    endif
 #    if !defined(_UINT64_T_DECLARED) && !defined(_UINT64_T)
-typedef unsigned _int64 uint64_t;
+typedef unsigned _int64     uint64_t;
 #    endif
 #   elif defined(__WATCOMC__)
 #    if !defined(_INT64_T_DECLARED)  && !defined(_INT64_T)
-typedef signed __int64 int64_t;
+typedef signed __int64      int64_t;
 #    endif
 #    if !defined(_UINT64_T_DECLARED) && !defined(_UINT64_T)
-typedef unsigned __int64 uint64_t;
+typedef unsigned __int64    uint64_t;
 #    endif
 #   elif defined(IPRT_STDINT_USE_STRUCT_FOR_64_BIT_TYPES)
 #    if !defined(_INT64_T_DECLARED)  && !defined(_INT64_T)
-typedef struct {
-	uint32_t lo;
-	int32_t hi;
-} int64_t;
+typedef struct { uint32_t lo; int32_t hi; }     int64_t;
 #    endif
 #    if !defined(_UINT64_T_DECLARED) && !defined(_UINT64_T)
-typedef struct {
-	uint32_t lo;
-	uint32_t hi;
-} uint64_t;
+typedef struct { uint32_t lo; uint32_t hi; }    uint64_t;
 #    endif
 #   else /* Use long long for 64-bit types */
 #    if !defined(_INT64_T_DECLARED)  && !defined(_INT64_T)
-typedef signed long long int64_t;
+typedef signed long long    int64_t;
 #    endif
 #    if !defined(_UINT64_T_DECLARED) && !defined(_UINT64_T)
-typedef unsigned long long uint64_t;
+typedef unsigned long long  uint64_t;
 #    endif
 #   endif
 
     /* max integer types */
 #   if !defined(_INTMAX_T_DECLARED)  && !defined(_INTMAX_T)
-typedef int64_t intmax_t;
+typedef int64_t             intmax_t;
 #   endif
 #   if !defined(_UINTMAX_T_DECLARED) && !defined(_UINTMAX_T)
-typedef uint64_t uintmax_t;
+typedef uint64_t            uintmax_t;
 #   endif
 
 #  else
 #   error "PORTME: Add architecture. Don't forget to check the [U]INTx_C() and [U]INTMAX_MIN/MAX macros."
 #  endif
 
-# endif	/* !linux kernel or stuff */
+# endif /* !linux kernel or stuff */
 
     /* pointer <-> integer types */
 # if !defined(_MSC_VER) || defined(DOXYGEN_RUNNING)
@@ -197,22 +192,23 @@ typedef uint64_t uintmax_t;
    || defined(RT_OS_LINUX) \
    || defined(RT_OS_FREEBSD)
 #   if !defined(_INTPTR_T_DECLARED)  && !defined(_INTPTR_T)
-typedef signed long intptr_t;
+typedef signed long         intptr_t;
 #   endif
 #   if !defined(_UINTPTR_T_DECLARED) && !defined(_UINTPTR_T)
-typedef unsigned long uintptr_t;
+typedef unsigned long       uintptr_t;
 #   endif
 #  else
 #   if !defined(_INTPTR_T_DECLARED)  && !defined(_INTPTR_T)
-typedef int64_t intptr_t;
+typedef int64_t             intptr_t;
 #   endif
 #   if !defined(_UINTPTR_T_DECLARED) && !defined(_UINTPTR_T)
-typedef uint64_t uintptr_t;
+typedef uint64_t            uintptr_t;
 #   endif
 #  endif
-# endif	/* !_MSC_VER */
+# endif /* !_MSC_VER */
 
 #endif /* no system stdint.h */
+
 
 /*
  * Make sure the [U]INTx_C(c) macros are present.
@@ -247,6 +243,7 @@ typedef uint64_t uintptr_t;
 # define INTMAX_C(Value)    INT64_C(Value)
 # define UINTMAX_C(Value)   UINT64_C(Value)
 #endif
+
 
 /*
  * Make sure the INTx_MIN and [U]INTx_MAX macros are present.
@@ -284,3 +281,4 @@ typedef uint64_t uintptr_t;
 #endif
 
 #endif
+

@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -35,20 +36,18 @@
 #include <iprt/err.h>
 #include <iprt/assert.h>
 
-RTDECL(int) RTSemEventWait(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies)
-{
-	int rc;
-	if (cMillies == RT_INDEFINITE_WAIT)
-		rc = RTSemEventWaitEx(hEventSem,
-				      RTSEMWAIT_FLAGS_RESUME |
-				      RTSEMWAIT_FLAGS_INDEFINITE, 0);
-	else
-		rc = RTSemEventWaitEx(hEventSem,
-				      RTSEMWAIT_FLAGS_RESUME |
-				      RTSEMWAIT_FLAGS_RELATIVE |
-				      RTSEMWAIT_FLAGS_MILLISECS, cMillies);
-	Assert(rc != VERR_INTERRUPTED);
-	return rc;
-}
 
+RTDECL(int)  RTSemEventWait(RTSEMEVENT hEventSem, RTMSINTERVAL cMillies)
+{
+    int rc;
+    if (cMillies == RT_INDEFINITE_WAIT)
+        rc = RTSemEventWaitEx(hEventSem, RTSEMWAIT_FLAGS_RESUME | RTSEMWAIT_FLAGS_INDEFINITE, 0);
+    else
+        rc = RTSemEventWaitEx(hEventSem,
+                              RTSEMWAIT_FLAGS_RESUME | RTSEMWAIT_FLAGS_RELATIVE | RTSEMWAIT_FLAGS_MILLISECS,
+                              cMillies);
+    Assert(rc != VERR_INTERRUPTED);
+    return rc;
+}
 RT_EXPORT_SYMBOL(RTSemEventWait);
+

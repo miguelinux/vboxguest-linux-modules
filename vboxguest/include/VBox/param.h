@@ -31,6 +31,7 @@
 #include <iprt/param.h>
 #include <iprt/cdefs.h>
 
+
 /** @defgroup   grp_vbox_param  VBox Parameter Definition
  * @{
  */
@@ -49,9 +50,10 @@
  *          all 64-bit hosts except Mac OS X */
 #if (   HC_ARCH_BITS == 64          /* ASM-NOINC */ \
      && (defined(RT_OS_FREEBSD) || defined(RT_OS_LINUX) || defined(RT_OS_SOLARIS) || defined(RT_OS_WINDOWS)) ) /* ASM-NOINC */ \
- || defined(DOXYGEN_RUNNING)	/* ASM-NOINC */
-# define VBOX_WITH_PAGE_SHARING	/* ASM-NOINC */
-#endif /* ASM-NOINC */
+ || defined(DOXYGEN_RUNNING)        /* ASM-NOINC */
+# define VBOX_WITH_PAGE_SHARING     /* ASM-NOINC */
+#endif                              /* ASM-NOINC */
+
 
 /** @defgroup   grp_vbox_param_mm  Memory Monitor Parameters
  * @{
@@ -61,7 +63,7 @@
 #define MM_HYPER_AREA_ADDRESS       UINT32_C(0xa0000000)
 
 /** The max size of the hypervisor memory area. */
-#define MM_HYPER_AREA_MAX_SIZE      (40U * _1M)	/**< @todo Readjust when floating RAMRANGEs have been implemented. Used to be 20 * _1MB */
+#define MM_HYPER_AREA_MAX_SIZE      (40U * _1M) /**< @todo Readjust when floating RAMRANGEs have been implemented. Used to be 20 * _1MB */
 
 /** Maximum number of bytes we can dynamically map into the hypervisor region.
  * This must be a power of 2 number of pages!
@@ -99,6 +101,7 @@
 
 /** @} */
 
+
 /** @defgroup   grp_vbox_param_pgm  Page Manager Parameters
  * @{
  */
@@ -131,6 +134,7 @@
 #define PGM_HANDY_PAGES_MIN         32
 /** @} */
 
+
 /** @defgroup   grp_vbox_param_vmm  VMM Parameters
  * @{
  */
@@ -147,6 +151,7 @@
 
 /** @} */
 
+
 /** @defgroup   grp_vbox_pci        PCI Identifiers
  * @{ */
 /** VirtualBox PCI vendor ID. */
@@ -154,8 +159,8 @@
 
 /** @name VirtualBox graphics card identifiers
  * @{ */
-#define VBOX_VENDORID               VBOX_PCI_VENDORID	/**< @todo wonderful choice of name! Please squeeze a _VGA_ or something in there, please. */
-#define VBOX_DEVICEID               (0xbeef)		/**< @todo ditto. */
+#define VBOX_VENDORID               VBOX_PCI_VENDORID   /**< @todo wonderful choice of name! Please squeeze a _VGA_ or something in there, please. */
+#define VBOX_DEVICEID               (0xbeef)            /**< @todo ditto. */
 #define VBOX_VESA_VENDORID          VBOX_PCI_VENDORID
 #define VBOX_VESA_DEVICEID          (0xbeef)
 /** @} */
@@ -168,6 +173,7 @@
 
 /** @} */
 
+
 /** @defgroup grp_vbox_param_misc  Misc
  * @{ */
 
@@ -177,6 +183,8 @@
 
 /** @} */
 
+
 /** @} */
 
 #endif
+

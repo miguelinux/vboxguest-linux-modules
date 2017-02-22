@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -40,120 +41,117 @@
 
 #include "internal/magics.h"
 
+
 /*********************************************************************************************************************************
 *   Structures and Typedefs                                                                                                      *
 *********************************************************************************************************************************/
 /**
  * Wrapper for the linux semaphore structure.
  */
-typedef struct RTSEMFASTMUTEXINTERNAL {
+typedef struct RTSEMFASTMUTEXINTERNAL
+{
     /** Magic value (RTSEMFASTMUTEX_MAGIC). */
-	uint32_t u32Magic;
+    uint32_t            u32Magic;
     /** the linux semaphore. */
-	struct semaphore Semaphore;
+    struct semaphore    Semaphore;
 #if defined(RT_STRICT) || defined(IPRT_DEBUG_SEMS)
     /** For check. */
-	RTNATIVETHREAD volatile Owner;
+    RTNATIVETHREAD volatile Owner;
 #endif
 } RTSEMFASTMUTEXINTERNAL, *PRTSEMFASTMUTEXINTERNAL;
 
-RTDECL(int) RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx)
+
+RTDECL(int)  RTSemFastMutexCreate(PRTSEMFASTMUTEX phFastMtx)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
+    IPRT_LINUX_SAVE_EFL_AC();
 
-	/*
-	 * Allocate.
-	 */
-	PRTSEMFASTMUTEXINTERNAL pThis;
-	pThis = (PRTSEMFASTMUTEXINTERNAL) RTMemAlloc(sizeof(*pThis));
-	if (!pThis)
-		return VERR_NO_MEMORY;
+    /*
+     * Allocate.
+     */
+    PRTSEMFASTMUTEXINTERNAL pThis;
+    pThis = (PRTSEMFASTMUTEXINTERNAL)RTMemAlloc(sizeof(*pThis));
+    if (!pThis)
+        return VERR_NO_MEMORY;
 
-	/*
-	 * Initialize.
-	 */
-	pThis->u32Magic = RTSEMFASTMUTEX_MAGIC;
-	sema_init(&pThis->Semaphore, 1);
+    /*
+     * Initialize.
+     */
+    pThis->u32Magic = RTSEMFASTMUTEX_MAGIC;
+    sema_init(&pThis->Semaphore, 1);
 #if defined(RT_STRICT) || defined(IPRT_DEBUG_SEMS)
-	pThis->Owner = NIL_RTNATIVETHREAD;
+    pThis->Owner = NIL_RTNATIVETHREAD;
 #endif
 
-	*phFastMtx = pThis;
-	IPRT_LINUX_RESTORE_EFL_AC();
-	return VINF_SUCCESS;
+    *phFastMtx = pThis;
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return VINF_SUCCESS;
 }
-
 RT_EXPORT_SYMBOL(RTSemFastMutexCreate);
 
-RTDECL(int)RTSemFastMutexDestroy(RTSEMFASTMUTEX hFastMtx)
+
+RTDECL(int)  RTSemFastMutexDestroy(RTSEMFASTMUTEX hFastMtx)
 {
-	/*
-	 * Validate.
-	 */
-	PRTSEMFASTMUTEXINTERNAL pThis = hFastMtx;
-	if (pThis == NIL_RTSEMFASTMUTEX)
-		return VINF_SUCCESS;
-	AssertPtrReturn(pThis, VERR_INVALID_HANDLE);
-	AssertMsgReturn(pThis->u32Magic == RTSEMFASTMUTEX_MAGIC,
-			("u32Magic=%RX32 pThis=%p\n", pThis->u32Magic, pThis),
-			VERR_INVALID_HANDLE);
+    /*
+     * Validate.
+     */
+    PRTSEMFASTMUTEXINTERNAL pThis = hFastMtx;
+    if (pThis == NIL_RTSEMFASTMUTEX)
+        return VINF_SUCCESS;
+    AssertPtrReturn(pThis, VERR_INVALID_HANDLE);
+    AssertMsgReturn(pThis->u32Magic == RTSEMFASTMUTEX_MAGIC, ("u32Magic=%RX32 pThis=%p\n", pThis->u32Magic, pThis), VERR_INVALID_HANDLE);
 
-	ASMAtomicWriteU32(&pThis->u32Magic, RTSEMFASTMUTEX_MAGIC_DEAD);
-	RTMemFree(pThis);
-	return VINF_SUCCESS;
+    ASMAtomicWriteU32(&pThis->u32Magic, RTSEMFASTMUTEX_MAGIC_DEAD);
+    RTMemFree(pThis);
+    return VINF_SUCCESS;
 }
-
 RT_EXPORT_SYMBOL(RTSemFastMutexDestroy);
 
-RTDECL(int)RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx)
+
+RTDECL(int)  RTSemFastMutexRequest(RTSEMFASTMUTEX hFastMtx)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
+    IPRT_LINUX_SAVE_EFL_AC();
 
-	/*
-	 * Validate.
-	 */
-	PRTSEMFASTMUTEXINTERNAL pThis = hFastMtx;
-	AssertPtrReturn(pThis, VERR_INVALID_HANDLE);
-	AssertMsgReturn(pThis->u32Magic == RTSEMFASTMUTEX_MAGIC,
-			("u32Magic=%RX32 pThis=%p\n", pThis->u32Magic, pThis),
-			VERR_INVALID_HANDLE);
+    /*
+     * Validate.
+     */
+    PRTSEMFASTMUTEXINTERNAL pThis = hFastMtx;
+    AssertPtrReturn(pThis, VERR_INVALID_HANDLE);
+    AssertMsgReturn(pThis->u32Magic == RTSEMFASTMUTEX_MAGIC, ("u32Magic=%RX32 pThis=%p\n", pThis->u32Magic, pThis), VERR_INVALID_HANDLE);
 
-	IPRT_DEBUG_SEMS_STATE(pThis, 'd');
-	down(&pThis->Semaphore);
+    IPRT_DEBUG_SEMS_STATE(pThis, 'd');
+    down(&pThis->Semaphore);
 #if defined(RT_STRICT) || defined(IPRT_DEBUG_SEMS)
-	IPRT_DEBUG_SEMS_STATE(pThis, 'o');
-	AssertRelease(pThis->Owner == NIL_RTNATIVETHREAD);
-	ASMAtomicUoWriteSize(&pThis->Owner, RTThreadNativeSelf());
+    IPRT_DEBUG_SEMS_STATE(pThis, 'o');
+    AssertRelease(pThis->Owner == NIL_RTNATIVETHREAD);
+    ASMAtomicUoWriteSize(&pThis->Owner, RTThreadNativeSelf());
 #endif
 
-	IPRT_LINUX_RESTORE_EFL_ONLY_AC();
-	return VINF_SUCCESS;
+    IPRT_LINUX_RESTORE_EFL_ONLY_AC();
+    return VINF_SUCCESS;
 }
-
 RT_EXPORT_SYMBOL(RTSemFastMutexRequest);
 
-RTDECL(int)RTSemFastMutexRelease(RTSEMFASTMUTEX hFastMtx)
-{
-	IPRT_LINUX_SAVE_EFL_AC();
 
-	/*
-	 * Validate.
-	 */
-	PRTSEMFASTMUTEXINTERNAL pThis = hFastMtx;
-	AssertPtrReturn(pThis, VERR_INVALID_HANDLE);
-	AssertMsgReturn(pThis->u32Magic == RTSEMFASTMUTEX_MAGIC,
-			("u32Magic=%RX32 pThis=%p\n", pThis->u32Magic, pThis),
-			VERR_INVALID_HANDLE);
+RTDECL(int)  RTSemFastMutexRelease(RTSEMFASTMUTEX hFastMtx)
+{
+    IPRT_LINUX_SAVE_EFL_AC();
+
+    /*
+     * Validate.
+     */
+    PRTSEMFASTMUTEXINTERNAL pThis = hFastMtx;
+    AssertPtrReturn(pThis, VERR_INVALID_HANDLE);
+    AssertMsgReturn(pThis->u32Magic == RTSEMFASTMUTEX_MAGIC, ("u32Magic=%RX32 pThis=%p\n", pThis->u32Magic, pThis), VERR_INVALID_HANDLE);
 
 #if defined(RT_STRICT) || defined(IPRT_DEBUG_SEMS)
-	AssertRelease(pThis->Owner == RTThreadNativeSelf());
-	ASMAtomicUoWriteSize(&pThis->Owner, NIL_RTNATIVETHREAD);
+    AssertRelease(pThis->Owner == RTThreadNativeSelf());
+    ASMAtomicUoWriteSize(&pThis->Owner, NIL_RTNATIVETHREAD);
 #endif
-	up(&pThis->Semaphore);
-	IPRT_DEBUG_SEMS_STATE(pThis, 'u');
+    up(&pThis->Semaphore);
+    IPRT_DEBUG_SEMS_STATE(pThis, 'u');
 
-	IPRT_LINUX_RESTORE_EFL_ONLY_AC();
-	return VINF_SUCCESS;
+    IPRT_LINUX_RESTORE_EFL_ONLY_AC();
+    return VINF_SUCCESS;
 }
-
 RT_EXPORT_SYMBOL(RTSemFastMutexRelease);
+

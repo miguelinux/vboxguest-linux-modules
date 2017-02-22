@@ -32,18 +32,23 @@
 # include <iprt/fs.h>
 #endif
 
+
+
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt_path   RTPath - Path Manipulation
  * @ingroup grp_rt
  * @{
  */
+
 /**
  * Host max path (the reasonable value).
  * @remarks defined both by iprt/param.h and iprt/path.h.
  */
 #if !defined(___iprt_param_h) || defined(DOXYGEN_RUNNING)
-# define RTPATH_MAX         (4096 + 4)	/* (PATH_MAX + 1) on linux w/ some alignment */
+# define RTPATH_MAX         (4096 + 4)    /* (PATH_MAX + 1) on linux w/ some alignment */
 #endif
+
 /** @def RTPATH_TAG
  * The default allocation tag used by the RTPath allocation APIs.
  *
@@ -54,6 +59,8 @@ RT_C_DECLS_BEGIN
 #ifndef RTPATH_TAG
 # define RTPATH_TAG     (__FILE__)
 #endif
+
+
 /** @name RTPATH_F_XXX - Generic flags for APIs working on the file system.
  * @{ */
 /** Last component: Work on the link. */
@@ -64,11 +71,14 @@ RT_C_DECLS_BEGIN
  * @remarks this flag is currently not implemented and will be ignored. */
 #define RTPATH_F_NO_SYMLINKS      RT_BIT_32(2)
 /** @} */
+
 /** Validates a flags parameter containing RTPATH_F_*.
  * @remarks The parameters will be referenced multiple times. */
 #define RTPATH_F_IS_VALID(a_fFlags, a_fIgnore) \
     (    ((a_fFlags) & ~(uint32_t)((a_fIgnore) | RTPATH_F_NO_SYMLINKS)) == RTPATH_F_ON_LINK \
       || ((a_fFlags) & ~(uint32_t)((a_fIgnore) | RTPATH_F_NO_SYMLINKS)) == RTPATH_F_FOLLOW_LINK )
+
+
 /** @name RTPATH_STR_F_XXX - Generic flags for APIs working with path strings.
  * @{
  */
@@ -90,15 +100,19 @@ RT_C_DECLS_BEGIN
 #define RTPATH_STR_F_NO_END             UINT32_C(0x00000020)
 /** Partial path - no start and no end. */
 #define RTPATH_STR_F_MIDDLE             (RTPATH_STR_F_NO_START | RTPATH_STR_F_NO_END)
+
 /** Reserved for future use. */
 #define RTPATH_STR_F_RESERVED_MASK      UINT32_C(0x0000ffcc)
 /** @} */
+
 /** Validates a flags parameter containing RTPATH_FSTR_.
  * @remarks The parameters will be references multiple times.  */
 #define RTPATH_STR_F_IS_VALID(a_fFlags, a_fIgnore) \
       (   ((a_fFlags) & ~((uint32_t)(a_fIgnore) | RTPATH_STR_F_STYLE_MASK | RTPATH_STR_F_MIDDLE)) == 0 \
        && ((a_fFlags) & RTPATH_STR_F_STYLE_MASK) != RTPATH_STR_F_STYLE_RESERVED \
        && ((a_fFlags) & RTPATH_STR_F_RESERVED_MASK) == 0 )
+
+
 /** @def RTPATH_STYLE
  * The host path style. This is set to RTPATH_STR_F_STYLE_DOS,
  * RTPATH_STR_F_STYLE_UNIX, or other future styles. */
@@ -107,6 +121,8 @@ RT_C_DECLS_BEGIN
 #else
 # define RTPATH_STYLE       RTPATH_STR_F_STYLE_UNIX
 #endif
+
+
 /** @def RTPATH_SLASH
  * The preferred slash character.
  *
@@ -120,8 +136,11 @@ RT_C_DECLS_BEGIN
 #else
 # error "Unsupported RTPATH_STYLE value."
 #endif
+
 /** @deprecated Use '/'! */
 #define RTPATH_DELIMITER    RTPATH_SLASH
+
+
 /** @def RTPATH_SLASH_STR
  * The preferred slash character as a string, handy for concatenations
  * with other strings.
@@ -136,6 +155,8 @@ RT_C_DECLS_BEGIN
 #else
 # error "Unsupported RTPATH_STYLE value."
 #endif
+
+
 /** @def RTPATH_IS_SLASH
  * Checks if a character is a slash.
  *
@@ -149,6 +170,8 @@ RT_C_DECLS_BEGIN
 #else
 # error "Unsupported RTPATH_STYLE value."
 #endif
+
+
 /** @def RTPATH_IS_VOLSEP
  * Checks if a character marks the end of the volume specification.
  *
@@ -167,6 +190,8 @@ RT_C_DECLS_BEGIN
 #else
 # error "Unsupported RTPATH_STYLE value."
 #endif
+
+
 /** @def RTPATH_IS_SEP
  * Checks if a character is path component separator
  *
@@ -175,6 +200,8 @@ RT_C_DECLS_BEGIN
  * @
  */
 #define RTPATH_IS_SEP(a_ch)     ( RTPATH_IS_SLASH(a_ch) || RTPATH_IS_VOLSEP(a_ch) )
+
+
 /**
  * Checks if the path exists.
  *
@@ -200,7 +227,7 @@ RTDECL(bool) RTPathExistsEx(const char *pszPath, uint32_t fFlags);
  * @returns IPRT status code.
  * @param   pszPath         The path to the new working directory.
  */
-RTDECL(int) RTPathSetCurrent(const char *pszPath);
+RTDECL(int)  RTPathSetCurrent(const char *pszPath);
 
 /**
  * Gets the current working directory of the process.
@@ -209,7 +236,7 @@ RTDECL(int) RTPathSetCurrent(const char *pszPath);
  * @param   pszPath         Where to store the path.
  * @param   cchPath         The size of the buffer pszPath points to.
  */
-RTDECL(int) RTPathGetCurrent(char *pszPath, size_t cchPath);
+RTDECL(int)  RTPathGetCurrent(char *pszPath, size_t cchPath);
 
 /**
  * Gets the current working directory on the specified drive.
@@ -245,8 +272,7 @@ RTDECL(int) RTPathGetCurrentDrive(char *pszPath, size_t cbPath);
  * @param   pszRealPath     Where to store the real path.
  * @param   cchRealPath     Size of the buffer.
  */
-RTDECL(int) RTPathReal(const char *pszPath, char *pszRealPath,
-		       size_t cchRealPath);
+RTDECL(int) RTPathReal(const char *pszPath, char *pszRealPath, size_t cchRealPath);
 
 /**
  * Same as RTPathReal only the result is RTStrDup()'ed.
@@ -291,8 +317,7 @@ RTDECL(char *) RTPathAbsDup(const char *pszPath);
  * @param   pszAbsPath      Where to store the absolute path.
  * @param   cchAbsPath      Size of the buffer.
  */
-RTDECL(int) RTPathAbsEx(const char *pszBase, const char *pszPath,
-			char *pszAbsPath, size_t cchAbsPath);
+RTDECL(int) RTPathAbsEx(const char *pszBase, const char *pszPath, char *pszAbsPath, size_t cchAbsPath);
 
 /**
  * Same as RTPathAbsEx only the result is RTStrDup()'ed.
@@ -389,8 +414,7 @@ RTDECL(char *) RTPathChangeToUnixSlashes(char *pszPath, bool fForce);
  *                      If empty string or if it's ending with a slash this
  *                      will be set to -1. Optional.
  */
-RTDECL(size_t) RTPathParseSimple(const char *pszPath, size_t * pcchDir,
-				 ssize_t * poffName, ssize_t * poffSuff);
+RTDECL(size_t) RTPathParseSimple(const char *pszPath, size_t *pcchDir, ssize_t *poffName, ssize_t *poffSuff);
 
 /**
  * Finds the filename in a path.
@@ -480,8 +504,7 @@ RTDECL(size_t) RTPathCountComponents(const char *pszPath);
  * @param   pszSrc      The source path.
  * @param   cComponents The number of components to copy from @a pszSrc.
  */
-RTDECL(int) RTPathCopyComponents(char *pszDst, size_t cbDst, const char *pszSrc,
-				 size_t cComponents);
+RTDECL(int) RTPathCopyComponents(char *pszDst, size_t cbDst, const char *pszSrc, size_t cComponents);
 
 /** @name Path properties returned by RTPathParse and RTPathSplit.
  * @{ */
@@ -557,6 +580,7 @@ RTDECL(int) RTPathCopyComponents(char *pszDst, size_t cbDst, const char *pszSrc,
  * RTPATH_PROP_RELATIVE will always be set together with this.  */
 #define RTPATH_PROP_DOTDOT_REFS     UINT16_C(0x1000)
 
+
 /** Macro to determin whether to insert a slash after the first component when
  * joining it with something else.
  * (All other components in a split or parsed path requies slashes added.) */
@@ -570,6 +594,7 @@ RTDECL(int) RTPathCopyComponents(char *pszDst, size_t cbDst, const char *pszSrc,
 
 /** @} */
 
+
 /**
  * Parsed path.
  *
@@ -580,39 +605,42 @@ RTDECL(int) RTPathCopyComponents(char *pszDst, size_t cbDst, const char *pszSrc,
  * Other than the root component, no component will include directory separators
  * (slashes).
  */
-typedef struct RTPATHPARSED {
+typedef struct RTPATHPARSED
+{
     /** Number of path components.
      * This will always be set on VERR_BUFFER_OVERFLOW returns from RTPathParsed
      * so the caller can calculate the required buffer size. */
-	uint16_t cComps;
+    uint16_t    cComps;
     /** Path property flags, RTPATH_PROP_XXX */
-	uint16_t fProps;
+    uint16_t    fProps;
     /** On success this is the length of the described path, i.e. sum of all
      * component lengths and necessary separators.
      * Do NOT use this to index in the source path in case it contains
      * unnecessary slashes that RTPathParsed has ignored here. */
-	uint16_t cchPath;
+    uint16_t    cchPath;
     /** Reserved for future use. */
-	uint16_t u16Reserved;
+    uint16_t    u16Reserved;
     /** The offset of the filename suffix, offset of the NUL char if none. */
-	uint16_t offSuffix;
+    uint16_t    offSuffix;
     /** The lenght of the suffix. */
-	uint16_t cchSuffix;
+    uint16_t    cchSuffix;
     /** Array of component descriptors (variable size).
      * @note Don't try figure the end of the input path by adding up off and cch
      *       of the last component.  If RTPATH_PROP_DIR_SLASH is set, there may
      *       be one or more trailing slashes that are unaccounted for! */
-	struct {
-	/** The offset of the component. */
-		uint16_t off;
-	/** The length of the component. */
-		uint16_t cch;
-	} aComps[1];
+    struct
+    {
+        /** The offset of the component. */
+        uint16_t    off;
+        /** The length of the component. */
+        uint16_t    cch;
+    } aComps[1];
 } RTPATHPARSED;
 /** Pointer to to a parsed path result. */
 typedef RTPATHPARSED *PRTPATHPARSED;
 /** Pointer to to a const parsed path result. */
 typedef RTPATHPARSED *PCRTPATHPARSED;
+
 
 /**
  * Parses the path.
@@ -637,8 +665,7 @@ typedef RTPATHPARSED *PCRTPATHPARSED;
  *                              Most users will pass 0.
  * @sa      RTPathSplit, RTPathSplitA.
  */
-RTDECL(int) RTPathParse(const char *pszPath, PRTPATHPARSED pParsed,
-			size_t cbParsed, uint32_t fFlags);
+RTDECL(int) RTPathParse(const char *pszPath, PRTPATHPARSED pParsed, size_t cbParsed, uint32_t fFlags);
 
 /**
  * Reassembles a path parsed by RTPathParse.
@@ -658,36 +685,37 @@ RTDECL(int) RTPathParse(const char *pszPath, PRTPATHPARSED pParsed,
  *                              reassembled.
  * @param   cbDstPath           The size of the output buffer.
  */
-RTDECL(int) RTPathParsedReassemble(const char *pszSrcPath,
-				   PRTPATHPARSED pParsed, uint32_t fFlags,
-				   char *pszDstPath, size_t cbDstPath);
+RTDECL(int) RTPathParsedReassemble(const char *pszSrcPath, PRTPATHPARSED pParsed, uint32_t fFlags,
+                                   char *pszDstPath, size_t cbDstPath);
+
 
 /**
  * Output buffer for RTPathSplit and RTPathSplitA.
  */
-typedef struct RTPATHSPLIT {
+typedef struct RTPATHSPLIT
+{
     /** Number of path components.
      * This will always be set on VERR_BUFFER_OVERFLOW returns from RTPathParsed
      * so the caller can calculate the required buffer size. */
-	uint16_t cComps;
+    uint16_t    cComps;
     /** Path property flags, RTPATH_PROP_XXX */
-	uint16_t fProps;
+    uint16_t    fProps;
     /** On success this is the length of the described path, i.e. sum of all
      * component lengths and necessary separators.
      * Do NOT use this to index in the source path in case it contains
      * unnecessary slashes that RTPathSplit has ignored here. */
-	uint16_t cchPath;
+    uint16_t    cchPath;
     /** Reserved (internal use).  */
-	uint16_t u16Reserved;
+    uint16_t    u16Reserved;
     /** The amount of memory used (on success) or required (on
      *  VERR_BUFFER_OVERFLOW) of this structure and it's strings. */
-	uint32_t cbNeeded;
+    uint32_t    cbNeeded;
     /** Pointer to the filename suffix (the dot), if any. Points to the NUL
      * character of the last component if none or if RTPATH_PROP_DIR_SLASH is
      * present. */
-	const char *pszSuffix;
+    const char *pszSuffix;
     /** Array of component strings (variable size). */
-	char *apszComps[1];
+    char       *apszComps[1];
 } RTPATHSPLIT;
 /** Pointer to a split path buffer. */
 typedef RTPATHSPLIT *PRTPATHSPLIT;
@@ -721,8 +749,7 @@ typedef RTPATHSPLIT const *PCRTPATHSPLIT;
  *
  * @sa      RTPathSplitA, RTPathParse.
  */
-RTDECL(int) RTPathSplit(const char *pszPath, PRTPATHSPLIT pSplit,
-			size_t cbSplit, uint32_t fFlags);
+RTDECL(int) RTPathSplit(const char *pszPath, PRTPATHSPLIT pSplit, size_t cbSplit, uint32_t fFlags);
 
 /**
  * Splits the path into individual component strings, allocating the buffer on
@@ -759,8 +786,7 @@ RTDECL(int) RTPathSplit(const char *pszPath, PRTPATHSPLIT pSplit,
  * @param   pszTag              Allocation tag used for statistics and such.
  * @sa      RTPathSplitFree, RTPathSplit, RTPathParse.
  */
-RTDECL(int) RTPathSplitATag(const char *pszPath, PRTPATHSPLIT * ppSplit,
-			    uint32_t fFlags, const char *pszTag);
+RTDECL(int) RTPathSplitATag(const char *pszPath, PRTPATHSPLIT *ppSplit, uint32_t fFlags, const char *pszTag);
 
 /**
  * Frees buffer returned by RTPathSplitA.
@@ -787,8 +813,7 @@ RTDECL(void) RTPathSplitFree(PRTPATHSPLIT pSplit);
  *                              reassembled.
  * @param   cbDstPath           The size of the output buffer.
  */
-RTDECL(int) RTPathSplitReassemble(PRTPATHSPLIT pSplit, uint32_t fFlags,
-				  char *pszDstPath, size_t cbDstPath);
+RTDECL(int) RTPathSplitReassemble(PRTPATHSPLIT pSplit, uint32_t fFlags, char *pszDstPath, size_t cbDstPath);
 
 /**
  * Checks if the two paths leads to the file system object.
@@ -802,6 +827,7 @@ RTDECL(int) RTPathSplitReassemble(PRTPATHSPLIT pSplit, uint32_t fFlags,
  * @param   pszPath2            The seoncd path.
  */
 RTDECL(int) RTPathIsSame(const char *pszPath1, const char *pszPath2);
+
 
 /**
  * Compares two paths.
@@ -875,8 +901,7 @@ RTDECL(bool) RTPathStartsWith(const char *pszPath, const char *pszParentPath);
  *
  * @remarks See the RTPathAppendEx remarks.
  */
-RTDECL(int) RTPathAppend(char *pszPath, size_t cbPathDst,
-			 const char *pszAppend);
+RTDECL(int) RTPathAppend(char *pszPath, size_t cbPathDst, const char *pszAppend);
 
 /**
  * Appends one partial path to another.
@@ -911,8 +936,7 @@ RTDECL(int) RTPathAppend(char *pszPath, size_t cbPathDst,
  *          absolute path. Meaning, RTPathAppend(strcpy(szBuf, "C:"),
  *          sizeof(szBuf), "bar") will result in "C:bar".
  */
-RTDECL(int) RTPathAppendEx(char *pszPath, size_t cbPathDst,
-			   const char *pszAppend, size_t cchAppendMax);
+RTDECL(int) RTPathAppendEx(char *pszPath, size_t cbPathDst, const char *pszAppend, size_t cchAppendMax);
 
 /**
  * Like RTPathAppend, but with the base path as a separate argument instead of
@@ -933,8 +957,8 @@ RTDECL(int) RTPathAppendEx(char *pszPath, size_t cbPathDst,
  *                          be NULL, in which case nothing is done.
  *
  */
-RTDECL(int) RTPathJoin(char *pszPathDst, size_t cbPathDst,
-		       const char *pszPathSrc, const char *pszAppend);
+RTDECL(int) RTPathJoin(char *pszPathDst, size_t cbPathDst, const char *pszPathSrc,
+                       const char *pszAppend);
 
 /**
  * Same as RTPathJoin, except that the output buffer is allocated.
@@ -972,8 +996,8 @@ RTDECL(char *) RTPathJoinA(const char *pszPathSrc, const char *pszAppend);
  *
  */
 RTDECL(int) RTPathJoinEx(char *pszPathDst, size_t cbPathDst,
-			 const char *pszPathSrc, size_t cchPathSrcMax,
-			 const char *pszAppend, size_t cchAppendMax);
+                         const char *pszPathSrc, size_t cchPathSrcMax,
+                         const char *pszAppend, size_t cchAppendMax);
 
 /**
  * Callback for RTPathTraverseList that's called for each element.
@@ -987,8 +1011,7 @@ RTDECL(int) RTPathJoinEx(char *pszPathDst, size_t cbPathDst,
  * @param   pvUser1         The first user parameter.
  * @param   pvUser2         The second user parameter.
  */
-typedef DECLCALLBACK(int) FNRTPATHTRAVERSER(char const *pchPath, size_t cchPath,
-					    void *pvUser1, void *pvUser2);
+typedef DECLCALLBACK(int) FNRTPATHTRAVERSER(char const *pchPath, size_t cchPath, void *pvUser1, void *pvUser2);
 /** Pointer to a FNRTPATHTRAVERSER. */
 typedef FNRTPATHTRAVERSER *PFNRTPATHTRAVERSER;
 
@@ -1008,9 +1031,8 @@ typedef FNRTPATHTRAVERSER *PFNRTPATHTRAVERSER;
  * @param   pvUser1         First user argument for the callback.
  * @param   pvUser2         Second user argument for the callback.
  */
-RTDECL(int) RTPathTraverseList(const char *pszPathList, char chSep,
-			       PFNRTPATHTRAVERSER pfnCallback, void *pvUser1,
-			       void *pvUser2);
+RTDECL(int) RTPathTraverseList(const char *pszPathList, char chSep, PFNRTPATHTRAVERSER pfnCallback, void *pvUser1, void *pvUser2);
+
 
 /**
  * Calculate a relative path between the two given paths.
@@ -1027,7 +1049,8 @@ RTDECL(int) RTPathTraverseList(const char *pszPathList, char chSep,
  * @param   pszPathTo       The path to reach with the created relative path.
  */
 RTDECL(int) RTPathCalcRelative(char *pszPathDst, size_t cbPathDst,
-			       const char *pszPathFrom, const char *pszPathTo);
+                               const char *pszPathFrom,
+                               const char *pszPathTo);
 
 #ifdef IN_RING3
 
@@ -1148,20 +1171,22 @@ RTDECL(int) RTPathAppDocs(char *pszPath, size_t cchPath);
  */
 RTDECL(int) RTPathTemp(char *pszPath, size_t cchPath);
 
+
 /**
  * RTPathGlobl result entry.
  */
-typedef struct RTPATHGLOBENTRY {
+typedef struct RTPATHGLOBENTRY
+{
     /** List entry. */
-	struct RTPATHGLOBENTRY *pNext;
+    struct RTPATHGLOBENTRY *pNext;
     /** RTDIRENTRYTYPE value. */
-	uint8_t uType;
+    uint8_t                 uType;
     /** Unused explicit padding. */
-	uint8_t bUnused;
+    uint8_t                 bUnused;
     /** The length of the path. */
-	uint16_t cchPath;
+    uint16_t                cchPath;
     /** The path to the file (variable length). */
-	char szPath[1];
+    char                    szPath[1];
 } RTPATHGLOBENTRY;
 /** Pointer to a GLOB result entry. */
 typedef RTPATHGLOBENTRY *PRTPATHGLOBENTRY;
@@ -1181,8 +1206,7 @@ typedef PCRTPATHGLOBENTRY *PPCRTPATHGLOBENTRY;
  *                          is always set to NULL on failure.
  * @param   pcResults       Where to return the number of the result. Optional.
  */
-RTDECL(int) RTPathGlob(const char *pszPattern, uint32_t fFlags,
-		       PPCRTPATHGLOBENTRY ppHead, uint32_t * pcResults);
+RTDECL(int) RTPathGlob(const char *pszPattern, uint32_t fFlags, PPCRTPATHGLOBENTRY ppHead, uint32_t *pcResults);
 
 /** @name RTPATHGLOB_F_XXX - RTPathGlob flags
  *  @{ */
@@ -1212,6 +1236,7 @@ RTDECL(int) RTPathGlob(const char *pszPattern, uint32_t fFlags,
  */
 RTDECL(void) RTPathGlobFree(PCRTPATHGLOBENTRY pHead);
 
+
 /**
  * Query information about a file system object.
  *
@@ -1232,8 +1257,7 @@ RTDECL(void) RTPathGlobFree(PCRTPATHGLOBENTRY pHead);
  *                      Which set of additional attributes to request.
  *                      Use RTFSOBJATTRADD_NOTHING if this doesn't matter.
  */
-RTR3DECL(int) RTPathQueryInfo(const char *pszPath, PRTFSOBJINFO pObjInfo,
-			      RTFSOBJATTRADD enmAdditionalAttribs);
+RTR3DECL(int) RTPathQueryInfo(const char *pszPath, PRTFSOBJINFO pObjInfo, RTFSOBJATTRADD enmAdditionalAttribs);
 
 /**
  * Query information about a file system object.
@@ -1252,9 +1276,7 @@ RTR3DECL(int) RTPathQueryInfo(const char *pszPath, PRTFSOBJINFO pObjInfo,
  *                      Use RTFSOBJATTRADD_NOTHING if this doesn't matter.
  * @param   fFlags      RTPATH_F_ON_LINK or RTPATH_F_FOLLOW_LINK.
  */
-RTR3DECL(int) RTPathQueryInfoEx(const char *pszPath, PRTFSOBJINFO pObjInfo,
-				RTFSOBJATTRADD enmAdditionalAttribs,
-				uint32_t fFlags);
+RTR3DECL(int) RTPathQueryInfoEx(const char *pszPath, PRTFSOBJINFO pObjInfo, RTFSOBJATTRADD enmAdditionalAttribs, uint32_t fFlags);
 
 /**
  * Changes the mode flags of a file system object.
@@ -1307,9 +1329,8 @@ RTR3DECL(int) RTPathGetMode(const char *pszPath, PRTFMODE pfMode);
  *
  * @remark  POSIX can only set Access & Modification and will always set both.
  */
-RTR3DECL(int) RTPathSetTimes(const char *pszPath, PCRTTIMESPEC pAccessTime,
-			     PCRTTIMESPEC pModificationTime,
-			     PCRTTIMESPEC pChangeTime, PCRTTIMESPEC pBirthTime);
+RTR3DECL(int) RTPathSetTimes(const char *pszPath, PCRTTIMESPEC pAccessTime, PCRTTIMESPEC pModificationTime,
+                             PCRTTIMESPEC pChangeTime, PCRTTIMESPEC pBirthTime);
 
 /**
  * Changes one or more of the timestamps associated of file system object.
@@ -1333,10 +1354,8 @@ RTR3DECL(int) RTPathSetTimes(const char *pszPath, PCRTTIMESPEC pAccessTime,
  *
  * @remark  POSIX can only set Access & Modification and will always set both.
  */
-RTR3DECL(int) RTPathSetTimesEx(const char *pszPath, PCRTTIMESPEC pAccessTime,
-			       PCRTTIMESPEC pModificationTime,
-			       PCRTTIMESPEC pChangeTime,
-			       PCRTTIMESPEC pBirthTime, uint32_t fFlags);
+RTR3DECL(int) RTPathSetTimesEx(const char *pszPath, PCRTTIMESPEC pAccessTime, PCRTTIMESPEC pModificationTime,
+                               PCRTTIMESPEC pChangeTime, PCRTTIMESPEC pBirthTime, uint32_t fFlags);
 
 /**
  * Gets one or more of the timestamps associated of file system object.
@@ -1352,9 +1371,8 @@ RTR3DECL(int) RTPathSetTimesEx(const char *pszPath, PCRTTIMESPEC pAccessTime,
  *          RTPathSetTimes().  If the last component is a symbolic link, it will
  *          not be resolved.
  */
-RTR3DECL(int) RTPathGetTimes(const char *pszPath, PRTTIMESPEC pAccessTime,
-			     PRTTIMESPEC pModificationTime,
-			     PRTTIMESPEC pChangeTime, PRTTIMESPEC pBirthTime);
+RTR3DECL(int) RTPathGetTimes(const char *pszPath, PRTTIMESPEC pAccessTime, PRTTIMESPEC pModificationTime,
+                             PRTTIMESPEC pChangeTime, PRTTIMESPEC pBirthTime);
 
 /**
  * Changes the owner and/or group of a file system object.
@@ -1382,8 +1400,7 @@ RTR3DECL(int) RTPathSetOwner(const char *pszPath, uint32_t uid, uint32_t gid);
  *                      unchanged.
  * @param   fFlags      RTPATH_F_ON_LINK or RTPATH_F_FOLLOW_LINK.
  */
-RTR3DECL(int) RTPathSetOwnerEx(const char *pszPath, uint32_t uid, uint32_t gid,
-			       uint32_t fFlags);
+RTR3DECL(int) RTPathSetOwnerEx(const char *pszPath, uint32_t uid, uint32_t gid, uint32_t fFlags);
 
 /**
  * Gets the owner and/or group of a file system object.
@@ -1397,8 +1414,8 @@ RTR3DECL(int) RTPathSetOwnerEx(const char *pszPath, uint32_t uid, uint32_t gid,
  *          RTPathGetOwner().  If the last component is a symbolic link, it will
  *          not be resolved.
  */
-RTR3DECL(int) RTPathGetOwner(const char *pszPath, uint32_t * pUid,
-			     uint32_t * pGid);
+RTR3DECL(int) RTPathGetOwner(const char *pszPath, uint32_t *pUid, uint32_t *pGid);
+
 
 /** @name RTPathRename, RTDirRename & RTFileRename flags.
  * @{ */
@@ -1422,8 +1439,7 @@ RTR3DECL(int) RTPathGetOwner(const char *pszPath, uint32_t * pUid,
  * @param   pszDst      The destination path.
  * @param   fRename     Rename flags, RTPATHRENAME_FLAGS_*.
  */
-RTR3DECL(int) RTPathRename(const char *pszSrc, const char *pszDst,
-			   unsigned fRename);
+RTR3DECL(int) RTPathRename(const char *pszSrc,  const char *pszDst, unsigned fRename);
 
 /** @name RTPathUnlink flags.
  * @{ */
@@ -1457,4 +1473,6 @@ RTDECL(RTEXITCODE) RTPathRmCmd(unsigned cArgs, char **papszArgs);
 /** @} */
 
 RT_C_DECLS_END
+
 #endif
+

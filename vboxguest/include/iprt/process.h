@@ -30,10 +30,13 @@
 #include <iprt/types.h>
 
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt_process    RTProc - Process Management
  * @ingroup grp_rt
  * @{
  */
+
+
 /**
  * Process priority.
  *
@@ -45,39 +48,41 @@ RT_C_DECLS_BEGIN
  * a GUI, resource manager or admin to adjust the general priority of a task
  * without upsetting the fine-tuned priority of the threads within.
  */
-    typedef enum RTPROCPRIORITY {
+typedef enum RTPROCPRIORITY
+{
     /** Invalid priority. */
-	RTPROCPRIORITY_INVALID = 0,
+    RTPROCPRIORITY_INVALID = 0,
     /** Default priority.
      * Derive the scheduling policy from the priority of the RTR3Init()
      * and RTProcSetPriority() callers and the rights the process have
      * to alter its own priority.
      */
-	RTPROCPRIORITY_DEFAULT,
+    RTPROCPRIORITY_DEFAULT,
     /** Flat priority.
      * Assumes a scheduling policy which puts the process at the default priority
      * and with all thread at the same priority.
      */
-	RTPROCPRIORITY_FLAT,
+    RTPROCPRIORITY_FLAT,
     /** Low priority.
      * Assumes a scheduling policy which puts the process mostly below the
      * default priority of the host OS.
      */
-	RTPROCPRIORITY_LOW,
+    RTPROCPRIORITY_LOW,
     /** Normal priority.
      * Assume a scheduling policy which shares the CPU resources fairly with
      * other processes running with the default priority of the host OS.
      */
-	RTPROCPRIORITY_NORMAL,
+    RTPROCPRIORITY_NORMAL,
     /** High priority.
      * Assumes a scheduling policy which puts the task above the default
      * priority of the host OS. This policy might easily cause other tasks
      * in the system to starve.
      */
-	RTPROCPRIORITY_HIGH,
+    RTPROCPRIORITY_HIGH,
     /** Last priority, used for validation. */
-	RTPROCPRIORITY_LAST
+    RTPROCPRIORITY_LAST
 } RTPROCPRIORITY;
+
 
 /**
  * Get the current process identifier.
@@ -85,6 +90,7 @@ RT_C_DECLS_BEGIN
  * @returns Process identifier.
  */
 RTDECL(RTPROCESS) RTProcSelf(void);
+
 
 #ifdef IN_RING0
 /**
@@ -94,6 +100,7 @@ RTDECL(RTPROCESS) RTProcSelf(void);
  */
 RTR0DECL(RTR0PROCESS) RTR0ProcHandleSelf(void);
 #endif
+
 
 #ifdef IN_RING3
 
@@ -123,8 +130,8 @@ RTR3DECL(RTPROCPRIORITY) RTProcGetPriority(void);
  * @param   pProcess    Where to store the process identifier on successful return.
  *                      The content is not changed on failure. NULL is allowed.
  */
-RTR3DECL(int) RTProcCreate(const char *pszExec, const char *const *papszArgs,
-			   RTENV Env, unsigned fFlags, PRTPROCESS pProcess);
+RTR3DECL(int)   RTProcCreate(const char *pszExec, const char * const *papszArgs, RTENV Env, unsigned fFlags, PRTPROCESS pProcess);
+
 
 /**
  * Create a child process.
@@ -167,11 +174,9 @@ RTR3DECL(int) RTProcCreate(const char *pszExec, const char *const *papszArgs,
  * @remarks The as-user feature isn't supported/implemented on all platforms and
  *          will cause a-yet-to-be-determined-error-status on these.
  */
-RTR3DECL(int) RTProcCreateEx(const char *pszExec, const char *const *papszArgs,
-			     RTENV hEnv, uint32_t fFlags, PCRTHANDLE phStdIn,
-			     PCRTHANDLE phStdOut, PCRTHANDLE phStdErr,
-			     const char *pszAsUser, const char *pszPassword,
-			     PRTPROCESS phProcess);
+RTR3DECL(int)   RTProcCreateEx(const char *pszExec, const char * const *papszArgs, RTENV hEnv, uint32_t fFlags,
+                               PCRTHANDLE phStdIn, PCRTHANDLE phStdOut, PCRTHANDLE phStdErr, const char *pszAsUser,
+                               const char *pszPassword, PRTPROCESS phProcess);
 
 /** @name RTProcCreate and RTProcCreateEx flags
  * @{ */
@@ -217,31 +222,35 @@ RTR3DECL(int) RTProcCreateEx(const char *pszExec, const char *const *papszArgs,
 #define RTPROC_FLAGS_VALID_MASK             UINT32_C(0x1ff)
 /** @}  */
 
+
 /**
  * Process exit reason.
  */
-typedef enum RTPROCEXITREASON {
+typedef enum RTPROCEXITREASON
+{
     /** Normal exit. iStatus contains the exit code. */
-	RTPROCEXITREASON_NORMAL = 1,
+    RTPROCEXITREASON_NORMAL = 1,
     /** Any abnormal exit. iStatus is undefined. */
-	RTPROCEXITREASON_ABEND,
+    RTPROCEXITREASON_ABEND,
     /** Killed by a signal. The iStatus field contains the signal number. */
-	RTPROCEXITREASON_SIGNAL
+    RTPROCEXITREASON_SIGNAL
 } RTPROCEXITREASON;
 
 /**
  * Process exit status.
  */
-typedef struct RTPROCSTATUS {
+typedef struct RTPROCSTATUS
+{
     /** The process exit status if the exit was a normal one. */
-	int iStatus;
+    int                 iStatus;
     /** The reason the process terminated. */
-	RTPROCEXITREASON enmReason;
+    RTPROCEXITREASON    enmReason;
 } RTPROCSTATUS;
 /** Pointer to a process exit status structure. */
 typedef RTPROCSTATUS *PRTPROCSTATUS;
 /** Pointer to a const process exit status structure. */
 typedef const RTPROCSTATUS *PCRTPROCSTATUS;
+
 
 /** Flags for RTProcWait().
  * @{ */
@@ -265,8 +274,7 @@ typedef const RTPROCSTATUS *PCRTPROCSTATUS;
  * @param   pProcStatus     Where to store the exit status on success.
  *                          Optional.
  */
-RTR3DECL(int) RTProcWait(RTPROCESS Process, unsigned fFlags,
-			 PRTPROCSTATUS pProcStatus);
+RTR3DECL(int) RTProcWait(RTPROCESS Process, unsigned fFlags, PRTPROCSTATUS pProcStatus);
 
 /**
  * Waits for a process, returns on interruption.
@@ -284,8 +292,7 @@ RTR3DECL(int) RTProcWait(RTPROCESS Process, unsigned fFlags,
  * @param   pProcStatus     Where to store the exit status on success.
  *                          Optional.
  */
-RTR3DECL(int) RTProcWaitNoResume(RTPROCESS Process, unsigned fFlags,
-				 PRTPROCSTATUS pProcStatus);
+RTR3DECL(int) RTProcWaitNoResume(RTPROCESS Process, unsigned fFlags, PRTPROCSTATUS pProcStatus);
 
 /**
  * Terminates (kills) a running process.
@@ -338,8 +345,7 @@ RTR3DECL(char *) RTProcGetExecutablePath(char *pszExecPath, size_t cbExecPath);
  * @param   pszDaemonizedOpt    The daemonized option.  This is appended to the
  *                              end of the parameter list of the daemonized process.
  */
-RTR3DECL(int) RTProcDaemonize(const char *const *papszArgs,
-			      const char *pszDaemonizedOpt);
+RTR3DECL(int)   RTProcDaemonize(const char * const *papszArgs, const char *pszDaemonizedOpt);
 
 /**
  * Daemonize the current process, making it a background process. The current
@@ -355,8 +361,7 @@ RTR3DECL(int) RTProcDaemonize(const char *const *papszArgs,
  *                      process to. Daemonizing will fail if this file already
  *                      exists or cannot be written. May be NULL.
  */
-RTR3DECL(int) RTProcDaemonizeUsingFork(bool fNoChDir, bool fNoClose,
-				       const char *pszPidfile);
+RTR3DECL(int)   RTProcDaemonizeUsingFork(bool fNoChDir, bool fNoClose, const char *pszPidfile);
 
 /**
  * Check if the given process is running on the system.
@@ -370,7 +375,7 @@ RTR3DECL(int) RTProcDaemonizeUsingFork(bool fNoChDir, bool fNoClose,
  *                      matched. If a path is specified, the full path will be
  *                      matched.
  */
-RTR3DECL(bool) RTProcIsRunningByName(const char *pszName);
+RTR3DECL(bool)  RTProcIsRunningByName(const char *pszName);
 
 /**
  * Queries the parent process ID.
@@ -394,8 +399,7 @@ RTR3DECL(int) RTProcQueryParent(RTPROCESS hProcess, PRTPROCESS phParent);
  *                       or the required buffer size if VERR_BUFFER_OVERFLOW
  *                       is returned.
  */
-RTR3DECL(int) RTProcQueryUsername(RTPROCESS hProcess, char *pszUser,
-				  size_t cbUser, size_t * pcbUser);
+RTR3DECL(int)   RTProcQueryUsername(RTPROCESS hProcess, char *pszUser, size_t cbUser, size_t *pcbUser);
 
 /**
  * Query the username of the given process allocating the string for the username.
@@ -405,11 +409,13 @@ RTR3DECL(int) RTProcQueryUsername(RTPROCESS hProcess, char *pszUser,
  * @param   ppszUser     Where to store the pointer to the string containing
  *                       the username on success. Free with RTStrFree().
  */
-RTR3DECL(int) RTProcQueryUsernameA(RTPROCESS hProcess, char **ppszUser);
+RTR3DECL(int)   RTProcQueryUsernameA(RTPROCESS hProcess, char **ppszUser);
 
 #endif /* IN_RING3 */
 
 /** @} */
 
 RT_C_DECLS_END
+
 #endif
+

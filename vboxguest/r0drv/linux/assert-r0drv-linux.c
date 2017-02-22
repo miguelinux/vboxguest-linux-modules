@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -38,36 +39,36 @@
 
 #include "internal/assert.h"
 
-DECLHIDDEN(void) rtR0AssertNativeMsg1(const char *pszExpr, unsigned uLine,
-				      const char *pszFile,
-				      const char *pszFunction)
+
+DECLHIDDEN(void) rtR0AssertNativeMsg1(const char *pszExpr, unsigned uLine, const char *pszFile, const char *pszFunction)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
-	printk(KERN_EMERG
-	       "\r\n!!Assertion Failed!!\r\n"
-	       "Expression: %s\r\n"
-	       "Location  : %s(%d) %s\r\n",
-	       pszExpr, pszFile, uLine, pszFunction);
-	IPRT_LINUX_RESTORE_EFL_AC();
+    IPRT_LINUX_SAVE_EFL_AC();
+    printk(KERN_EMERG
+           "\r\n!!Assertion Failed!!\r\n"
+           "Expression: %s\r\n"
+           "Location  : %s(%d) %s\r\n",
+           pszExpr, pszFile, uLine, pszFunction);
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
 
-DECLHIDDEN(void) rtR0AssertNativeMsg2V(bool fInitial, const char *pszFormat,
-				       va_list va)
+
+DECLHIDDEN(void) rtR0AssertNativeMsg2V(bool fInitial, const char *pszFormat, va_list va)
 {
-	char szMsg[256];
-	IPRT_LINUX_SAVE_EFL_AC();
+    char szMsg[256];
+    IPRT_LINUX_SAVE_EFL_AC();
 
-	RTStrPrintfV(szMsg, sizeof(szMsg) - 1, pszFormat, va);
-	szMsg[sizeof(szMsg) - 1] = '\0';
-	printk(KERN_EMERG "%s", szMsg);
+    RTStrPrintfV(szMsg, sizeof(szMsg) - 1, pszFormat, va);
+    szMsg[sizeof(szMsg) - 1] = '\0';
+    printk(KERN_EMERG "%s", szMsg);
 
-	NOREF(fInitial);
-	IPRT_LINUX_RESTORE_EFL_AC();
+    NOREF(fInitial);
+    IPRT_LINUX_RESTORE_EFL_AC();
 }
+
 
 RTR0DECL(void) RTR0AssertPanicSystem(void)
 {
-	panic("%s%s", g_szRTAssertMsg1, g_szRTAssertMsg2);
+    panic("%s%s", g_szRTAssertMsg1, g_szRTAssertMsg2);
 }
-
 RT_EXPORT_SYMBOL(RTR0AssertPanicSystem);
+

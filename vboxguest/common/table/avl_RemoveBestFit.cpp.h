@@ -29,6 +29,7 @@
 #ifndef _kAVLRemoveBestFit_h_
 #define _kAVLRemoveBestFit_h_
 
+
 /**
  * Finds the best fitting node in the tree for the given Key value.
  * And removes it.
@@ -42,26 +43,28 @@
  *            <= (below): the node where you last turned right.
  * @remark    This implementation should be speeded up slightly!
  */
-KAVL_DECL(PKAVLNODECORE) KAVL_FN(RemoveBestFit) (PPKAVLNODECORE ppTree,
-						 KAVLKEY Key, bool fAbove)
+KAVL_DECL(PKAVLNODECORE) KAVL_FN(RemoveBestFit)(PPKAVLNODECORE ppTree, KAVLKEY Key, bool fAbove)
 {
-	/*
-	 * If we find anything we'll have to remove the node and return it.
-	 * But, if duplicate keys are allowed we'll have to check for multiple
-	 * nodes first and return one of them before doing an expensive remove+insert.
-	 */
-	PKAVLNODECORE pNode = KAVL_FN(GetBestFit) (ppTree, Key, fAbove);
-	if (pNode != NULL) {
+    /*
+     * If we find anything we'll have to remove the node and return it.
+     * But, if duplicate keys are allowed we'll have to check for multiple
+     * nodes first and return one of them before doing an expensive remove+insert.
+     */
+    PKAVLNODECORE   pNode = KAVL_FN(GetBestFit)(ppTree, Key, fAbove);
+    if (pNode != NULL)
+    {
 #ifdef KAVL_EQUAL_ALLOWED
-		if (pNode->pList != KAVL_NULL) {
-			PKAVLNODECORE pRet = KAVL_GET_POINTER(&pNode->pList);
-			KAVL_SET_POINTER_NULL(&pNode->pList, &pRet->pList);
-			return pRet;
-		}
+        if (pNode->pList != KAVL_NULL)
+        {
+            PKAVLNODECORE pRet = KAVL_GET_POINTER(&pNode->pList);
+            KAVL_SET_POINTER_NULL(&pNode->pList, &pRet->pList);
+            return pRet;
+        }
 #endif
-		pNode = KAVL_FN(Remove) (ppTree, pNode->Key);
-	}
-	return pNode;
+        pNode = KAVL_FN(Remove)(ppTree, pNode->Key);
+    }
+    return pNode;
 }
+
 
 #endif

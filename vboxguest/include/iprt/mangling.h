@@ -43,6 +43,7 @@
  * Indicates that we're mangling symbols.  */
 # define RT_WITH_MANGLING
 
+
 /*
  * Stable functions (alphabetical order):
  */
@@ -598,9 +599,9 @@
 # define RTCircBufReset                                 RT_MANGLER(RTCircBufReset)
 # define RTCircBufSize                                  RT_MANGLER(RTCircBufSize)
 # define RTCircBufUsed                                  RT_MANGLER(RTCircBufUsed)
-# define RTCoreDumperDisable                            RT_MANGLER(RTCoreDumperDisable)	/* solaris */
-# define RTCoreDumperSetup                              RT_MANGLER(RTCoreDumperSetup)	/* solaris */
-# define RTCoreDumperTakeDump                           RT_MANGLER(RTCoreDumperTakeDump)	/* solaris */
+# define RTCoreDumperDisable                            RT_MANGLER(RTCoreDumperDisable)  /* solaris */
+# define RTCoreDumperSetup                              RT_MANGLER(RTCoreDumperSetup)    /* solaris */
+# define RTCoreDumperTakeDump                           RT_MANGLER(RTCoreDumperTakeDump) /* solaris */
 # define RTCrc32                                        RT_MANGLER(RTCrc32)
 # define RTCrc32Finish                                  RT_MANGLER(RTCrc32Finish)
 # define RTCrc32Process                                 RT_MANGLER(RTCrc32Process)
@@ -1121,8 +1122,8 @@
 # define RTLockValidatorWriteLockDec                    RT_MANGLER(RTLockValidatorWriteLockDec)
 # define RTLockValidatorWriteLockGetCount               RT_MANGLER(RTLockValidatorWriteLockGetCount)
 # define RTLockValidatorWriteLockInc                    RT_MANGLER(RTLockValidatorWriteLockInc)
-# define RTLogBackdoorPrintf                            RT_MANGLER(RTLogBackdoorPrintf)	/* r0drv-guest */
-# define RTLogBackdoorPrintfV                           RT_MANGLER(RTLogBackdoorPrintfV)	/* r0drv-guest */
+# define RTLogBackdoorPrintf                            RT_MANGLER(RTLogBackdoorPrintf) /* r0drv-guest */
+# define RTLogBackdoorPrintfV                           RT_MANGLER(RTLogBackdoorPrintfV) /* r0drv-guest */
 # define RTLogCalcSizeForR0                             RT_MANGLER(RTLogCalcSizeForR0)
 # define RTLogCloneRC                                   RT_MANGLER(RTLogCloneRC)
 # define RTLogComPrintf                                 RT_MANGLER(RTLogComPrintf)
@@ -1168,7 +1169,7 @@
 # define RTLogSetCustomPrefixCallback                   RT_MANGLER(RTLogSetCustomPrefixCallback)
 # define RTLogSetCustomPrefixCallbackForR0              RT_MANGLER(RTLogSetCustomPrefixCallbackForR0)
 # define RTLogSetDefaultInstance                        RT_MANGLER(RTLogSetDefaultInstance)
-# define RTLogSetDefaultInstanceThread                  RT_MANGLER(RTLogSetDefaultInstanceThread)	/* r0drv */
+# define RTLogSetDefaultInstanceThread                  RT_MANGLER(RTLogSetDefaultInstanceThread) /* r0drv */
 # define RTLogSetGroupLimit                             RT_MANGLER(RTLogSetGroupLimit)
 # define RTLogWriteCom                                  RT_MANGLER(RTLogWriteCom)
 # define RTLogWriteCom                                  RT_MANGLER(RTLogWriteCom)
@@ -1223,8 +1224,8 @@
 # define RTMemCacheCreate                               RT_MANGLER(RTMemCacheCreate)
 # define RTMemCacheDestroy                              RT_MANGLER(RTMemCacheDestroy)
 # define RTMemCacheFree                                 RT_MANGLER(RTMemCacheFree)
-# define RTMemContAlloc                                 RT_MANGLER(RTMemContAlloc)	/* r0drv */
-# define RTMemContFree                                  RT_MANGLER(RTMemContFree)	/* r0drv */
+# define RTMemContAlloc                                 RT_MANGLER(RTMemContAlloc) /* r0drv */
+# define RTMemContFree                                  RT_MANGLER(RTMemContFree) /* r0drv */
 # define RTMemDump                                      RT_MANGLER(RTMemDump)
 # define RTMemDupExTag                                  RT_MANGLER(RTMemDupExTag)
 # define RTMemDupTag                                    RT_MANGLER(RTMemDupTag)
@@ -1315,18 +1316,18 @@
 # define RTMpGetSet                                     RT_MANGLER(RTMpGetSet)
 # define RTMpGetCoreCount                               RT_MANGLER(RTMpGetCoreCount)
 # define RTMpIsCpuOnline                                RT_MANGLER(RTMpIsCpuOnline)
-# define RTMpIsCpuPossible                              RT_MANGLER(RTMpIsCpuPossible)	/* r0drv */
+# define RTMpIsCpuPossible                              RT_MANGLER(RTMpIsCpuPossible) /* r0drv */
 # define RTMpIsCpuPresent                               RT_MANGLER(RTMpIsCpuPresent)
 # define RTMpIsCpuWorkPending                           RT_MANGLER(RTMpIsCpuWorkPending)
-# define RTMpNotificationDeregister                     RT_MANGLER(RTMpNotificationDeregister)	/* r0drv */
-# define RTMpNotificationRegister                       RT_MANGLER(RTMpNotificationRegister)	/* r0drv */
-# define RTMpOnAll                                      RT_MANGLER(RTMpOnAll)	/* r0drv */
-# define RTMpOnAllIsConcurrentSafe                      RT_MANGLER(RTMpOnAllIsConcurrentSafe)	/* r0drv */
-# define RTMpOnOthers                                   RT_MANGLER(RTMpOnOthers)	/* r0drv */
-# define RTMpOnPair                                     RT_MANGLER(RTMpOnPair)	/* r0drv */
-# define RTMpOnPairIsConcurrentExecSupported            RT_MANGLER(RTMpOnPairIsConcurrentExecSupported)	/* r0drv */
-# define RTMpOnSpecific                                 RT_MANGLER(RTMpOnSpecific)	/* r0drv */
-# define RTMpPokeCpu                                    RT_MANGLER(RTMpPokeCpu)	/* r0drv */
+# define RTMpNotificationDeregister                     RT_MANGLER(RTMpNotificationDeregister) /* r0drv */
+# define RTMpNotificationRegister                       RT_MANGLER(RTMpNotificationRegister)   /* r0drv */
+# define RTMpOnAll                                      RT_MANGLER(RTMpOnAll)                  /* r0drv */
+# define RTMpOnAllIsConcurrentSafe                      RT_MANGLER(RTMpOnAllIsConcurrentSafe)  /* r0drv */
+# define RTMpOnOthers                                   RT_MANGLER(RTMpOnOthers)               /* r0drv */
+# define RTMpOnPair                                     RT_MANGLER(RTMpOnPair)                 /* r0drv */
+# define RTMpOnPairIsConcurrentExecSupported            RT_MANGLER(RTMpOnPairIsConcurrentExecSupported) /* r0drv */
+# define RTMpOnSpecific                                 RT_MANGLER(RTMpOnSpecific)             /* r0drv */
+# define RTMpPokeCpu                                    RT_MANGLER(RTMpPokeCpu)                /* r0drv */
 # define RTMpSetIndexFromCpuGroupMember                 RT_MANGLER(RTMpSetIndexFromCpuGroupMember)
 # define RTMsgError                                     RT_MANGLER(RTMsgError)
 # define RTMsgErrorExit                                 RT_MANGLER(RTMsgErrorExit)
@@ -1416,9 +1417,9 @@
 # define RTPathRename                                   RT_MANGLER(RTPathRename)
 # define RTPathRmCmd                                    RT_MANGLER(RTPathRmCmd)
 # define RTPathSetCurrent                               RT_MANGLER(RTPathSetCurrent)
-# define RTPathSetMode                                  RT_MANGLER(RTPathSetMode)	/* not-win */
-# define RTPathSetOwner                                 RT_MANGLER(RTPathSetOwner)	/* not-win */
-# define RTPathSetOwnerEx                               RT_MANGLER(RTPathSetOwnerEx)	/* not-win */
+# define RTPathSetMode                                  RT_MANGLER(RTPathSetMode)                   /* not-win */
+# define RTPathSetOwner                                 RT_MANGLER(RTPathSetOwner)                  /* not-win */
+# define RTPathSetOwnerEx                               RT_MANGLER(RTPathSetOwnerEx)                /* not-win */
 # define RTPathSetTimes                                 RT_MANGLER(RTPathSetTimes)
 # define RTPathSetTimesEx                               RT_MANGLER(RTPathSetTimesEx)
 # define RTPathSharedLibs                               RT_MANGLER(RTPathSharedLibs)
@@ -1457,9 +1458,9 @@
 # define RTPollSetGetCount                              RT_MANGLER(RTPollSetGetCount)
 # define RTPollSetQueryHandle                           RT_MANGLER(RTPollSetQueryHandle)
 # define RTPollSetRemove                                RT_MANGLER(RTPollSetRemove)
-# define RTPowerNotificationDeregister                  RT_MANGLER(RTPowerNotificationDeregister)	/* r0drv */
-# define RTPowerNotificationRegister                    RT_MANGLER(RTPowerNotificationRegister)	/* r0drv */
-# define RTPowerSignalEvent                             RT_MANGLER(RTPowerSignalEvent)	/* r0drv */
+# define RTPowerNotificationDeregister                  RT_MANGLER(RTPowerNotificationDeregister) /* r0drv */
+# define RTPowerNotificationRegister                    RT_MANGLER(RTPowerNotificationRegister) /* r0drv */
+# define RTPowerSignalEvent                             RT_MANGLER(RTPowerSignalEvent)         /* r0drv */
 # define RTPrintf                                       RT_MANGLER(RTPrintf)
 # define RTPrintfV                                      RT_MANGLER(RTPrintfV)
 # define RTProcCreate                                   RT_MANGLER(RTProcCreate)
@@ -1479,46 +1480,46 @@
 # define RTProcTerminate                                RT_MANGLER(RTProcTerminate)
 # define RTProcWait                                     RT_MANGLER(RTProcWait)
 # define RTProcWaitNoResume                             RT_MANGLER(RTProcWaitNoResume)
-# define RTR0AssertPanicSystem                          RT_MANGLER(RTR0AssertPanicSystem)	/* r0drv */
-# define RTR0DbgKrnlInfoOpen                            RT_MANGLER(RTR0DbgKrnlInfoOpen)	/* r0drv */
-# define RTR0DbgKrnlInfoQueryMember                     RT_MANGLER(RTR0DbgKrnlInfoQueryMember)	/* r0drv */
-# define RTR0DbgKrnlInfoQuerySize                       RT_MANGLER(RTR0DbgKrnlInfoQuerySize)	/* r0drv */
-# define RTR0DbgKrnlInfoQuerySymbol                     RT_MANGLER(RTR0DbgKrnlInfoQuerySymbol)	/* r0drv */
-# define RTR0DbgKrnlInfoRelease                         RT_MANGLER(RTR0DbgKrnlInfoRelease)	/* r0drv */
-# define RTR0DbgKrnlInfoRetain                          RT_MANGLER(RTR0DbgKrnlInfoRetain)	/* r0drv */
-# define RTR0Init                                       RT_MANGLER(RTR0Init)	/* r0drv */
-# define RTR0MemAreKrnlAndUsrDifferent                  RT_MANGLER(RTR0MemAreKrnlAndUsrDifferent)	/* r0drv */
-# define RTR0MemExecDonate                              RT_MANGLER(RTR0MemExecDonate)	/* r0drv */
-# define RTR0MemKernelIsValidAddr                       RT_MANGLER(RTR0MemKernelIsValidAddr)	/* r0drv */
-# define RTR0MemObjAddress                              RT_MANGLER(RTR0MemObjAddress)	/* r0drv */
-# define RTR0MemObjAddressR3                            RT_MANGLER(RTR0MemObjAddressR3)	/* r0drv */
-# define RTR0MemKernelCopyFrom                          RT_MANGLER(RTR0MemKernelCopyFrom)	/* r0drv */
-# define RTR0MemKernelCopyTo                            RT_MANGLER(RTR0MemKernelCopyTo)	/* r0drv */
-# define RTR0MemObjAllocContTag                         RT_MANGLER(RTR0MemObjAllocContTag)	/* r0drv */
-# define RTR0MemObjAllocLowTag                          RT_MANGLER(RTR0MemObjAllocLowTag)	/* r0drv */
-# define RTR0MemObjAllocPageTag                         RT_MANGLER(RTR0MemObjAllocPageTag)	/* r0drv */
-# define RTR0MemObjAllocPhysExTag                       RT_MANGLER(RTR0MemObjAllocPhysExTag)	/* r0drv */
-# define RTR0MemObjAllocPhysNCTag                       RT_MANGLER(RTR0MemObjAllocPhysNCTag)	/* r0drv */
-# define RTR0MemObjAllocPhysTag                         RT_MANGLER(RTR0MemObjAllocPhysTag)	/* r0drv */
-# define RTR0MemObjEnterPhysTag                         RT_MANGLER(RTR0MemObjEnterPhysTag)	/* r0drv */
-# define RTR0MemObjFree                                 RT_MANGLER(RTR0MemObjFree)	/* r0drv */
-# define RTR0MemObjGetPagePhysAddr                      RT_MANGLER(RTR0MemObjGetPagePhysAddr)	/* r0drv */
-# define RTR0MemObjIsMapping                            RT_MANGLER(RTR0MemObjIsMapping)	/* r0drv */
-# define RTR0MemObjLockKernelTag                        RT_MANGLER(RTR0MemObjLockKernelTag)	/* r0drv */
-# define RTR0MemObjLockUserTag                          RT_MANGLER(RTR0MemObjLockUserTag)	/* r0drv */
-# define RTR0MemObjMapKernelExTag                       RT_MANGLER(RTR0MemObjMapKernelExTag)	/* r0drv */
-# define RTR0MemObjMapKernelTag                         RT_MANGLER(RTR0MemObjMapKernelTag)	/* r0drv */
-# define RTR0MemObjMapUserTag                           RT_MANGLER(RTR0MemObjMapUserTag)	/* r0drv */
-# define RTR0MemObjProtect                              RT_MANGLER(RTR0MemObjProtect)	/* r0drv */
-# define RTR0MemObjReserveKernelTag                     RT_MANGLER(RTR0MemObjReserveKernelTag)	/* r0drv */
-# define RTR0MemObjReserveUserTag                       RT_MANGLER(RTR0MemObjReserveUserTag)	/* r0drv */
-# define RTR0MemObjSize                                 RT_MANGLER(RTR0MemObjSize)	/* r0drv */
-# define RTR0MemUserCopyFrom                            RT_MANGLER(RTR0MemUserCopyFrom)	/* r0drv */
-# define RTR0MemUserCopyTo                              RT_MANGLER(RTR0MemUserCopyTo)	/* r0drv */
-# define RTR0MemUserIsValidAddr                         RT_MANGLER(RTR0MemUserIsValidAddr)	/* r0drv */
-# define RTR0ProcHandleSelf                             RT_MANGLER(RTR0ProcHandleSelf)	/* r0drv */
-# define RTR0Term                                       RT_MANGLER(RTR0Term)	/* r0drv */
-# define RTR0TermForced                                 RT_MANGLER(RTR0TermForced)	/* r0drv */
+# define RTR0AssertPanicSystem                          RT_MANGLER(RTR0AssertPanicSystem)      /* r0drv */
+# define RTR0DbgKrnlInfoOpen                            RT_MANGLER(RTR0DbgKrnlInfoOpen)        /* r0drv */
+# define RTR0DbgKrnlInfoQueryMember                     RT_MANGLER(RTR0DbgKrnlInfoQueryMember) /* r0drv */
+# define RTR0DbgKrnlInfoQuerySize                       RT_MANGLER(RTR0DbgKrnlInfoQuerySize)   /* r0drv */
+# define RTR0DbgKrnlInfoQuerySymbol                     RT_MANGLER(RTR0DbgKrnlInfoQuerySymbol) /* r0drv */
+# define RTR0DbgKrnlInfoRelease                         RT_MANGLER(RTR0DbgKrnlInfoRelease)     /* r0drv */
+# define RTR0DbgKrnlInfoRetain                          RT_MANGLER(RTR0DbgKrnlInfoRetain)      /* r0drv */
+# define RTR0Init                                       RT_MANGLER(RTR0Init)                   /* r0drv */
+# define RTR0MemAreKrnlAndUsrDifferent                  RT_MANGLER(RTR0MemAreKrnlAndUsrDifferent) /* r0drv */
+# define RTR0MemExecDonate                              RT_MANGLER(RTR0MemExecDonate)          /* r0drv */
+# define RTR0MemKernelIsValidAddr                       RT_MANGLER(RTR0MemKernelIsValidAddr)   /* r0drv */
+# define RTR0MemObjAddress                              RT_MANGLER(RTR0MemObjAddress)          /* r0drv */
+# define RTR0MemObjAddressR3                            RT_MANGLER(RTR0MemObjAddressR3)        /* r0drv */
+# define RTR0MemKernelCopyFrom                          RT_MANGLER(RTR0MemKernelCopyFrom)      /* r0drv */
+# define RTR0MemKernelCopyTo                            RT_MANGLER(RTR0MemKernelCopyTo)        /* r0drv */
+# define RTR0MemObjAllocContTag                         RT_MANGLER(RTR0MemObjAllocContTag)     /* r0drv */
+# define RTR0MemObjAllocLowTag                          RT_MANGLER(RTR0MemObjAllocLowTag)      /* r0drv */
+# define RTR0MemObjAllocPageTag                         RT_MANGLER(RTR0MemObjAllocPageTag)     /* r0drv */
+# define RTR0MemObjAllocPhysExTag                       RT_MANGLER(RTR0MemObjAllocPhysExTag)   /* r0drv */
+# define RTR0MemObjAllocPhysNCTag                       RT_MANGLER(RTR0MemObjAllocPhysNCTag)   /* r0drv */
+# define RTR0MemObjAllocPhysTag                         RT_MANGLER(RTR0MemObjAllocPhysTag)     /* r0drv */
+# define RTR0MemObjEnterPhysTag                         RT_MANGLER(RTR0MemObjEnterPhysTag)     /* r0drv */
+# define RTR0MemObjFree                                 RT_MANGLER(RTR0MemObjFree)             /* r0drv */
+# define RTR0MemObjGetPagePhysAddr                      RT_MANGLER(RTR0MemObjGetPagePhysAddr)  /* r0drv */
+# define RTR0MemObjIsMapping                            RT_MANGLER(RTR0MemObjIsMapping)        /* r0drv */
+# define RTR0MemObjLockKernelTag                        RT_MANGLER(RTR0MemObjLockKernelTag)    /* r0drv */
+# define RTR0MemObjLockUserTag                          RT_MANGLER(RTR0MemObjLockUserTag)      /* r0drv */
+# define RTR0MemObjMapKernelExTag                       RT_MANGLER(RTR0MemObjMapKernelExTag)   /* r0drv */
+# define RTR0MemObjMapKernelTag                         RT_MANGLER(RTR0MemObjMapKernelTag)     /* r0drv */
+# define RTR0MemObjMapUserTag                           RT_MANGLER(RTR0MemObjMapUserTag)       /* r0drv */
+# define RTR0MemObjProtect                              RT_MANGLER(RTR0MemObjProtect)          /* r0drv */
+# define RTR0MemObjReserveKernelTag                     RT_MANGLER(RTR0MemObjReserveKernelTag) /* r0drv */
+# define RTR0MemObjReserveUserTag                       RT_MANGLER(RTR0MemObjReserveUserTag)   /* r0drv */
+# define RTR0MemObjSize                                 RT_MANGLER(RTR0MemObjSize)             /* r0drv */
+# define RTR0MemUserCopyFrom                            RT_MANGLER(RTR0MemUserCopyFrom)        /* r0drv */
+# define RTR0MemUserCopyTo                              RT_MANGLER(RTR0MemUserCopyTo)          /* r0drv */
+# define RTR0MemUserIsValidAddr                         RT_MANGLER(RTR0MemUserIsValidAddr)     /* r0drv */
+# define RTR0ProcHandleSelf                             RT_MANGLER(RTR0ProcHandleSelf)         /* r0drv */
+# define RTR0Term                                       RT_MANGLER(RTR0Term)                   /* r0drv */
+# define RTR0TermForced                                 RT_MANGLER(RTR0TermForced)             /* r0drv */
 # define RTR3InitDll                                    RT_MANGLER(RTR3InitDll)
 # define RTR3InitExe                                    RT_MANGLER(RTR3InitExe)
 # define RTR3InitExeNoArguments                         RT_MANGLER(RTR3InitExeNoArguments)
@@ -1598,28 +1599,28 @@
 # define RTSemEventCreate                               RT_MANGLER(RTSemEventCreate)
 # define RTSemEventCreateEx                             RT_MANGLER(RTSemEventCreateEx)
 # define RTSemEventDestroy                              RT_MANGLER(RTSemEventDestroy)
-# define RTSemEventGetResolution                        RT_MANGLER(RTSemEventGetResolution)	/* r0drv */
+# define RTSemEventGetResolution                        RT_MANGLER(RTSemEventGetResolution)    /* r0drv */
 # define RTSemEventMultiAddSignaller                    RT_MANGLER(RTSemEventMultiAddSignaller)
 # define RTSemEventMultiCreate                          RT_MANGLER(RTSemEventMultiCreate)
 # define RTSemEventMultiCreateEx                        RT_MANGLER(RTSemEventMultiCreateEx)
 # define RTSemEventMultiDestroy                         RT_MANGLER(RTSemEventMultiDestroy)
-# define RTSemEventMultiGetResolution                   RT_MANGLER(RTSemEventMultiGetResolution)	/* r0drv */
+# define RTSemEventMultiGetResolution                   RT_MANGLER(RTSemEventMultiGetResolution) /* r0drv */
 # define RTSemEventMultiRemoveSignaller                 RT_MANGLER(RTSemEventMultiRemoveSignaller)
 # define RTSemEventMultiReset                           RT_MANGLER(RTSemEventMultiReset)
 # define RTSemEventMultiSetSignaller                    RT_MANGLER(RTSemEventMultiSetSignaller)
 # define RTSemEventMultiSignal                          RT_MANGLER(RTSemEventMultiSignal)
 # define RTSemEventMultiWait                            RT_MANGLER(RTSemEventMultiWait)
 # define RTSemEventMultiWaitEx                          RT_MANGLER(RTSemEventMultiWaitEx)
-# define RTSemEventMultiWaitEx                          RT_MANGLER(RTSemEventMultiWaitEx)	/* r0drv */
+# define RTSemEventMultiWaitEx                          RT_MANGLER(RTSemEventMultiWaitEx)      /* r0drv */
 # define RTSemEventMultiWaitExDebug                     RT_MANGLER(RTSemEventMultiWaitExDebug)
-# define RTSemEventMultiWaitExDebug                     RT_MANGLER(RTSemEventMultiWaitExDebug)	/* r0drv */
+# define RTSemEventMultiWaitExDebug                     RT_MANGLER(RTSemEventMultiWaitExDebug) /* r0drv */
 # define RTSemEventMultiWaitNoResume                    RT_MANGLER(RTSemEventMultiWaitNoResume)
 # define RTSemEventRemoveSignaller                      RT_MANGLER(RTSemEventRemoveSignaller)
 # define RTSemEventSetSignaller                         RT_MANGLER(RTSemEventSetSignaller)
 # define RTSemEventSignal                               RT_MANGLER(RTSemEventSignal)
 # define RTSemEventWait                                 RT_MANGLER(RTSemEventWait)
-# define RTSemEventWaitEx                               RT_MANGLER(RTSemEventWaitEx)	/* r0drv */
-# define RTSemEventWaitExDebug                          RT_MANGLER(RTSemEventWaitExDebug)	/* r0drv */
+# define RTSemEventWaitEx                               RT_MANGLER(RTSemEventWaitEx)           /* r0drv */
+# define RTSemEventWaitExDebug                          RT_MANGLER(RTSemEventWaitExDebug)      /* r0drv */
 # define RTSemEventWaitNoResume                         RT_MANGLER(RTSemEventWaitNoResume)
 # define RTSemFastMutexCreate                           RT_MANGLER(RTSemFastMutexCreate)
 # define RTSemFastMutexDestroy                          RT_MANGLER(RTSemFastMutexDestroy)
@@ -2043,11 +2044,11 @@
 # define RTThreadCreate                                 RT_MANGLER(RTThreadCreate)
 # define RTThreadCreateF                                RT_MANGLER(RTThreadCreateF)
 # define RTThreadCreateV                                RT_MANGLER(RTThreadCreateV)
-# define RTThreadCtxHookIsEnabled                       RT_MANGLER(RTThreadCtxHookIsEnabled)	/* r0drv */
-# define RTThreadCtxHookCreate                          RT_MANGLER(RTThreadCtxHookCreate)	/* r0drv */
-# define RTThreadCtxHookDestroy                         RT_MANGLER(RTThreadCtxHookDestroy)	/* r0drv */
-# define RTThreadCtxHookDisable                         RT_MANGLER(RTThreadCtxHookDisable)	/* r0drv */
-# define RTThreadCtxHookEnable                          RT_MANGLER(RTThreadCtxHookEnable)	/* r0drv */
+# define RTThreadCtxHookIsEnabled                       RT_MANGLER(RTThreadCtxHookIsEnabled)    /* r0drv */
+# define RTThreadCtxHookCreate                          RT_MANGLER(RTThreadCtxHookCreate)       /* r0drv */
+# define RTThreadCtxHookDestroy                         RT_MANGLER(RTThreadCtxHookDestroy)      /* r0drv */
+# define RTThreadCtxHookDisable                         RT_MANGLER(RTThreadCtxHookDisable)      /* r0drv */
+# define RTThreadCtxHookEnable                          RT_MANGLER(RTThreadCtxHookEnable)       /* r0drv */
 # define RTThreadFromNative                             RT_MANGLER(RTThreadFromNative)
 # define RTThreadGetAffinity                            RT_MANGLER(RTThreadGetAffinity)
 # define RTThreadGetExecutionTimeMilli                  RT_MANGLER(RTThreadGetExecutionTimeMilli)
@@ -2057,19 +2058,19 @@
 # define RTThreadGetReallySleeping                      RT_MANGLER(RTThreadGetReallySleeping)
 # define RTThreadGetState                               RT_MANGLER(RTThreadGetState)
 # define RTThreadGetType                                RT_MANGLER(RTThreadGetType)
-# define RTThreadIsInInterrupt                          RT_MANGLER(RTThreadIsInInterrupt)	/* r0drv */
+# define RTThreadIsInInterrupt                          RT_MANGLER(RTThreadIsInInterrupt)      /* r0drv */
 # define RTThreadIsInitialized                          RT_MANGLER(RTThreadIsInitialized)
 # define RTThreadIsMain                                 RT_MANGLER(RTThreadIsMain)
 # define RTThreadIsSelfAlive                            RT_MANGLER(RTThreadIsSelfAlive)
 # define RTThreadIsSelfKnown                            RT_MANGLER(RTThreadIsSelfKnown)
 # define RTThreadNativeSelf                             RT_MANGLER(RTThreadNativeSelf)
-# define RTThreadPoke                                   RT_MANGLER(RTThreadPoke)	/* not-win not-os2 */
-# define RTThreadPreemptDisable                         RT_MANGLER(RTThreadPreemptDisable)	/* r0drv */
-# define RTThreadPreemptIsEnabled                       RT_MANGLER(RTThreadPreemptIsEnabled)	/* r0drv */
-# define RTThreadPreemptIsPending                       RT_MANGLER(RTThreadPreemptIsPending)	/* r0drv */
-# define RTThreadPreemptIsPendingTrusty                 RT_MANGLER(RTThreadPreemptIsPendingTrusty)	/* r0drv */
-# define RTThreadPreemptIsPossible                      RT_MANGLER(RTThreadPreemptIsPossible)	/* r0drv */
-# define RTThreadPreemptRestore                         RT_MANGLER(RTThreadPreemptRestore)	/* r0drv */
+# define RTThreadPoke                                   RT_MANGLER(RTThreadPoke) /* not-win not-os2 */
+# define RTThreadPreemptDisable                         RT_MANGLER(RTThreadPreemptDisable)     /* r0drv */
+# define RTThreadPreemptIsEnabled                       RT_MANGLER(RTThreadPreemptIsEnabled)   /* r0drv */
+# define RTThreadPreemptIsPending                       RT_MANGLER(RTThreadPreemptIsPending)   /* r0drv */
+# define RTThreadPreemptIsPendingTrusty                 RT_MANGLER(RTThreadPreemptIsPendingTrusty) /* r0drv */
+# define RTThreadPreemptIsPossible                      RT_MANGLER(RTThreadPreemptIsPossible)  /* r0drv */
+# define RTThreadPreemptRestore                         RT_MANGLER(RTThreadPreemptRestore)     /* r0drv */
 # define RTThreadSelf                                   RT_MANGLER(RTThreadSelf)
 # define RTThreadSelfAutoAdopt                          RT_MANGLER(RTThreadSelfAutoAdopt)
 # define RTThreadSelfName                               RT_MANGLER(RTThreadSelfName)
@@ -2152,15 +2153,15 @@
 # define RTTimerCreate                                  RT_MANGLER(RTTimerCreate)
 # define RTTimerCreateEx                                RT_MANGLER(RTTimerCreateEx)
 # define RTTimerDestroy                                 RT_MANGLER(RTTimerDestroy)
-# define RTTimerGetSystemGranularity                    RT_MANGLER(RTTimerGetSystemGranularity)	/* r0drv */
+# define RTTimerGetSystemGranularity                    RT_MANGLER(RTTimerGetSystemGranularity) /* r0drv */
 # define RTTimerLRCreate                                RT_MANGLER(RTTimerLRCreate)
 # define RTTimerLRCreateEx                              RT_MANGLER(RTTimerLRCreateEx)
 # define RTTimerLRDestroy                               RT_MANGLER(RTTimerLRDestroy)
 # define RTTimerLRStart                                 RT_MANGLER(RTTimerLRStart)
 # define RTTimerLRStop                                  RT_MANGLER(RTTimerLRStop)
 # define RTTimerLRChangeInterval                        RT_MANGLER(RTTimerLRChangeInterval)
-# define RTTimerReleaseSystemGranularity                RT_MANGLER(RTTimerReleaseSystemGranularity)	/* r0drv */
-# define RTTimerRequestSystemGranularity                RT_MANGLER(RTTimerRequestSystemGranularity)	/* r0drv */
+# define RTTimerReleaseSystemGranularity                RT_MANGLER(RTTimerReleaseSystemGranularity) /* r0drv */
+# define RTTimerRequestSystemGranularity                RT_MANGLER(RTTimerRequestSystemGranularity) /* r0drv */
 # define RTTimerStart                                   RT_MANGLER(RTTimerStart)
 # define RTTimerStop                                    RT_MANGLER(RTTimerStop)
 # define RTTimeSet                                      RT_MANGLER(RTTimeSet)
@@ -3443,15 +3444,16 @@
 # define RTCrX509PolicyQualifierInfos_Erase             RT_MANGLER(RTCrX509PolicyQualifierInfos_Erase)
 # define RTCrX509PolicyQualifierInfos_InsertEx          RT_MANGLER(RTCrX509PolicyQualifierInfos_InsertEx)
 
+
 /*
  * Stable variables (alphabetical order):
  */
-# define g_apfnRTZlibDeps                               RT_MANGLER(g_apfnRTZlibDeps)	/* os2 win solaris */
+# define g_apfnRTZlibDeps                               RT_MANGLER(g_apfnRTZlibDeps) /* os2 win solaris */
 # define g_aRTUniFlagsRanges                            RT_MANGLER(g_aRTUniFlagsRanges)
 # define g_aRTUniLowerRanges                            RT_MANGLER(g_aRTUniLowerRanges)
 # define g_aRTUniUpperRanges                            RT_MANGLER(g_aRTUniUpperRanges)
 # define g_fRTAlignmentChecks                           RT_MANGLER(g_fRTAlignmentChecks)
-# define g_hKrnlDbgInfo                                 RT_MANGLER(g_hKrnlDbgInfo)	/* solaris */
+# define g_hKrnlDbgInfo                                 RT_MANGLER(g_hKrnlDbgInfo) /* solaris */
 # define g_pStdErr                                      RT_MANGLER(g_pStdErr)
 # define g_pStdIn                                       RT_MANGLER(g_pStdIn)
 # define g_pStdOut                                      RT_MANGLER(g_pStdOut)
@@ -3477,7 +3479,7 @@
 # define g_aRTCrX509CertificateMarkers                  RT_MANGLER(g_aRTCrX509CertificateMarkers)
 # define g_cRTCrX509CertificateMarkers                  RT_MANGLER(g_cRTCrX509CertificateMarkers)
 
-#if 0				/* Disabled for now as I'm not sure the assmbler supports mangling yet. */
+#if 0 /* Disabled for now as I'm not sure the assmbler supports mangling yet. */
 # define g_abRTZeroPage                                 RT_MANGLER(g_abRTZeroPage)
 # define g_abRTZero4K                                   RT_MANGLER(g_abRTZero4K)
 # define g_abRTZero8K                                   RT_MANGLER(g_abRTZero8K)
@@ -3486,10 +3488,12 @@
 # define g_abRTZero64K                                  RT_MANGLER(g_abRTZero64K)
 #endif
 
+
 /*
  * Unstable functions (alphabetical order):
  */
 /** @todo the list is incomplete! See the .def files + libraries. */
+
 
 /*
  * Unstable variables (alphabetical order):
@@ -3499,3 +3503,4 @@
 #endif /* !DOXYGEN_RUNNING */
 
 #endif
+

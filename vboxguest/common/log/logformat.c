@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -40,16 +41,15 @@
 #include <iprt/stdarg.h>
 #include <iprt/string.h>
 
+
 /*********************************************************************************************************************************
 *   Internal Functions                                                                                                           *
 *********************************************************************************************************************************/
-static DECLCALLBACK(size_t) rtlogFormatStr(void *pvArg,
-					   PFNRTSTROUTPUT pfnOutput,
-					   void *pvArgOutput,
-					   const char **ppszFormat,
-					   va_list * pArgs, int cchWidth,
-					   int cchPrecision, unsigned fFlags,
-					   char chArgSize);
+static DECLCALLBACK(size_t) rtlogFormatStr(void *pvArg, PFNRTSTROUTPUT pfnOutput,
+                                           void *pvArgOutput, const char **ppszFormat,
+                                           va_list *pArgs, int cchWidth, int cchPrecision,
+                                           unsigned fFlags, char chArgSize);
+
 
 /**
  * Partial vsprintf worker implementation.
@@ -62,14 +62,12 @@ static DECLCALLBACK(size_t) rtlogFormatStr(void *pvArg,
  * @param   pszFormat   Format string.
  * @param   args        Argument list.
  */
-RTDECL(size_t) RTLogFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArg,
-			    const char *pszFormat, va_list args)
+RTDECL(size_t) RTLogFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArg, const char *pszFormat, va_list args)
 {
-	return RTStrFormatV(pfnOutput, pvArg, rtlogFormatStr, NULL, pszFormat,
-			    args);
+    return RTStrFormatV(pfnOutput, pvArg, rtlogFormatStr, NULL, pszFormat, args);
 }
-
 RT_EXPORT_SYMBOL(RTLogFormatV);
+
 
 /**
  * Callback to format VBox formatting extentions.
@@ -87,27 +85,16 @@ RT_EXPORT_SYMBOL(RTLogFormatV);
  * @param   fFlags          Flags (RTSTR_NTFS_*).
  * @param   chArgSize       The argument size specifier, 'l' or 'L'.
  */
-static DECLCALLBACK(size_t) rtlogFormatStr(void *pvArg,
-					   PFNRTSTROUTPUT pfnOutput,
-					   void *pvArgOutput,
-					   const char **ppszFormat,
-					   va_list * pArgs, int cchWidth,
-					   int cchPrecision, unsigned fFlags,
-					   char chArgSize)
+static DECLCALLBACK(size_t) rtlogFormatStr(void *pvArg, PFNRTSTROUTPUT pfnOutput, void *pvArgOutput,
+                                           const char **ppszFormat, va_list *pArgs, int cchWidth,
+                                           int cchPrecision, unsigned fFlags, char chArgSize)
 {
-	char ch = *(*ppszFormat)++;
+    char ch = *(*ppszFormat)++;
 
-	AssertMsgFailed(("Invalid logger format type '%%%c%.10s'!\n", ch,
-			 *ppszFormat));
-	NOREF(ch);
+    AssertMsgFailed(("Invalid logger format type '%%%c%.10s'!\n", ch, *ppszFormat)); NOREF(ch);
 
-	NOREF(pvArg);
-	NOREF(pfnOutput);
-	NOREF(pvArgOutput);
-	NOREF(pArgs);
-	NOREF(cchWidth);
-	NOREF(cchPrecision);
-	NOREF(fFlags);
-	NOREF(chArgSize);
-	return 0;
+    NOREF(pvArg); NOREF(pfnOutput); NOREF(pvArgOutput); NOREF(pArgs); NOREF(cchWidth);
+    NOREF(cchPrecision); NOREF(fFlags); NOREF(chArgSize);
+    return 0;
 }
+

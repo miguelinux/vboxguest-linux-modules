@@ -29,7 +29,7 @@
 
 #ifndef RT_OS_WINDOWS
 # error "Don't include this file."
-#else /* RT_OS_WINDOWS */
+#else  /* RT_OS_WINDOWS */
 /* Save LOG_ENABLED state, because "VBox/rt/log.h"
  * may undefine it for IN_RING0 code.
  */
@@ -54,6 +54,6 @@
 #  undef __LOG_ENABLED_SAVED__
 # endif
 
-#endif /* RT_OS_WINDOWS */
+#endif  /* RT_OS_WINDOWS */
 
 #endif /* !__VBOXGUESTLOG__H */

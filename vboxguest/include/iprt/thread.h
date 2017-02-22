@@ -30,47 +30,51 @@
 #include <iprt/types.h>
 #include <iprt/stdarg.h>
 
+
 RT_C_DECLS_BEGIN
+
 /** @defgroup grp_rt_thread    RTThread - Thread Management
  * @ingroup grp_rt
  * @{
  */
+
 /**
  * The thread state.
  */
-    typedef enum RTTHREADSTATE {
+typedef enum RTTHREADSTATE
+{
     /** The usual invalid 0 value. */
-	RTTHREADSTATE_INVALID = 0,
+    RTTHREADSTATE_INVALID = 0,
     /** The thread is being initialized. */
-	RTTHREADSTATE_INITIALIZING,
+    RTTHREADSTATE_INITIALIZING,
     /** The thread has terminated */
-	RTTHREADSTATE_TERMINATED,
+    RTTHREADSTATE_TERMINATED,
     /** Probably running. */
-	RTTHREADSTATE_RUNNING,
+    RTTHREADSTATE_RUNNING,
 
     /** Waiting on a critical section. */
-	RTTHREADSTATE_CRITSECT,
+    RTTHREADSTATE_CRITSECT,
     /** Waiting on a event semaphore. */
-	RTTHREADSTATE_EVENT,
+    RTTHREADSTATE_EVENT,
     /** Waiting on a event multiple wakeup semaphore. */
-	RTTHREADSTATE_EVENT_MULTI,
+    RTTHREADSTATE_EVENT_MULTI,
     /** Waiting on a fast mutex. */
-	RTTHREADSTATE_FAST_MUTEX,
+    RTTHREADSTATE_FAST_MUTEX,
     /** Waiting on a mutex. */
-	RTTHREADSTATE_MUTEX,
+    RTTHREADSTATE_MUTEX,
     /** Waiting on a read write semaphore, read (shared) access. */
-	RTTHREADSTATE_RW_READ,
+    RTTHREADSTATE_RW_READ,
     /** Waiting on a read write semaphore, write (exclusive) access. */
-	RTTHREADSTATE_RW_WRITE,
+    RTTHREADSTATE_RW_WRITE,
     /** The thread is sleeping. */
-	RTTHREADSTATE_SLEEP,
+    RTTHREADSTATE_SLEEP,
     /** Waiting on a spin mutex. */
-	RTTHREADSTATE_SPIN_MUTEX,
+    RTTHREADSTATE_SPIN_MUTEX,
     /** End of the thread states. */
-	RTTHREADSTATE_END,
+    RTTHREADSTATE_END,
 
     /** The usual 32-bit size hack. */
-	RTTHREADSTATE_32BIT_HACK = 0x7fffffff
+    RTTHREADSTATE_32BIT_HACK = 0x7fffffff
 } RTTHREADSTATE;
 
 /** Checks if a thread state indicates that the thread is sleeping. */
@@ -83,27 +87,28 @@ RT_C_DECLS_BEGIN
  *
  * The types in are placed in a rough order of ascending priority.
  */
-typedef enum RTTHREADTYPE {
+typedef enum RTTHREADTYPE
+{
     /** Invalid type. */
-	RTTHREADTYPE_INVALID = 0,
+    RTTHREADTYPE_INVALID = 0,
     /** Infrequent poller thread.
      * This type of thread will sleep for the most of the time, and do
      * infrequent polls on resources at 0.5 sec or higher intervals.
      */
-	RTTHREADTYPE_INFREQUENT_POLLER,
+    RTTHREADTYPE_INFREQUENT_POLLER,
     /** Main heavy worker thread.
      * Thread of this type is driving asynchronous tasks in the Main
      * API which takes a long time and might involve a bit of CPU. Like
      * for instance creating a fixed sized VDI.
      */
-	RTTHREADTYPE_MAIN_HEAVY_WORKER,
+    RTTHREADTYPE_MAIN_HEAVY_WORKER,
     /** The emulation thread type.
      * While being a thread with very high workload it still is vital
      * that it gets scheduled frequently. When possible all other thread
      * types except DEFAULT and GUI should interrupt this one ASAP when
      * they become ready.
      */
-	RTTHREADTYPE_EMULATION,
+    RTTHREADTYPE_EMULATION,
     /** The default thread type.
      * Since it doesn't say much about the purpose of the thread
      * nothing special is normally done to the scheduling. This type
@@ -111,51 +116,52 @@ typedef enum RTTHREADTYPE {
      * The main thread is registered with default type during RTR3Init()
      * and that's what the default process priority is derived from.
      */
-	RTTHREADTYPE_DEFAULT,
+    RTTHREADTYPE_DEFAULT,
     /** The GUI thread type
      * The GUI normally have a low workload but is frequently scheduled
      * to handle events. When possible the scheduler should not leave
      * threads of this kind waiting for too long (~50ms).
      */
-	RTTHREADTYPE_GUI,
+    RTTHREADTYPE_GUI,
     /** Main worker thread.
      * Thread of this type is driving asynchronous tasks in the Main API.
      * In most cases this means little work an a lot of waiting.
      */
-	RTTHREADTYPE_MAIN_WORKER,
+    RTTHREADTYPE_MAIN_WORKER,
     /** VRDP I/O thread.
      * These threads are I/O threads in the RDP server will hang around
      * waiting for data, process it and pass it on.
      */
-	RTTHREADTYPE_VRDP_IO,
+    RTTHREADTYPE_VRDP_IO,
     /** The debugger type.
      * Threads involved in servicing the debugger. It must remain
      * responsive even when things are running wild in.
      */
-	RTTHREADTYPE_DEBUGGER,
+    RTTHREADTYPE_DEBUGGER,
     /** Message pump thread.
      * Thread pumping messages from one thread/process to another
      * thread/process. The workload is very small, most of the time
      * it's blocked waiting for messages to be produced or processed.
      * This type of thread will be favored after I/O threads.
      */
-	RTTHREADTYPE_MSG_PUMP,
+    RTTHREADTYPE_MSG_PUMP,
     /** The I/O thread type.
      * Doing I/O means shuffling data, waiting for request to arrive and
      * for them to complete. The thread should be favored when competing
      * with any other threads except timer threads.
      */
-	RTTHREADTYPE_IO,
+    RTTHREADTYPE_IO,
     /** The timer thread type.
      * A timer thread is mostly waiting for the timer to tick
      * and then perform a little bit of work. Accuracy is important here,
      * so the thread should be favoured over all threads. If premention can
      * be configured at thread level, it could be made very short.
      */
-	RTTHREADTYPE_TIMER,
+    RTTHREADTYPE_TIMER,
     /** Only used for validation. */
-	RTTHREADTYPE_END
+    RTTHREADTYPE_END
 } RTTHREADTYPE;
+
 
 #ifndef IN_RC
 
@@ -219,6 +225,8 @@ RTDECL(int) RTThreadSleepNoLog(RTMSINTERVAL cMillies);
  */
 RTDECL(bool) RTThreadYield(void);
 
+
+
 /**
  * Thread function.
  *
@@ -233,18 +241,20 @@ typedef FNRTTHREAD *PFNRTTHREAD;
 /**
  * Thread creation flags.
  */
-typedef enum RTTHREADFLAGS {
+typedef enum RTTHREADFLAGS
+{
     /** This flag is used to keep the thread structure around so it can
      * be waited on after termination.  @sa RTThreadWait and
      * RTThreadWaitNoResume.  Not required for RTThreadUserWait and friends!
      */
-	RTTHREADFLAGS_WAITABLE = RT_BIT(0),
+    RTTHREADFLAGS_WAITABLE = RT_BIT(0),
     /** The bit number corresponding to the RTTHREADFLAGS_WAITABLE mask. */
-	RTTHREADFLAGS_WAITABLE_BIT = 0,
+    RTTHREADFLAGS_WAITABLE_BIT = 0,
 
     /** Mask of valid flags, use for validation. */
-	RTTHREADFLAGS_MASK = RT_BIT(0)
+    RTTHREADFLAGS_MASK = RT_BIT(0)
 } RTTHREADFLAGS;
+
 
 /**
  * Create a new thread.
@@ -263,18 +273,14 @@ typedef enum RTTHREADFLAGS {
  * @remark  When called in Ring-0, this API will create a new kernel thread and not a thread in
  *          the context of the calling process.
  */
-RTDECL(int) RTThreadCreate(PRTTHREAD pThread, PFNRTTHREAD pfnThread,
-			   void *pvUser, size_t cbStack, RTTHREADTYPE enmType,
-			   unsigned fFlags, const char *pszName);
-#ifndef RT_OS_LINUX		/* XXX crashes genksyms at least on 32-bit Linux hosts */
+RTDECL(int) RTThreadCreate(PRTTHREAD pThread, PFNRTTHREAD pfnThread, void *pvUser, size_t cbStack,
+                           RTTHREADTYPE enmType, unsigned fFlags, const char *pszName);
+#ifndef RT_OS_LINUX /* XXX crashes genksyms at least on 32-bit Linux hosts */
 /** @copydoc RTThreadCreate */
-typedef DECLCALLBACKPTR(int, PFNRTTHREADCREATE) (PRTTHREAD pThread,
-						 PFNRTTHREAD pfnThread,
-						 void *pvUser, size_t cbStack,
-						 RTTHREADTYPE enmType,
-						 unsigned fFlags,
-						 const char *pszName);
+typedef DECLCALLBACKPTR(int, PFNRTTHREADCREATE)(PRTTHREAD pThread, PFNRTTHREAD pfnThread, void *pvUser, size_t cbStack,
+                                                RTTHREADTYPE enmType, unsigned fFlags, const char *pszName);
 #endif
+
 
 /**
  * Create a new thread.
@@ -291,10 +297,8 @@ typedef DECLCALLBACKPTR(int, PFNRTTHREADCREATE) (PRTTHREAD pThread,
  * @param   pszName     Thread name format.
  * @param   va          Format arguments.
  */
-RTDECL(int) RTThreadCreateV(PRTTHREAD pThread, PFNRTTHREAD pfnThread,
-			    void *pvUser, size_t cbStack, RTTHREADTYPE enmType,
-			    uint32_t fFlags, const char *pszNameFmt,
-			    va_list va) RT_IPRT_FORMAT_ATTR(7, 0);
+RTDECL(int) RTThreadCreateV(PRTTHREAD pThread, PFNRTTHREAD pfnThread, void *pvUser, size_t cbStack,
+                            RTTHREADTYPE enmType, uint32_t fFlags, const char *pszNameFmt, va_list va) RT_IPRT_FORMAT_ATTR(7, 0);
 
 /**
  * Create a new thread.
@@ -311,10 +315,8 @@ RTDECL(int) RTThreadCreateV(PRTTHREAD pThread, PFNRTTHREAD pfnThread,
  * @param   pszName     Thread name format.
  * @param   ...         Format arguments.
  */
-RTDECL(int) RTThreadCreateF(PRTTHREAD pThread, PFNRTTHREAD pfnThread,
-			    void *pvUser, size_t cbStack, RTTHREADTYPE enmType,
-			    uint32_t fFlags, const char *pszNameFmt,
-			    ...) RT_IPRT_FORMAT_ATTR(7, 8);
+RTDECL(int) RTThreadCreateF(PRTTHREAD pThread, PFNRTTHREAD pfnThread, void *pvUser, size_t cbStack,
+                            RTTHREADTYPE enmType, uint32_t fFlags, const char *pszNameFmt, ...) RT_IPRT_FORMAT_ATTR(7, 8);
 
 /**
  * Gets the native thread id of a IPRT thread.
@@ -364,8 +366,7 @@ RTDECL(int) RTThreadWait(RTTHREAD Thread, RTMSINTERVAL cMillies, int *prc);
  *                              an indefinite wait.
  * @param       prc             Where to store the return code of the thread. Optional.
  */
-RTDECL(int) RTThreadWaitNoResume(RTTHREAD Thread, RTMSINTERVAL cMillies,
-				 int *prc);
+RTDECL(int) RTThreadWaitNoResume(RTTHREAD Thread, RTMSINTERVAL cMillies, int *prc);
 
 /**
  * Gets the name of the current thread thread.
@@ -524,30 +525,31 @@ RTDECL(bool) RTThreadPreemptIsPossible(void);
  * Preemption state saved by RTThreadPreemptDisable and used by
  * RTThreadPreemptRestore to restore the previous state.
  */
-typedef struct RTTHREADPREEMPTSTATE {
+typedef struct RTTHREADPREEMPTSTATE
+{
     /** In debug builds this will be used to check for cpu migration. */
-	RTCPUID idCpu;
+    RTCPUID         idCpu;
 #  ifdef RT_OS_WINDOWS
     /** The old IRQL. Don't touch! */
-	unsigned char uchOldIrql;
+    unsigned char   uchOldIrql;
     /** Reserved, MBZ. */
-	uint8_t bReserved1;
+    uint8_t         bReserved1;
     /** Reserved, MBZ. */
-	uint8_t bReserved2;
+    uint8_t         bReserved2;
     /** Reserved, MBZ. */
-	uint8_t bReserved3;
+    uint8_t         bReserved3;
 #   define RTTHREADPREEMPTSTATE_INITIALIZER { NIL_RTCPUID, 255, 0, 0, 0 }
 #  elif defined(RT_OS_HAIKU)
     /** The cpu_state. Don't touch! */
-	uint32_t uOldCpuState;
+    uint32_t        uOldCpuState;
 #   define RTTHREADPREEMPTSTATE_INITIALIZER { NIL_RTCPUID, 0 }
 #  elif defined(RT_OS_SOLARIS)
     /** The Old PIL. Don't touch! */
-	uint32_t uOldPil;
+    uint32_t        uOldPil;
 #   define RTTHREADPREEMPTSTATE_INITIALIZER { NIL_RTCPUID, UINT32_MAX }
 #  else
     /** Reserved, MBZ. */
-	uint32_t u32Reserved;
+    uint32_t        u32Reserved;
 #   define RTTHREADPREEMPTSTATE_INITIALIZER { NIL_RTCPUID, 0 }
 #  endif
 } RTTHREADPREEMPTSTATE;
@@ -583,18 +585,20 @@ RTDECL(void) RTThreadPreemptRestore(PRTTHREADPREEMPTSTATE pState);
  */
 RTDECL(bool) RTThreadIsInInterrupt(RTTHREAD hThread);
 
+
 /**
  * Thread context swithcing events.
  */
-typedef enum RTTHREADCTXEVENT {
+typedef enum RTTHREADCTXEVENT
+{
     /** This thread is being scheduled out on the current CPU (includes preemption,
      * waiting, sleep and whatever else may trigger scheduling). */
-	RTTHREADCTXEVENT_OUT = 0,
+    RTTHREADCTXEVENT_OUT = 0,
     /** This thread is being scheduled in on the current CPU and will resume
      * execution. */
-	RTTHREADCTXEVENT_IN,
+    RTTHREADCTXEVENT_IN,
     /** The usual 32-bit size hack. */
-	RTTHREADCTXEVENT_32BIT_HACK = 0x7fffffff
+    RTTHREADCTXEVENT_32BIT_HACK = 0x7fffffff
 } RTTHREADCTXEVENT;
 
 /**
@@ -611,8 +615,7 @@ typedef enum RTTHREADCTXEVENT {
  *                      events, we may add more (thread exit, ++) later.
  * @param   pvUser      User argument.
  */
-typedef DECLCALLBACK(void) FNRTTHREADCTXHOOK(RTTHREADCTXEVENT enmEvent,
-					     void *pvUser);
+typedef DECLCALLBACK(void) FNRTTHREADCTXHOOK(RTTHREADCTXEVENT enmEvent, void *pvUser);
 /** Pointer to a context switching hook. */
 typedef FNRTTHREADCTXHOOK *PFNRTTHREADCTXHOOK;
 
@@ -630,8 +633,7 @@ typedef FNRTTHREADCTXHOOK *PFNRTTHREADCTXHOOK;
  * @param   pvUser          User argument that will be passed to @a pfnCallback.
  * @remarks Preemption must be enabled.
  */
-RTDECL(int) RTThreadCtxHookCreate(PRTTHREADCTXHOOK phCtxHook, uint32_t fFlags,
-				  PFNRTTHREADCTXHOOK pfnCallback, void *pvUser);
+RTDECL(int) RTThreadCtxHookCreate(PRTTHREADCTXHOOK phCtxHook, uint32_t fFlags, PFNRTTHREADCTXHOOK pfnCallback, void *pvUser);
 
 /**
  * Destroys a thread context switching hook.
@@ -684,7 +686,8 @@ RTDECL(int) RTThreadCtxHookDisable(RTTHREADCTXHOOK hCtxHook);
  */
 RTDECL(bool) RTThreadCtxHookIsEnabled(RTTHREADCTXHOOK hCtxHook);
 
-# endif	/* IN_RING0 */
+# endif /* IN_RING0 */
+
 
 # ifdef IN_RING3
 
@@ -697,8 +700,7 @@ RTDECL(bool) RTThreadCtxHookIsEnabled(RTTHREADCTXHOOK hCtxHook);
  * @param   pszName         The thread name. Optional
  * @param   pThread         Where to store the thread handle. Optional.
  */
-RTDECL(int) RTThreadAdopt(RTTHREADTYPE enmType, unsigned fFlags,
-			  const char *pszName, PRTTHREAD pThread);
+RTDECL(int) RTThreadAdopt(RTTHREADTYPE enmType, unsigned fFlags, const char *pszName, PRTTHREAD pThread);
 
 /**
  * Get the thread handle of the current thread, automatically adopting alien
@@ -754,8 +756,7 @@ RTDECL(void) RTThreadUnblocked(RTTHREAD hThread, RTTHREADSTATE enmCurState);
  * @param   fReallySleeping Really going to sleep now.  Use false before calls
  *                          to other IPRT synchronization methods.
  */
-RTDECL(void) RTThreadBlocking(RTTHREAD hThread, RTTHREADSTATE enmState,
-			      bool fReallySleeping);
+RTDECL(void) RTThreadBlocking(RTTHREAD hThread, RTTHREADSTATE enmState, bool fReallySleeping);
 
 /**
  * Get the current thread state.
@@ -786,25 +787,28 @@ RTDECL(RTTHREADSTATE) RTThreadGetReallySleeping(RTTHREAD hThread);
  */
 RTDECL(const char *) RTThreadStateName(RTTHREADSTATE enmState);
 
+
 /**
  * Native thread states returned by RTThreadNativeState.
  */
-typedef enum RTTHREADNATIVESTATE {
+typedef enum RTTHREADNATIVESTATE
+{
     /** Invalid thread handle. */
-	RTTHREADNATIVESTATE_INVALID = 0,
+    RTTHREADNATIVESTATE_INVALID = 0,
     /** Unable to determine the thread state. */
-	RTTHREADNATIVESTATE_UNKNOWN,
+    RTTHREADNATIVESTATE_UNKNOWN,
     /** The thread is running. */
-	RTTHREADNATIVESTATE_RUNNING,
+    RTTHREADNATIVESTATE_RUNNING,
     /** The thread is blocked. */
-	RTTHREADNATIVESTATE_BLOCKED,
+    RTTHREADNATIVESTATE_BLOCKED,
     /** The thread is suspended / stopped. */
-	RTTHREADNATIVESTATE_SUSPENDED,
+    RTTHREADNATIVESTATE_SUSPENDED,
     /** The thread has terminated. */
-	RTTHREADNATIVESTATE_TERMINATED,
+    RTTHREADNATIVESTATE_TERMINATED,
     /** Make sure it's a 32-bit type. */
-	RTTHREADNATIVESTATE_32BIT_HACK = 0x7fffffff
+    RTTHREADNATIVESTATE_32BIT_HACK = 0x7fffffff
 } RTTHREADNATIVESTATE;
+
 
 /**
  * Get the native state of a thread.
@@ -817,6 +821,7 @@ typedef enum RTTHREADNATIVESTATE {
  */
 RTDECL(RTTHREADNATIVESTATE) RTThreadGetNativeState(RTTHREAD hThread);
 
+
 /**
  * Get the execution times of the specified thread
  *
@@ -825,8 +830,7 @@ RTDECL(RTTHREADNATIVESTATE) RTThreadGetNativeState(RTTHREAD hThread);
  * @param   pUserTime           User execution time in ms (out)
  *
  */
-RTR3DECL(int) RTThreadGetExecutionTimeMilli(uint64_t * pKernelTime,
-					    uint64_t * pUserTime);
+RTR3DECL(int) RTThreadGetExecutionTimeMilli(uint64_t *pKernelTime, uint64_t *pUserTime);
 
 /** @name Thread Local Storage
  * @{
@@ -928,10 +932,12 @@ RTR3DECL(int) RTTlsSet(RTTLS iTls, void *pvValue);
 
 /** @} */
 
-# endif	/* IN_RING3 */
-# endif	/* !IN_RC */
+# endif /* IN_RING3 */
+# endif /* !IN_RC */
 
 /** @} */
 
 RT_C_DECLS_END
+
 #endif
+

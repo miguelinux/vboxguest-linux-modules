@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -35,57 +36,60 @@
 # include <VBox/VBoxGuestLib.h>
 #endif
 
+
 /*********************************************************************************************************************************
 *   Internal Functions                                                                                                           *
 *********************************************************************************************************************************/
-static DECLCALLBACK(size_t) rtLogBackdoorOutput(void *pv, const char *pachChars,
-						size_t cbChars);
+static DECLCALLBACK(size_t) rtLogBackdoorOutput(void *pv, const char *pachChars, size_t cbChars);
+
 
 RTDECL(size_t) RTLogBackdoorPrintf(const char *pszFormat, ...)
 {
-	va_list args;
-	size_t cb;
+    va_list args;
+    size_t cb;
 
-	va_start(args, pszFormat);
-	cb = RTLogBackdoorPrintfV(pszFormat, args);
-	va_end(args);
+    va_start(args, pszFormat);
+    cb = RTLogBackdoorPrintfV(pszFormat, args);
+    va_end(args);
 
-	return cb;
+    return cb;
 }
 
 RT_EXPORT_SYMBOL(RTLogBackdoorPrintf);
 
+
 RTDECL(size_t) RTLogBackdoorPrintfV(const char *pszFormat, va_list args)
 {
-	return RTLogFormatV(rtLogBackdoorOutput, NULL, pszFormat, args);
+    return RTLogFormatV(rtLogBackdoorOutput, NULL, pszFormat, args);
 }
 
 RT_EXPORT_SYMBOL(RTLogBackdoorPrintfV);
+
 
 /**
  * Callback for RTLogFormatV which writes to the backdoor.
  * See PFNRTSTROUTPUT() for details.
  */
-static DECLCALLBACK(size_t) rtLogBackdoorOutput(void *pvArg,
-						const char *pachChars,
-						size_t cbChars)
+static DECLCALLBACK(size_t) rtLogBackdoorOutput(void *pvArg, const char *pachChars, size_t cbChars)
 {
-	RT_NOREF_PV(pvArg);
-	RTLogWriteUser(pachChars, cbChars);
-	return cbChars;
+    RT_NOREF_PV(pvArg);
+    RTLogWriteUser(pachChars, cbChars);
+    return cbChars;
 }
 
-RTDECL(void)RTLogWriteUser(const char *pch, size_t cb)
+
+RTDECL(void) RTLogWriteUser(const char *pch, size_t cb)
 {
 #ifdef IN_GUEST_R3
-	VbglR3WriteLog(pch, cb);
-#else /* !IN_GUEST_R3 */
-	const uint8_t *pau8 = (const uint8_t *)pch;
-	if (cb > 1)
-		ASMOutStrU8(RTLOG_DEBUG_PORT, pau8, cb);
-	else if (cb)
-		ASMOutU8(RTLOG_DEBUG_PORT, *pau8);
+    VbglR3WriteLog(pch, cb);
+#else  /* !IN_GUEST_R3 */
+    const uint8_t *pau8 = (const uint8_t *)pch;
+    if (cb > 1)
+        ASMOutStrU8(RTLOG_DEBUG_PORT, pau8, cb);
+    else if (cb)
+        ASMOutU8(RTLOG_DEBUG_PORT, *pau8);
 #endif /* !IN_GUEST_R3 */
 }
 
 RT_EXPORT_SYMBOL(RTLogWriteUser);
+

@@ -40,21 +40,21 @@
 # undef ExFreePool
 #endif
 
-typedef struct _VBGLDRIVER {
+typedef struct _VBGLDRIVER
+{
 #ifdef RT_OS_WINDOWS
-	PDEVICE_OBJECT pDeviceObject;
-	PFILE_OBJECT pFileObject;
+    PDEVICE_OBJECT pDeviceObject;
+    PFILE_OBJECT pFileObject;
 #elif defined (RT_OS_OS2)
-	uint32_t u32Session;
-			 /**< just for sanity checking. */
-#else				/* PORTME */
-	void *pvOpaque;
+    uint32_t u32Session; /**< just for sanity checking. */
+#else /* PORTME */
+    void *pvOpaque;
 #endif
 } VBGLDRIVER;
 
-int vbglLockLinear(void **ppvCtx, void *pv, uint32_t cb, bool fWriteAccess,
-		   uint32_t fFlags);
+int  vbglLockLinear(void **ppvCtx, void *pv, uint32_t cb, bool fWriteAccess, uint32_t fFlags);
 void vbglUnlockLinear(void *pvCtx, void *pv, uint32_t cb);
+
 
 #ifndef VBGL_VBOXGUEST
 
@@ -65,7 +65,7 @@ void vbglUnlockLinear(void *pvCtx, void *pv, uint32_t cb);
  *
  * @return VBox status code
  */
-int vbglDriverOpen(VBGLDRIVER * pDriver);
+int vbglDriverOpen(VBGLDRIVER *pDriver);
 
 /**
  * Answers whether the VBoxGuest driver is opened
@@ -74,7 +74,7 @@ int vbglDriverOpen(VBGLDRIVER * pDriver);
  *
  * @return true - if opened, false - otherwise
  */
-bool vbglDriverIsOpened(VBGLDRIVER * pDriver);
+bool vbglDriverIsOpened(VBGLDRIVER *pDriver);
 
 /**
  * Call VBoxGuest driver.
@@ -86,8 +86,7 @@ bool vbglDriverIsOpened(VBGLDRIVER * pDriver);
  *
  * @returns VBox status code
  */
-int vbglDriverIOCtl(VBGLDRIVER * pDriver, uint32_t u32Function, void *pvData,
-		    uint32_t cbData);
+int vbglDriverIOCtl(VBGLDRIVER *pDriver, uint32_t u32Function, void *pvData, uint32_t cbData);
 
 /**
  * Close VBoxGuest driver.
@@ -96,8 +95,9 @@ int vbglDriverIOCtl(VBGLDRIVER * pDriver, uint32_t u32Function, void *pvData,
  *
  * @returns VBox status code
  */
-void vbglDriverClose(VBGLDRIVER * pDriver);
+void vbglDriverClose(VBGLDRIVER *pDriver);
 
 #endif
 
 #endif
+

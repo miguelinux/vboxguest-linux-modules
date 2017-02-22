@@ -40,7 +40,7 @@ static char sccsid[] = "@(#)moddi3.c	8.1 (Berkeley) 6/4/93";
 #else
 __RCSID("$NetBSD: moddi3.c,v 1.8 2005/12/11 12:24:37 christos Exp $");
 #endif
-	 #endif*//* LIBC_SCCS and not lint */
+#endif*/ /* LIBC_SCCS and not lint */
 
 #include "quad.h"
 
@@ -49,8 +49,9 @@ __RCSID("$NetBSD: moddi3.c,v 1.8 2005/12/11 12:24:37 christos Exp $");
  *
  * XXX	we assume a % b < 0 iff a < 0, but this is actually machine-dependent.
  */
-quad_t __moddi3(a, b)
-quad_t a, b;
+quad_t
+__moddi3(a, b)
+	quad_t a, b;
 {
 	u_quad_t ua, ub, ur;
 	int neg = 0;

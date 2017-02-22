@@ -30,13 +30,15 @@
 #include <iprt/process.h>
 #include <iprt/param.h>
 
-RT_C_DECLS_BEGIN extern DECLHIDDEN(RTPROCESS) g_ProcessSelf;
-extern DECLHIDDEN(RTPROCPRIORITY) g_enmProcessPriority;
-extern DECLHIDDEN(char) g_szrtProcExePath[RTPATH_MAX];
-extern DECLHIDDEN(size_t) g_cchrtProcExePath;
-extern DECLHIDDEN(size_t) g_cchrtProcDir;
-extern DECLHIDDEN(size_t) g_offrtProcName;
-extern DECLHIDDEN(bool volatile) g_frtAtExitCalled;
+RT_C_DECLS_BEGIN
+
+extern DECLHIDDEN(RTPROCESS)        g_ProcessSelf;
+extern DECLHIDDEN(RTPROCPRIORITY)   g_enmProcessPriority;
+extern DECLHIDDEN(char)             g_szrtProcExePath[RTPATH_MAX];
+extern DECLHIDDEN(size_t)           g_cchrtProcExePath;
+extern DECLHIDDEN(size_t)           g_cchrtProcDir;
+extern DECLHIDDEN(size_t)           g_offrtProcName;
+extern DECLHIDDEN(bool volatile)    g_frtAtExitCalled;
 
 /**
  * Validates and sets the process priority.
@@ -62,4 +64,6 @@ DECLHIDDEN(int) rtProcNativeSetPriority(RTPROCPRIORITY enmPriority);
 DECLHIDDEN(int) rtProcInitExePath(char *pszPath, size_t cchPath);
 
 RT_C_DECLS_END
+
 #endif
+

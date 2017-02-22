@@ -24,6 +24,7 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
+
 /*********************************************************************************************************************************
 *   Header Files                                                                                                                 *
 *********************************************************************************************************************************/
@@ -33,67 +34,70 @@
 #include <iprt/mem.h>
 #include <iprt/err.h>
 
+
 RTR0DECL(int) RTR0MemUserCopyFrom(void *pvDst, RTR3PTR R3PtrSrc, size_t cb)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
-	if (RT_LIKELY(copy_from_user(pvDst, (void *)R3PtrSrc, cb) == 0)) {
-		IPRT_LINUX_RESTORE_EFL_AC();
-		return VINF_SUCCESS;
-	}
-	IPRT_LINUX_RESTORE_EFL_AC();
-	return VERR_ACCESS_DENIED;
+    IPRT_LINUX_SAVE_EFL_AC();
+    if (RT_LIKELY(copy_from_user(pvDst, (void *)R3PtrSrc, cb) == 0))
+    {
+        IPRT_LINUX_RESTORE_EFL_AC();
+        return VINF_SUCCESS;
+    }
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return VERR_ACCESS_DENIED;
 }
-
 RT_EXPORT_SYMBOL(RTR0MemUserCopyFrom);
 
-RTR0DECL(int)RTR0MemUserCopyTo(RTR3PTR R3PtrDst, void const *pvSrc, size_t cb)
-{
-	IPRT_LINUX_SAVE_EFL_AC();
-	if (RT_LIKELY(copy_to_user((void *)R3PtrDst, pvSrc, cb) == 0)) {
-		IPRT_LINUX_RESTORE_EFL_AC();
-		return VINF_SUCCESS;
-	}
-	IPRT_LINUX_RESTORE_EFL_AC();
-	return VERR_ACCESS_DENIED;
-}
 
+RTR0DECL(int) RTR0MemUserCopyTo(RTR3PTR R3PtrDst, void const *pvSrc, size_t cb)
+{
+    IPRT_LINUX_SAVE_EFL_AC();
+    if (RT_LIKELY(copy_to_user((void *)R3PtrDst, pvSrc, cb) == 0))
+    {
+        IPRT_LINUX_RESTORE_EFL_AC();
+        return VINF_SUCCESS;
+    }
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return VERR_ACCESS_DENIED;
+}
 RT_EXPORT_SYMBOL(RTR0MemUserCopyTo);
+
 
 RTR0DECL(bool) RTR0MemUserIsValidAddr(RTR3PTR R3Ptr)
 {
-	IPRT_LINUX_SAVE_EFL_AC();
-	bool fRc = access_ok(VERIFY_READ, (void *)R3Ptr, 1);
-	IPRT_LINUX_RESTORE_EFL_AC();
-	return fRc;
+    IPRT_LINUX_SAVE_EFL_AC();
+    bool fRc = access_ok(VERIFY_READ, (void *)R3Ptr, 1);
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return fRc;
 }
-
 RT_EXPORT_SYMBOL(RTR0MemUserIsValidAddr);
+
 
 RTR0DECL(bool) RTR0MemKernelIsValidAddr(void *pv)
 {
-	/* Couldn't find a straight forward way of doing this... */
+    /* Couldn't find a straight forward way of doing this... */
 #if defined(RT_ARCH_X86) && defined(CONFIG_X86_HIGH_ENTRY)
-	return true;		/* ?? */
+    return true; /* ?? */
 #elif defined(RT_ARCH_X86) || defined(RT_ARCH_AMD64)
-	return (uintptr_t) pv >= PAGE_OFFSET;
+    return (uintptr_t)pv >= PAGE_OFFSET;
 #else
 # error "PORT ME"
-	return !access_ok(VERIFY_READ, pv, 1);
+    return !access_ok(VERIFY_READ, pv, 1);
 #endif
 }
-
 RT_EXPORT_SYMBOL(RTR0MemKernelIsValidAddr);
+
 
 RTR0DECL(bool) RTR0MemAreKrnlAndUsrDifferent(void)
 {
-#if defined(RT_ARCH_X86) && defined(CONFIG_X86_HIGH_ENTRY)	/* ?? */
-	return false;
+#if defined(RT_ARCH_X86) && defined(CONFIG_X86_HIGH_ENTRY) /* ?? */
+    return false;
 #else
-	return true;
+    return true;
 #endif
 }
-
 RT_EXPORT_SYMBOL(RTR0MemAreKrnlAndUsrDifferent);
+
 
 /**
  * Treats both source and destination as unsafe buffers.
@@ -120,41 +124,49 @@ static int rtR0MemKernelCopyLnxWorker(void *pvDst, void const *pvSrc, size_t cb)
     ".quad   " #a_Resume "\n" \
     ".previous\n"
 #  endif
-# endif	/* !_ASM_EXTABLE */
-	int rc;
-	IPRT_LINUX_SAVE_EFL_AC();	/* paranoia */
-	if (!cb)
-		return VINF_SUCCESS;
+# endif /* !_ASM_EXTABLE */
+    int rc;
+    IPRT_LINUX_SAVE_EFL_AC(); /* paranoia */
+    if (!cb)
+        return VINF_SUCCESS;
 
-	__asm__ __volatile__("cld\n"
-			     "1:\n\t"
-			     "rep; movsb\n"
-			     "2:\n\t"
-			     ".section .fixup,\"ax\"\n"
-			     "3:\n\t"
-			     "movl %4, %0\n"
-			     ".previous\n" _ASM_EXTABLE(1 b, 3 b)
-			     :"=r"(rc), "=D"(pvDst), "=S"(pvSrc), "=c"(cb)
-			     :"i"(VERR_ACCESS_DENIED),
-			     "0"(VINF_SUCCESS), "1"(pvDst), "2"(pvSrc), "3"(cb)
-			     :"memory");
-	IPRT_LINUX_RESTORE_EFL_AC();
-	return rc;
+    __asm__ __volatile__ ("cld\n"
+                          "1:\n\t"
+                          "rep; movsb\n"
+                          "2:\n\t"
+                          ".section .fixup,\"ax\"\n"
+                          "3:\n\t"
+                          "movl %4, %0\n"
+                          ".previous\n"
+                          _ASM_EXTABLE(1b, 3b)
+                          : "=r" (rc),
+                            "=D" (pvDst),
+                            "=S" (pvSrc),
+                            "=c" (cb)
+                          : "i" (VERR_ACCESS_DENIED),
+                            "0" (VINF_SUCCESS),
+                            "1" (pvDst),
+                            "2" (pvSrc),
+                            "3" (cb)
+                          : "memory");
+    IPRT_LINUX_RESTORE_EFL_AC();
+    return rc;
 #else
-	return VERR_NOT_SUPPORTED;
+    return VERR_NOT_SUPPORTED;
 #endif
 }
 
-RTR0DECL(int)RTR0MemKernelCopyFrom(void *pvDst, void const *pvSrc, size_t cb)
-{
-	return rtR0MemKernelCopyLnxWorker(pvDst, pvSrc, cb);
-}
 
+RTR0DECL(int) RTR0MemKernelCopyFrom(void *pvDst, void const *pvSrc, size_t cb)
+{
+    return rtR0MemKernelCopyLnxWorker(pvDst, pvSrc, cb);
+}
 RT_EXPORT_SYMBOL(RTR0MemKernelCopyFrom);
 
-RTR0DECL(int)RTR0MemKernelCopyTo(void *pvDst, void const *pvSrc, size_t cb)
-{
-	return rtR0MemKernelCopyLnxWorker(pvDst, pvSrc, cb);
-}
 
+RTR0DECL(int) RTR0MemKernelCopyTo(void *pvDst, void const *pvSrc, size_t cb)
+{
+    return rtR0MemKernelCopyLnxWorker(pvDst, pvSrc, cb);
+}
 RT_EXPORT_SYMBOL(RTR0MemKernelCopyTo);
+

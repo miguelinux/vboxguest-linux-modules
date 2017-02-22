@@ -64,8 +64,8 @@
  */
 DECL_FORCE_INLINE(bool) RTLocCIsBlank(int ch)
 {
-	return ch == 0x20	/* space */
-	    || ch == 0x09;	/* horizontal tab */
+    return ch == 0x20  /* space */
+        || ch == 0x09; /* horizontal tab */
 }
 
 /**
@@ -78,8 +78,8 @@ DECL_FORCE_INLINE(bool) RTLocCIsBlank(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsCntrl(int ch)
 {
-	return (unsigned)ch < 32U	/* 0..2f */
-	    || ch == 0x7f;
+    return (unsigned)ch < 32U /* 0..2f */
+        || ch == 0x7f;
 }
 
 /**
@@ -90,7 +90,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsCntrl(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsDigit(int ch)
 {
-	return (unsigned)ch - 0x30 < 10U;	/* 30..39 */
+    return (unsigned)ch - 0x30 < 10U; /* 30..39 */
 }
 
 /**
@@ -101,7 +101,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsDigit(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsLower(int ch)
 {
-	return (unsigned)ch - 0x61U < 26U;	/* 61..7a */
+    return (unsigned)ch - 0x61U < 26U; /* 61..7a */
 }
 
 /**
@@ -112,7 +112,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsLower(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsODigit(int ch)
 {
-	return (unsigned)ch - 0x30 < 8U;	/* 30..37 */
+    return (unsigned)ch - 0x30 < 8U; /* 30..37 */
 }
 
 /**
@@ -123,7 +123,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsODigit(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsPrint(int ch)
 {
-	return (unsigned)ch - 0x20U < 95U;	/* 20..7e */
+    return (unsigned)ch - 0x20U < 95U; /* 20..7e */
 }
 
 /**
@@ -134,11 +134,11 @@ DECL_FORCE_INLINE(bool) RTLocCIsPrint(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsPunct(int ch)
 {
-	return (unsigned)ch - 0x21U < 15U	/* 21..2f */
-	    || (unsigned)ch - 0x2aU < 6U	/* 2a..2f */
-	    || (unsigned)ch - 0x3aU < 7U	/* 3a..40 */
-	    || (unsigned)ch - 0x5bU < 6U	/* 5a..60 */
-	    || (unsigned)ch - 0x7bU < 4U /* 7b..7e */ ;
+    return (unsigned)ch - 0x21U < 15U /* 21..2f */
+        || (unsigned)ch - 0x2aU <  6U /* 2a..2f */
+        || (unsigned)ch - 0x3aU <  7U /* 3a..40 */
+        || (unsigned)ch - 0x5bU <  6U /* 5a..60 */
+        || (unsigned)ch - 0x7bU <  4U /* 7b..7e */;
 }
 
 /**
@@ -149,8 +149,8 @@ DECL_FORCE_INLINE(bool) RTLocCIsPunct(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsSpace(int ch)
 {
-	return ch == 0x20	/* 20 (space) */
-	    || (unsigned)ch - 0x09U < 5U;	/* 09..0d */
+    return ch == 0x20                 /* 20 (space) */
+        || (unsigned)ch - 0x09U < 5U; /* 09..0d */
 }
 
 /**
@@ -161,7 +161,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsSpace(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsUpper(int ch)
 {
-	return (unsigned)ch - 0x41 < 26U;	/* 41..5a */
+    return (unsigned)ch - 0x41 < 26U; /* 41..5a */
 }
 
 /**
@@ -172,9 +172,9 @@ DECL_FORCE_INLINE(bool) RTLocCIsUpper(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsXDigit(int ch)
 {
-	return (unsigned)ch - 0x30 < 10U	/* 30..39 (0-9) */
-	    || (unsigned)ch - 0x41 < 6	/* 41..46 (A-F) */
-	    || (unsigned)ch - 0x61 < 6;	/* 61..66 (a-f) */
+    return (unsigned)ch - 0x30 < 10U /* 30..39 (0-9) */
+        || (unsigned)ch - 0x41 < 6   /* 41..46 (A-F) */
+        || (unsigned)ch - 0x61 < 6;  /* 61..66 (a-f) */
 }
 
 /**
@@ -185,7 +185,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsXDigit(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsAlpha(int ch)
 {
-	return RTLocCIsLower(ch) || RTLocCIsUpper(ch);
+    return RTLocCIsLower(ch) || RTLocCIsUpper(ch);
 }
 
 /**
@@ -196,7 +196,7 @@ DECL_FORCE_INLINE(bool) RTLocCIsAlpha(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsAlNum(int ch)
 {
-	return RTLocCIsDigit(ch) || RTLocCIsAlpha(ch);
+    return RTLocCIsDigit(ch) || RTLocCIsAlpha(ch);
 }
 
 /**
@@ -207,8 +207,9 @@ DECL_FORCE_INLINE(bool) RTLocCIsAlNum(int ch)
  */
 DECL_FORCE_INLINE(bool) RTLocCIsGraph(int ch)
 {
-	return RTLocCIsPrint(ch) && !RTLocCIsBlank(ch);
+    return RTLocCIsPrint(ch) && !RTLocCIsBlank(ch);
 }
+
 
 /**
  * Converts the character to lower case if applictable.
@@ -216,9 +217,9 @@ DECL_FORCE_INLINE(bool) RTLocCIsGraph(int ch)
  * @returns lower cased character or ch.
  * @param   ch      The character to test.
  */
-DECL_FORCE_INLINE(int)RTLocCToLower(int ch)
+DECL_FORCE_INLINE(int) RTLocCToLower(int ch)
 {
-	return RTLocCIsUpper(ch) ? (ch) + 0x20 : (ch);
+    return RTLocCIsUpper(ch) ? (ch) + 0x20 : (ch);
 }
 
 /**
@@ -227,11 +228,13 @@ DECL_FORCE_INLINE(int)RTLocCToLower(int ch)
  * @returns upper cased character or ch.
  * @param   ch      The character to test.
  */
-DECL_FORCE_INLINE(int)RTLocCToUpper(int ch)
+DECL_FORCE_INLINE(int) RTLocCToUpper(int ch)
 {
-	return RTLocCIsLower(ch) ? (ch) - 0x20 : (ch);
+    return RTLocCIsLower(ch) ? (ch) - 0x20 : (ch);
 }
+
 
 /** @} */
 
 #endif
+
