@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -71,6 +71,7 @@ typedef enum VBOXOSTYPE
     VBOXOSTYPE_Win81_x64        = 0x3A100,
     VBOXOSTYPE_Win10            = 0x3B000,
     VBOXOSTYPE_Win10_x64        = 0x3B100,
+    VBOXOSTYPE_Win2k16_x64      = 0x3C100,
     VBOXOSTYPE_OS2              = 0x40000,
     VBOXOSTYPE_OS2Warp3         = 0x41000,
     VBOXOSTYPE_OS2Warp4         = 0x42000,
@@ -129,6 +130,8 @@ typedef enum VBOXOSTYPE
     VBOXOSTYPE_MacOS109_x64     = 0xB5100,
     VBOXOSTYPE_MacOS1010_x64    = 0xB6100,
     VBOXOSTYPE_MacOS1011_x64    = 0xB7100,
+    VBOXOSTYPE_MacOS1012_x64    = 0xB8100,
+    VBOXOSTYPE_MacOS1013_x64    = 0xB9100,
     VBOXOSTYPE_JRockitVE        = 0xC0000,
     VBOXOSTYPE_Haiku            = 0xD0000,
     VBOXOSTYPE_Haiku_x64        = 0xD0100,

@@ -1,10 +1,10 @@
-/* $Id: initterm-r0drv.cpp 109136 2016-07-26 15:20:12Z bird $ */
+/* $Id: initterm-r0drv.cpp 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - Initialization & Termination, R0 Driver, Common.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -26,11 +26,11 @@
 #ifndef ___VBox_shflsvc_h
 #define ___VBox_shflsvc_h
 
-#include <VBox/types.h>
-#include <VBox/VBoxGuest2.h>
-#include <VBox/VMMDev.h>
+#include <VBox/VMMDevCoreTypes.h>
+#include <VBox/VBoxGuestCoreTypes.h>
 #include <VBox/hgcmsvc.h>
 #include <iprt/fs.h>
+#include <iprt/assert.h>
 
 
 /** @name Some bit flag manipulation macros.
@@ -152,7 +152,6 @@ typedef uint64_t SHFLHANDLE;
 /**
  * Shared folder string buffer structure.
  */
-#pragma pack(1)
 typedef struct _SHFLSTRING
 {
     /** Allocated size of the String member in bytes. */
@@ -164,13 +163,23 @@ typedef struct _SHFLSTRING
     /** UTF-8 or UTF-16 string. Nul terminated. */
     union
     {
+#if 1
         uint8_t  utf8[1];
-        uint16_t ucs2[1];
+        RTUTF16  utf16[1];
+        uint16_t ucs2[1];                                 /**< misnomer, use utf16. */
+#else
+        uint8_t  utf8[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION];
+        RTUTF16  utf16[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION];
+        RTUTF16  ucs2[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION]; /**< misnomer, use utf16. */
+#endif
     } String;
 } SHFLSTRING;
-#pragma pack()
-
-#define SHFLSTRING_HEADER_SIZE RT_UOFFSETOF(SHFLSTRING, String)
+AssertCompileSize(RTUTF16, 2);
+AssertCompileSize(SHFLSTRING, 6);
+AssertCompileMemberOffset(SHFLSTRING, String, 4);
+/** The size of SHFLSTRING w/o the string part. */
+#define SHFLSTRING_HEADER_SIZE  4
+AssertCompileMemberOffset(SHFLSTRING, String, SHFLSTRING_HEADER_SIZE);
 
 /** Pointer to a shared folder string buffer. */
 typedef SHFLSTRING *PSHFLSTRING;
@@ -180,7 +189,7 @@ typedef const SHFLSTRING *PCSHFLSTRING;
 /** Calculate size of the string. */
 DECLINLINE(uint32_t) ShflStringSizeOfBuffer(PCSHFLSTRING pString)
 {
-    return pString ? (uint32_t)(sizeof(SHFLSTRING) - sizeof(pString->String) + pString->u16Size) : 0;
+    return pString ? (uint32_t)(SHFLSTRING_HEADER_SIZE + pString->u16Size) : 0;
 }
 
 DECLINLINE(uint32_t) ShflStringLength(PCSHFLSTRING pString)
@@ -474,6 +483,8 @@ DECLINLINE(void) vbfsCopyFsObjInfoFromIprt(PSHFLFSOBJINFO pDst, PCRTFSOBJINFO pS
     pDst->ChangeTime        = pSrc->ChangeTime;
     pDst->BirthTime         = pSrc->BirthTime;
     pDst->Attr.fMode        = pSrc->Attr.fMode;
+    /* Clear bits which we don't pass through for security reasons. */
+    pDst->Attr.fMode       &= ~(RTFS_UNIX_ISUID | RTFS_UNIX_ISGID | RTFS_UNIX_ISTXT);
     RT_ZERO(pDst->Attr.u);
     switch (pSrc->Attr.enmAdditional)
     {
@@ -769,7 +780,7 @@ typedef struct _SHFLVOLINFO
 /** Parameters structure. */
 typedef struct _VBoxSFQueryMappings
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** 32bit, in:
      * Flags describing various client needs.
@@ -802,7 +813,7 @@ typedef struct _VBoxSFQueryMappings
 /** Parameters structure. */
 typedef struct _VBoxSFQueryMapName
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** 32bit, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -826,7 +837,7 @@ typedef struct _VBoxSFQueryMapName
 /** Parameters structure. */
 typedef struct _VBoxSFMapFolder_Old
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in:
      * Points to SHFLSTRING buffer.
@@ -855,7 +866,7 @@ typedef struct _VBoxSFMapFolder_Old
 /** Parameters structure. */
 typedef struct _VBoxSFMapFolder
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in:
      * Points to SHFLSTRING buffer.
@@ -889,7 +900,7 @@ typedef struct _VBoxSFMapFolder
 /** Parameters structure. */
 typedef struct _VBoxSFUnmapFolder
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -909,7 +920,7 @@ typedef struct _VBoxSFUnmapFolder
 /** Parameters structure. */
 typedef struct _VBoxSFCreate
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -939,7 +950,7 @@ typedef struct _VBoxSFCreate
 /** Parameters structure. */
 typedef struct _VBoxSFClose
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -965,7 +976,7 @@ typedef struct _VBoxSFClose
 /** Parameters structure. */
 typedef struct _VBoxSFRead
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1006,7 +1017,7 @@ typedef struct _VBoxSFRead
 /** Parameters structure. */
 typedef struct _VBoxSFWrite
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1068,7 +1079,7 @@ typedef struct _VBoxSFWrite
 /** Parameters structure. */
 typedef struct _VBoxSFLock
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1109,7 +1120,7 @@ typedef struct _VBoxSFLock
 /** Parameters structure. */
 typedef struct _VBoxSFFlush
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1139,7 +1150,7 @@ typedef struct _VBoxSFFlush
 /** Parameters structure. */
 typedef struct _VBoxSFList
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1197,7 +1208,7 @@ typedef struct _VBoxSFList
 /** Parameters structure. */
 typedef struct _VBoxSFReadLink
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1247,7 +1258,7 @@ typedef struct _VBoxSFReadLink
 /** Parameters structure. */
 typedef struct _VBoxSFInformation
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1292,7 +1303,7 @@ typedef struct _VBoxSFInformation
 /** Parameters structure. */
 typedef struct _VBoxSFRemove
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1325,7 +1336,7 @@ typedef struct _VBoxSFRemove
 /** Parameters structure. */
 typedef struct _VBoxSFRename
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1359,7 +1370,7 @@ typedef struct _VBoxSFRename
 /** Parameters structure. */
 typedef struct _VBoxSFSymlink
 {
-    VBoxGuestHGCMCallInfo callInfo;
+    VBGLIOCHGCMCALL callInfo;
 
     /** pointer, in: SHFLROOT
      * Root handle of the mapping which name is queried.
@@ -1421,3 +1432,4 @@ typedef struct _VBoxSFSymlink
 /** @} */
 
 #endif
+

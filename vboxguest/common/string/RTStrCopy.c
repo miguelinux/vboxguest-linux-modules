@@ -1,10 +1,10 @@
-/* $Id: RTStrCopy.cpp 109033 2016-07-22 18:27:37Z bird $ */
+/* $Id: RTStrCopy.cpp 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - RTStrCopy.
  */
 
 /*
- * Copyright (C) 2010-2016 Oracle Corporation
+ * Copyright (C) 2010-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

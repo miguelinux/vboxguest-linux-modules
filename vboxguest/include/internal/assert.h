@@ -1,10 +1,10 @@
-/* $Id: assert.h 109033 2016-07-22 18:27:37Z bird $ */
+/* $Id: assert.h 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - Internal RTAssert header
  */
 
 /*
- * Copyright (C) 2009-2016 Oracle Corporation
+ * Copyright (C) 2009-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

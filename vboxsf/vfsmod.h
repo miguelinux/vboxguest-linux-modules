@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -100,8 +100,13 @@ extern int  sf_stat(const char *caller, struct sf_glob_info *sf_g,
                     SHFLSTRING *path, PSHFLFSOBJINFO result, int ok_to_fail);
 extern int  sf_inode_revalidate(struct dentry *dentry);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+extern int  sf_getattr(const struct path *path, struct kstat *kstat,
+                       u32 request_mask, unsigned int query_flags);
+# else
 extern int  sf_getattr(struct vfsmount *mnt, struct dentry *dentry,
                        struct kstat *kstat);
+#endif
 extern int  sf_setattr(struct dentry *dentry, struct iattr *iattr);
 #endif
 extern int  sf_path_from_dentry(const char *caller, struct sf_glob_info *sf_g,

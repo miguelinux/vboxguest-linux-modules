@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -97,7 +97,11 @@
  * @param   type    The return type of the function declaration.
  */
 #if defined(IN_DIS)
-# define DISDECL(type)      DECLEXPORT(type) VBOXCALL
+# ifdef IN_DIS_STATIC
+#  define DISDECL(type)     DECLHIDDEN(type) VBOXCALL
+# else
+#  define DISDECL(type)     DECLEXPORT(type) VBOXCALL
+# endif
 #else
 # define DISDECL(type)      DECLIMPORT(type) VBOXCALL
 #endif

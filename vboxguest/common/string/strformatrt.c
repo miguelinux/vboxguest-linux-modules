@@ -1,10 +1,10 @@
-/* $Id: strformatrt.cpp 109493 2016-08-03 08:46:35Z klaus $ */
+/* $Id: strformatrt.cpp 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - IPRT String Formatter Extensions.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -82,9 +82,9 @@ static size_t rtstrFormatIPv6HexWord(char *pszDst, uint16_t uWord)
     off = 0;
     switch (cDigits)
     {
-        case 4: pszDst[off++] = g_szHexDigits[(uWord >> 12) & 0xf];
-        case 3: pszDst[off++] = g_szHexDigits[(uWord >>  8) & 0xf];
-        case 2: pszDst[off++] = g_szHexDigits[(uWord >>  4) & 0xf];
+        case 4: pszDst[off++] = g_szHexDigits[(uWord >> 12) & 0xf]; RT_FALL_THRU();
+        case 3: pszDst[off++] = g_szHexDigits[(uWord >>  8) & 0xf]; RT_FALL_THRU();
+        case 2: pszDst[off++] = g_szHexDigits[(uWord >>  4) & 0xf]; RT_FALL_THRU();
         case 1: pszDst[off++] = g_szHexDigits[(uWord >>  0) & 0xf];
             break;
     }
@@ -251,6 +251,7 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
             case 'I':
             case 'X':
             case 'U':
+            case 'K':
             {
                 /*
                  * Interpret the type.
@@ -304,6 +305,7 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
                     { STRMEM("I32"),     sizeof(int32_t),        10, RTSF_INT,   RTSTR_F_VALSIGNED },
                     { STRMEM("I64"),     sizeof(int64_t),        10, RTSF_INT,   RTSTR_F_VALSIGNED },
                     { STRMEM("I8"),      sizeof(int8_t),         10, RTSF_INT,   RTSTR_F_VALSIGNED },
+                    { STRMEM("Kv"),      sizeof(RTHCPTR),        16, RTSF_INT,   RTSTR_F_OBFUSCATE_PTR },
                     { STRMEM("Rv"),      sizeof(RTRCPTR),        16, RTSF_INTW,  0 },
                     { STRMEM("Tbool"),   sizeof(bool),           10, RTSF_BOOL,  0 },
                     { STRMEM("Tfile"),   sizeof(RTFILE),         10, RTSF_INT,   0 },
@@ -362,6 +364,7 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
                     int16_t             i16;
                     int32_t             i32;
                     int64_t             i64;
+                    RTR0INTPTR          uR0Ptr;
                     RTFAR16             fp16;
                     RTFAR32             fp32;
                     RTFAR64             fp64;
@@ -468,6 +471,17 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
                             break;
                     }
                 }
+
+#ifndef DEBUG
+                /*
+                 * For now don't show the address.
+                 */
+                if (fFlags & RTSTR_F_OBFUSCATE_PTR)
+                {
+                    cch = rtStrFormatKernelAddress(szBuf, sizeof(szBuf), u.uR0Ptr, cchWidth, cchPrecision, fFlags);
+                    return pfnOutput(pvArgOutput, szBuf, cch);
+                }
+#endif
 
                 /*
                  * Format the output.
@@ -655,7 +669,7 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
             /* Group 3 */
 
             /*
-             * Base name printing.
+             * Base name printing, big endian UTF-16.
              */
             case 'b':
             {
@@ -684,6 +698,56 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
 
                         return pfnOutput(pvArgOutput, pszLastSep, psz - pszLastSep);
                     }
+
+                    /* %lRbs */
+                    case 's':
+                        if (chArgSize == 'l')
+                        {
+                            /* utf-16BE -> utf-8 */
+                            int         cchStr;
+                            PCRTUTF16   pwszStr = va_arg(*pArgs, PRTUTF16);
+
+                            if (RT_VALID_PTR(pwszStr))
+                            {
+                                cchStr = 0;
+                                while (cchStr < cchPrecision && pwszStr[cchStr] != '\0')
+                                    cchStr++;
+                            }
+                            else
+                            {
+                                static RTUTF16  s_wszBigNull[] =
+                                {
+                                    RT_H2BE_U16_C((uint16_t)'<'), RT_H2BE_U16_C((uint16_t)'N'), RT_H2BE_U16_C((uint16_t)'U'),
+                                    RT_H2BE_U16_C((uint16_t)'L'), RT_H2BE_U16_C((uint16_t)'L'), RT_H2BE_U16_C((uint16_t)'>'), '\0'
+                                };
+                                pwszStr = s_wszBigNull;
+                                cchStr  = RT_ELEMENTS(s_wszBigNull) - 1;
+                            }
+
+                            cch = 0;
+                            if (!(fFlags & RTSTR_F_LEFT))
+                                while (--cchWidth >= cchStr)
+                                    cch += pfnOutput(pvArgOutput, " ", 1);
+                            cchWidth -= cchStr;
+                            while (cchStr-- > 0)
+                            {
+/** @todo \#ifndef IN_RC*/
+#ifdef IN_RING3
+                                RTUNICP Cp = 0;
+                                RTUtf16BigGetCpEx(&pwszStr, &Cp);
+                                char *pszEnd = RTStrPutCp(szBuf, Cp);
+                                *pszEnd = '\0';
+                                cch += pfnOutput(pvArgOutput, szBuf, pszEnd - szBuf);
+#else
+                                szBuf[0] = (char)(*pwszStr++ >> 8);
+                                cch += pfnOutput(pvArgOutput, szBuf, 1);
+#endif
+                            }
+                            while (--cchWidth >= 0)
+                                cch += pfnOutput(pvArgOutput, " ", 1);
+                            return cch;
+                        }
+                    RT_FALL_THRU();
 
                     default:
                         AssertMsgFailed(("Invalid status code format type '%.10s'!\n", pszFormatOrg));
@@ -784,10 +848,12 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
                                     while (off < cchPrecision)
                                     {
                                         int i;
-                                        cch += RTStrFormat(pfnOutput, pvArgOutput, NULL, 0, "%s%0*p %04x:", off ? "\n" : "", sizeof(pu8) * 2, (uintptr_t)pu8, off);
+                                        cch += RTStrFormat(pfnOutput, pvArgOutput, NULL, 0,
+                                                           "%s%0*p %04x:", off ? "\n" : "", sizeof(pu8) * 2, (uintptr_t)pu8, off);
                                         for (i = 0; i < cchWidth && off + i < cchPrecision ; i++)
                                             cch += RTStrFormat(pfnOutput, pvArgOutput, NULL, 0,
-                                                               off + i < cchPrecision ? !(i & 7) && i ? "-%02x" : " %02x" : "   ", pu8[i]);
+                                                               off + i < cchPrecision ? !(i & 7) && i ? "-%02x" : " %02x" : "   ",
+                                                               pu8[i]);
                                         while (i++ < cchWidth)
                                             cch += pfnOutput(pvArgOutput, "   ", 3);
 
@@ -798,6 +864,66 @@ DECLHIDDEN(size_t) rtstrFormatRt(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, co
                                             uint8_t u8 = pu8[i];
                                             cch += pfnOutput(pvArgOutput, u8 < 127 && u8 >= 32 ? (const char *)&u8 : ".", 1);
                                         }
+
+                                        /* next */
+                                        pu8 += cchWidth;
+                                        off += cchWidth;
+                                    }
+                                    return cch;
+                                }
+
+                                /*
+                                 * Regular hex dump with dittoing.
+                                 */
+                                case 'D':
+                                {
+                                    int offEndDupCheck;
+                                    int cDuplicates = 0;
+                                    int off = 0;
+                                    cch = 0;
+
+                                    if (cchWidth <= 0)
+                                        cchWidth = 16;
+                                    offEndDupCheck = cchPrecision - cchWidth;
+
+                                    while (off < cchPrecision)
+                                    {
+                                        int i;
+                                        if (   off >= offEndDupCheck
+                                            || off <= 0
+                                            || memcmp(pu8, pu8 - cchWidth, cchWidth) != 0
+                                            || (   cDuplicates == 0
+                                                && (   off + cchWidth >= offEndDupCheck
+                                                    || memcmp(pu8 + cchWidth, pu8, cchWidth) != 0)) )
+                                        {
+                                            if (cDuplicates > 0)
+                                            {
+                                                cch += RTStrFormat(pfnOutput, pvArgOutput, NULL, 0,
+                                                                   "\n%.*s ****  <ditto x %u>",
+                                                                   sizeof(pu8) * 2, "****************", cDuplicates);
+                                                cDuplicates = 0;
+                                            }
+
+                                            cch += RTStrFormat(pfnOutput, pvArgOutput, NULL, 0,
+                                                               "%s%0*p %04x:", off ? "\n" : "", sizeof(pu8) * 2, (uintptr_t)pu8, off);
+                                            for (i = 0; i < cchWidth && off + i < cchPrecision ; i++)
+                                                cch += RTStrFormat(pfnOutput, pvArgOutput, NULL, 0,
+                                                                     off + i < cchPrecision ? !(i & 7) && i
+                                                                   ? "-%02x" : " %02x" : "   ",
+                                                                   pu8[i]);
+                                            while (i++ < cchWidth)
+                                                cch += pfnOutput(pvArgOutput, "   ", 3);
+
+                                            cch += pfnOutput(pvArgOutput, " ", 1);
+
+                                            for (i = 0; i < cchWidth && off + i < cchPrecision; i++)
+                                            {
+                                                uint8_t u8 = pu8[i];
+                                                cch += pfnOutput(pvArgOutput, u8 < 127 && u8 >= 32 ? (const char *)&u8 : ".", 1);
+                                            }
+                                        }
+                                        else
+                                            cDuplicates++;
 
                                         /* next */
                                         pu8 += cchWidth;

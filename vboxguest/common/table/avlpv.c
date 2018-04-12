@@ -1,10 +1,10 @@
-/* $Id: avlpv.cpp 102121 2015-08-14 15:16:38Z bird $ */
+/* $Id: avlpv.cpp 113681 2017-02-27 17:04:46Z bird $ */
 /** @file
  * IPRT - AVL tree, void *, unique keys.
  */
 
 /*
- * Copyright (C) 2001-2010 knut st. osmundsen (bird-src-spam@anduin.net)
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

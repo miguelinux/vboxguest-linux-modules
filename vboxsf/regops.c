@@ -1,10 +1,10 @@
-/* $Id: regops.c 112705 2017-01-09 12:21:13Z sunlover $ */
+/* $Id: regops.c 118839 2017-10-28 15:14:05Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders, Regular file inode and file operations.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -232,16 +232,9 @@ static ssize_t sf_reg_write(struct file *file, const char *buf, size_t size, lof
             goto fail;
         }
 
-#if 1
-        if (VbglR0CanUsePhysPageList())
-        {
-            err = VbglR0SfWritePhysCont(&client_handle, &sf_g->map, sf_r->handle,
-                                        pos, &nwritten, tmp_phys);
-            err = RT_FAILURE(err) ? -EPROTO : 0;
-        }
-        else
-#endif
-            err = sf_reg_write_aux(__func__, sf_g, sf_r, tmp, &nwritten, pos);
+        err = VbglR0SfWritePhysCont(&client_handle, &sf_g->map, sf_r->handle,
+                                    pos, &nwritten, tmp_phys);
+        err = RT_FAILURE(err) ? -EPROTO : 0;
         if (err)
             goto fail;
 
@@ -444,7 +437,9 @@ static int sf_reg_release(struct inode *inode, struct file *file)
     return 0;
 }
 
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 25)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+static int sf_reg_fault(struct vm_fault *vmf)
+#elif LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 25)
 static int sf_reg_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
 static struct page *sf_reg_nopage(struct vm_area_struct *vma, unsigned long vaddr, int *type)
@@ -459,6 +454,9 @@ static struct page *sf_reg_nopage(struct vm_area_struct *vma, unsigned long vadd
     loff_t off;
     uint32_t nread = PAGE_SIZE;
     int err;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+    struct vm_area_struct *vma = vmf->vma;
+#endif
     struct file *file = vma->vm_file;
     struct inode *inode = GET_F_DENTRY(file)->d_inode;
     struct sf_glob_info *sf_g = GET_GLOB_INFO(inode->i_sb);
@@ -539,7 +537,7 @@ static struct vm_operations_struct sf_vma_ops =
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 25)
     .fault = sf_reg_fault
 #else
-     .nopage = sf_reg_nopage
+    .nopage = sf_reg_nopage
 #endif
 };
 
@@ -564,15 +562,14 @@ struct file_operations sf_reg_fops =
     .release     = sf_reg_release,
     .mmap        = sf_reg_mmap,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
-# if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 23)
+# if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31)
+/** @todo This code is known to cause caching of data which should not be
+ * cached.  Investigate. */
+#  if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 23)
     .splice_read = generic_file_splice_read,
-# else
+#  else
     .sendfile    = generic_file_sendfile,
-# endif
-# if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
-    .read_iter   = generic_file_read_iter,
-    .write_iter  = generic_file_write_iter,
-# else
+#  endif
     .aio_read    = generic_file_aio_read,
     .aio_write   = generic_file_aio_write,
 # endif

@@ -3,8 +3,7 @@
 #
 
 #
-#
-# Copyright (C) 2009-2012 Oracle Corporation
+# Copyright (C) 2009-2017 Oracle Corporation
 #
 # This file is part of VirtualBox Open Source Edition (OSE), as
 # available from http://www.virtualbox.org. This file is free software;
@@ -27,7 +26,7 @@ else # ! KBUILD_EXTMOD
 KBUILD_VERBOSE =
 
 all:
-	@echo "*** Building 'vboxguest' module ***"
+	@echo "=== Building 'vboxguest' module ==="
 	@$(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxguest
 	@if [ -f vboxguest/vboxguest.ko ]; then \
 	    cp vboxguest/vboxguest.ko .; \
@@ -39,8 +38,8 @@ all:
 	    if [ -f vboxguest/Module.symvers ]; then \
 	        cp vboxguest/Module.symvers vboxsf; \
 	    fi; \
-	    echo "*** Building 'vboxsf' module ***"; \
-	    $(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxsf; \
+	    echo "=== Building 'vboxsf' module ==="; \
+	    $(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxsf || exit 1; \
 	    if [ -f vboxsf/vboxsf.ko ]; then \
 	        cp vboxsf/vboxsf.ko .; \
 	    else \
@@ -52,11 +51,11 @@ all:
 	    if [ -f vboxguest/Module.symvers ]; then \
 	        cp vboxguest/Module.symvers vboxvideo; \
 	    fi; \
-	    echo "*** Building 'vboxvideo' module ***"; \
-	    $(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxvideo; \
+	    echo "=== Building 'vboxvideo' module ==="; \
+	    $(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxvideo || exit 1; \
 	    if [ -f vboxvideo/vboxvideo.ko ]; then \
 	        cp vboxvideo/vboxvideo.ko .; \
-	    else \
+	    elif [ -f vboxvideo/vboxvideo.o ]; then \
 	        cp vboxvideo/vboxvideo.o .; \
 	    fi; \
 	    echo; \

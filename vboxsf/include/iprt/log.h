@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -438,7 +438,7 @@ typedef enum RTLOGGRPFLAGS
 } RTLOGGRPFLAGS;
 
 /**
- * Logger destination type.
+ * Logger destination types and flags.
  */
 typedef enum RTLOGDEST
 {
@@ -454,6 +454,11 @@ typedef enum RTLOGDEST
     RTLOGDEST_COM           = 0x00000010,
     /** Log a memory ring buffer. */
     RTLOGDEST_RINGBUF       = 0x00000020,
+    /** Open files with no deny (share read, write, delete) on Windows. */
+    RTLOGDEST_F_NO_DENY     = 0x00010000,
+    /** Delay opening the log file, logging to the buffer untill
+     * RTLogClearFileDelayFlag is called. */
+    RTLOGDEST_F_DELAY_FILE  = 0x00020000,
     /** Just a dummy flag to be used when no other flag applies. */
     RTLOGDEST_DUMMY         = 0x20000000,
     /** Log to a user defined output stream. */
@@ -1663,6 +1668,33 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
     do { LogRelMax(a_cMax, ("{%p} " LOG_FN_FMT ": ", this, __PRETTY_FUNCTION__)); LogRelMax(a_cMax, a); } while (0)
 #endif
 
+/** @def LogRelFlowThisFunc
+ * The same as LogRelFlowFunc but for class functions (methods): the resulting
+ * log line is additionally prepended with a hex value of |this| pointer.
+ */
+#ifdef LOG_USE_C99
+# define LogRelFlowThisFunc(a) \
+    _LogRelIt(RTLOGGRPFLAGS_FLOW, LOG_GROUP, "{%p} " LOG_FN_FMT ": %M", this, __PRETTY_FUNCTION__, _LogRemoveParentheseis a )
+#else
+# define LogRelFlowThisFunc(a) do { LogRelFlow(("{%p} " LOG_FN_FMT ": ", this, __PRETTY_FUNCTION__)); LogRelFlow(a); } while (0)
+#endif
+
+
+/** Shortcut to |LogRelFlowFunc ("ENTER\n")|, marks the beginnig of the function. */
+#define LogRelFlowFuncEnter()      LogRelFlowFunc(("ENTER\n"))
+
+/** Shortcut to |LogRelFlowFunc ("LEAVE\n")|, marks the end of the function. */
+#define LogRelFlowFuncLeave()      LogRelFlowFunc(("LEAVE\n"))
+
+/** Shortcut to |LogRelFlowFunc ("LEAVE: %Rrc\n")|, marks the end of the function. */
+#define LogRelFlowFuncLeaveRC(rc)  LogRelFlowFunc(("LEAVE: %Rrc\n", (rc)))
+
+/** Shortcut to |LogRelFlowThisFunc ("ENTER\n")|, marks the beginnig of the function. */
+#define LogRelFlowThisFuncEnter()  LogRelFlowThisFunc(("ENTER\n"))
+
+/** Shortcut to |LogRelFlowThisFunc ("LEAVE\n")|, marks the end of the function. */
+#define LogRelFlowThisFuncLeave()  LogRelFlowThisFunc(("LEAVE\n"))
+
 /** @} */
 
 
@@ -1987,16 +2019,16 @@ RTDECL(int) RTLogCreate(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGro
  * @param   cSecsHistoryTimeSlot Maximum time interval per log file when
  *                              performing history rotation, in seconds.
  *                              0 means time limit.
- * @param   pszErrorMsg         A buffer which is filled with an error message if something fails. May be NULL.
- * @param   cchErrorMsg         The size of the error message buffer.
+ * @param   pErrInfo            Where to return extended error information.
+ *                              Optional.
  * @param   pszFilenameFmt      Log filename format string. Standard RTStrFormat().
  * @param   ...                 Format arguments.
  */
 RTDECL(int) RTLogCreateEx(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGroupSettings,
                           const char *pszEnvVarBase, unsigned cGroups, const char * const * papszGroups,
                           uint32_t fDestFlags, PFNRTLOGPHASE pfnPhase, uint32_t cHistory,
-                          uint64_t cbHistoryFileMax, uint32_t cSecsHistoryTimeSlot, char *pszErrorMsg, size_t cchErrorMsg,
-                          const char *pszFilenameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(14, 15);
+                          uint64_t cbHistoryFileMax, uint32_t cSecsHistoryTimeSlot, PRTERRINFO pErrInfo,
+                          const char *pszFilenameFmt, ...) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(13, 14);
 
 /**
  * Create a logger instance.
@@ -2024,9 +2056,8 @@ RTDECL(int) RTLogCreateEx(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszG
  * @param   cSecsHistoryTimeSlot  Maximum time interval per log file when
  *                              performing history rotation, in seconds.
  *                              0 means no time limit.
- * @param   pszErrorMsg         A buffer which is filled with an error message
- *                              if something fails.  May be NULL.
- * @param   cchErrorMsg         The size of the error message buffer.
+ * @param   pErrInfo            Where to return extended error information.
+ *                              Optional.
  * @param   pszFilenameFmt      Log filename format string.  Standard
  *                              RTStrFormat().
  * @param   args                Format arguments.
@@ -2034,8 +2065,8 @@ RTDECL(int) RTLogCreateEx(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszG
 RTDECL(int) RTLogCreateExV(PRTLOGGER *ppLogger, uint32_t fFlags, const char *pszGroupSettings,
                            const char *pszEnvVarBase, unsigned cGroups, const char * const * papszGroups,
                            uint32_t fDestFlags, PFNRTLOGPHASE pfnPhase, uint32_t cHistory,
-                           uint64_t cbHistoryFileMax, uint32_t cSecsHistoryTimeSlot, char *pszErrorMsg, size_t cchErrorMsg,
-                           const char *pszFilenameFmt, va_list args) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(14, 0);
+                           uint64_t cbHistoryFileMax, uint32_t cSecsHistoryTimeSlot, PRTERRINFO pErrInfo,
+                           const char *pszFilenameFmt, va_list args) RT_IPRT_FORMAT_ATTR_MAYBE_NULL(13, 0);
 
 /**
  * Create a logger instance for singled threaded ring-0 usage.
@@ -2237,6 +2268,16 @@ RTDECL(int) RTLogGetFlags(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf);
  * @param   pszValue            The value to parse.
  */
 RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue);
+
+/**
+ * Clear the file delay flag if set, opening the destination and flushing.
+ *
+ * @returns IPRT status code.
+ * @param   pLogger             Logger instance (NULL for default logger).
+ * @param   pszValue            The value to parse.
+ * @param   pErrInfo            Where to return extended error info.  Optional.
+ */
+RTDECL(int) RTLogClearFileDelayFlag(PRTLOGGER pLogger, PRTERRINFO pErrInfo);
 
 /**
  * Get the current log destinations as a string.

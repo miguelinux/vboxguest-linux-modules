@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2008-2016 Oracle Corporation
+ * Copyright (C) 2008-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -103,6 +103,30 @@ RTDECL(int) RTNetStrToIPv4AddrEx(const char *pcszAddr, PRTNETADDRIPV4 pAddr, cha
 RTDECL(int) RTNetStrToIPv4Addr(const char *pcszAddr, PRTNETADDRIPV4 pAddr);
 
 /**
+ * Verifies that RTNETADDRIPV4 is a valid contiguous netmask and
+ * computes its prefix length.
+ *
+ * @returns VINF_SUCCESS on success, VERR_INVALID_PARAMETER on
+ *          failure.
+ *
+ * @param   pMask           The netmask to verify and convert.
+ * @param   piPrefix        Where to store the prefix length. (Optional)
+ */
+RTDECL(int) RTNetMaskToPrefixIPv4(PCRTNETADDRIPV4 pMask, int *piPrefix);
+
+/**
+ * Computes netmask corresponding to the prefix length.
+ *
+ * @returns VINF_SUCCESS on success, VERR_INVALID_PARAMETER on
+ *          failure.
+ *
+ * @param   iPrefix         The prefix to convert.
+ * @param   pMask           Where to store the netmask.
+ */
+RTDECL(int) RTNetPrefixToMaskIPv4(int iPrefix, PRTNETADDRIPV4 pMask);
+
+
+/**
  * IPv6 address.
  */
 typedef RTUINT128U RTNETADDRIPV6;
@@ -155,6 +179,30 @@ RTDECL(int) RTNetStrToIPv6AddrEx(const char *pcszAddr, PRTNETADDRIPV6 pAddr, cha
  * @param   pAddr           Where to store the result.
  */
 RTDECL(int) RTNetStrToIPv6Addr(const char *pcszAddr, PRTNETADDRIPV6 pAddr, char **ppszZone);
+
+/**
+ * Verifies that RTNETADDRIPV6 is a valid contiguous netmask and
+ * computes its prefix length.
+ *
+ * @returns VINF_SUCCESS on success, VERR_INVALID_PARAMETER on
+ *          failure.
+ *
+ * @param   pMask           The netmask to verify and convert.
+ * @param   piPrefix        Where to store the prefix length. (Optional)
+ */
+RTDECL(int) RTNetMaskToPrefixIPv6(PCRTNETADDRIPV6 pMask, int *piPrefix);
+
+/**
+ * Computes netmask corresponding to the prefix length.
+ *
+ * @returns VINF_SUCCESS on success, VERR_INVALID_PARAMETER on
+ *          failure.
+ *
+ * @param   iPrefix         The prefix to convert.
+ * @param   pMask           Where to store the netmask.
+ */
+RTDECL(int) RTNetPrefixToMaskIPv6(int iPrefix, PRTNETADDRIPV6 pMask);
+
 
 /**
  * IPX address.

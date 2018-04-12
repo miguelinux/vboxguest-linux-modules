@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -1062,7 +1062,11 @@
  */
 #ifdef RT_EXCEPTIONS_ENABLED
 # ifdef __GNUC__
-#  define RT_NO_THROW_PROTO     __attribute__((__nothrow__))
+#  if RT_GNUC_PREREQ(3, 3)
+#   define RT_NO_THROW_PROTO    __attribute__((__nothrow__))
+#  else
+#   define RT_NO_THROW_PROTO
+#  endif
 # else
 #  define RT_NO_THROW_PROTO     throw()
 # endif
@@ -1093,18 +1097,31 @@
  *          Do NOT use this for the actual throwing of exceptions!
  */
 #ifdef RT_EXCEPTIONS_ENABLED
-# ifdef _MSC_VER
-#  if _MSC_VER >= 1310
+# if RT_MSC_PREREQ_EX(RT_MSC_VER_VC71, 0)
 #   define RT_THROW(type)
-#  else
-#   define RT_THROW(type)       throw(type)
-#  endif
+# elif RT_GNUC_PREREQ(7, 0)
+#   define RT_THROW(type)
 # else
-#  define RT_THROW(type)        throw(type)
+#   define RT_THROW(type)       throw(type)
 # endif
 #else
 # define RT_THROW(type)
 #endif
+
+
+/** @def RT_FALL_THROUGH
+ * Tell the compiler that we're falling through to the next case in a switch.
+ * @sa RT_FALL_THRU  */
+#if RT_GNUC_PREREQ(7, 0)
+# define RT_FALL_THROUGH()      __attribute__((fallthrough))
+#else
+# define RT_FALL_THROUGH()      (void)0
+#endif
+/** @def RT_FALL_THRU
+ * Tell the compiler that we're falling thru to the next case in a switch.
+ * @sa RT_FALL_THROUGH */
+#define RT_FALL_THRU()          RT_FALL_THROUGH()
+
 
 /** @def RT_IPRT_FORMAT_ATTR
  * Identifies a function taking an IPRT format string.
@@ -1291,7 +1308,7 @@
  * How to declare an call back function type.
  * @param   type    The return type of the function declaration.
  */
-#define DECLCALLBACK(type)      type RTCALL
+#define DECLCALLBACK(type)      type RT_FAR_CODE RTCALL
 
 /** @def DECLCALLBACKPTR
  * How to declare an call back function pointer.
@@ -1301,7 +1318,7 @@
 #if defined(__IBMC__) || defined(__IBMCPP__)
 # define DECLCALLBACKPTR(type, name)    type (* RTCALL name)
 #else
-# define DECLCALLBACKPTR(type, name)    type (RTCALL * name)
+# define DECLCALLBACKPTR(type, name)    type (RT_FAR_CODE RTCALL * name)
 #endif
 
 /** @def DECLCALLBACKMEMBER
@@ -1312,7 +1329,7 @@
 #if defined(__IBMC__) || defined(__IBMCPP__)
 # define DECLCALLBACKMEMBER(type, name) type (* RTCALL name)
 #else
-# define DECLCALLBACKMEMBER(type, name) type (RTCALL * name)
+# define DECLCALLBACKMEMBER(type, name) type (RT_FAR_CODE RTCALL * name)
 #endif
 
 /** @def DECLR3CALLBACKMEMBER
@@ -1768,6 +1785,54 @@
 /** RT_CONCAT6 helper, don't use.  */
 #define RT_CONCAT6_HLP(a,b,c,d,e,f)   a##b##c##d##e##f
 
+/** @def RT_CONCAT7
+ * Concatenate the expanded arguments without any extra spaces in between.
+ *
+ * @param   a       The 1st part.
+ * @param   b       The 2nd part.
+ * @param   c       The 3rd part.
+ * @param   d       The 4th part.
+ * @param   e       The 5th part.
+ * @param   f       The 6th part.
+ * @param   g       The 7th part.
+ */
+#define RT_CONCAT7(a,b,c,d,e,f,g)       RT_CONCAT7_HLP(a,b,c,d,e,f,g)
+/** RT_CONCAT7 helper, don't use.  */
+#define RT_CONCAT7_HLP(a,b,c,d,e,f,g)   a##b##c##d##e##f##g
+
+/** @def RT_CONCAT8
+ * Concatenate the expanded arguments without any extra spaces in between.
+ *
+ * @param   a       The 1st part.
+ * @param   b       The 2nd part.
+ * @param   c       The 3rd part.
+ * @param   d       The 4th part.
+ * @param   e       The 5th part.
+ * @param   f       The 6th part.
+ * @param   g       The 7th part.
+ * @param   h       The 8th part.
+ */
+#define RT_CONCAT8(a,b,c,d,e,f,g,h)     RT_CONCAT8_HLP(a,b,c,d,e,f,g,h)
+/** RT_CONCAT8 helper, don't use.  */
+#define RT_CONCAT8_HLP(a,b,c,d,e,f,g,h) a##b##c##d##e##f##g##h
+
+/** @def RT_CONCAT9
+ * Concatenate the expanded arguments without any extra spaces in between.
+ *
+ * @param   a       The 1st part.
+ * @param   b       The 2nd part.
+ * @param   c       The 3rd part.
+ * @param   d       The 4th part.
+ * @param   e       The 5th part.
+ * @param   f       The 6th part.
+ * @param   g       The 7th part.
+ * @param   h       The 8th part.
+ * @param   i       The 9th part.
+ */
+#define RT_CONCAT9(a,b,c,d,e,f,g,h,i)   RT_CONCAT9_HLP(a,b,c,d,e,f,g,h,i)
+/** RT_CONCAT9 helper, don't use.  */
+#define RT_CONCAT9_HLP(a,b,c,d,e,f,g,h,i) a##b##c##d##e##f##g##h##i
+
 /**
  * String constant tuple - string constant, strlen(string constant).
  *
@@ -2200,6 +2265,15 @@
  */
 #define RT_SIZEOFMEMB(type, member)             ( sizeof(((type *)(void *)0)->member) )
 
+/** @def RT_UOFFSET_AFTER
+ * Returns the offset of the first byte following a structure/union member.
+ *
+ * @return byte offset into the struct.
+ * @param   a_Type      Structure type.
+ * @param   a_Member    The member name.
+ */
+#define RT_UOFFSET_AFTER(a_Type, a_Member)      ( RT_UOFFSETOF(a_Type, a_Member) + RT_SIZEOFMEMB(a_Type, a_Member) )
+
 /** @def RT_FROM_MEMBER
  * Convert a pointer to a structure member into a pointer to the structure.
  *
@@ -2234,6 +2308,106 @@
  * @param   aArray      Array in question.
  */
 #define RT_ELEMENTS(aArray)                     ( sizeof(aArray) / sizeof((aArray)[0]) )
+
+/** @def RT_FLEXIBLE_ARRAY
+ * What to up inside the square brackets when declaring a structure member
+ * with a flexible size.
+ *
+ * @note    Use RT_UOFFSETOF() to calculate the structure size.
+ *
+ * @note    Never to a sizeof() on the structure or member!
+ *
+ * @note    The member must be the last one.
+ *
+ * @note    GCC does not permit using this in a union.  So, for unions you must
+ *          use RT_FLEXIBLE_ARRAY_IN_UNION instead.
+ *
+ * @note    GCC does not permit using this in nested structures, where as MSC
+ *          does.  So, use RT_FLEXIBLE_ARRAY_NESTED for that.
+ *
+ * @sa      RT_FLEXIBLE_ARRAY_NESTED, RT_FLEXIBLE_ARRAY_IN_UNION
+ */
+#if RT_MSC_PREREQ(RT_MSC_VER_VS2005) /** @todo Probably much much earlier. */ \
+ || (defined(__cplusplus) && RT_GNUC_PREREQ(6, 1) && !RT_GNUC_PREREQ(7, 0)) /* gcc-7 warns again */\
+ || defined(__WATCOMC__) /* openwatcom 1.9 supports it, we don't care about older atm. */ \
+ || RT_CLANG_PREREQ_EX(3, 4, 0) /* Only tested clang v3.4, support is probably older. */
+# define RT_FLEXIBLE_ARRAY
+# if defined(__cplusplus) && defined(_MSC_VER)
+#  pragma warning(disable:4200) /* -wd4200 does not work with VS2010 */
+# endif
+#elif defined(__STDC_VERSION__)
+# if __STDC_VERSION__ >= 1999901L
+#  define RT_FLEXIBLE_ARRAY
+# else
+#  define RT_FLEXIBLE_ARRAY                     1
+# endif
+#else
+# define RT_FLEXIBLE_ARRAY                      1
+#endif
+
+/** @def RT_FLEXIBLE_ARRAY_NESTED
+ * Variant of RT_FLEXIBLE_ARRAY for use in structures that are nested.
+ *
+ * GCC only allow the use of flexible array member in the top structure, whereas
+ * MSC is less strict and let you do struct { struct { char szName[]; } s; };
+ *
+ * @note    See notes for RT_FLEXIBLE_ARRAY.
+ *
+ * @note    GCC does not permit using this in a union.  So, for unions you must
+ *          use RT_FLEXIBLE_ARRAY_IN_NESTED_UNION instead.
+ *
+ * @sa      RT_FLEXIBLE_ARRAY, RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+ */
+#ifdef _MSC_VER
+# define RT_FLEXIBLE_ARRAY_NESTED               RT_FLEXIBLE_ARRAY
+#else
+# define RT_FLEXIBLE_ARRAY_NESTED               1
+#endif
+
+/** @def RT_FLEXIBLE_ARRAY_IN_UNION
+ * The union version of RT_FLEXIBLE_ARRAY.
+ *
+ * @remarks GCC does not support flexible array members in unions, 6.1.x
+ *          actively checks for this.  Visual C++ 2010 seems happy with it.
+ *
+ * @note    See notes for RT_FLEXIBLE_ARRAY.
+ *
+ * @sa      RT_FLEXIBLE_ARRAY, RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+ */
+#ifdef _MSC_VER
+# define RT_FLEXIBLE_ARRAY_IN_UNION             RT_FLEXIBLE_ARRAY
+#else
+# define RT_FLEXIBLE_ARRAY_IN_UNION             1
+#endif
+
+/** @def RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+ * The union version of RT_FLEXIBLE_ARRAY_NESTED.
+ *
+ * @note    See notes for RT_FLEXIBLE_ARRAY.
+ *
+ * @sa      RT_FLEXIBLE_ARRAY, RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+ */
+#ifdef _MSC_VER
+# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      RT_FLEXIBLE_ARRAY_NESTED
+#else
+# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
+#endif
+
+/** @def RT_UNION_NM
+ * For compilers (like DTrace) that does not grok nameless unions, we have a
+ * little hack to make them palatable.
+ */
+/** @def RT_STRUCT_NM
+ * For compilers (like DTrace) that does not grok nameless structs (it is
+ * non-standard C++), we have a little hack to make them palatable.
+ */
+#ifdef IPRT_WITHOUT_NAMED_UNIONS_AND_STRUCTS
+# define RT_UNION_NM(a_Nm)  a_Nm
+# define RT_STRUCT_NM(a_Nm) a_Nm
+#else
+# define RT_UNION_NM(a_Nm)
+# define RT_STRUCT_NM(a_Nm)
+#endif
 
 /**
  * Checks if the value is a power of two.
@@ -2830,7 +3004,7 @@
 /** @def RT_NOREF9
  * RT_NOREF_PV shorthand taking nine parameters.  */
 #define RT_NOREF9(var1, var2, var3, var4, var5, var6, var7, var8, var9) \
-    RT_NOREF_PV(var1); RT_NOREF8(var2, var3, var4, var5, var6, var7, var8)
+    RT_NOREF_PV(var1); RT_NOREF8(var2, var3, var4, var5, var6, var7, var8, var9)
 /** @def RT_NOREF10
  * RT_NOREF_PV shorthand taking ten parameters.  */
 #define RT_NOREF10(var1, var2, var3, var4, var5, var6, var7, var8, var9, var10) \
@@ -3496,15 +3670,45 @@
 /* 4.5 or later, I think, if in ++11 mode... */
 #endif
 
-/** @def RT_FAR_DATA
+/** @def RT_DATA_IS_FAR
  * Set to 1 if we're in 16-bit mode and use far pointers.
  */
 #if ARCH_BITS == 16 && defined(__WATCOMC__) \
   && (defined(__COMPACT__) || defined(__LARGE__))
-# define RT_FAR_DATA 1
+# define RT_DATA_IS_FAR 1
 #else
-# define RT_FAR_DATA 0
+# define RT_DATA_IS_FAR 0
 #endif
+
+/** @def RT_FAR
+ * For indicating far pointers in 16-bit code.
+ * Does nothing in 32-bit and 64-bit code. */
+/** @def RT_NEAR
+ * For indicating near pointers in 16-bit code.
+ * Does nothing in 32-bit and 64-bit code. */
+/** @def RT_FAR_CODE
+ * For indicating far 16-bit functions.
+ * Does nothing in 32-bit and 64-bit code. */
+/** @def RT_NEAR_CODE
+ * For indicating near 16-bit functions.
+ * Does nothing in 32-bit and 64-bit code. */
+/** @def RT_FAR_DATA
+ * For indicating far 16-bit external data, i.e. in a segment other than DATA16.
+ * Does nothing in 32-bit and 64-bit code. */
+#if ARCH_BITS == 16
+# define RT_FAR            __far
+# define RT_NEAR           __near
+# define RT_FAR_CODE       __far
+# define RT_NEAR_CODE      __near
+# define RT_FAR_DATA       __far
+#else
+# define RT_FAR
+# define RT_NEAR
+# define RT_FAR_CODE
+# define RT_NEAR_CODE
+# define RT_FAR_DATA
+#endif
+
 
 /** @} */
 

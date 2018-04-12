@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -32,11 +32,8 @@
 #include <iprt/stdarg.h>
 #include <iprt/err.h> /* for VINF_SUCCESS */
 #if defined(RT_OS_LINUX) && defined(__KERNEL__)
-  RT_C_DECLS_BEGIN
-# define new newhack /* string.h: strreplace */
+  /* no C++ hacks ('new' etc) here anymore! */
 # include <linux/string.h>
-# undef new
-  RT_C_DECLS_END
 
 #elif defined(IN_XF86_MODULE) && !defined(NO_ANSIC)
   RT_C_DECLS_BEGIN
@@ -829,6 +826,9 @@ RTDECL(int) RTStrCalcUtf16LenEx(const char *psz, size_t cch, size_t *pcwc);
  * Translate a UTF-8 string into a UTF-16 allocating the result buffer (custom
  * tag).
  *
+ * This differs from RTStrToUtf16 in that it always produces a
+ * big-endian string.
+ *
  * @returns iprt status code.
  * @param   pszString       UTF-8 string to convert.
  * @param   ppwszString     Receives pointer to the allocated UTF-16 string.
@@ -836,6 +836,32 @@ RTDECL(int) RTStrCalcUtf16LenEx(const char *psz, size_t cch, size_t *pcwc);
  * @param   pszTag          Allocation tag used for statistics and such.
  */
 RTDECL(int) RTStrToUtf16Tag(const char *pszString, PRTUTF16 *ppwszString, const char *pszTag);
+
+/**
+ * Translate a UTF-8 string into a UTF-16BE allocating the result buffer
+ * (default tag).
+ *
+ * This differs from RTStrToUtf16Tag in that it always produces a
+ * big-endian string.
+ *
+ * @returns iprt status code.
+ * @param   pszString       UTF-8 string to convert.
+ * @param   ppwszString     Receives pointer to the allocated UTF-16BE string.
+ *                          The returned string must be freed using RTUtf16Free().
+ */
+#define RTStrToUtf16Big(pszString, ppwszString)  RTStrToUtf16BigTag((pszString), (ppwszString), RTSTR_TAG)
+
+/**
+ * Translate a UTF-8 string into a UTF-16BE allocating the result buffer (custom
+ * tag).
+ *
+ * @returns iprt status code.
+ * @param   pszString       UTF-8 string to convert.
+ * @param   ppwszString     Receives pointer to the allocated UTF-16BE string.
+ *                          The returned string must be freed using RTUtf16Free().
+ * @param   pszTag          Allocation tag used for statistics and such.
+ */
+RTDECL(int) RTStrToUtf16BigTag(const char *pszString, PRTUTF16 *ppwszString, const char *pszTag);
 
 /**
  * Translates pszString from UTF-8 to UTF-16, allocating the result buffer if requested.
@@ -886,7 +912,67 @@ RTDECL(int) RTStrToUtf16Tag(const char *pszString, PRTUTF16 *ppwszString, const 
  *                          length that can be used to resize the buffer.
  * @param   pszTag          Allocation tag used for statistics and such.
  */
-RTDECL(int)  RTStrToUtf16ExTag(const char *pszString, size_t cchString, PRTUTF16 *ppwsz, size_t cwc, size_t *pcwc, const char *pszTag);
+RTDECL(int)  RTStrToUtf16ExTag(const char *pszString, size_t cchString,
+                               PRTUTF16 *ppwsz, size_t cwc, size_t *pcwc, const char *pszTag);
+
+
+/**
+ * Translates pszString from UTF-8 to UTF-16BE, allocating the result buffer if requested.
+ *
+ * This differs from RTStrToUtf16Ex in that it always produces a
+ * big-endian string.
+ *
+ * @returns iprt status code.
+ * @param   pszString       UTF-8 string to convert.
+ * @param   cchString       The maximum size in chars (the type) to convert. The conversion stop
+ *                          when it reaches cchString or the string terminator ('\\0').
+ *                          Use RTSTR_MAX to translate the entire string.
+ * @param   ppwsz           If cwc is non-zero, this must either be pointing to pointer to
+ *                          a buffer of the specified size, or pointer to a NULL pointer.
+ *                          If *ppwsz is NULL or cwc is zero a buffer of at least cwc items
+ *                          will be allocated to hold the translated string.
+ *                          If a buffer was requested it must be freed using RTUtf16Free().
+ * @param   cwc             The buffer size in RTUTF16s. This includes the terminator.
+ * @param   pcwc            Where to store the length of the translated string,
+ *                          excluding the terminator. (Optional)
+ *
+ *                          This may be set under some error conditions,
+ *                          however, only for VERR_BUFFER_OVERFLOW and
+ *                          VERR_NO_STR_MEMORY will it contain a valid string
+ *                          length that can be used to resize the buffer.
+ */
+#define RTStrToUtf16BigEx(pszString, cchString, ppwsz, cwc, pcwc) \
+    RTStrToUtf16BigExTag((pszString), (cchString), (ppwsz), (cwc), (pcwc), RTSTR_TAG)
+
+/**
+ * Translates pszString from UTF-8 to UTF-16BE, allocating the result buffer if
+ * requested (custom tag).
+ *
+ * This differs from RTStrToUtf16ExTag in that it always produces a
+ * big-endian string.
+ *
+ * @returns iprt status code.
+ * @param   pszString       UTF-8 string to convert.
+ * @param   cchString       The maximum size in chars (the type) to convert. The conversion stop
+ *                          when it reaches cchString or the string terminator ('\\0').
+ *                          Use RTSTR_MAX to translate the entire string.
+ * @param   ppwsz           If cwc is non-zero, this must either be pointing to pointer to
+ *                          a buffer of the specified size, or pointer to a NULL pointer.
+ *                          If *ppwsz is NULL or cwc is zero a buffer of at least cwc items
+ *                          will be allocated to hold the translated string.
+ *                          If a buffer was requested it must be freed using RTUtf16Free().
+ * @param   cwc             The buffer size in RTUTF16s. This includes the terminator.
+ * @param   pcwc            Where to store the length of the translated string,
+ *                          excluding the terminator. (Optional)
+ *
+ *                          This may be set under some error conditions,
+ *                          however, only for VERR_BUFFER_OVERFLOW and
+ *                          VERR_NO_STR_MEMORY will it contain a valid string
+ *                          length that can be used to resize the buffer.
+ * @param   pszTag          Allocation tag used for statistics and such.
+ */
+RTDECL(int)  RTStrToUtf16BigExTag(const char *pszString, size_t cchString,
+                                  PRTUTF16 *ppwsz, size_t cwc, size_t *pcwc, const char *pszTag);
 
 
 /**
@@ -1352,6 +1438,7 @@ RTDECL(char *) RTStrPrevCp(const char *pszStart, const char *psz);
  *      - \%Rhxd            - Takes a pointer to the memory which is to be dumped in typical
  *                            hex format. Use the precision to specify the length, and the width to
  *                            set the number of bytes per line. Default width and precision is 16.
+ *      - \%RhxD            - Same as \%Rhxd, except that it skips duplicate lines.
  *      - \%Rhxs            - Takes a pointer to the memory to be displayed as a hex string,
  *                            i.e. a series of space separated bytes formatted as two digit hex value.
  *                            Use the precision to specify the length. Default length is 16 bytes.
@@ -1382,6 +1469,8 @@ RTDECL(char *) RTStrPrevCp(const char *pszStart, const char *psz);
  *                            return code and parameter list.
  *      - \%Rbn             - Prints the base name.  For dropping the path in
  *                            order to save space when printing a path name.
+ *
+ *      - \%lRbs            - Same as \%ls except inlut is big endian UTF-16.
  *
  * On other platforms, \%Rw? simply prints the argument in a form of 0xXXXXXXXX.
  *
@@ -1434,6 +1523,7 @@ typedef FNRTSTROUTPUT *PFNRTSTROUTPUT;
 #define RTSTR_F_WIDTH           0x0080
 #define RTSTR_F_PRECISION       0x0100
 #define RTSTR_F_THOUSAND_SEP    0x0200
+#define RTSTR_F_OBFUSCATE_PTR   0x0400
 
 #define RTSTR_F_BIT_MASK        0xf800
 #define RTSTR_F_8BIT            0x0800
@@ -1497,6 +1587,7 @@ RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, PFNSTRF
 
 /**
  * Partial implementation of a printf like formatter.
+ *
  * It doesn't do everything correct, and there is no floating point support.
  * However, it supports custom formats by the means of a format callback.
  *
@@ -1598,9 +1689,46 @@ RTDECL(ssize_t) RTStrFormatU64(char *pszBuf, size_t cbBuf, uint64_t u64Value, un
  * @param   cchWidth        Width.
  * @param   cchPrecision    Precision.
  * @param   fFlags          Flags, RTSTR_F_XXX.
+ * @remarks The current implementation is limited to base 16 and doesn't do
+ *          width or precision and probably ignores few flags too.
  */
 RTDECL(ssize_t) RTStrFormatU128(char *pszBuf, size_t cbBuf, PCRTUINT128U pu128Value, unsigned int uiBase,
                                 signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
+
+/**
+ * Formats an unsigned 256-bit number.
+ *
+ * @returns The length of the formatted number or VERR_BUFFER_OVERFLOW.
+ * @param   pszBuf          The output buffer.
+ * @param   cbBuf           The size of the output buffer.
+ * @param   pu256Value      The value to format.
+ * @param   uiBase          Number representation base.
+ * @param   cchWidth        Width.
+ * @param   cchPrecision    Precision.
+ * @param   fFlags          Flags, RTSTR_F_XXX.
+ * @remarks The current implementation is limited to base 16 and doesn't do
+ *          width or precision and probably ignores few flags too.
+ */
+RTDECL(ssize_t) RTStrFormatU256(char *pszBuf, size_t cbBuf, PCRTUINT256U pu256Value, unsigned int uiBase,
+                                signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
+
+/**
+ * Formats an unsigned 512-bit number.
+ *
+ * @returns The length of the formatted number or VERR_BUFFER_OVERFLOW.
+ * @param   pszBuf          The output buffer.
+ * @param   cbBuf           The size of the output buffer.
+ * @param   pu512Value      The value to format.
+ * @param   uiBase          Number representation base.
+ * @param   cchWidth        Width.
+ * @param   cchPrecision    Precision.
+ * @param   fFlags          Flags, RTSTR_F_XXX.
+ * @remarks The current implementation is limited to base 16 and doesn't do
+ *          width or precision and probably ignores few flags too.
+ */
+RTDECL(ssize_t) RTStrFormatU512(char *pszBuf, size_t cbBuf, PCRTUINT512U pu512Value, unsigned int uiBase,
+                                signed int cchWidth, signed int cchPrecision, uint32_t fFlags);
+
 
 /**
  * Formats an 80-bit extended floating point number.
@@ -1717,6 +1845,8 @@ RTDECL(int) RTStrFormatTypeSetUser(const char *pszType, void *pvUser);
  * @param   cchBuffer   Size of the output buffer.
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   args        The format argument.
+ *
+ * @deprecated Use RTStrPrintf2V! Problematic return value on overflow.
  */
 RTDECL(size_t) RTStrPrintfV(char *pszBuffer, size_t cchBuffer, const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
 
@@ -1729,9 +1859,10 @@ RTDECL(size_t) RTStrPrintfV(char *pszBuffer, size_t cchBuffer, const char *pszFo
  * @param   cchBuffer   Size of the output buffer.
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
+ *
+ * @deprecated Use RTStrPrintf2! Problematic return value on overflow.
  */
 RTDECL(size_t) RTStrPrintf(char *pszBuffer, size_t cchBuffer, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
-
 
 /**
  * String printf with custom formatting.
@@ -1744,6 +1875,8 @@ RTDECL(size_t) RTStrPrintf(char *pszBuffer, size_t cchBuffer, const char *pszFor
  * @param   cchBuffer   Size of the output buffer.
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   args        The format argument.
+ *
+ * @deprecated Use RTStrPrintf2ExV! Problematic return value on overflow.
  */
 RTDECL(size_t) RTStrPrintfExV(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuffer, size_t cchBuffer,
                               const char *pszFormat, va_list args)  RT_IPRT_FORMAT_ATTR(5, 0);
@@ -1759,10 +1892,73 @@ RTDECL(size_t) RTStrPrintfExV(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuff
  * @param   cchBuffer   Size of the output buffer.
  * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
  * @param   ...         The format argument.
+ *
+ * @deprecated Use RTStrPrintf2Ex! Problematic return value on overflow.
  */
 RTDECL(size_t) RTStrPrintfEx(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuffer, size_t cchBuffer,
                              const char *pszFormat, ...)  RT_IPRT_FORMAT_ATTR(5, 6);
 
+/**
+ * String printf, version 2.
+ *
+ * @returns On success, positive count of formatted character excluding the
+ *          terminator.  On buffer overflow, negative number giving the required
+ *          buffer size (including terminator char).
+ *
+ * @param   pszBuffer   Output buffer.
+ * @param   cbBuffer    Size of the output buffer.
+ * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
+ * @param   args        The format argument.
+ */
+RTDECL(ssize_t) RTStrPrintf2V(char *pszBuffer, size_t cbBuffer, const char *pszFormat, va_list args) RT_IPRT_FORMAT_ATTR(3, 0);
+
+/**
+ * String printf, version 2.
+ *
+ * @returns On success, positive count of formatted character excluding the
+ *          terminator.  On buffer overflow, negative number giving the required
+ *          buffer size (including terminator char).
+ *
+ * @param   pszBuffer   Output buffer.
+ * @param   cbBuffer    Size of the output buffer.
+ * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
+ * @param   ...         The format argument.
+ */
+RTDECL(ssize_t) RTStrPrintf2(char *pszBuffer, size_t cbBuffer, const char *pszFormat, ...) RT_IPRT_FORMAT_ATTR(3, 4);
+
+/**
+ * String printf with custom formatting, version 2.
+ *
+ * @returns On success, positive count of formatted character excluding the
+ *          terminator.  On buffer overflow, negative number giving the required
+ *          buffer size (including terminator char).
+ *
+ * @param   pfnFormat   Pointer to handler function for the custom formats.
+ * @param   pvArg       Argument to the pfnFormat function.
+ * @param   pszBuffer   Output buffer.
+ * @param   cbBuffer    Size of the output buffer.
+ * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
+ * @param   args        The format argument.
+ */
+RTDECL(ssize_t) RTStrPrintf2ExV(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuffer, size_t cbBuffer,
+                                const char *pszFormat, va_list args)  RT_IPRT_FORMAT_ATTR(5, 0);
+
+/**
+ * String printf with custom formatting, version 2.
+ *
+ * @returns On success, positive count of formatted character excluding the
+ *          terminator.  On buffer overflow, negative number giving the required
+ *          buffer size (including terminator char).
+ *
+ * @param   pfnFormat   Pointer to handler function for the custom formats.
+ * @param   pvArg       Argument to the pfnFormat function.
+ * @param   pszBuffer   Output buffer.
+ * @param   cbBuffer   Size of the output buffer.
+ * @param   pszFormat   Pointer to the format string, @see pg_rt_str_format.
+ * @param   ...         The format argument.
+ */
+RTDECL(ssize_t) RTStrPrintf2Ex(PFNSTRFORMAT pfnFormat, void *pvArg, char *pszBuffer, size_t cbBuffer,
+                               const char *pszFormat, ...)  RT_IPRT_FORMAT_ATTR(5, 6);
 
 /**
  * Allocating string printf (default tag).
@@ -2139,6 +2335,25 @@ RTDECL(int) RTStrICmp(const char *psz1, const char *psz2);
  * @param   cchMax      Maximum string length
  */
 RTDECL(int) RTStrNICmp(const char *psz1, const char *psz2, size_t cchMax);
+
+/**
+ * Performs a case insensitive string compare between a UTF-8 string and a 7-bit
+ * ASCII string.
+ *
+ * This is potentially faster than RTStrICmp and drags in less dependencies.  It
+ * is really handy for hardcoded inputs.
+ *
+ * If the string encoding is invalid the function will assert (strict builds)
+ * and use RTStrCmp for the remainder of the string.
+ *
+ * @returns < 0 if the first string less than the second string.
+ * @returns 0 if the first string identical to the second string.
+ * @returns > 0 if the first string greater than the second string.
+ * @param   psz1        First UTF-8 string. Null is allowed.
+ * @param   psz2        Second string, 7-bit ASCII. Null is allowed.
+ * @sa      RTUtf16ICmpAscii
+ */
+RTDECL(int) RTStrICmpAscii(const char *psz1, const char *psz2);
 
 /**
  * Checks whether @a pszString starts with @a pszStart.

@@ -1,9 +1,12 @@
-#
+# $Id: Makefile.module 118839 2017-10-28 15:14:05Z bird $
+## @file
 # VirtualBox Guest Additions Module Makefile.
 #
 # (For 2.6.x this file must be 'Makefile'!)
 #
-# Copyright (C) 2006-2011 Oracle Corporation
+
+#
+# Copyright (C) 2006-2017 Oracle Corporation
 #
 # This file is part of VirtualBox Open Source Edition (OSE), as
 # available from http://www.virtualbox.org. This file is free software;
@@ -25,19 +28,16 @@ MOD_OBJS   = \
 	lnkops.o \
 	regops.o \
 	utils.o \
-	GenericRequest.o \
-	SysHlp.o \
-	PhysHeap.o \
-	Init.o \
-	VMMDev.o \
-	HGCM.o \
-	VBoxGuestR0LibSharedFolders.o \
-	VbglR0CanUsePhysPageList.o
+	VBoxGuestR0LibHGCM.o \
+	VBoxGuestR0LibIdc.o \
+	VBoxGuestR0LibIdc-unix.o \
+	VBoxGuestR0LibSharedFolders.o
 ifeq ($(BUILD_TARGET_ARCH),x86)
 MOD_OBJS  += \
 	divdi3.o \
 	moddi3.o \
 	udivdi3.o \
+	udivmoddi4.o \
 	umoddi3.o \
 	qdivrem.o
 endif

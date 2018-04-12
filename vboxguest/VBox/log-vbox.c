@@ -1,10 +1,10 @@
-/* $Id: log-vbox.cpp 109808 2016-08-09 02:03:17Z vushakov $ */
+/* $Id: log-vbox.cpp 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * VirtualBox Runtime - Logging configuration.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -483,6 +483,7 @@ RTDECL(PRTLOGGER) RTLogDefaultInit(void)
     ASSERT_LOG_GROUP(MAIN_VBOXSVCAVAILABILITYCHANGEDEVENT);
     ASSERT_LOG_GROUP(MAIN_VIRTUALBOX);
     ASSERT_LOG_GROUP(MAIN_VIRTUALBOXCLIENT);
+    ASSERT_LOG_GROUP(MAIN_VIRTUALBOXSDS);
     ASSERT_LOG_GROUP(MAIN_VIRTUALSYSTEMDESCRIPTION);
     ASSERT_LOG_GROUP(MAIN_VRDESERVER);
     ASSERT_LOG_GROUP(MAIN_VRDESERVERCHANGEDEVENT);
@@ -732,6 +733,8 @@ RTDECL(PRTLOGGER) RTLogDefaultInit(void)
         RTLogFlags(pLogger, "enabled unbuffered pid tid");
 #  ifndef IN_GUEST
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER | RTLOGDEST_STDOUT;
+#  else
+        RTLogGroupSettings(pLogger, "all=~0 -default.l6.l5.l4.l3");
 #  endif
 # endif
 # if defined(DEBUG_sandervl) && !defined(IN_GUEST)
@@ -745,8 +748,7 @@ RTDECL(PRTLOGGER) RTLogDefaultInit(void)
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER;
 # endif
 # if defined(DEBUG_aleksey)  /* Guest ring-0 as well */
-        //RTLogGroupSettings(pLogger, "net_flt_drv.e.l.f.l3.l4.l5 +net_adp_drv.e.l.f.l3.l4.l5");
-        RTLogGroupSettings(pLogger, "net_flt_drv.e.l.f.l3.l4.l5.l6");
+        RTLogGroupSettings(pLogger, "net_flt_drv.e.l.f.l3.l4.l5 +net_adp_drv.e.l.f.l3.l4.l5.l6");
         RTLogFlags(pLogger, "enabled unbuffered");
         pLogger->fDestFlags |= RTLOGDEST_DEBUGGER | RTLOGDEST_STDOUT;
 # endif

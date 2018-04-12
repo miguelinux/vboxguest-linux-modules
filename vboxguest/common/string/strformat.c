@@ -1,10 +1,10 @@
-/* $Id: strformat.cpp 110216 2016-08-16 14:02:22Z bird $ */
+/* $Id: strformat.cpp 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - String Formatter.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -658,6 +658,7 @@ RTDECL(size_t) RTStrFormatV(PFNRTSTROUTPUT pfnOutput, void *pvArgOutput, PFNSTRF
 
                             case 'X':
                                 fFlags |= RTSTR_F_CAPITAL;
+                                RT_FALL_THRU();
                             case 'x':
                                 uBase = 16;
                                 break;

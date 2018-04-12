@@ -1,10 +1,10 @@
-/* $Id: mpnotification-r0drv-linux.c 112917 2017-01-16 14:07:06Z fmehnert $ */
+/* $Id: mpnotification-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - Multiprocessor Event Notifications, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2008-2016 Oracle Corporation
+ * Copyright (C) 2008-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

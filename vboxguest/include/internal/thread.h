@@ -1,10 +1,10 @@
-/* $Id: thread.h 109033 2016-07-22 18:27:37Z bird $ */
+/* $Id: thread.h 118810 2017-10-28 13:12:06Z bird $ */
 /** @file
  * IPRT - Internal RTThread header.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -178,6 +178,21 @@ DECLHIDDEN(int) rtThreadNativeAdopt(PRTTHREADINT pThread);
  * @param   pThread         The thread structure.
  */
 DECLHIDDEN(void) rtThreadNativeDestroy(PRTTHREADINT pThread);
+
+#ifdef IN_RING3
+/**
+ * Called to check whether the thread is still alive or not before we start
+ * waiting.
+ *
+ * This is a kludge to deal with windows threads being killed wholesale in
+ * certain process termination scenarios and we don't want to hang the last
+ * thread because it's waiting on the semaphore of a dead thread.
+ *
+ * @returns true if alive, false if not.
+ * @param   pThread         The thread structure.
+ */
+DECLHIDDEN(bool) rtThreadNativeIsAliveKludge(PRTTHREADINT pThread);
+#endif
 
 #ifdef IN_RING0
 /**

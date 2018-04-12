@@ -1,10 +1,10 @@
-/* $Id: mp-r0drv-linux.c 112144 2016-12-06 10:21:41Z fmehnert $ */
+/* $Id: mp-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - Multiprocessor, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2008-2016 Oracle Corporation
+ * Copyright (C) 2008-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -384,7 +384,10 @@ RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags, PFNRTMPW
          * CPUs is the one we're running on, we must do the call and the post
          * call wait ourselves.
          */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+        /* 2.6.28 introduces CONFIG_CPUMASK_OFFSTACK */
+        cpumask_var_t DstCpuMask;
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
         cpumask_t   DstCpuMask;
 #endif
         RTCPUID     idCpuSelf = RTMpCpuId();
@@ -397,10 +400,17 @@ RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags, PFNRTMPW
         Args.idCpu2  = idCpu2;
         Args.cHits   = 0;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
-        cpumask_clear(&DstCpuMask);
-        cpumask_set_cpu(idCpu1, &DstCpuMask);
-        cpumask_set_cpu(idCpu2, &DstCpuMask);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30)
+        if (!zalloc_cpumask_var(&DstCpuMask, GFP_KERNEL))
+            return VERR_NO_MEMORY;
+        cpumask_set_cpu(idCpu1, DstCpuMask);
+        cpumask_set_cpu(idCpu2, DstCpuMask);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+        if (!alloc_cpumask_var(&DstCpuMask, GFP_KERNEL))
+            return VERR_NO_MEMORY;
+        cpumask_clear(DstCpuMask);
+        cpumask_set_cpu(idCpu1, DstCpuMask);
+        cpumask_set_cpu(idCpu2, DstCpuMask);
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
         cpus_clear(DstCpuMask);
         cpu_set(idCpu1, DstCpuMask);
@@ -408,7 +418,7 @@ RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags, PFNRTMPW
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
-        smp_call_function_many(&DstCpuMask, rtmpLinuxWrapperPostInc, &Args, !fCallSelf /* wait */);
+        smp_call_function_many(DstCpuMask, rtmpLinuxWrapperPostInc, &Args, !fCallSelf /* wait */);
         rc = 0;
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
         rc = smp_call_function_mask(DstCpuMask, rtmpLinuxWrapperPostInc, &Args, !fCallSelf /* wait */);
@@ -440,6 +450,10 @@ RTDECL(int) RTMpOnPair(RTCPUID idCpu1, RTCPUID idCpu2, uint32_t fFlags, PFNRTMPW
             rc = VERR_CPU_OFFLINE;
         else
             rc = VERR_CPU_IPE_1;
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
+        free_cpumask_var(DstCpuMask);
+#endif
     }
     /*
      * A CPU must be present to be considered just offline.

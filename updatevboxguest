@@ -98,7 +98,7 @@ extract_files ()
 
 update_repo ()
 {
-    git rm vbox* Make* build_*
+    git rm -r vbox* Make* build_*
     cp -r /tmp/vblga-bz2/src/vboxguest-${VBOX_VERSION}/* .
     cp /tmp/vblga-bz2/LICENSE .
     git add -A

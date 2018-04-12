@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -79,10 +79,7 @@ void sf_init_inode(struct sf_glob_info *sf_g, struct inode *inode,
     attr = &info->Attr;
 
 #define mode_set(r) attr->fMode & (RTFS_UNIX_##r) ? (S_##r) : 0;
-    mode  = mode_set(ISUID);
-    mode |= mode_set(ISGID);
-
-    mode |= mode_set(IRUSR);
+    mode  = mode_set(IRUSR);
     mode |= mode_set(IWUSR);
     mode |= mode_set(IXUSR);
 
@@ -290,9 +287,16 @@ sf_dentry_revalidate(struct dentry *dentry, int flags)
    has inode at all) from these new attributes we derive [kstat] via
    [generic_fillattr] */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+int sf_getattr(const struct path *path, struct kstat *kstat, u32 request_mask, unsigned int flags)
+# else
 int sf_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *kstat)
+# endif
 {
     int err;
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+    struct dentry *dentry = path->dentry;
+# endif
 
     TRACE();
     err = sf_inode_revalidate(dentry);
@@ -353,9 +357,7 @@ int sf_setattr(struct dentry *dentry, struct iattr *iattr)
         RT_ZERO(info);
         if (iattr->ia_valid & ATTR_MODE)
         {
-            info.Attr.fMode  = mode_set(ISUID);
-            info.Attr.fMode |= mode_set(ISGID);
-            info.Attr.fMode |= mode_set(IRUSR);
+            info.Attr.fMode  = mode_set(IRUSR);
             info.Attr.fMode |= mode_set(IWUSR);
             info.Attr.fMode |= mode_set(IXUSR);
             info.Attr.fMode |= mode_set(IRGRP);
@@ -798,7 +800,7 @@ int sf_dir_read_all(struct sf_glob_info *sf_g, struct sf_inode_info *sf_i,
         switch (rc)
         {
             case VINF_SUCCESS:
-                /* fallthrough */
+                RT_FALL_THRU();
             case VERR_NO_MORE_FILES:
                 break;
             case VERR_NO_TRANSLATION:

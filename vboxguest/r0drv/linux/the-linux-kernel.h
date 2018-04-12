@@ -1,10 +1,10 @@
-/* $Id: the-linux-kernel.h 109855 2016-08-09 16:35:40Z bird $ */
+/* $Id: the-linux-kernel.h 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - Include all necessary headers for the Linux kernel.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -103,6 +103,10 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
 # include <linux/sched/rt.h>
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+# include <linux/sched/signal.h>
+# include <linux/sched/types.h>
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 7)
 # include <linux/jiffies.h>
 #endif
@@ -153,6 +157,11 @@
 /* for cr4_init_shadow() / cpu_tlbstate. */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 20, 0)
 # include <asm/tlbflush.h>
+#endif
+
+/* for set_pages_x() */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+# include <asm/set_memory.h>
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)

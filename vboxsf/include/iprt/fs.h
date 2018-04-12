@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -233,6 +233,8 @@ typedef enum RTFSTYPE
      * limiting the file size (except, perhaps for the 64KB cluster case on
      * non-Windows hosts). */
     RTFSTYPE_FAT,
+    /** Extended File Allocation Table, main target are flash drives. */
+    RTFSTYPE_EXFAT,
 
     /* Solaris: */
     /** Zettabyte File System.  */
@@ -301,11 +303,11 @@ typedef enum RTFSOBJATTRADD
 typedef struct RTFSOBJATTRUNIX
 {
     /** The user owning the filesystem object (st_uid).
-     * This field is NIL_UID if not supported. */
+     * This field is NIL_RTUID if not supported. */
     RTUID           uid;
 
     /** The group the filesystem object is assigned (st_gid).
-     * This field is NIL_GID if not supported. */
+     * This field is NIL_RTGID if not supported. */
     RTGID           gid;
 
     /** Number of hard links to this filesystem object (st_nlink).
@@ -321,7 +323,9 @@ typedef struct RTFSOBJATTRUNIX
     /** The unique identifier (within the filesystem) of this filesystem object (st_ino).
      * Together with INodeIdDevice, this field can be used as a OS wide unique id
      * when both their values are not 0.
-     * This field is 0 if the information is not available. */
+     * This field is 0 if the information is not available.
+     *
+     * @remarks  The special '..' dir always shows up with 0 on NTFS/Windows. */
     RTINODE         INodeId;
 
     /** User flags (st_flags).

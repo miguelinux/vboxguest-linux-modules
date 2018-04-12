@@ -1,10 +1,10 @@
-/* $Id: thread.cpp 109153 2016-07-27 11:46:03Z bird $ */
+/* $Id: thread.cpp 118940 2017-11-06 09:56:18Z bird $ */
 /** @file
  * IPRT - Threads, common routines.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -281,6 +281,8 @@ static int rtThreadAdopt(RTTHREADTYPE enmType, unsigned fFlags, uint32_t fIntFla
             rtThreadSetState(pThread, RTTHREADSTATE_RUNNING);
             rtThreadRelease(pThread);
         }
+        else
+            rtThreadDestroy(pThread);
     }
     return rc;
 }
@@ -449,7 +451,7 @@ DECLHIDDEN(void) rtThreadInsert(PRTTHREADINT pThread, RTNATIVETHREAD NativeThrea
                     ASMAtomicBitClear(&pThread->fIntFlags, RTTHREADINT_FLAG_IN_TREE_BIT);
                     rtThreadRemoveLocked(pThreadOther);
                     if (pThreadOther->fIntFlags & RTTHREADINT_FLAGS_ALIEN)
-                    rtThreadRelease(pThreadOther);
+                        rtThreadRelease(pThreadOther);
                 }
 
                 /* insert the thread */
@@ -1165,10 +1167,23 @@ static int rtThreadWait(RTTHREAD Thread, RTMSINTERVAL cMillies, int *prc, bool f
         {
             if (pThread->fFlags & RTTHREADFLAGS_WAITABLE)
             {
-                if (fAutoResume)
-                    rc = RTSemEventMultiWait(pThread->EventTerminated, cMillies);
+#if defined(IN_RING3) && defined(RT_OS_WINDOWS)
+                if (RT_LIKELY(rtThreadNativeIsAliveKludge(pThread)))
+#endif
+                {
+                    if (fAutoResume)
+                        rc = RTSemEventMultiWait(pThread->EventTerminated, cMillies);
+                    else
+                        rc = RTSemEventMultiWaitNoResume(pThread->EventTerminated, cMillies);
+                }
+#if defined(IN_RING3) && defined(RT_OS_WINDOWS)
                 else
-                    rc = RTSemEventMultiWaitNoResume(pThread->EventTerminated, cMillies);
+                {
+                    rc = VINF_SUCCESS;
+                    if (pThread->rc == VERR_PROCESS_RUNNING)
+                        pThread->rc = VERR_THREAD_IS_DEAD;
+                }
+#endif
                 if (RT_SUCCESS(rc))
                 {
                     if (prc)

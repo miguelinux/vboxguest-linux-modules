@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -597,6 +597,28 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 
 /** ECX Bit 0 - PREFETCHWT1 - Supports the PREFETCHWT1 instruction. */
 #define X86_CPUID_STEXT_FEATURE_ECX_PREFETCHWT1       RT_BIT_32(0)
+/** ECX Bit 2 - UIMP - Supports user mode instruction prevention. */
+#define X86_CPUID_STEXT_FEATURE_ECX_UMIP              RT_BIT_32(2)
+/** ECX Bit 3 - PKU - Supports protection keys for user-mode pages. */
+#define X86_CPUID_STEXT_FEATURE_ECX_PKU               RT_BIT_32(3)
+/** ECX Bit 4 - OSPKE - Protection keys for user mode pages enabled. */
+#define X86_CPUID_STEXT_FEATURE_ECX_OSPKE             RT_BIT_32(4)
+/** ECX Bits 17-21 - MAWAU - Value used by BNDLDX and BNDSTX. */
+#define X86_CPUID_STEXT_FEATURE_ECX_MAWAU             UINT32_C(0x003e0000)
+/** ECX Bit 22 - RDPID - Support pread process ID. */
+#define X86_CPUID_STEXT_FEATURE_ECX_RDPID             RT_BIT_32(2)
+/** ECX Bit 30 - SGX_LC - Supports SGX launch configuration. */
+#define X86_CPUID_STEXT_FEATURE_ECX_SGX_LC            RT_BIT_32(30)
+
+/** EDX Bit 26 - IBRS & IBPB - Supports the IBRS flag in IA32_SPEC_CTRL and
+ *  IBPB command in IA32_PRED_CMD. */
+#define X86_CPUID_STEXT_FEATURE_EDX_IBRS_IBPB         RT_BIT_32(26)
+/** EDX Bit 27 - IBRS & IBPB - Supports the STIBP flag in IA32_SPEC_CTRL. */
+#define X86_CPUID_STEXT_FEATURE_EDX_STIBP             RT_BIT_32(27)
+
+/** EDX Bit 29 - ARCHCAP - Supports the IA32_ARCH_CAPABILITIES MSR. */
+#define X86_CPUID_STEXT_FEATURE_EDX_ARCHCAP           RT_BIT_32(29)
+
 /** @} */
 
 
@@ -741,6 +763,57 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 /** @} */
 
 
+/** @name CPUID AMD extended feature extensions ID (EBX).
+ * CPUID query with EAX=0x80000008.
+ * @{
+ */
+/** Bit 0 - CLZERO - Clear zero instruction. */
+#define X86_CPUID_AMD_EFEID_EBX_CLZERO       RT_BIT_32(0)
+/** Bit 1 - IRPerf - Instructions retired count support. */
+#define X86_CPUID_AMD_EFEID_EBX_IRPERF       RT_BIT_32(1)
+/** Bit 2 - XSaveErPtr - Always XSAVE* and XRSTR* error pointers. */
+#define X86_CPUID_AMD_EFEID_EBX_XSAVE_ER_PTR RT_BIT_32(2)
+/* AMD pipeline length: 9 feature bits ;-) */
+/** Bit 12 - IBPB - Supports the IBPB command in IA32_PRED_CMD. */
+#define X86_CPUID_AMD_EFEID_EBX_IBPB         RT_BIT_32(12)
+/** @} */
+
+
+/** @name CPUID AMD SVM Feature information.
+ * CPUID query with EAX=0x8000000a.
+ * @{
+ */
+/** Bit 0 - NP - Nested Paging supported. */
+#define X86_CPUID_SVM_FEATURE_EDX_NESTED_PAGING             RT_BIT(0)
+/** Bit 1 - LbrVirt - Support for saving five debug MSRs. */
+#define X86_CPUID_SVM_FEATURE_EDX_LBR_VIRT                  RT_BIT(1)
+/** Bit 2 - SVML - SVM locking bit supported. */
+#define X86_CPUID_SVM_FEATURE_EDX_SVM_LOCK                  RT_BIT(2)
+/** Bit 3 - NRIPS - Saving the next instruction pointer is supported. */
+#define X86_CPUID_SVM_FEATURE_EDX_NRIP_SAVE                 RT_BIT(3)
+/** Bit 4 - TscRateMsr - Support for MSR TSC ratio. */
+#define X86_CPUID_SVM_FEATURE_EDX_TSC_RATE_MSR              RT_BIT(4)
+/** Bit 5 - VmcbClean - Support VMCB clean bits. */
+#define X86_CPUID_SVM_FEATURE_EDX_VMCB_CLEAN                RT_BIT(5)
+/** Bit 6 - FlushByAsid - Indicate TLB flushing for current ASID only, and that
+ *  VMCB.TLB_Control is supported. */
+#define X86_CPUID_SVM_FEATURE_EDX_FLUSH_BY_ASID             RT_BIT(6)
+/** Bit 7 - DecodeAssist - Indicate decode assist is supported. */
+#define X86_CPUID_SVM_FEATURE_EDX_DECODE_ASSIST             RT_BIT(7)
+/** Bit 10 - PauseFilter - Indicates support for the PAUSE intercept filter. */
+#define X86_CPUID_SVM_FEATURE_EDX_PAUSE_FILTER              RT_BIT(10)
+/** Bit 12 - PauseFilterThreshold - Indicates support for the PAUSE
+ *  intercept filter cycle count threshold. */
+#define X86_CPUID_SVM_FEATURE_EDX_PAUSE_FILTER_THRESHOLD    RT_BIT(12)
+/** Bit 13 - AVIC - Advanced Virtual Interrupt Controller. */
+#define X86_CPUID_SVM_FEATURE_EDX_AVIC                      RT_BIT(13)
+/** Bit 15 - V_VMSAVE_VMLOAD - Supports virtualized VMSAVE/VMLOAD. */
+#define X86_CPUID_SVM_FEATURE_EDX_VIRT_VMSAVE_VMLOAD        RT_BIT(15)
+/** Bit 16 - V_VMSAVE_VMLOAD - Supports virtualized GIF. */
+#define X86_CPUID_SVM_FEATURE_EDX_VGIF                      RT_BIT(16)
+/** @} */
+
+
 /** @name CR0
  * @remarks The 286 (MSW), 386 and 486 ignores attempts at setting
  *          reserved flags.
@@ -824,6 +897,8 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CR4_VMXE                        RT_BIT_32(13)
 /** Bit 14 - SMXE - Safer Mode Extensions Enabled. */
 #define X86_CR4_SMXE                        RT_BIT_32(14)
+/** Bit 16 - FSGSBASE - Read/write FSGSBASE instructions Enable. */
+#define X86_CR4_FSGSBASE                    RT_BIT_32(16)
 /** Bit 17 - PCIDE - Process-Context Identifiers Enabled. */
 #define X86_CR4_PCIDE                       RT_BIT_32(17)
 /** Bit 18 - OSXSAVE - Operating System Support for XSAVE and processor
@@ -1078,6 +1153,20 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 /** Per-processor TSC adjust MSR. */
 #define MSR_IA32_TSC_ADJUST                 0x3B
 
+/** Spectre control register.
+ * Logical processor scope. Reset value 0, unaffected by SIPI & INIT. */
+#define MSR_IA32_SPEC_CTRL                  0x48
+/** IBRS - Indirect branch restricted speculation. */
+#define MSR_IA32_SPEC_CTRL_F_IBRS           RT_BIT_32(0)
+/** STIBP - Single thread indirect branch predictors. */
+#define MSR_IA32_SPEC_CTRL_F_STIBP          RT_BIT_32(1)
+
+/** Prediction command register.
+ * Write only, logical processor scope, no state since write only. */
+#define MSR_IA32_PRED_CMD                   0x49
+/** IBPB - Indirect branch prediction barrie when written as 1. */
+#define MSR_IA32_PRED_CMD_F_IBPB            RT_BIT_32(0)
+
 /** BIOS update trigger (microcode update). */
 #define MSR_IA32_BIOS_UPDT_TRIG             0x79
 
@@ -1112,6 +1201,14 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 
 /** MTRR Capabilities. */
 #define MSR_IA32_MTRR_CAP                   0xFE
+
+/** Architecture capabilities (bugfixes).
+ * @note May move  */
+#define MSR_IA32_ARCH_CAPABILITIES          UINT32_C(0x10a)
+/** CPU is no subject to spectre problems. */
+#define MSR_IA32_ARCH_CAP_F_SPECTRE_FIX     RT_BIT_32(0)
+/** CPU has better IBRS and you can leave it on all the time. */
+#define MSR_IA32_ARCH_CAP_F_BETTER_IBRS     RT_BIT_32(1)
 
 /** Cache control/info. */
 #define MSR_BBL_CR_CTL3                     UINT32_C(0x11e)
@@ -1269,6 +1366,15 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define MSR_IA32_VMX_PROCBASED_CTLS2        0x48B
 /** EPT capabilities. */
 #define MSR_IA32_VMX_EPT_VPID_CAP           0x48C
+/** Allowed settings of all pin-based VM execution controls. */
+#define MSR_IA32_VMX_TRUE_PINBASED_CTLS     0x48D
+/** Allowed settings of all proc-based VM execution controls. */
+#define MSR_IA32_VMX_TRUE_PROCBASED_CTLS    0x48E
+/** Allowed settings of all VMX exit controls. */
+#define MSR_IA32_VMX_TRUE_EXIT_CTLS         0x48F
+/** Allowed settings of all VMX entry controls. */
+#define MSR_IA32_VMX_TRUE_ENTRY_CTLS        0x490
+
 /** DS Save Area (R/W). */
 #define MSR_IA32_DS_AREA                    0x600
 /** Running Average Power Limit (RAPL) power units. */
@@ -1449,7 +1555,21 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 /** Hypertransport interrupt pending register.
  * "BIOS and Kernel Developer's Guide for AMD NPT Family 0Fh Processors" */
 #define MSR_K8_INT_PENDING                  UINT32_C(0xc0010055)
+
+/** SVM Control. */
 #define MSR_K8_VM_CR                        UINT32_C(0xc0010114)
+/** Disables HDT (Hardware Debug Tool) and certain internal debug
+ *  features. */
+#define MSR_K8_VM_CR_DPD                    RT_BIT_32(0)
+/** If set, non-intercepted INIT signals are converted to \#SX
+ *  exceptions. */
+#define MSR_K8_VM_CR_R_INIT                 RT_BIT_32(1)
+/** Disables A20 masking.  */
+#define MSR_K8_VM_CR_DIS_A20M               RT_BIT_32(2)
+/** Lock bit for this MSR controlling bits 3 (LOCK) and 4 (SVMDIS). */
+#define MSR_K8_VM_CR_LOCK                   RT_BIT_32(3)
+/** SVM disable. When set, writes to EFER.SVME are treated as MBZ. When
+ *  clear, EFER.SVME can be written normally. */
 #define MSR_K8_VM_CR_SVM_DISABLE            RT_BIT_32(4)
 
 #define MSR_K8_IGNNE                        UINT32_C(0xc0010115)
@@ -2467,6 +2587,20 @@ typedef const X86PML4 *PCX86PML4;
 /** @} */
 
 /**
+ * Intel PCID invalidation types.
+ */
+/** Individual address invalidation. */
+#define X86_INVPCID_TYPE_INDV_ADDR                  0
+/** Single-context invalidation. */
+#define X86_INVPCID_TYPE_SINGLE_CONTEXT             1
+/** All-context including globals invalidation. */
+#define X86_INVPCID_TYPE_ALL_CONTEXT_INCL_GLOBAL    2
+/** All-context excluding globals invalidation. */
+#define X86_INVPCID_TYPE_ALL_CONTEXT_EXCL_GLOBAL    3
+/** The maximum valid invalidation type value.   */
+#define X86_INVPCID_TYPE_MAX_VALID                  X86_INVPCID_TYPE_ALL_CONTEXT_EXCL_GLOBAL
+
+/**
  * 32-bit protected mode FSTENV image.
  */
 typedef struct X86FSTENV32P
@@ -2540,7 +2674,7 @@ typedef X86FPUREG const *PCX86FPUREG;
  */
 typedef union X86XMMREG
 {
-    /** XMM Register view *. */
+    /** XMM Register view. */
     uint128_t   xmm;
     /** 8-bit view. */
     uint8_t     au8[16];
@@ -2552,6 +2686,8 @@ typedef union X86XMMREG
     uint64_t    au64[2];
     /** 128-bit view. (yeah, very helpful) */
     uint128_t   au128[1];
+    /** Confusing nested 128-bit union view (this is what xmm should've been). */
+    RTUINT128U  uXmm;
 } X86XMMREG;
 #ifndef VBOX_FOR_DTRACE_LIB
 AssertCompileSize(X86XMMREG, 16);
@@ -2802,50 +2938,50 @@ AssertCompileMemberOffset(X86FXSTATE, au32RsrvdForSoftware, X86_OFF_FXSTATE_RSVD
 /** @name SSE MXCSR
  * @{ */
 /** Exception Flag: Invalid operation.  */
-#define X86_MXSCR_IE          RT_BIT_32(0)
+#define X86_MXCSR_IE          RT_BIT_32(0)
 /** Exception Flag: Denormalized operand.  */
-#define X86_MXSCR_DE          RT_BIT_32(1)
+#define X86_MXCSR_DE          RT_BIT_32(1)
 /** Exception Flag: Zero divide.  */
-#define X86_MXSCR_ZE          RT_BIT_32(2)
+#define X86_MXCSR_ZE          RT_BIT_32(2)
 /** Exception Flag: Overflow.  */
-#define X86_MXSCR_OE          RT_BIT_32(3)
+#define X86_MXCSR_OE          RT_BIT_32(3)
 /** Exception Flag: Underflow.  */
-#define X86_MXSCR_UE          RT_BIT_32(4)
+#define X86_MXCSR_UE          RT_BIT_32(4)
 /** Exception Flag: Precision.  */
-#define X86_MXSCR_PE          RT_BIT_32(5)
+#define X86_MXCSR_PE          RT_BIT_32(5)
 
 /** Denormals are zero. */
-#define X86_MXSCR_DAZ         RT_BIT_32(6)
+#define X86_MXCSR_DAZ         RT_BIT_32(6)
 
 /** Exception Mask: Invalid operation. */
-#define X86_MXSCR_IM          RT_BIT_32(7)
+#define X86_MXCSR_IM          RT_BIT_32(7)
 /** Exception Mask: Denormalized operand. */
-#define X86_MXSCR_DM          RT_BIT_32(8)
+#define X86_MXCSR_DM          RT_BIT_32(8)
 /** Exception Mask: Zero divide.  */
-#define X86_MXSCR_ZM          RT_BIT_32(9)
+#define X86_MXCSR_ZM          RT_BIT_32(9)
 /** Exception Mask: Overflow.  */
-#define X86_MXSCR_OM          RT_BIT_32(10)
+#define X86_MXCSR_OM          RT_BIT_32(10)
 /** Exception Mask: Underflow.  */
-#define X86_MXSCR_UM          RT_BIT_32(11)
+#define X86_MXCSR_UM          RT_BIT_32(11)
 /** Exception Mask: Precision.  */
-#define X86_MXSCR_PM          RT_BIT_32(12)
+#define X86_MXCSR_PM          RT_BIT_32(12)
 
 /** Rounding control mask. */
-#define X86_MXSCR_RC_MASK     UINT16_C(0x6000)
+#define X86_MXCSR_RC_MASK     UINT16_C(0x6000)
 /** Rounding control: To nearest. */
-#define X86_MXSCR_RC_NEAREST  UINT16_C(0x0000)
+#define X86_MXCSR_RC_NEAREST  UINT16_C(0x0000)
 /** Rounding control: Down. */
-#define X86_MXSCR_RC_DOWN     UINT16_C(0x2000)
+#define X86_MXCSR_RC_DOWN     UINT16_C(0x2000)
 /** Rounding control: Up. */
-#define X86_MXSCR_RC_UP       UINT16_C(0x4000)
+#define X86_MXCSR_RC_UP       UINT16_C(0x4000)
 /** Rounding control: Towards zero. */
-#define X86_MXSCR_RC_ZERO     UINT16_C(0x6000)
+#define X86_MXCSR_RC_ZERO     UINT16_C(0x6000)
 
 /** Flush-to-zero for masked underflow.  */
-#define X86_MXSCR_FZ          RT_BIT_32(15)
+#define X86_MXCSR_FZ          RT_BIT_32(15)
 
 /** Misaligned Exception Mask (AMD MISALIGNSSE).  */
-#define X86_MXSCR_MM          RT_BIT_32(17)
+#define X86_MXCSR_MM          RT_BIT_32(17)
 /** @} */
 
 /**
@@ -3005,6 +3141,10 @@ typedef struct X86XSAVEAREA
        follows immediately. */
     union
     {
+        /** The high 128-bit AVX registers for easy access by IEM.
+         * @note This ASSUMES they will always be here...  */
+        X86XSAVEYMMHI       YmmHi;
+
         /** This is a typical layout on intel CPUs (good for debuggers). */
         struct
         {
@@ -3049,7 +3189,7 @@ typedef X86XSAVEAREA *PX86XSAVEAREA;
 typedef X86XSAVEAREA const *PCX86XSAVEAREA;
 
 
-/** @name XSAVE_C_XXX - XSAVE State Components Bits.
+/** @name XSAVE_C_XXX - XSAVE State Components Bits (XCR0).
  * @{ */
 /** Bit 0 - x87 - Legacy FPU state (bit number) */
 #define XSAVE_C_X87_BIT         0
@@ -3091,6 +3231,10 @@ typedef X86XSAVEAREA const *PCX86XSAVEAREA;
 #define XSAVE_C_LWP_BIT         62
 /** Bit 62 - LWP - Lightweight Profiling (AMD). */
 #define XSAVE_C_LWP             RT_BIT_64(XSAVE_C_LWP_BIT)
+/** Bit 63 - X - Reserved (MBZ) for extending XCR0 (bit number). */
+#define XSAVE_C_X_BIT           63
+/** Bit 63 - X - Reserved (MBZ) for extending XCR0 (AMD). */
+#define XSAVE_C_X               RT_BIT_64(XSAVE_C_X_BIT)
 /** @} */
 
 
@@ -3250,9 +3394,9 @@ typedef struct X86DESCGATE
     unsigned    u16Sel : 16;
     /** 20 - Number of parameters for a call-gate.
      * Ignored if interrupt-, trap- or task-gate. */
-    unsigned    u4ParmCount : 4;
-    /** 24 - Reserved / ignored. */
-    unsigned    u4Reserved : 4;
+    unsigned    u5ParmCount : 5;
+    /** 25 - Reserved / ignored. */
+    unsigned    u3Reserved : 3;
     /** 28 - Segment Type. */
     unsigned    u4Type : 4;
     /** 2c - Descriptor Type (0 = system). */
@@ -3970,14 +4114,14 @@ typedef enum X86XCPT
     /** \#VE - Virtualization Exception. */
     X86_XCPT_VE = 0x14,
     /** \#SX - Security Exception. */
-    X86_XCPT_SX = 0x1f
+    X86_XCPT_SX = 0x1e
 } X86XCPT;
 /** Pointer to a x86 exception code. */
 typedef X86XCPT *PX86XCPT;
 /** Pointer to a const x86 exception code. */
 typedef const X86XCPT *PCX86XCPT;
-/** The maximum exception value. */
-#define X86_XCPT_MAX                (X86_XCPT_SX)
+/** The last valid (currently reserved) exception value. */
+#define X86_XCPT_LAST               0x1f
 
 
 /** @name Trap Error Codes
@@ -4074,6 +4218,11 @@ typedef struct X86XDTR64
 AssertCompile((X86_MODRM_RM_MASK | X86_MODRM_REG_MASK | X86_MODRM_MOD_MASK) == 0xff);
 AssertCompile((X86_MODRM_REG_MASK >> X86_MODRM_REG_SHIFT) == X86_MODRM_REG_SMASK);
 AssertCompile((X86_MODRM_MOD_MASK >> X86_MODRM_MOD_SHIFT) == X86_MODRM_MOD_SMASK);
+/** @def X86_MODRM_MAKE
+ * @param   a_Mod       The mod value (0..3).
+ * @param   a_Reg       The register value (0..7).
+ * @param   a_RegMem    The register or memory value (0..7). */
+# define X86_MODRM_MAKE(a_Mod, a_Reg, a_RegMem) (((a_Mod) << X86_MODRM_MOD_SHIFT) | ((a_Reg) << X86_MODRM_REG_SHIFT) | (a_RegMem))
 #endif
 /** @} */
 
@@ -4137,8 +4286,8 @@ AssertCompile((X86_SIB_SCALE_MASK >> X86_SIB_SCALE_SHIFT) == X86_SIB_SCALE_SMASK
 #define X86_OP_PRF_SIZE_OP      UINT8_C(0x66)
 #define X86_OP_PRF_SIZE_ADDR    UINT8_C(0x67)
 #define X86_OP_PRF_LOCK         UINT8_C(0xf0)
-#define X86_OP_PRF_REPZ         UINT8_C(0xf2)
-#define X86_OP_PRF_REPNZ        UINT8_C(0xf3)
+#define X86_OP_PRF_REPZ         UINT8_C(0xf3)
+#define X86_OP_PRF_REPNZ        UINT8_C(0xf2)
 #define X86_OP_REX_B            UINT8_C(0x41)
 #define X86_OP_REX_X            UINT8_C(0x42)
 #define X86_OP_REX_R            UINT8_C(0x44)

@@ -1,10 +1,10 @@
-/* $Id: semmutex-r0drv-linux.c 109135 2016-07-26 15:16:41Z bird $ */
+/* $Id: semmutex-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
 /** @file
  * IPRT - Mutex Semaphores, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -206,7 +206,7 @@ static int rtSemMutexLinuxRequestSleep(PRTSEMMUTEXINTERNAL pThis, RTMSINTERVAL c
             break;
 
         /* Go to sleep. */
-        set_task_state(pSelf, fInterruptible ? TASK_INTERRUPTIBLE : TASK_UNINTERRUPTIBLE);
+        set_current_state(fInterruptible ? TASK_INTERRUPTIBLE : TASK_UNINTERRUPTIBLE);
         spin_unlock_irq(&pThis->Spinlock);
 
         lTimeout = schedule_timeout(lTimeout);

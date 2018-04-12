@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2016 Oracle Corporation
+ * Copyright (C) 2006-2017 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -786,6 +786,21 @@ RTDECL(PRTTIME) RTTimeFromString(PRTTIME pTime, const char *pszString);
 RTDECL(bool) RTTimeIsLeapYear(int32_t i32Year);
 
 /**
+ * Compares two normalized time structures.
+ *
+ * @retval  0 if equal.
+ * @retval  -1 if @a pLeft is earlier than @a pRight.
+ * @retval  1 if @a pRight is earlier than @a pLeft.
+ *
+ * @param   pLeft       The left side time.  NULL is accepted.
+ * @param   pRight      The right side time.  NULL is accepted.
+ *
+ * @note    A NULL time is considered smaller than anything else.  If both are
+ *          NULL, they are considered equal.
+ */
+RTDECL(int) RTTimeCompare(PCRTTIME pLeft, PCRTTIME pRight);
+
+/**
  * Gets the current nanosecond timestamp.
  *
  * @returns nanosecond timestamp.
@@ -1029,6 +1044,78 @@ RTDECL(uint32_t)  RTTimeProgramSecTS(void);
  * @returns Program startup timestamp.
  */
 RTDECL(uint64_t) RTTimeProgramStartNanoTS(void);
+
+
+/**
+ * Time zone information.
+ */
+typedef struct RTTIMEZONEINFO
+{
+    /** Unix time zone name (continent/country[/city]|). */
+    const char     *pszUnixName;
+    /** Windows time zone name.   */
+    const char     *pszWindowsName;
+    /** The length of the unix time zone name. */
+    uint8_t         cchUnixName;
+    /** The length of the windows time zone name. */
+    uint8_t         cchWindowsName;
+    /** Two letter country/territory code if applicable, otherwise 'ZZ'. */
+    char            szCountry[3];
+    /** Two letter windows country/territory code if applicable.
+     * Empty string if no windows mapping. */
+    char            szWindowsCountry[3];
+#if 0 /* Add when needed and it's been extracted. */
+    /** The standard delta in minutes (add to UTC). */
+    int16_t         cMinStdDelta;
+    /** The daylight saving time delta in minutes (add to UTC). */
+    int16_t         cMinDstDelta;
+#endif
+    /** closest matching windows time zone index. */
+    uint32_t        idxWindows;
+    /** Flags, RTTIMEZONEINFO_F_XXX. */
+    uint32_t        fFlags;
+} RTTIMEZONEINFO;
+/** Pointer to time zone info.   */
+typedef RTTIMEZONEINFO const *PCRTTIMEZONEINFO;
+
+/** @name RTTIMEZONEINFO_F_XXX - time zone info flags.
+ *  @{ */
+/** Indicates golden mapping entry for a windows time zone name. */
+#define RTTIMEZONEINFO_F_GOLDEN         RT_BIT_32(0)
+/** @} */
+
+/**
+ * Looks up static time zone information by unix name.
+ *
+ * @returns Pointer to info entry if found, NULL if not.
+ * @param   pszName     The unix zone name (TZ).
+ */
+RTDECL(PCRTTIMEZONEINFO) RTTimeZoneGetInfoByUnixName(const char *pszName);
+
+/**
+ * Looks up static time zone information by window name.
+ *
+ * @returns Pointer to info entry if found, NULL if not.
+ * @param   pszName     The windows zone name (reg key).
+ */
+RTDECL(PCRTTIMEZONEINFO) RTTimeZoneGetInfoByWindowsName(const char *pszName);
+
+/**
+ * Looks up static time zone information by windows index.
+ *
+ * @returns Pointer to info entry if found, NULL if not.
+ * @param   idxZone     The windows timezone index.
+ */
+RTDECL(PCRTTIMEZONEINFO) RTTimeZoneGetInfoByWindowsIndex(uint32_t idxZone);
+
+/**
+ * Get the current time zone (TZ).
+ *
+ * @returns IPRT status code.
+ * @param   pszName     Where to return the time zone name.
+ * @param   cbName      The size of the name buffer.
+ */
+RTDECL(int) RTTimeZoneGetCurrent(char *pszName, size_t cbName);
 
 /** @} */
 
