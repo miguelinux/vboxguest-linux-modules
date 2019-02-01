@@ -1,10 +1,10 @@
-/* $Id: memobj.h 118810 2017-10-28 13:12:06Z bird $ */
+/* $Id: memobj.h 127888 2019-01-01 06:31:29Z bird $ */
 /** @file
  * IPRT - Ring-0 Memory Objects.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -24,8 +24,11 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-#ifndef ___internal_memobj_h
-#define ___internal_memobj_h
+#ifndef IPRT_INCLUDED_INTERNAL_memobj_h
+#define IPRT_INCLUDED_INTERNAL_memobj_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include <iprt/memobj.h>
 #include <iprt/assert.h>
@@ -479,5 +482,5 @@ DECLHIDDEN(void) rtR0MemObjDelete(PRTR0MEMOBJINTERNAL pMem);
 
 RT_C_DECLS_END
 
-#endif
+#endif /* !IPRT_INCLUDED_INTERNAL_memobj_h */
 

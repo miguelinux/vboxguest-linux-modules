@@ -1,10 +1,10 @@
-/* $Id: logformat.cpp 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: logformat.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Log Formatter.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -35,7 +35,7 @@
 #include <iprt/assert.h>
 #ifdef IN_RING3
 # include <iprt/thread.h>
-# include <iprt/err.h>
+# include <iprt/errcore.h>
 #endif
 
 #include <iprt/stdarg.h>

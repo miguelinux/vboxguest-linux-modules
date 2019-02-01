@@ -3,7 +3,7 @@
 #
 
 #
-# Copyright (C) 2009-2017 Oracle Corporation
+# Copyright (C) 2009-2019 Oracle Corporation
 #
 # This file is part of VirtualBox Open Source Edition (OSE), as
 # available from http://www.virtualbox.org. This file is free software;
@@ -25,7 +25,7 @@ else # ! KBUILD_EXTMOD
 
 KBUILD_VERBOSE =
 
-all:
+vboxguest:
 	@echo "=== Building 'vboxguest' module ==="
 	@$(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxguest
 	@if [ -f vboxguest/vboxguest.ko ]; then \
@@ -34,6 +34,8 @@ all:
 	    cp vboxguest/vboxguest.o .; \
 	 fi
 	@echo
+
+vboxsf: vboxguest
 	@if [ -d vboxsf ]; then \
 	    if [ -f vboxguest/Module.symvers ]; then \
 	        cp vboxguest/Module.symvers vboxsf; \
@@ -47,6 +49,8 @@ all:
 	    fi; \
 	    echo; \
 	fi
+
+vboxvideo:
 	@if [ -d vboxvideo ]; then \
 	    if [ -f vboxguest/Module.symvers ]; then \
 	        cp vboxguest/Module.symvers vboxvideo; \
@@ -60,6 +64,8 @@ all:
 	    fi; \
 	    echo; \
 	fi
+
+all: vboxguest vboxsf vboxvideo
 
 install:
 	@$(MAKE) KBUILD_VERBOSE=$(KBUILD_VERBOSE) -C vboxguest install
@@ -91,5 +97,7 @@ load:
 	@/sbin/insmod vboxguest.ko
 	@if [ -f vboxsf.ko ]; then /sbin/insmod vboxsf.ko; fi
 	@if [ -f vboxvideo.ko ]; then /sbin/insmod vboxvideo.ko; fi
+
+.PHONY: vboxguest vboxsf vboxvideo all install clean check load
 
 endif # ! KBUILD_EXTMOD

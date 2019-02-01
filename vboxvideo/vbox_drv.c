@@ -1,6 +1,6 @@
-/*  $Id: vbox_drv.c 118867 2017-10-30 11:10:42Z michael $ */
+/*  $Id: vbox_drv.c 127855 2019-01-01 01:45:53Z bird $ */
 /*
- * Copyright (C) 2013-2017 Oracle Corporation
+ * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_drv.c
  * Copyright 2012 Red Hat Inc.
  *
@@ -28,11 +28,6 @@
  *          Michael Thayer <michael.thayer@oracle.com,
  *          Hans de Goede <hdegoede@redhat.com>
  */
-#include "vbox_drv.h"
-
-#include "version-generated.h"
-#include "revision-generated.h"
-
 #include <linux/module.h>
 #include <linux/console.h>
 #include <linux/vt_kern.h>
@@ -40,7 +35,12 @@
 #include <drm/drmP.h>
 #include <drm/drm_crtc_helper.h>
 
-int vbox_modeset = -1;
+#include "vbox_drv.h"
+
+#include "version-generated.h"
+#include "revision-generated.h"
+
+static int vbox_modeset = -1;
 
 MODULE_PARM_DESC(modeset, "Disable/Enable modesetting");
 module_param_named(modeset, vbox_modeset, int, 0400);
@@ -64,27 +64,39 @@ static void vbox_pci_remove(struct pci_dev *pdev)
 	drm_put_dev(dev);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0) && !defined(RHEL_74)
+static void drm_fb_helper_set_suspend_unlocked(struct drm_fb_helper *fb_helper,
+					bool suspend)
+{
+	if (!fb_helper || !fb_helper->fbdev)
+		return;
+
+	console_lock();
+	fb_set_suspend(fb_helper->fbdev, suspend);
+	console_unlock();
+}
+#endif
+
 static int vbox_drm_freeze(struct drm_device *dev)
 {
+	struct vbox_private *vbox = dev->dev_private;
+
 	drm_kms_helper_poll_disable(dev);
 
 	pci_save_state(dev->pdev);
 
-	console_lock();
-	vbox_fbdev_set_suspend(dev, 1);
-	console_unlock();
+	drm_fb_helper_set_suspend_unlocked(&vbox->fbdev->helper, true);
 
 	return 0;
 }
 
 static int vbox_drm_thaw(struct drm_device *dev)
 {
+	struct vbox_private *vbox = dev->dev_private;
+
 	drm_mode_config_reset(dev);
 	drm_helper_resume_force_mode(dev);
-
-	console_lock();
-	vbox_fbdev_set_suspend(dev, 0);
-	console_unlock();
+	drm_fb_helper_set_suspend_unlocked(&vbox->fbdev->helper, false);
 
 	return 0;
 }
@@ -199,7 +211,7 @@ static const struct file_operations vbox_fops = {
 #endif
 	.mmap = vbox_mmap,
 	.poll = drm_poll,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && !defined(RHEL_73)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && !defined(RHEL_70)
 	.fasync = drm_fasync,
 #endif
 #ifdef CONFIG_COMPAT
@@ -221,18 +233,10 @@ static int vbox_master_set(struct drm_device *dev,
 	vbox->initial_mode_queried = false;
 
 	mutex_lock(&vbox->hw_mutex);
-	/*
-	 * Disable VBVA when someone releases master in case the next person
-	 * tries tries to do VESA.
-	 */
-	/** @todo work out if anyone is likely to and whether it will work. */
-	/*
-	 * Update: we also disable it because if the new master does not do
-	 * dirty rectangle reporting (e.g. old versions of Plymouth) then at
-	 * least the first screen will still be updated. We enable it as soon
-	 * as we receive a dirty rectangle report.
-	 */
-	vbox_disable_accel(vbox);
+	/* Start the refresh timer in case the user does not provide dirty
+	 * rectangles. */
+	vbox->need_refresh_timer = true;
+	schedule_delayed_work(&vbox->refresh_work, VBOX_REFRESH_PERIOD);
 	mutex_unlock(&vbox->hw_mutex);
 
 	return 0;
@@ -249,9 +253,10 @@ static void vbox_master_drop(struct drm_device *dev, struct drm_file *file_priv)
 
 	/* See vbox_master_set() */
 	vbox->initial_mode_queried = false;
+	vbox_report_caps(vbox);
 
 	mutex_lock(&vbox->hw_mutex);
-	vbox_disable_accel(vbox);
+	vbox->need_refresh_timer = false;
 	mutex_unlock(&vbox->hw_mutex);
 }
 
@@ -267,7 +272,7 @@ static struct drm_driver driver = {
 	.master_set = vbox_master_set,
 	.master_drop = vbox_master_drop,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_73)
-# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0) && !defined(RHEL_75)
 	.set_busid = drm_pci_set_busid,
 # endif
 #endif

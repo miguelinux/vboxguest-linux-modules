@@ -1,6 +1,6 @@
-/* $Id: vbox_fb.c 119148 2017-11-18 20:56:56Z michael $ */
+/* $Id: vbox_fb.c 127855 2019-01-01 01:45:53Z bird $ */
 /*
- * Copyright (C) 2013-2017 Oracle Corporation
+ * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_fb.c
  * Copyright 2012 Red Hat Inc.
  *
@@ -27,10 +27,6 @@
  * Authors: Dave Airlie <airlied@redhat.com>
  *          Michael Thayer <michael.thayer@oracle.com,
  */
-/* Include from most specific to most general to be able to override things. */
-#include "vbox_drv.h"
-#include "vboxvideo.h"
-
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -46,9 +42,11 @@
 #include <drm/drm_crtc.h>
 #include <drm/drm_fb_helper.h>
 #include <drm/drm_crtc_helper.h>
-#include "vbox_drv.h"
 
-#define VBOX_DIRTY_DELAY (HZ / 30)
+#include "vbox_drv.h"
+#include "vboxvideo.h"
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0) && !defined(RHEL_74)
 /**
  * Tell the host about dirty rectangles to update.
  */
@@ -121,9 +119,11 @@ static void vbox_dirty_update(struct vbox_fbdev *fbdev,
 
 	vbox_bo_unreserve(bo);
 }
+#endif
 
 #ifdef CONFIG_FB_DEFERRED_IO
-static void vbox_deferred_io(struct fb_info *info, struct list_head *pagelist)
+# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0) && !defined(RHEL_74)
+static void drm_fb_helper_deferred_io(struct fb_info *info, struct list_head *pagelist)
 {
 	struct vbox_fbdev *fbdev = info->par;
 	unsigned long start, end, min, max;
@@ -147,14 +147,16 @@ static void vbox_deferred_io(struct fb_info *info, struct list_head *pagelist)
 		vbox_dirty_update(fbdev, 0, y1, info->var.xres, y2 - y1 - 1);
 	}
 }
+# endif
 
 static struct fb_deferred_io vbox_defio = {
-	.delay = VBOX_DIRTY_DELAY,
-	.deferred_io = vbox_deferred_io,
+	.delay = HZ / 30,
+	.deferred_io = drm_fb_helper_deferred_io,
 };
 #endif
 
-static void vbox_fillrect(struct fb_info *info, const struct fb_fillrect *rect)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 3, 0) && !defined(RHEL_73)
+static void drm_fb_helper_sys_fillrect(struct fb_info *info, const struct fb_fillrect *rect)
 {
 	struct vbox_fbdev *fbdev = info->par;
 
@@ -162,7 +164,7 @@ static void vbox_fillrect(struct fb_info *info, const struct fb_fillrect *rect)
 	vbox_dirty_update(fbdev, rect->dx, rect->dy, rect->width, rect->height);
 }
 
-static void vbox_copyarea(struct fb_info *info, const struct fb_copyarea *area)
+static void drm_fb_helper_sys_copyarea(struct fb_info *info, const struct fb_copyarea *area)
 {
 	struct vbox_fbdev *fbdev = info->par;
 
@@ -170,7 +172,7 @@ static void vbox_copyarea(struct fb_info *info, const struct fb_copyarea *area)
 	vbox_dirty_update(fbdev, area->dx, area->dy, area->width, area->height);
 }
 
-static void vbox_imageblit(struct fb_info *info, const struct fb_image *image)
+static void drm_fb_helper_sys_imageblit(struct fb_info *info, const struct fb_image *image)
 {
 	struct vbox_fbdev *fbdev = info->par;
 
@@ -178,14 +180,15 @@ static void vbox_imageblit(struct fb_info *info, const struct fb_image *image)
 	vbox_dirty_update(fbdev, image->dx, image->dy, image->width,
 			  image->height);
 }
+#endif
 
 static struct fb_ops vboxfb_ops = {
 	.owner = THIS_MODULE,
 	.fb_check_var = drm_fb_helper_check_var,
 	.fb_set_par = drm_fb_helper_set_par,
-	.fb_fillrect = vbox_fillrect,
-	.fb_copyarea = vbox_copyarea,
-	.fb_imageblit = vbox_imageblit,
+	.fb_fillrect = drm_fb_helper_sys_fillrect,
+	.fb_copyarea = drm_fb_helper_sys_copyarea,
+	.fb_imageblit = drm_fb_helper_sys_imageblit,
 	.fb_pan_display = drm_fb_helper_pan_display,
 	.fb_blank = drm_fb_helper_blank,
 	.fb_setcmap = drm_fb_helper_setcmap,
@@ -206,7 +209,7 @@ static int vboxfb_create_object(struct vbox_fbdev *fbdev,
 	u32 pitch = mode_cmd->pitches[0];
 #endif
 
-	int ret = 0;
+	int ret;
 
 	size = pitch * mode_cmd->height;
 	ret = vbox_gem_create(dev, size, true, &gobj);
@@ -214,8 +217,34 @@ static int vboxfb_create_object(struct vbox_fbdev *fbdev,
 		return ret;
 
 	*gobj_p = gobj;
-	return ret;
+
+	return 0;
 }
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 3, 0) && !defined(RHEL_73)
+static struct fb_info *drm_fb_helper_alloc_fbi(struct drm_fb_helper *helper)
+{
+	struct fb_info *info;
+	struct vbox_fbdev *fbdev =
+	    container_of(helper, struct vbox_fbdev, helper);
+	struct drm_device *dev = fbdev->helper.dev;
+	struct device *device = &dev->pdev->dev;
+
+	info = framebuffer_alloc(0, device);
+	if (!info)
+		return ERR_PTR(-ENOMEM);
+	fbdev->helper.fbdev = info;
+
+	if (fb_alloc_cmap(&info->cmap, 256, 0))
+		return ERR_PTR(-ENOMEM);
+
+	info->apertures = alloc_apertures(1);
+	if (!info->apertures)
+		return ERR_PTR(-ENOMEM);
+
+	return info;
+}
+#endif
 
 static int vboxfb_create(struct drm_fb_helper *helper,
 			 struct drm_fb_helper_surface_size *sizes)
@@ -226,9 +255,8 @@ static int vboxfb_create(struct drm_fb_helper *helper,
 	struct DRM_MODE_FB_CMD mode_cmd;
 	struct drm_framebuffer *fb;
 	struct fb_info *info;
-	struct device *device = &dev->pdev->dev;
-	struct drm_gem_object *gobj = NULL;
-	struct vbox_bo *bo = NULL;
+	struct drm_gem_object *gobj;
+	struct vbox_bo *bo;
 	int size, ret;
 	u32 pitch;
 
@@ -276,16 +304,16 @@ static int vboxfb_create(struct drm_fb_helper *helper,
 		return ret;
 	}
 
-	info = framebuffer_alloc(0, device);
-	if (!info)
-		return -ENOMEM;
+	info = drm_fb_helper_alloc_fbi(helper);
+	if (IS_ERR(info))
+		return -PTR_ERR(info);
+
 	info->par = fbdev;
 
 	fbdev->size = size;
 
 	fb = &fbdev->afb.base;
 	fbdev->helper.fb = fb;
-	fbdev->helper.fbdev = info;
 
 	strcpy(info->fix.id, "vboxdrmfb");
 
@@ -293,27 +321,17 @@ static int vboxfb_create(struct drm_fb_helper *helper,
 	 * The last flag forces a mode set on VT switches even if the kernel
 	 * does not think it is needed.
 	 */
-	info->flags = FBINFO_DEFAULT | FBINFO_CAN_FORCE_OUTPUT |
-		      FBINFO_MISC_ALWAYS_SETPAR;
+	info->flags = FBINFO_DEFAULT | FBINFO_MISC_ALWAYS_SETPAR;
 	info->fbops = &vboxfb_ops;
-
-	ret = fb_alloc_cmap(&info->cmap, 256, 0);
-	if (ret)
-		return -ENOMEM;
 
 	/*
 	 * This seems to be done for safety checking that the framebuffer
 	 * is not registered twice by different drivers.
 	 */
-	info->apertures = alloc_apertures(1);
-	if (!info->apertures)
-		return -ENOMEM;
 	info->apertures->ranges[0].base = pci_resource_start(dev->pdev, 0);
 	info->apertures->ranges[0].size = pci_resource_len(dev->pdev, 0);
-	info->fix.smem_start = 0;
-	info->fix.smem_len = size;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 	drm_fb_helper_fill_fix(info, fb->pitches[0], fb->format->depth);
 #else
 	drm_fb_helper_fill_fix(info, fb->pitches[0], fb->depth);
@@ -340,18 +358,21 @@ static struct drm_fb_helper_funcs vbox_fb_helper_funcs = {
 	.fb_probe = vboxfb_create,
 };
 
-static void vbox_fbdev_destroy(struct drm_device *dev, struct vbox_fbdev *fbdev)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 3, 0) && !defined(RHEL_73)
+static void drm_fb_helper_unregister_fbi(struct drm_fb_helper *fb_helper)
 {
-	struct fb_info *info;
+	if (fb_helper && fb_helper->fbdev)
+		unregister_framebuffer(fb_helper->fbdev);
+}
+#endif
+
+void vbox_fbdev_fini(struct drm_device *dev)
+{
+	struct vbox_private *vbox = dev->dev_private;
+	struct vbox_fbdev *fbdev = vbox->fbdev;
 	struct vbox_framebuffer *afb = &fbdev->afb;
 
-	if (fbdev->helper.fbdev) {
-		info = fbdev->helper.fbdev;
-		unregister_framebuffer(info);
-		if (info->cmap.len)
-			fb_dealloc_cmap(&info->cmap);
-		framebuffer_release(info);
-	}
+	drm_fb_helper_unregister_fbi(&fbdev->helper);
 
 	if (afb->obj) {
 		struct vbox_bo *bo = gem_to_vbox_bo(afb->obj);
@@ -367,7 +388,7 @@ static void vbox_fbdev_destroy(struct drm_device *dev, struct vbox_fbdev *fbdev)
 				vbox_bo_unpin(bo);
 			vbox_bo_unreserve(bo);
 		}
-		drm_gem_object_unreference_unlocked(afb->obj);
+		drm_gem_object_put_unlocked(afb->obj);
 		afb->obj = NULL;
 	}
 	drm_fb_helper_fini(&fbdev->helper);
@@ -384,7 +405,7 @@ int vbox_fbdev_init(struct drm_device *dev)
 	struct vbox_fbdev *fbdev;
 	int ret;
 
-	fbdev = kzalloc(sizeof(*fbdev), GFP_KERNEL);
+	fbdev = devm_kzalloc(dev->dev, sizeof(*fbdev), GFP_KERNEL);
 	if (!fbdev)
 		return -ENOMEM;
 
@@ -396,7 +417,7 @@ int vbox_fbdev_init(struct drm_device *dev)
 #else
 	drm_fb_helper_prepare(dev, &fbdev->helper, &vbox_fb_helper_funcs);
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 	ret = drm_fb_helper_init(dev, &fbdev->helper, vbox->num_crtcs);
 #else
 	ret =
@@ -404,48 +425,30 @@ int vbox_fbdev_init(struct drm_device *dev)
 			       vbox->num_crtcs);
 #endif
 	if (ret)
-		goto free;
+		return ret;
 
 	ret = drm_fb_helper_single_add_all_connectors(&fbdev->helper);
 	if (ret)
-		goto fini;
+		goto err_fini;
 
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
 	ret = drm_fb_helper_initial_config(&fbdev->helper, 32);
 	if (ret)
-		goto fini;
+		goto err_fini;
 
 	return 0;
 
-fini:
+err_fini:
 	drm_fb_helper_fini(&fbdev->helper);
-free:
-	kfree(fbdev);
-	vbox->fbdev = NULL;
-
 	return ret;
 }
 
-void vbox_fbdev_fini(struct drm_device *dev)
+void vbox_fbdev_set_base(struct vbox_private *vbox, unsigned long gpu_addr)
 {
-	struct vbox_private *vbox = dev->dev_private;
+	struct fb_info *fbdev = vbox->fbdev->helper.fbdev;
 
-	if (!vbox->fbdev)
-		return;
-
-	vbox_fbdev_destroy(dev, vbox->fbdev);
-	kfree(vbox->fbdev);
-	vbox->fbdev = NULL;
-}
-
-void vbox_fbdev_set_suspend(struct drm_device *dev, int state)
-{
-	struct vbox_private *vbox = dev->dev_private;
-
-	if (!vbox->fbdev)
-		return;
-
-	fb_set_suspend(vbox->fbdev->helper.fbdev, state);
+	fbdev->fix.smem_start = fbdev->apertures->ranges[0].base + gpu_addr;
+	fbdev->fix.smem_len = vbox->available_vram_size - gpu_addr;
 }

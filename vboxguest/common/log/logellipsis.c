@@ -1,10 +1,10 @@
-/* $Id: logellipsis.cpp 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: logellipsis.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * Runtime VBox - Logger, the ellipsis variants.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;

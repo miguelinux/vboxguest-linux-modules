@@ -1,6 +1,6 @@
-/* $Id: vbox_mode.c 120349 2018-01-18 11:16:31Z michael $ */
+/* $Id: vbox_mode.c 128006 2019-01-08 09:53:32Z michael $ */
 /*
- * Copyright (C) 2013-2017 Oracle Corporation
+ * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_mode.c
  * Copyright 2012 Red Hat Inc.
  * Parts based on xf86-video-ast
@@ -35,12 +35,11 @@
 #include "vbox_drv.h"
 #include <linux/export.h>
 #include <drm/drm_crtc_helper.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_73)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72)
 #include <drm/drm_plane_helper.h>
 #endif
 
 #include "vboxvideo.h"
-#include "hgsmi_channels.h"
 
 static int vbox_cursor_set2(struct drm_crtc *crtc, struct drm_file *file_priv,
 			    u32 handle, u32 width, u32 height,
@@ -57,15 +56,13 @@ static void vbox_do_modeset(struct drm_crtc *crtc,
 	struct vbox_crtc *vbox_crtc = to_vbox_crtc(crtc);
 	struct vbox_private *vbox;
 	int width, height, bpp, pitch;
-	unsigned int crtc_id;
 	u16 flags;
 	s32 x_offset, y_offset;
 
 	vbox = crtc->dev->dev_private;
 	width = mode->hdisplay ? mode->hdisplay : 640;
 	height = mode->vdisplay ? mode->vdisplay : 480;
-	crtc_id = vbox_crtc->crtc_id;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 	bpp = crtc->enabled ? CRTC_FB(crtc)->format->cpp[0] * 8 : 32;
 	pitch = crtc->enabled ? CRTC_FB(crtc)->pitches[0] : width * bpp / 8;
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0)
@@ -89,7 +86,7 @@ static void vbox_do_modeset(struct drm_crtc *crtc,
 	    vbox_crtc->fb_offset % (bpp / 8) == 0)
 		VBoxVideoSetModeRegisters(
 			width, height, pitch * 8 / bpp,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 			CRTC_FB(crtc)->format->cpp[0] * 8,
 #else
 			CRTC_FB(crtc)->bits_per_pixel,
@@ -103,48 +100,10 @@ static void vbox_do_modeset(struct drm_crtc *crtc,
 		 0 : VBVA_SCREEN_F_BLANK;
 	flags |= vbox_crtc->disconnected ? VBVA_SCREEN_F_DISABLED : 0;
 	hgsmi_process_display_info(vbox->guest_pool, vbox_crtc->crtc_id,
-				    x_offset, y_offset,
-				    crtc->x * bpp / 8 + crtc->y * pitch,
-				    pitch, width, height,
-				    vbox_crtc->blanked ? 0 : bpp, flags);
-}
-
-static int vbox_set_view(struct drm_crtc *crtc)
-{
-	struct vbox_crtc *vbox_crtc = to_vbox_crtc(crtc);
-	struct vbox_private *vbox = crtc->dev->dev_private;
-	void *p;
-
-	/*
-	 * Tell the host about the view.  This design originally targeted the
-	 * Windows XP driver architecture and assumed that each screen would
-	 * have a dedicated frame buffer with the command buffer following it,
-	 * the whole being a "view".  The host works out which screen a command
-	 * buffer belongs to by checking whether it is in the first view, then
-	 * whether it is in the second and so on.  The first match wins.  We
-	 * cheat around this by making the first view be the managed memory
-	 * plus the first command buffer, the second the same plus the second
-	 * buffer and so on.
-	 */
-	p = hgsmi_buffer_alloc(vbox->guest_pool, sizeof(VBVAINFOVIEW),
-				 HGSMI_CH_VBVA, VBVA_INFO_VIEW);
-	if (p) {
-		VBVAINFOVIEW *pInfo = (VBVAINFOVIEW *) p;
-
-		pInfo->view_index = vbox_crtc->crtc_id;
-		pInfo->u32ViewOffset = vbox_crtc->fb_offset;
-		pInfo->u32ViewSize =
-		    vbox->available_vram_size - vbox_crtc->fb_offset +
-		    vbox_crtc->crtc_id * VBVA_MIN_BUFFER_SIZE;
-		pInfo->u32MaxScreenSize =
-		    vbox->available_vram_size - vbox_crtc->fb_offset;
-		hgsmi_buffer_submit(vbox->guest_pool, p);
-		hgsmi_buffer_free(vbox->guest_pool, p);
-	} else {
-		return -ENOMEM;
-	}
-
-	return 0;
+				   x_offset, y_offset, vbox_crtc->fb_offset +
+				   crtc->x * bpp / 8 + crtc->y * pitch,
+				   pitch, width, height,
+				   vbox_crtc->blanked ? 0 : bpp, flags);
 }
 
 static void vbox_crtc_dpms(struct drm_crtc *crtc, int mode)
@@ -155,6 +114,8 @@ static void vbox_crtc_dpms(struct drm_crtc *crtc, int mode)
 	switch (mode) {
 	case DRM_MODE_DPMS_ON:
 		vbox_crtc->blanked = false;
+		/* Restart the refresh timer if necessary. */
+		schedule_delayed_work(&vbox->refresh_work, VBOX_REFRESH_PERIOD);
 		break;
 	case DRM_MODE_DPMS_STANDBY:
 	case DRM_MODE_DPMS_SUSPEND:
@@ -206,15 +167,14 @@ static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 	if (single_framebuffer) {
 		list_for_each_entry(crtci, &vbox->dev->mode_config.crtc_list,
 				    head) {
-			if (to_vbox_crtc(crtci)->crtc_id == 0) {
-				vbox->single_framebuffer = true;
-				vbox->input_mapping_width =
-				    CRTC_FB(crtci)->width;
-				vbox->input_mapping_height =
-				    CRTC_FB(crtci)->height;
-				return old_single_framebuffer !=
-				    vbox->single_framebuffer;
-			}
+			if (to_vbox_crtc(crtci)->crtc_id != 0)
+				continue;
+
+			vbox->single_framebuffer = true;
+			vbox->input_mapping_width = CRTC_FB(crtci)->width;
+			vbox->input_mapping_height = CRTC_FB(crtci)->height;
+			return old_single_framebuffer !=
+			       vbox->single_framebuffer;
 		}
 	}
 	/* Otherwise calculate the total span of all screens. */
@@ -237,7 +197,7 @@ static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 	return old_single_framebuffer != vbox->single_framebuffer;
 }
 
-static int vbox_crtc_do_set_base(struct drm_crtc *crtc,
+static int vbox_crtc_set_base(struct drm_crtc *crtc,
 				 struct drm_framebuffer *old_fb, int x, int y)
 {
 	struct vbox_private *vbox = crtc->dev->dev_private;
@@ -247,19 +207,6 @@ static int vbox_crtc_do_set_base(struct drm_crtc *crtc,
 	struct vbox_bo *bo;
 	int ret;
 	u64 gpu_addr;
-
-	/* Unpin the previous fb. */
-	if (old_fb) {
-		vbox_fb = to_vbox_framebuffer(old_fb);
-		obj = vbox_fb->obj;
-		bo = gem_to_vbox_bo(obj);
-		ret = vbox_bo_reserve(bo, false);
-		if (ret)
-			return ret;
-
-		vbox_bo_unpin(bo);
-		vbox_bo_unreserve(bo);
-	}
 
 	vbox_fb = to_vbox_framebuffer(CRTC_FB(crtc));
 	obj = vbox_fb->obj;
@@ -274,24 +221,35 @@ static int vbox_crtc_do_set_base(struct drm_crtc *crtc,
 	if (ret)
 		return ret;
 
+	/* Unpin the previous fb.  Do this after the new one has been pinned rather
+	 * than before and re-pinning it on failure in case that fails too. */
+	if (old_fb) {
+		vbox_fb = to_vbox_framebuffer(old_fb);
+		obj = vbox_fb->obj;
+		bo = gem_to_vbox_bo(obj);
+		ret = vbox_bo_reserve(bo, false);
+		/* This should never fail, as no one else should be accessing it and we
+		 * should be running under the modeset locks. */
+		if (!ret) {
+			vbox_bo_unpin(bo);
+			vbox_bo_unreserve(bo);
+		}
+	}
+
+	if (&vbox->fbdev->afb == vbox_fb)
+		vbox_fbdev_set_base(vbox, gpu_addr);
+
 	vbox_crtc->fb_offset = gpu_addr;
 	if (vbox_set_up_input_mapping(vbox)) {
 		struct drm_crtc *crtci;
 
 		list_for_each_entry(crtci, &vbox->dev->mode_config.crtc_list,
 				    head) {
-			vbox_set_view(crtc);
 			vbox_do_modeset(crtci, &crtci->mode);
 		}
 	}
 
 	return 0;
-}
-
-static int vbox_crtc_mode_set_base(struct drm_crtc *crtc, int x, int y,
-				   struct drm_framebuffer *old_fb)
-{
-	return vbox_crtc_do_set_base(crtc, old_fb, x, y);
 }
 
 static int vbox_crtc_mode_set(struct drm_crtc *crtc,
@@ -300,20 +258,17 @@ static int vbox_crtc_mode_set(struct drm_crtc *crtc,
 			      int x, int y, struct drm_framebuffer *old_fb)
 {
 	struct vbox_private *vbox = crtc->dev->dev_private;
-	int rc = 0;
-
-	vbox_crtc_mode_set_base(crtc, x, y, old_fb);
-
+	int ret = vbox_crtc_set_base(crtc, old_fb, x, y);
+	if (ret)
+		return ret;
 	mutex_lock(&vbox->hw_mutex);
-	rc = vbox_set_view(crtc);
-	if (!rc)
-		vbox_do_modeset(crtc, mode);
+	vbox_do_modeset(crtc, mode);
 	hgsmi_update_input_mapping(vbox->guest_pool, 0, 0,
-				    vbox->input_mapping_width,
-				    vbox->input_mapping_height);
+				   vbox->input_mapping_width,
+				   vbox->input_mapping_height);
 	mutex_unlock(&vbox->hw_mutex);
 
-	return rc;
+	return ret;
 }
 
 static void vbox_crtc_disable(struct drm_crtc *crtc)
@@ -332,7 +287,6 @@ static const struct drm_crtc_helper_funcs vbox_crtc_helper_funcs = {
 	.dpms = vbox_crtc_dpms,
 	.mode_fixup = vbox_crtc_mode_fixup,
 	.mode_set = vbox_crtc_mode_set,
-	/* .mode_set_base = vbox_crtc_mode_set_base, */
 	.disable = vbox_crtc_disable,
 	.prepare = vbox_crtc_prepare,
 	.commit = vbox_crtc_commit,
@@ -380,7 +334,7 @@ static void vbox_encoder_destroy(struct drm_encoder *encoder)
 	kfree(encoder);
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 13, 0) && !defined(RHEL_73)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 13, 0) && !defined(RHEL_71)
 static struct drm_encoder *drm_encoder_find(struct drm_device *dev, u32 id)
 {
 	struct drm_mode_object *mo;
@@ -397,7 +351,10 @@ static struct drm_encoder *vbox_best_single_encoder(struct drm_connector
 
 	/* pick the encoder ids */
 	if (enc_id)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0) || \
+	(defined(CONFIG_SUSE_VERSION) && \
+		LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)) || \
+	defined(RHEL_76)
 		return drm_encoder_find(connector->dev, NULL, enc_id);
 #else
 		return drm_encoder_find(connector->dev, enc_id);
@@ -453,11 +410,11 @@ static struct drm_encoder *vbox_encoder_init(struct drm_device *dev,
 		return NULL;
 
 	drm_encoder_init(dev, &vbox_encoder->base, &vbox_enc_funcs,
-			 DRM_MODE_ENCODER_DAC
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0) || defined(RHEL_73)
-			 , NULL
+			 DRM_MODE_ENCODER_DAC, NULL);
+#else
+			 DRM_MODE_ENCODER_DAC);
 #endif
-	    );
 	drm_encoder_helper_add(&vbox_encoder->base, &vbox_enc_helper_funcs);
 
 	vbox_encoder->base.possible_crtcs = 1 << i;
@@ -532,7 +489,11 @@ static void vbox_set_edid(struct drm_connector *connector, int width,
 	for (i = 0; i < EDID_SIZE - 1; ++i)
 		sum += edid[i];
 	edid[EDID_SIZE - 1] = (0x100 - (sum & 0xFF)) & 0xFF;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
+	drm_connector_update_edid_property(connector, (struct edid *)edid);
+#else
 	drm_mode_connector_update_edid_property(connector, (struct edid *)edid);
+#endif
 }
 
 static int vbox_get_modes(struct drm_connector *connector)
@@ -558,7 +519,7 @@ static int vbox_get_modes(struct drm_connector *connector)
 	 * capability.
 	 */
 	hgsmi_report_flags_location(vbox->guest_pool, GUEST_HEAP_OFFSET(vbox) +
-				     HOST_FLAGS_OFFSET);
+				    HOST_FLAGS_OFFSET);
 	if (vbox_connector->vbox_crtc->crtc_id == 0)
 		vbox_report_caps(vbox);
 	if (!vbox->initial_mode_queried) {
@@ -568,6 +529,10 @@ static int vbox_get_modes(struct drm_connector *connector)
 		}
 		return drm_add_modes_noedid(connector, 800, 600);
 	}
+	/* Also assume that a client which supports hot-plugging also knows
+	 * how to update the screen in a way we can use, the only known
+	 * relevent client which cannot is Plymouth in Ubuntu 14.04. */
+	vbox->need_refresh_timer = false;
 	num_modes = drm_add_modes_noedid(connector, 2560, 1600);
 	preferred_width = vbox_connector->mode_hint.width ?
 			  vbox_connector->mode_hint.width : 1024;
@@ -582,7 +547,7 @@ static int vbox_get_modes(struct drm_connector *connector)
 	}
 	vbox_set_edid(connector, preferred_width, preferred_height);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0) || defined(RHEL_73)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0) || defined(RHEL_72)
 	if (vbox_connector->vbox_crtc->x_hint != -1)
 		drm_object_property_set_value(&connector->base,
 			vbox->dev->mode_config.suggested_x_property,
@@ -611,10 +576,7 @@ static int vbox_mode_valid(struct drm_connector *connector,
 
 static void vbox_connector_destroy(struct drm_connector *connector)
 {
-	struct vbox_connector *vbox_connector = NULL;
-
-	vbox_connector = to_vbox_connector(connector);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(RHEL_73)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(RHEL_72)
 	drm_sysfs_connector_remove(connector);
 #else
 	drm_connector_unregister(connector);
@@ -626,9 +588,8 @@ static void vbox_connector_destroy(struct drm_connector *connector)
 static enum drm_connector_status
 vbox_connector_detect(struct drm_connector *connector, bool force)
 {
-	struct vbox_connector *vbox_connector = NULL;
+	struct vbox_connector *vbox_connector;
 
-	(void)force;
 	vbox_connector = to_vbox_connector(connector);
 
 	return vbox_connector->mode_hint.disconnected ?
@@ -686,20 +647,24 @@ static int vbox_connector_init(struct drm_device *dev,
 	connector->interlace_allowed = 0;
 	connector->doublescan_allowed = 0;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0) || defined(RHEL_73)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0) || defined(RHEL_72)
 	drm_mode_create_suggested_offset_properties(dev);
 	drm_object_attach_property(&connector->base,
 				   dev->mode_config.suggested_x_property, 0);
 	drm_object_attach_property(&connector->base,
 				   dev->mode_config.suggested_y_property, 0);
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(RHEL_73)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(RHEL_72)
 	drm_sysfs_connector_add(connector);
 #else
 	drm_connector_register(connector);
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
+	drm_connector_attach_encoder(connector, encoder);
+#else
 	drm_mode_connector_attach_encoder(connector, encoder);
+#endif
 
 	return 0;
 }
@@ -710,6 +675,7 @@ int vbox_mode_init(struct drm_device *dev)
 	struct drm_encoder *encoder;
 	struct vbox_crtc *vbox_crtc;
 	unsigned int i;
+	int ret;
 
 	/* vbox_cursor_init(dev); */
 	for (i = 0; i < vbox->num_crtcs; ++i) {
@@ -719,7 +685,9 @@ int vbox_mode_init(struct drm_device *dev)
 		encoder = vbox_encoder_init(dev, i);
 		if (!encoder)
 			return -ENOMEM;
-		vbox_connector_init(dev, vbox_crtc, encoder);
+		ret = vbox_connector_init(dev, vbox_crtc, encoder);
+		if (ret)
+			return ret;
 	}
 
 	return 0;
@@ -754,23 +722,16 @@ static int vbox_cursor_set2(struct drm_crtc *crtc, struct drm_file *file_priv,
 {
 	struct vbox_private *vbox = crtc->dev->dev_private;
 	struct vbox_crtc *vbox_crtc = to_vbox_crtc(crtc);
-	struct drm_gem_object *obj;
-	struct vbox_bo *bo;
-	int ret, rc;
 	struct ttm_bo_kmap_obj uobj_map;
-	u8 *src;
-	u8 *dst = NULL;
-	u32 caps = 0;
 	size_t data_size, mask_size;
+	struct drm_gem_object *obj;
+	u32 flags, caps = 0;
+	struct vbox_bo *bo;
 	bool src_isiomem;
+	u8 *dst = NULL;
+	u8 *src;
+	int ret;
 
-	/*
-	 * Re-set this regularly as in 5.0.20 and earlier the information was
-	 * lost on save and restore.
-	 */
-	hgsmi_update_input_mapping(vbox->guest_pool, 0, 0,
-				    vbox->input_mapping_width,
-				    vbox->input_mapping_height);
 	if (!handle) {
 		bool cursor_enabled = false;
 		struct drm_crtc *crtci;
@@ -778,92 +739,93 @@ static int vbox_cursor_set2(struct drm_crtc *crtc, struct drm_file *file_priv,
 		/* Hide cursor. */
 		vbox_crtc->cursor_enabled = false;
 		list_for_each_entry(crtci, &vbox->dev->mode_config.crtc_list,
-				    head)
+				    head) {
 			if (to_vbox_crtc(crtci)->cursor_enabled)
 				cursor_enabled = true;
+			}
 
 		if (!cursor_enabled)
 			hgsmi_update_pointer_shape(vbox->guest_pool, 0, 0, 0,
-						    0, 0, NULL, 0);
+						   0, 0, NULL, 0);
 		return 0;
 	}
+
 	vbox_crtc->cursor_enabled = true;
+
 	if (width > VBOX_MAX_CURSOR_WIDTH || height > VBOX_MAX_CURSOR_HEIGHT ||
 	    width == 0 || height == 0)
 		return -EINVAL;
-	rc = hgsmi_query_conf(vbox->guest_pool,
+	ret = hgsmi_query_conf(vbox->guest_pool,
 				VBOX_VBVA_CONF32_CURSOR_CAPABILITIES, &caps);
-	ret = rc == VINF_SUCCESS ? 0 : rc == VERR_NO_MEMORY ? -ENOMEM : -EINVAL;
 	if (ret)
-		return ret;
+		return ret == VERR_NO_MEMORY ? -ENOMEM : -EINVAL;
 
-	if (!(caps & VBOX_VBVA_CURSOR_CAPABILITY_HARDWARE))
+	if (!(caps & VBOX_VBVA_CURSOR_CAPABILITY_HARDWARE)) {
 		/*
 		 * -EINVAL means cursor_set2() not supported, -EAGAIN means
 		 * retry at once.
 		 */
 		return -EBUSY;
+	}
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0) || defined(RHEL_74)
 	obj = drm_gem_object_lookup(file_priv, handle);
 #else
 	obj = drm_gem_object_lookup(crtc->dev, file_priv, handle);
 #endif
-	if (obj) {
-		bo = gem_to_vbox_bo(obj);
-		ret = vbox_bo_reserve(bo, false);
-		if (!ret) {
-			/*
-			 * The mask must be calculated based on the alpha
-			 * channel, one bit per ARGB word, and must be 32-bit
-			 * padded.
-			 */
-			mask_size = ((width + 7) / 8 * height + 3) & ~3;
-			data_size = width * height * 4 + mask_size;
-			vbox->cursor_hot_x = min_t(u32, max(hot_x, 0), width);
-			vbox->cursor_hot_y = min_t(u32, max(hot_y, 0), height);
-			vbox->cursor_width = width;
-			vbox->cursor_height = height;
-			vbox->cursor_data_size = data_size;
-			dst = vbox->cursor_data;
-			ret =
-			    ttm_bo_kmap(&bo->bo, 0, bo->bo.num_pages,
-					&uobj_map);
-			if (!ret) {
-				src =
-				    ttm_kmap_obj_virtual(&uobj_map,
-							 &src_isiomem);
-				if (!src_isiomem) {
-					u32 flags =
-					    VBOX_MOUSE_POINTER_VISIBLE |
-					    VBOX_MOUSE_POINTER_SHAPE |
-					    VBOX_MOUSE_POINTER_ALPHA;
-					copy_cursor_image(src, dst, width,
-							  height, mask_size);
-					rc = hgsmi_update_pointer_shape(
-						vbox->guest_pool, flags,
-						vbox->cursor_hot_x,
-						vbox->cursor_hot_y,
-						width, height, dst, data_size);
-					ret =
-					    rc == VINF_SUCCESS ? 0 : rc ==
-					    VERR_NO_MEMORY ? -ENOMEM : rc ==
-					    VERR_NOT_SUPPORTED ? -EBUSY :
-					    -EINVAL;
-				} else {
-					DRM_ERROR("src cursor bo should be in main memory\n");
-				}
-				ttm_bo_kunmap(&uobj_map);
-			} else {
-				vbox->cursor_data_size = 0;
-			}
-			vbox_bo_unreserve(bo);
-		}
-		drm_gem_object_unreference_unlocked(obj);
-	} else {
+	if (!obj) {
 		DRM_ERROR("Cannot find cursor object %x for crtc\n", handle);
-		ret = -ENOENT;
+		return -ENOENT;
 	}
+
+	bo = gem_to_vbox_bo(obj);
+	ret = vbox_bo_reserve(bo, false);
+	if (ret)
+		goto out_unref_obj;
+
+	/*
+	 * The mask must be calculated based on the alpha
+	 * channel, one bit per ARGB word, and must be 32-bit
+	 * padded.
+	 */
+	mask_size = ((width + 7) / 8 * height + 3) & ~3;
+	data_size = width * height * 4 + mask_size;
+	vbox->cursor_hot_x = hot_x;
+	vbox->cursor_hot_y = hot_y;
+	vbox->cursor_width = width;
+	vbox->cursor_height = height;
+	vbox->cursor_data_size = data_size;
+	dst = vbox->cursor_data;
+
+	ret = ttm_bo_kmap(&bo->bo, 0, bo->bo.num_pages, &uobj_map);
+	if (ret) {
+		vbox->cursor_data_size = 0;
+		goto out_unreserve_bo;
+	}
+
+	src = ttm_kmap_obj_virtual(&uobj_map, &src_isiomem);
+	if (src_isiomem) {
+		DRM_ERROR("src cursor bo not in main memory\n");
+		ret = -EIO;
+		goto out_unmap_bo;
+	}
+
+	copy_cursor_image(src, dst, width, height, mask_size);
+
+	flags = VBOX_MOUSE_POINTER_VISIBLE | VBOX_MOUSE_POINTER_SHAPE |
+		VBOX_MOUSE_POINTER_ALPHA;
+	ret = hgsmi_update_pointer_shape(vbox->guest_pool, flags,
+					 vbox->cursor_hot_x, vbox->cursor_hot_y,
+					 width, height, dst, data_size);
+	ret = ret == VINF_SUCCESS ? 0 : ret == VERR_NO_MEMORY ? -ENOMEM :
+		ret == VERR_NOT_SUPPORTED ? -EBUSY : -EINVAL;
+
+out_unmap_bo:
+	ttm_bo_kunmap(&uobj_map);
+out_unreserve_bo:
+	vbox_bo_unreserve(bo);
+out_unref_obj:
+	drm_gem_object_put_unlocked(obj);
 
 	return ret;
 }
@@ -871,42 +833,21 @@ static int vbox_cursor_set2(struct drm_crtc *crtc, struct drm_file *file_priv,
 static int vbox_cursor_move(struct drm_crtc *crtc, int x, int y)
 {
 	struct vbox_private *vbox = crtc->dev->dev_private;
-	u32 flags = VBOX_MOUSE_POINTER_VISIBLE |
-	    VBOX_MOUSE_POINTER_SHAPE | VBOX_MOUSE_POINTER_ALPHA;
 	s32 crtc_x =
 	    vbox->single_framebuffer ? crtc->x : to_vbox_crtc(crtc)->x_hint;
 	s32 crtc_y =
 	    vbox->single_framebuffer ? crtc->y : to_vbox_crtc(crtc)->y_hint;
-	u32 host_x, host_y;
-	u32 hot_x = 0;
-	u32 hot_y = 0;
-	int rc;
+	int ret;
 
-	/*
-	 * We compare these to unsigned later and don't
-	 * need to handle negative.
-	 */
-	if (x + crtc_x < 0 || y + crtc_y < 0 || vbox->cursor_data_size == 0)
+	x += vbox->cursor_hot_x;
+	y += vbox->cursor_hot_y;
+	if (x + crtc_x < 0 || y + crtc_y < 0 ||
+		x + crtc_x >= vbox->input_mapping_width ||
+		y + crtc_y >= vbox->input_mapping_width ||
+		vbox->cursor_data_size == 0)
 		return 0;
-
-	rc = hgsmi_cursor_position(vbox->guest_pool, true, x + crtc_x,
-				     y + crtc_y, &host_x, &host_y);
-	/* Work around a bug after save and restore in 5.0.20 and earlier. */
-	if (RT_FAILURE(rc) || (host_x == 0 && host_y == 0))
-		return rc == VINF_SUCCESS ? 0
-		    : rc == VERR_NO_MEMORY ? -ENOMEM : -EINVAL;
-	if (x + crtc_x < host_x)
-		hot_x = min(host_x - x - crtc_x, vbox->cursor_width);
-	if (y + crtc_y < host_y)
-		hot_y = min(host_y - y - crtc_y, vbox->cursor_height);
-	if (hot_x == vbox->cursor_hot_x && hot_y == vbox->cursor_hot_y)
-		return 0;
-	vbox->cursor_hot_x = hot_x;
-	vbox->cursor_hot_y = hot_y;
-	rc = hgsmi_update_pointer_shape(vbox->guest_pool, flags, hot_x, hot_y,
-					 vbox->cursor_width,
-					 vbox->cursor_height, vbox->cursor_data,
-					 vbox->cursor_data_size);
-	return rc == VINF_SUCCESS ? 0 : rc == VERR_NO_MEMORY ? -ENOMEM : rc ==
-	    VERR_NOT_SUPPORTED ? -EBUSY : -EINVAL;
+	ret = hgsmi_cursor_position(vbox->guest_pool, true, x + crtc_x,
+					 y + crtc_y, NULL, NULL);
+	return ret == VINF_SUCCESS ? 0 : ret == VERR_NO_MEMORY ? -ENOMEM : ret ==
+		VERR_NOT_SUPPORTED ? -EBUSY : -EINVAL;
 }

@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -23,13 +23,16 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-#ifndef ___VBox_cdefs_h
-#define ___VBox_cdefs_h
+#ifndef VBOX_INCLUDED_cdefs_h
+#define VBOX_INCLUDED_cdefs_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include <iprt/cdefs.h>
 
 
-/** @defgroup VBox Common Defintions and Macros
+/** @defgroup grp_vbox_cdefs    VBox Common Defintions and Macros
  * @{
  */
 
@@ -52,6 +55,23 @@
 # endif
 #endif
 
+/** @def VBOX_STRICT_GUEST
+ * Be strict on guest input.  This can be overriden on the compiler command line
+ * or per source file by defining VBOX_NO_STRICT_GUEST.
+ *
+ * @sa VBox/assert.h and its ASSERT_GUEST_XXXX macros.
+ */
+#ifndef VBOX_STRICT_GUEST
+# ifdef VBOX_STRICT
+#  define VBOX_STRICT_GUEST
+# endif
+#endif
+/** @def VBOX_NO_STRICT_GUEST
+ * Define to override VBOX_STRICT_GUEST, disabling asserting on guest input. */
+#ifdef VBOX_NO_STRICT_GUEST
+# undef VBOX_STRICT_GUEST
+#endif
+
 
 /*
  * Shut up DOXYGEN warnings and guide it properly thru the code.
@@ -59,6 +79,8 @@
 #ifdef DOXYGEN_RUNNING
 #define VBOX_WITH_STATISTICS
 #define VBOX_STRICT
+#define VBOX_STRICT_GUEST
+#define VBOX_NO_STRICT_GUEST
 #define IN_DBG
 #define IN_DIS
 #define IN_INTNET_R0
@@ -457,5 +479,5 @@
  * @{ */
 /** @} */
 
-#endif
+#endif /* !VBOX_INCLUDED_cdefs_h */
 

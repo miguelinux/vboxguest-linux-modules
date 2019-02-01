@@ -1,10 +1,10 @@
-/* $Id: avlpv.cpp 113681 2017-02-27 17:04:46Z bird $ */
+/* $Id: avlpv.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - AVL tree, void *, unique keys.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -61,7 +61,7 @@ static const char szFileId[] = "Id: kAVLPVInt.c,v 1.5 2003/02/13 02:02:35 bird E
 *********************************************************************************************************************************/
 #include <iprt/avl.h>
 #include <iprt/assert.h>
-#include <iprt/err.h>
+#include <iprt/errcore.h>
 
 /*
  * Include the code.

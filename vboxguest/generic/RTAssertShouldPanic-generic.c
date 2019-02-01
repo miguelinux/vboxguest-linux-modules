@@ -1,10 +1,10 @@
-/* $Id: RTAssertShouldPanic-generic.cpp 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: RTAssertShouldPanic-generic.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Assertions, generic RTAssertShouldPanic.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -31,9 +31,22 @@
 #include <iprt/assert.h>
 #include "internal/iprt.h"
 
+#ifdef IN_RING
+# if 0
+#  include <iprt/asm.h>
+#  include <iprt/asm-amd64-x86.h>
+# endif
+#endif
+
 
 RTDECL(bool) RTAssertShouldPanic(void)
 {
+#ifdef IN_RING0
+# if 0 /* this can be useful when debugging guests. */
+    ASMIntDisable();
+    ASMHalt();
+# endif
+#endif
 #if 0 /* Enable this to not panic on assertions. (Make sure this code is used!) */
     return false;
 #else

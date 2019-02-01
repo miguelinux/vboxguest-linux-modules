@@ -1,10 +1,10 @@
-/* $Id: string.h 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: string.h 127888 2019-01-01 06:31:29Z bird $ */
 /** @file
  * IPRT - wrapper for the linux kernel asm/string.h.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -24,8 +24,11 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-#ifndef ___string_h
-#define ___string_h
+#ifndef IPRT_INCLUDED_SRC_r0drv_linux_string_h
+#define IPRT_INCLUDED_SRC_r0drv_linux_string_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include <iprt/cdefs.h>
 
@@ -53,5 +56,5 @@ char *strpbrk(const char *pszStr, const char *pszChars)
 
 RT_C_DECLS_END
 
-#endif
+#endif /* !IPRT_INCLUDED_SRC_r0drv_linux_string_h */
 

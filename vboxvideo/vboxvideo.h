@@ -1,6 +1,6 @@
-/* $Id: vboxvideo.h 118629 2017-10-25 13:46:45Z bird $ */
+/* $Id: vboxvideo.h 127888 2019-01-01 06:31:29Z bird $ */
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,8 +24,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef ___VBox_Graphics_VBoxVideo_h
-#define ___VBox_Graphics_VBoxVideo_h
+#ifndef VBOX_INCLUDED_Graphics_VBoxVideo_h
+#define VBOX_INCLUDED_Graphics_VBoxVideo_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include "vbox_err.h"
 
@@ -330,47 +333,53 @@ typedef enum {
 	, VBOXVHWACMD_TYPE_HH_SAVESTATE_LOADPERFORM
 } VBOXVHWACMD_TYPE;
 
-/* the command processing was asynch, set by the host to indicate asynch command completion
- * must not be cleared once set, the command completion is performed by issuing a host->guest completion command
- * while keeping this flag unchanged */
-#define VBOXVHWACMD_FLAG_HG_ASYNCH               0x00010000
-/* asynch completion is performed by issuing the event */
-#define VBOXVHWACMD_FLAG_GH_ASYNCH_EVENT         0x00000001
-/* issue interrupt on asynch completion */
-#define VBOXVHWACMD_FLAG_GH_ASYNCH_IRQ           0x00000002
-/* guest does not do any op on completion of this command, the host may copy the command and indicate that it does not need the command anymore
+/** The command processing was asynch, set by the host to indicate asynch
+ * command completion. Must not be cleared once set, the command completion is
+ * performed by issuing a host->guest completion command while keeping this
+ * flag unchanged */
+#define VBOXVHWACMD_FLAG_HG_ASYNCH               0x00010000u
+/** asynch completion is performed by issuing the event */
+#define VBOXVHWACMD_FLAG_GH_ASYNCH_EVENT         0x00000001u
+/** issue interrupt on asynch completion */
+#define VBOXVHWACMD_FLAG_GH_ASYNCH_IRQ           0x00000002u
+/** Guest does not do any op on completion of this command, the host may copy
+ * the command and indicate that it does not need the command anymore
  * by setting the VBOXVHWACMD_FLAG_HG_ASYNCH_RETURNED flag */
-#define VBOXVHWACMD_FLAG_GH_ASYNCH_NOCOMPLETION  0x00000004
-/* the host has copied the VBOXVHWACMD_FLAG_GH_ASYNCH_NOCOMPLETION command and returned it to the guest */
-#define VBOXVHWACMD_FLAG_HG_ASYNCH_RETURNED      0x00020000
-/* this is the host->host cmd, i.e. a configuration command posted by the host to the framebuffer */
-#define VBOXVHWACMD_FLAG_HH_CMD                  0x10000000
+#define VBOXVHWACMD_FLAG_GH_ASYNCH_NOCOMPLETION  0x00000004u
+/** the host has copied the VBOXVHWACMD_FLAG_GH_ASYNCH_NOCOMPLETION command and returned it to the guest */
+#define VBOXVHWACMD_FLAG_HG_ASYNCH_RETURNED      0x00020000u
+/** this is the host->host cmd, i.e. a configuration command posted by the host to the framebuffer */
+#define VBOXVHWACMD_FLAG_HH_CMD                  0x10000000u
 
 typedef struct VBOXVHWACMD {
-	VBOXVHWACMD_TYPE enmCmd; /* command type */
-	volatile s32 rc; /* command result */
-	s32 iDisplay; /* display index */
-	volatile s32 Flags; /* ored VBOXVHWACMD_FLAG_xxx values */
-	uint64_t GuestVBVAReserved1; /* field internally used by the guest VBVA cmd handling, must NOT be modified by clients */
-	uint64_t GuestVBVAReserved2; /* field internally used by the guest VBVA cmd handling, must NOT be modified by clients */
+	VBOXVHWACMD_TYPE enmCmd;     /**< command type */
+	volatile s32 rc;         /**< command result */
+	s32 iDisplay;            /**< display index */
+	volatile s32 Flags;      /**< ORed VBOXVHWACMD_FLAG_xxx values */
+	uint64_t GuestVBVAReserved1; /**< field internally used by the guest VBVA cmd handling, must NOT be modified by clients */
+	uint64_t GuestVBVAReserved2; /**< field internally used by the guest VBVA cmd handling, must NOT be modified by clients */
 	volatile u32 cRefs;
 	s32 Reserved;
 	union {
 		struct VBOXVHWACMD *pNext;
-		u32             offNext;
-		uint64_t Data; /* the body is 64-bit aligned */
+		u32            offNext;
+		uint64_t Data;                  /**< the body is 64-bit aligned */
 	} u;
 	char body[1];
 } VBOXVHWACMD;
 
-#define VBOXVHWACMD_HEADSIZE() (RT_OFFSETOF(VBOXVHWACMD, body))
-#define VBOXVHWACMD_SIZE_FROMBODYSIZE(_s) (VBOXVHWACMD_HEADSIZE() + (_s))
-#define VBOXVHWACMD_SIZE(_tCmd) (VBOXVHWACMD_SIZE_FROMBODYSIZE(sizeof(_tCmd)))
+#define VBOXVHWACMD_HEADSIZE()                          (RT_OFFSETOF(VBOXVHWACMD, body))
+#define VBOXVHWACMD_SIZE_FROMBODYSIZE(a_cbBody)         (VBOXVHWACMD_HEADSIZE() + (a_cbBody))
+#define VBOXVHWACMD_SIZE(a_tTypeCmd)                    (VBOXVHWACMD_SIZE_FROMBODYSIZE(sizeof(a_tTypeCmd)))
 typedef unsigned int VBOXVHWACMD_LENGTH;
 typedef uint64_t VBOXVHWA_SURFHANDLE;
-#define VBOXVHWA_SURFHANDLE_INVALID 0ULL
-#define VBOXVHWACMD_BODY(_p, _t) ((_t*)(_p)->body)
-#define VBOXVHWACMD_HEAD(_pb) ((VBOXVHWACMD*)((u8 *)(_pb) - RT_OFFSETOF(VBOXVHWACMD, body)))
+#define VBOXVHWA_SURFHANDLE_INVALID                     UINT64_C(0)
+#define VBOXVHWACMD_BODY(a_pHdr, a_TypeBody)            ( (a_TypeBody  *)&(a_pHdr)->body[0] )
+#if !defined(IN_GUEST) && defined(IN_RING3)
+# define VBOXVHWACMD_BODY_HOST_HEAP(a_pHdr, a_TypeBody) ( (a_TypeBody *)&(a_pHdr)->body[0] )
+#endif
+#define VBOXVHWACMD_HEAD(a_pBody)\
+	( (VBOXVHWACMD  *)((u8 *)(a_pBody) - RT_OFFSETOF(VBOXVHWACMD, body)))
 
 typedef struct VBOXVHWA_RECTL {
 	s32 left;
@@ -609,7 +618,7 @@ typedef struct VBOXVHWACMD_QUERYINFO2 {
 	u32 FourCC[1];
 } VBOXVHWACMD_QUERYINFO2;
 
-#define VBOXVHWAINFO2_SIZE(_cFourCC) RT_OFFSETOF(VBOXVHWACMD_QUERYINFO2, FourCC[_cFourCC])
+#define VBOXVHWAINFO2_SIZE(_cFourCC) RT_UOFFSETOF_DYN(VBOXVHWACMD_QUERYINFO2, FourCC[_cFourCC])
 
 typedef struct VBOXVHWACMD_SURF_CANCREATE {
 	VBOXVHWA_SURFACEDESC SurfInfo;
@@ -830,6 +839,8 @@ typedef struct VBVABUFFER {
 #define VBVA_INFO_HEAP    4
 #define VBVA_FLUSH        5
 #define VBVA_INFO_SCREEN  6
+/** Enables or disables VBVA.  Enabling VBVA without disabling it before
+ * causes a complete screen update. */
 #define VBVA_ENABLE       7
 #define VBVA_MOUSE_POINTER_SHAPE 8
 #ifdef VBOX_WITH_VIDEOHWACCEL
@@ -889,12 +900,13 @@ typedef struct VBVAHOSTCMD {
 		uint64_t Data; /* the body is 64-bit aligned */
 	} u;
 	char body[1];
-}VBVAHOSTCMD;
+} VBVAHOSTCMD;
 
-#define VBVAHOSTCMD_SIZE(_size) (sizeof(VBVAHOSTCMD) + (_size))
-#define VBVAHOSTCMD_BODY(_pCmd, _tBody) ((_tBody*)(_pCmd)->body)
-#define VBVAHOSTCMD_HDR(_pBody) ((VBVAHOSTCMD*)(((u8*)_pBody) - RT_OFFSETOF(VBVAHOSTCMD, body)))
-#define VBVAHOSTCMD_HDRSIZE (RT_OFFSETOF(VBVAHOSTCMD, body))
+#define VBVAHOSTCMD_SIZE(a_cb)                  (sizeof(VBVAHOSTCMD) + (a_cb))
+#define VBVAHOSTCMD_BODY(a_pCmd, a_TypeBody)    ((a_TypeBody  *)&(a_pCmd)->body[0])
+#define VBVAHOSTCMD_HDR(a_pBody) \
+	( (VBVAHOSTCMD  *)( (u8 *)(a_pBody) - RT_OFFSETOF(VBVAHOSTCMD, body)) )
+#define VBVAHOSTCMD_HDRSIZE                     (RT_OFFSETOF(VBVAHOSTCMD, body))
 
 #pragma pack()
 
@@ -1184,8 +1196,11 @@ typedef struct vbva_report_input_mapping {
 } vbva_report_input_mapping;
 
 /** Report the guest cursor position and query the host one.  The host may wish
- *  to use the guest information to re-position its own cursor (though this is
- *  currently unlikely).
+ *  to use the guest information to re-position its own cursor, particularly
+ *  when the cursor is captured and the guest does not support switching to a
+ *  software cursor.  After every mode switch the guest must signal that it
+ *  supports sending position information by sending an event with
+ *  @a report_position set to false.
  *  @see VBVA_CURSOR_POSITION */
 typedef struct vbva_cursor_position {
 	u32 report_position;  /**< Are we reporting a position? */
@@ -1257,16 +1272,17 @@ typedef enum {
 #define VBOXSHGSMI_FLAG_GH_SYNCH                0x00000040
 
 
-static inline u8 * VBoxSHGSMIBufferData (const VBOXSHGSMIHEADER* pHeader)
+static inline u8  *
+VBoxSHGSMIBufferData(const VBOXSHGSMIHEADER  *pHeader)
 {
-	return (u8 *)pHeader + sizeof (VBOXSHGSMIHEADER);
+	return (u8  *)pHeader + sizeof(VBOXSHGSMIHEADER);
 }
 
-#define VBoxSHGSMIBufferHeaderSize() (sizeof (VBOXSHGSMIHEADER))
+#define VBoxSHGSMIBufferHeaderSize() (sizeof(VBOXSHGSMIHEADER))
 
-static inline PVBOXSHGSMIHEADER VBoxSHGSMIBufferHeader (const void *pvData)
+static inline VBOXSHGSMIHEADER  * VBoxSHGSMIBufferHeader(const void  *pvData)
 {
-	return (PVBOXSHGSMIHEADER)((u8 *)pvData - sizeof (VBOXSHGSMIHEADER));
+	return (VBOXSHGSMIHEADER  *)((uintptr_t)pvData - sizeof(VBOXSHGSMIHEADER));
 }
 
 #ifdef VBOX_WITH_VDMA
@@ -1281,14 +1297,15 @@ typedef enum {
 	VBOXVDMA_CTL_TYPE_ENABLE,
 	VBOXVDMA_CTL_TYPE_DISABLE,
 	VBOXVDMA_CTL_TYPE_FLUSH,
-	VBOXVDMA_CTL_TYPE_WATCHDOG
+	VBOXVDMA_CTL_TYPE_WATCHDOG,
+	VBOXVDMA_CTL_TYPE_END
 } VBOXVDMA_CTL_TYPE;
 
 typedef struct VBOXVDMA_CTL {
 	VBOXVDMA_CTL_TYPE enmCtl;
 	u32 offset;
 	s32  result;
-} VBOXVDMA_CTL, *PVBOXVDMA_CTL;
+} VBOXVDMA_CTL;
 
 typedef struct VBOXVDMA_RECTL {
 	int16_t left;
@@ -1355,7 +1372,7 @@ typedef uint64_t VBOXVDMASURFHANDLE;
 /* command buffer follows the VBOXVDMACBUF_DR in VRAM, VBOXVDMACBUF_DR::phBuf is ignored */
 #define VBOXVDMACBUF_FLAG_BUF_FOLLOWS_DR  0x00000002
 
-/*
+/**
  * We can not submit the DMA command via VRAM since we do not have control over
  * DMA command buffer [de]allocation, i.e. we only control the buffer contents.
  * In other words the system may call one of our callbacks to fill a command buffer
@@ -1378,21 +1395,25 @@ typedef struct VBOXVDMACBUF_DR {
 	uint64_t aGuestData[7];
 } VBOXVDMACBUF_DR, *PVBOXVDMACBUF_DR;
 
-#define VBOXVDMACBUF_DR_TAIL(_pCmd, _t) ( (_t*)(((u8*)(_pCmd)) + sizeof (VBOXVDMACBUF_DR)) )
-#define VBOXVDMACBUF_DR_FROM_TAIL(_pCmd) ( (VBOXVDMACBUF_DR*)(((u8*)(_pCmd)) - sizeof (VBOXVDMACBUF_DR)) )
+#define VBOXVDMACBUF_DR_TAIL(a_pCmd, a_TailType)       \
+	( (a_TailType       *)( ((u8*)(a_pCmd)) + sizeof(VBOXVDMACBUF_DR)) )
+#define VBOXVDMACBUF_DR_FROM_TAIL(a_pCmd) \
+	( (VBOXVDMACBUF_DR  *)( ((u8*)(a_pCmd)) - sizeof(VBOXVDMACBUF_DR)) )
 
 typedef struct VBOXVDMACMD {
 	VBOXVDMACMD_TYPE enmType;
 	u32 u32CmdSpecific;
-} VBOXVDMACMD, *PVBOXVDMACMD;
+} VBOXVDMACMD;
 
-#define VBOXVDMACMD_HEADER_SIZE() sizeof (VBOXVDMACMD)
-#define VBOXVDMACMD_SIZE_FROMBODYSIZE(_s) (VBOXVDMACMD_HEADER_SIZE() + (_s))
-#define VBOXVDMACMD_SIZE(_t) (VBOXVDMACMD_SIZE_FROMBODYSIZE(sizeof (_t)))
-#define VBOXVDMACMD_BODY(_pCmd, _t) ( (_t*)(((u8*)(_pCmd)) + VBOXVDMACMD_HEADER_SIZE()) )
-#define VBOXVDMACMD_BODY_SIZE(_s) ( (_s) - VBOXVDMACMD_HEADER_SIZE() )
-#define VBOXVDMACMD_FROM_BODY(_pCmd) ( (VBOXVDMACMD*)(((u8*)(_pCmd)) - VBOXVDMACMD_HEADER_SIZE()) )
-#define VBOXVDMACMD_BODY_FIELD_OFFSET(_ot, _t, _f) ( (_ot)(uintptr_t)( VBOXVDMACMD_BODY(0, u8) + RT_OFFSETOF(_t, _f) ) )
+#define VBOXVDMACMD_HEADER_SIZE()                   sizeof(VBOXVDMACMD)
+#define VBOXVDMACMD_SIZE_FROMBODYSIZE(_s)           ((u32)(VBOXVDMACMD_HEADER_SIZE() + (_s)))
+#define VBOXVDMACMD_SIZE(_t)                        (VBOXVDMACMD_SIZE_FROMBODYSIZE(sizeof(_t)))
+#define VBOXVDMACMD_BODY(a_pCmd, a_TypeBody)        \
+	( (a_TypeBody   *)( ((u8 *)(a_pCmd)) + VBOXVDMACMD_HEADER_SIZE()) )
+#define VBOXVDMACMD_BODY_SIZE(_s)                   ( (_s) - VBOXVDMACMD_HEADER_SIZE() )
+#define VBOXVDMACMD_FROM_BODY(a_pBody)                \
+	( (VBOXVDMACMD  *)( ((u8 *)(a_pBody)) - VBOXVDMACMD_HEADER_SIZE()) )
+#define VBOXVDMACMD_BODY_FIELD_OFFSET(_ot, _t, _f)  ( (_ot)(uintptr_t)( VBOXVDMACMD_BODY(0, u8) + RT_UOFFSETOF_DYN(_t, _f) ) )
 
 typedef struct VBOXVDMACMD_DMA_PRESENT_BLT {
 	VBOXVIDEOOFFSET offSrc;
@@ -1435,10 +1456,9 @@ typedef struct VBOXVDMACMD_SYSMEMEL {
 	uint64_t phBuf[1];
 } VBOXVDMACMD_SYSMEMEL, *PVBOXVDMACMD_SYSMEMEL;
 
-#define VBOXVDMACMD_SYSMEMEL_NEXT(_pEl) (((_pEl)->flags & VBOXVDMACMD_SYSMEMEL_F_PAGELIST) ? \
-		((PVBOXVDMACMD_SYSMEMEL)(((u8*)(_pEl))+RT_OFFSETOF(VBOXVDMACMD_SYSMEMEL, phBuf[(_pEl)->cPages]))) \
-		: \
-		((_pEl)+1)
+#define VBOXVDMACMD_SYSMEMEL_NEXT(_pEl) ( ((_pEl)->flags & VBOXVDMACMD_SYSMEMEL_F_PAGELIST) \
+		? ((PVBOXVDMACMD_SYSMEMEL)(((u8*)(_pEl)) + RT_UOFFSETOF_DYN(VBOXVDMACMD_SYSMEMEL, phBuf[(_pEl)->cPages]))) \
+		: ((_pEl) + 1) )
 
 #define VBOXVDMACMD_DMA_BPB_TRANSFER_VRAMSYS_SYS2VRAM 0x00000001
 
@@ -1942,5 +1962,5 @@ typedef struct VBOXVDMAVBVACMD {
 #pragma pack()
 #endif
 
-#endif
+#endif /* !VBOX_INCLUDED_Graphics_VBoxVideo_h */
 

@@ -1,10 +1,10 @@
-/* $Id: thread-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: thread-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Threads, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -37,7 +37,7 @@
 # include <iprt/asm-amd64-x86.h>
 #endif
 #include <iprt/assert.h>
-#include <iprt/err.h>
+#include <iprt/errcore.h>
 #include <iprt/mp.h>
 
 
@@ -164,12 +164,10 @@ RT_EXPORT_SYMBOL(RTThreadPreemptIsPendingTrusty);
 
 RTDECL(bool) RTThreadPreemptIsPossible(void)
 {
-    /** @todo r=ramshankar: What about CONFIG_PREEMPT_VOLUNTARY? That can preempt
-     *        too but does so in voluntarily in explicit preemption points. */
 #ifdef CONFIG_PREEMPT
-    return true;    /* yes, kernel preemption is possible. */
+    return true;    /* Yes, kernel preemption is possible. */
 #else
-    return false;   /* no kernel preemption */
+    return false;   /* No kernel preemption (or CONFIG_PREEMPT_VOLUNTARY). */
 #endif
 }
 RT_EXPORT_SYMBOL(RTThreadPreemptIsPossible);

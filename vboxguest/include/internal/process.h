@@ -1,10 +1,10 @@
-/* $Id: process.h 118810 2017-10-28 13:12:06Z bird $ */
+/* $Id: process.h 127888 2019-01-01 06:31:29Z bird $ */
 /** @file
  * IPRT - Internal RTProc header.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -24,8 +24,11 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-#ifndef ___internal_process_h
-#define ___internal_process_h
+#ifndef IPRT_INCLUDED_INTERNAL_process_h
+#define IPRT_INCLUDED_INTERNAL_process_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include <iprt/process.h>
 #include <iprt/param.h>
@@ -65,5 +68,5 @@ DECLHIDDEN(int) rtProcInitExePath(char *pszPath, size_t cchPath);
 
 RT_C_DECLS_END
 
-#endif
+#endif /* !IPRT_INCLUDED_INTERNAL_process_h */
 

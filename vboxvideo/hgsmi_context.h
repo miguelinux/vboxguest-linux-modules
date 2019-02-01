@@ -1,6 +1,6 @@
-/* $Id: hgsmi_context.h 118629 2017-10-25 13:46:45Z bird $ */
+/* $Id: hgsmi_context.h 127888 2019-01-01 06:31:29Z bird $ */
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,9 +24,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-#ifndef ___VBox_Graphics_HGSMIContext_h___
-#define ___VBox_Graphics_HGSMIContext_h___
+#ifndef VBOX_INCLUDED_Graphics_HGSMIContext_h
+#define VBOX_INCLUDED_Graphics_HGSMIContext_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include "HGSMI.h"
 #include "hgsmi_ch_setup.h"
@@ -100,5 +102,5 @@ void     VBoxHGSMISetupHostContext(PHGSMIHOSTCOMMANDCONTEXT ctx,
 /** @}  */
 
 
-#endif
+#endif /* !VBOX_INCLUDED_Graphics_HGSMIContext_h */
 

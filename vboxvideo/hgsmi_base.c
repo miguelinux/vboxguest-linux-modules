@@ -1,6 +1,6 @@
-/* $Id: HGSMIBase.cpp 118631 2017-10-25 13:55:39Z bird $ */
+/* $Id: HGSMIBase.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,10 +55,10 @@ bool VBoxHGSMIIsSupported(void)
  */
 int hgsmi_report_flags_location(struct gen_pool * ctx, u32 location)
 {
-	struct hgsmi_buffer_location *p;
 
 	/* Allocate the IO buffer. */
-	p = hgsmi_buffer_alloc(ctx, sizeof(*p), HGSMI_CH_HGSMI,
+	struct hgsmi_buffer_location  *p =
+		(struct hgsmi_buffer_location  *)hgsmi_buffer_alloc(ctx, sizeof(*p), HGSMI_CH_HGSMI,
 						HGSMI_CC_HOST_FLAGS_LOCATION);
 	if (!p)
 		return VERR_NO_MEMORY;
@@ -85,10 +85,10 @@ int hgsmi_report_flags_location(struct gen_pool * ctx, u32 location)
  */
 int hgsmi_send_caps_info(struct gen_pool * ctx, u32 caps)
 {
-	struct vbva_caps *p;
 
 	/* Allocate the IO buffer. */
-	p = hgsmi_buffer_alloc(ctx, sizeof(*p), HGSMI_CH_VBVA, VBVA_INFO_CAPS);
+	struct vbva_caps  *p =
+		(struct vbva_caps  *)hgsmi_buffer_alloc(ctx, sizeof(*p), HGSMI_CH_VBVA, VBVA_INFO_CAPS);
 
 	if (!p)
 		return VERR_NO_MEMORY;
@@ -155,8 +155,7 @@ int hgsmi_query_conf(struct gen_pool * ctx, u32 index, u32 *value_ret)
 	struct vbva_conf32 *p;
 
 	/* Allocate the IO buffer. */
-	p = hgsmi_buffer_alloc(ctx, sizeof(*p), HGSMI_CH_VBVA,
-						VBVA_QUERY_CONF32);
+	p = hgsmi_buffer_alloc(ctx, sizeof(*p), HGSMI_CH_VBVA, VBVA_QUERY_CONF32);
 	if (!p)
 		return VERR_NO_MEMORY;
 

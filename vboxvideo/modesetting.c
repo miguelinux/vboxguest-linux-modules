@@ -1,6 +1,6 @@
-/* $Id: Modesetting.cpp 118631 2017-10-25 13:55:39Z bird $ */
+/* $Id: Modesetting.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -53,13 +53,55 @@ u32 VBoxHGSMIGetMonitorCount(struct gen_pool * ctx)
 
 
 /**
+ * Query whether the virtual hardware supports VBE_DISPI_ID_CFG
+ * and set the interface.
+ *
+ * @returns Whether the interface is supported.
+ */
+bool VBoxVGACfgAvailable(void)
+{
+	u16 DispiId;
+	outw(VBE_DISPI_INDEX_ID, VBE_DISPI_IOPORT_INDEX);
+	outw(VBE_DISPI_ID_CFG, VBE_DISPI_IOPORT_DATA);
+	DispiId = inw(VBE_DISPI_IOPORT_DATA);
+	return (DispiId == VBE_DISPI_ID_CFG);
+}
+
+
+/**
+ * Query a configuration value from the virtual hardware which supports VBE_DISPI_ID_CFG.
+ * I.e. use this function only if VBoxVGACfgAvailable returns true.
+ *
+ * @returns Whether the value is supported.
+ * @param  u16Id       Identifier of the configuration value (VBE_DISPI_CFG_ID_*).
+ * @param  pu32Value   Where to store value from the host.
+ * @param  u32DefValue What to assign to *pu32Value if the value is not supported.
+ */
+bool VBoxVGACfgQuery(u16 u16Id, u32 *pu32Value, u32 u32DefValue)
+{
+	u32 u32;
+	outw(VBE_DISPI_INDEX_CFG, VBE_DISPI_IOPORT_INDEX);
+	outw(VBE_DISPI_CFG_MASK_SUPPORT | u16Id, VBE_DISPI_IOPORT_DATA);
+	u32 = inl(VBE_DISPI_IOPORT_DATA);
+	if (u32) {
+		outw(u16Id, VBE_DISPI_IOPORT_DATA);
+		*pu32Value = inl(VBE_DISPI_IOPORT_DATA);
+		return true;
+	}
+
+	*pu32Value = u32DefValue;
+	return false;
+}
+
+
+/**
  * Returns the size of the video RAM in bytes.
  *
  * @returns the size
  */
 u32 VBoxVideoGetVRAMSize(void)
 {
-	/** @note A 32bit read on this port returns the VRAM size. */
+	/** @note A 32bit read on this port returns the VRAM size if interface is older than VBE_DISPI_ID_CFG. */
 	return inl(VBE_DISPI_IOPORT_DATA);
 }
 
@@ -103,14 +145,14 @@ int VBoxHGSMISendViewInfo(struct gen_pool * ctx,
 {
 	int rc;
 	/* Issue the screen info command. */
-	void *p = hgsmi_buffer_alloc(ctx, sizeof(VBVAINFOVIEW) * u32Count,
+	VBVAINFOVIEW  *pInfo =
+		(VBVAINFOVIEW  *)hgsmi_buffer_alloc(ctx, sizeof(VBVAINFOVIEW) * u32Count,
 						HGSMI_CH_VBVA, VBVA_INFO_VIEW);
-	if (p) {
-		VBVAINFOVIEW *pInfo = (VBVAINFOVIEW *)p;
-		rc = pfnFill(pvData, pInfo, u32Count);
+	if (pInfo) {
+		rc = pfnFill(pvData, (VBVAINFOVIEW *)pInfo /* lazy bird */, u32Count);
 		if (RT_SUCCESS(rc))
-			hgsmi_buffer_submit (ctx, p);
-		hgsmi_buffer_free(ctx, p);
+			hgsmi_buffer_submit(ctx, pInfo);
+		hgsmi_buffer_free(ctx, pInfo);
 	}
 	else
 		rc = VERR_NO_MEMORY;
@@ -240,16 +282,10 @@ void hgsmi_process_display_info(struct gen_pool * ctx,
 						u16 flags)
 {
 	/* Issue the screen info command. */
-	void *p = hgsmi_buffer_alloc(ctx,
-						sizeof (VBVAINFOSCREEN),
-						HGSMI_CH_VBVA,
-						VBVA_INFO_SCREEN);
-	if (!p) {
-		// LogFunc(("HGSMIHeapAlloc failed\n"));
-	}
-	else {
-		VBVAINFOSCREEN *pScreen = (VBVAINFOSCREEN *)p;
-
+	VBVAINFOSCREEN  *pScreen =
+		(VBVAINFOSCREEN  *)hgsmi_buffer_alloc(ctx, sizeof(VBVAINFOSCREEN),
+						HGSMI_CH_VBVA, VBVA_INFO_SCREEN);
+	if (pScreen != NULL) {
 		pScreen->view_index    = display;
 		pScreen->origin_x      = origin_x;
 		pScreen->origin_y      = origin_y;
@@ -260,9 +296,12 @@ void hgsmi_process_display_info(struct gen_pool * ctx,
 		pScreen->bits_per_pixel = bpp;
 		pScreen->flags        = flags;
 
-		hgsmi_buffer_submit(ctx, p);
+		hgsmi_buffer_submit(ctx, pScreen);
 
-		hgsmi_buffer_free(ctx, p);
+		hgsmi_buffer_free(ctx, pScreen);
+	}
+	else {
+		// LogFunc(("HGSMIHeapAlloc failed\n"));
 	}
 }
 
@@ -282,7 +321,7 @@ void hgsmi_process_display_info(struct gen_pool * ctx,
 int      hgsmi_update_input_mapping(struct gen_pool * ctx, s32  origin_x, s32  origin_y,
 						u32 width, u32 height)
 {
-	int rc = VINF_SUCCESS;
+	int rc;
 	struct vbva_report_input_mapping *p;
 	// Log(("%s: origin_x=%d, origin_y=%d, width=%u, height=%u\n", __PRETTY_FUNCTION__, (int)origin_x, (int)origin_x,
 	//      (unsigned)width, (unsigned)height));
@@ -320,33 +359,28 @@ int hgsmi_get_mode_hints(struct gen_pool * ctx,
 						unsigned screens, struct vbva_modehint *hints)
 {
 	int rc;
-	void *p;
+	struct vbva_query_mode_hints  *pQuery;
 
-	WARN_ON_ONCE(!((hints)));
-	if (WARN_ON(!hints))
-		return VERR_INVALID_POINTER;
-
-	p = hgsmi_buffer_alloc(ctx, sizeof(struct vbva_query_mode_hints)
-						+ screens * sizeof(struct vbva_modehint),
+	assert_ptr_return(hints, VERR_INVALID_POINTER);
+	pQuery = (struct vbva_query_mode_hints  *)hgsmi_buffer_alloc(ctx,
+						sizeof(struct vbva_query_mode_hints)
+						+  screens * sizeof(struct vbva_modehint),
 						HGSMI_CH_VBVA, VBVA_QUERY_MODE_HINTS);
-	if (!p) {
-		// LogFunc(("HGSMIHeapAlloc failed\n"));
-		return VERR_NO_MEMORY;
-	}
-	else {
-		struct vbva_query_mode_hints *pQuery   = p;
-
+	if (pQuery != NULL) {
 		pQuery->hints_queried_count        = screens;
 		pQuery->cbHintStructureGuest = sizeof(struct vbva_modehint);
 		pQuery->rc                   = VERR_NOT_SUPPORTED;
 
-		hgsmi_buffer_submit(ctx, p);
+		hgsmi_buffer_submit(ctx, pQuery);
 		rc = pQuery->rc;
 		if (RT_SUCCESS(rc))
-			memcpy(hints, ((u8 *)p) + sizeof(struct vbva_query_mode_hints),
-				   screens * sizeof(struct vbva_modehint));
+			memcpy(hints, (void *)(pQuery + 1), screens * sizeof(struct vbva_modehint));
 
-		hgsmi_buffer_free(ctx, p);
+		hgsmi_buffer_free(ctx, pQuery);
+	}
+	else {
+		// LogFunc(("HGSMIHeapAlloc failed\n"));
+		rc = VERR_NO_MEMORY;
 	}
 	return rc;
 }

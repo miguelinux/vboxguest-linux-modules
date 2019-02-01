@@ -1,10 +1,10 @@
-/* $Id: semfastmutex-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: semfastmutex-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Fast Mutex Semaphores, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -34,7 +34,7 @@
 #include <iprt/alloc.h>
 #include <iprt/assert.h>
 #include <iprt/asm.h>
-#include <iprt/err.h>
+#include <iprt/errcore.h>
 #if defined(RT_STRICT) || defined(IPRT_DEBUG_SEMS)
 # include <iprt/thread.h>
 #endif

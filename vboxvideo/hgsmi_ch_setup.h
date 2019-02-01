@@ -1,6 +1,6 @@
-/* $Id: hgsmi_ch_setup.h 118629 2017-10-25 13:46:45Z bird $ */
+/* $Id: hgsmi_ch_setup.h 127888 2019-01-01 06:31:29Z bird $ */
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,9 @@
 
 #ifndef __HGSMI_CH_SETUP_H__
 #define __HGSMI_CH_SETUP_H__
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include "hgsmi_defs.h"
 
@@ -78,4 +81,4 @@ struct hgsmi_host_flags {
 };
 assert_compile_size(struct hgsmi_host_flags, 16);
 
-#endif
+#endif /* !__HGSMI_CH_SETUP_H__ */

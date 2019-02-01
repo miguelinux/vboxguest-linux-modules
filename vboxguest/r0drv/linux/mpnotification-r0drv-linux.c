@@ -1,10 +1,10 @@
-/* $Id: mpnotification-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: mpnotification-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Multiprocessor Event Notifications, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2008-2017 Oracle Corporation
+ * Copyright (C) 2008-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -32,7 +32,7 @@
 #include "internal/iprt.h"
 
 #include <iprt/asm-amd64-x86.h>
-#include <iprt/err.h>
+#include <iprt/errcore.h>
 #include <iprt/cpuset.h>
 #include <iprt/thread.h>
 #include "r0drv/mp-r0drv.h"

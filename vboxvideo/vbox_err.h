@@ -1,6 +1,6 @@
-/* $Id: VBoxVideoErr.h 118629 2017-10-25 13:46:45Z bird $ */
+/* $Id: VBoxVideoErr.h 127888 2019-01-01 06:31:29Z bird $ */
 /*
- * Copyright (C) 2017 Oracle Corporation
+ * Copyright (C) 2017-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,8 +24,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __VBOX_ERR_H__
-#define __VBOX_ERR_H__
+#ifndef VBOX_INCLUDED_Graphics_VBoxVideoErr_h
+#define VBOX_INCLUDED_Graphics_VBoxVideoErr_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 /** @name VirtualBox error macros
  * @{ */
@@ -60,7 +63,9 @@ extern int vbox_assert_var[1];
 	vbox_assert_var[(expr) ? 1 : 0] __attribute__((__unused__))
 #define assert_compile_size(type, size) \
 	assert_compile(sizeof(type) == (size))
+#define assert_ptr_return(ptr,ret) \
+	do { if (unlikely(!(ptr))) { WARN_ON_ONCE(!(ptr)); return ret; } } while (0)
 
 /** @}  */
 
-#endif
+#endif /* !VBOX_INCLUDED_Graphics_VBoxVideoErr_h */

@@ -1,10 +1,10 @@
-/* $Id: timer-r0drv-linux.c 120065 2018-01-04 12:48:34Z aeichner $ */
+/* $Id: timer-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Timers, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2018 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -461,7 +461,7 @@ static void rtTimerLnxDestroyIt(PRTTIMER pTimer)
     /*
      * Finally, free the resources.
      */
-    RTMemFreeEx(pTimer, RT_OFFSETOF(RTTIMER, aSubTimers[pTimer->cCpus]));
+    RTMemFreeEx(pTimer, RT_UOFFSETOF_DYN(RTTIMER, aSubTimers[pTimer->cCpus]));
     if (hSpinlock != NIL_RTSPINLOCK)
         RTSpinlockDestroy(hSpinlock);
 }
@@ -1550,7 +1550,7 @@ RTDECL(int) RTTimerCreateEx(PRTTIMER *ppTimer, uint64_t u64NanoInterval, uint32_
     }
 #endif
 
-    rc = RTMemAllocEx(RT_OFFSETOF(RTTIMER, aSubTimers[cCpus]), 0,
+    rc = RTMemAllocEx(RT_UOFFSETOF_DYN(RTTIMER, aSubTimers[cCpus]), 0,
                       RTMEMALLOCEX_FLAGS_ZEROED | RTMEMALLOCEX_FLAGS_ANY_CTX_FREE, (void **)&pTimer);
     if (RT_FAILURE(rc))
     {

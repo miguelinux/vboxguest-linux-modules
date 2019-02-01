@@ -1,10 +1,10 @@
-/* $Id: memobj-r0drv-linux.c 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: memobj-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - Ring-0 Memory Objects, Linux.
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -31,9 +31,10 @@
 #include "the-linux-kernel.h"
 
 #include <iprt/memobj.h>
-#include <iprt/alloc.h>
 #include <iprt/assert.h>
+#include <iprt/err.h>
 #include <iprt/log.h>
+#include <iprt/mem.h>
 #include <iprt/process.h>
 #include <iprt/string.h>
 #include "internal/memobj.h"
@@ -295,7 +296,7 @@ static int rtR0MemObjLinuxAllocPages(PRTR0MEMOBJLNX *ppMemLnx, RTR0MEMOBJTYPE en
      * Allocate a memory object structure that's large enough to contain
      * the page pointer array.
      */
-    PRTR0MEMOBJLNX  pMemLnx = (PRTR0MEMOBJLNX)rtR0MemObjNew(RT_OFFSETOF(RTR0MEMOBJLNX, apPages[cPages]), enmType, NULL, cb);
+    PRTR0MEMOBJLNX  pMemLnx = (PRTR0MEMOBJLNX)rtR0MemObjNew(RT_UOFFSETOF_DYN(RTR0MEMOBJLNX, apPages[cPages]), enmType, NULL, cb);
     if (!pMemLnx)
         return VERR_NO_MEMORY;
     pMemLnx->cPages = cPages;
@@ -1055,7 +1056,7 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser(PPRTR0MEMOBJINTERNAL ppMem, RTR3PTR R3P
     /*
      * Allocate the memory object and a temporary buffer for the VMAs.
      */
-    pMemLnx = (PRTR0MEMOBJLNX)rtR0MemObjNew(RT_OFFSETOF(RTR0MEMOBJLNX, apPages[cPages]), RTR0MEMOBJTYPE_LOCK, (void *)R3Ptr, cb);
+    pMemLnx = (PRTR0MEMOBJLNX)rtR0MemObjNew(RT_UOFFSETOF_DYN(RTR0MEMOBJLNX, apPages[cPages]), RTR0MEMOBJTYPE_LOCK, (void *)R3Ptr, cb);
     if (!pMemLnx)
     {
         IPRT_LINUX_RESTORE_EFL_AC();
@@ -1220,7 +1221,7 @@ DECLHIDDEN(int) rtR0MemObjNativeLockKernel(PPRTR0MEMOBJINTERNAL ppMem, void *pv,
     /*
      * Allocate the memory object.
      */
-    pMemLnx = (PRTR0MEMOBJLNX)rtR0MemObjNew(RT_OFFSETOF(RTR0MEMOBJLNX, apPages[cPages]), RTR0MEMOBJTYPE_LOCK, pv, cb);
+    pMemLnx = (PRTR0MEMOBJLNX)rtR0MemObjNew(RT_UOFFSETOF_DYN(RTR0MEMOBJLNX, apPages[cPages]), RTR0MEMOBJTYPE_LOCK, pv, cb);
     if (!pMemLnx)
     {
         IPRT_LINUX_RESTORE_EFL_AC();

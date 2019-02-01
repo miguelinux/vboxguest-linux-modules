@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -23,8 +23,11 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-#ifndef ___VBox_log_h
-#define ___VBox_log_h
+#ifndef VBOX_INCLUDED_log_h
+#define VBOX_INCLUDED_log_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 /*
  * Set the default loggroup.
@@ -101,6 +104,8 @@ typedef enum LOGGROUP
     LOG_GROUP_DEV_EHCI,
     /** Floppy Controller Device group. */
     LOG_GROUP_DEV_FDC,
+    /** Flash Device group. */
+    LOG_GROUP_DEV_FLASH,
     /** Guest Interface Manager Device group. */
     LOG_GROUP_DEV_GIM,
     /** HDA Device group. */
@@ -357,12 +362,26 @@ typedef enum LOGGROUP
     LOG_GROUP_MAIN_CERTIFICATE,
     /** Main group, IClipboardModeChangedEvent. */
     LOG_GROUP_MAIN_CLIPBOARDMODECHANGEDEVENT,
+    /** Main group, ICloudClient. */
+    LOG_GROUP_MAIN_CLOUDCLIENT,
+    /** Main group, ICloudProfile. */
+    LOG_GROUP_MAIN_CLOUDPROFILE,
+    /** Main group, ICloudProvider. */
+    LOG_GROUP_MAIN_CLOUDPROVIDER,
+    /** Main group, ICloudProviderManager. */
+    LOG_GROUP_MAIN_CLOUDPROVIDERMANAGER,
     /** Main group, IConsole. */
     LOG_GROUP_MAIN_CONSOLE,
     /** Main group, ICPUChangedEvent. */
     LOG_GROUP_MAIN_CPUCHANGEDEVENT,
     /** Main group, ICPUExecutionCapChangedEvent. */
     LOG_GROUP_MAIN_CPUEXECUTIONCAPCHANGEDEVENT,
+    /** Main group, ICursorPositionChangedEvent. */
+    LOG_GROUP_MAIN_CURSORPOSITIONCHANGEDEVENT,
+    /** Main group, IDataModel. */
+    LOG_GROUP_MAIN_DATAMODEL,
+    /** Main group, IDataStream. */
+    LOG_GROUP_MAIN_DATASTREAM,
     /** Main group, IDHCPServer. */
     LOG_GROUP_MAIN_DHCPSERVER,
     /** Main group, IDirectory. */
@@ -521,6 +540,8 @@ typedef enum LOGGROUP
     LOG_GROUP_MAIN_MEDIUMCONFIGCHANGEDEVENT,
     /** Main group, IMediumFormat. */
     LOG_GROUP_MAIN_MEDIUMFORMAT,
+    /** Main group, IMediumIO. */
+    LOG_GROUP_MAIN_MEDIUMIO,
     /** Main group, IMediumRegisteredEvent. */
     LOG_GROUP_MAIN_MEDIUMREGISTEREDEVENT,
     /** Main group, IMouse. */
@@ -575,6 +596,12 @@ typedef enum LOGGROUP
     LOG_GROUP_MAIN_PROGRESSPERCENTAGECHANGEDEVENT,
     /** Main group, IProgressTaskCompletedEvent. */
     LOG_GROUP_MAIN_PROGRESSTASKCOMPLETEDEVENT,
+    /** Main group, IRecordingChangedEvent. */
+    LOG_GROUP_MAIN_RECORDINGCHANGEDEVENT,
+    /** Main group, IRecordingSettings. */
+    LOG_GROUP_MAIN_RECORDINGSETTINGS,
+    /** Main group, IRecordingScreenSettings. */
+    LOG_GROUP_MAIN_RECORDINGSCREENSETTINGS,
     /** Main group, IReusableEvent. */
     LOG_GROUP_MAIN_REUSABLEEVENT,
     /** Main group, IRuntimeErrorEvent. */
@@ -615,6 +642,8 @@ typedef enum LOGGROUP
     LOG_GROUP_MAIN_STORAGEDEVICECHANGEDEVENT,
     /** Main group, ISystemProperties. */
     LOG_GROUP_MAIN_SYSTEMPROPERTIES,
+    /** Main group, threaded tasks. */
+    LOG_GROUP_MAIN_THREAD_TASK,
     /** Main group, IToken. */
     LOG_GROUP_MAIN_TOKEN,
     /** Main group, IUnattended. */
@@ -641,8 +670,6 @@ typedef enum LOGGROUP
     LOG_GROUP_MAIN_VETOEVENT,
     /** Main group, IVFSExplorer. */
     LOG_GROUP_MAIN_VFSEXPLORER,
-    /** Main group, IVideoCaptureChangedEvent. */
-    LOG_GROUP_MAIN_VIDEOCAPTURECHANGEDEVENT,
     /** Main group, IVirtualBox. */
     LOG_GROUP_MAIN_VIRTUALBOX,
     /** Main group, IVirtualBoxClient. */
@@ -677,6 +704,8 @@ typedef enum LOGGROUP
     LOG_GROUP_MM_POOL,
     /** The NAT service group */
     LOG_GROUP_NAT_SERVICE,
+    /** NEM group. */
+    LOG_GROUP_NEM,
     /** The network adaptor driver group. */
     LOG_GROUP_NET_ADP_DRV,
     /** The network filter driver group. */
@@ -849,6 +878,7 @@ typedef enum LOGGROUP
     "DEV_EFI",      \
     "DEV_EHCI",     \
     "DEV_FDC",      \
+    "DEV_FLASH",    \
     "DEV_GIM",      \
     "DEV_HDA",      \
     "DEV_HDA_CODEC", \
@@ -977,9 +1007,16 @@ typedef enum LOGGROUP
     "MAIN_CANSHOWWINDOWEVENT", \
     "MAIN_CERTIFICATE", \
     "MAIN_CLIPBOARDMODECHANGEDEVENT", \
+    "MAIN_CLOUDCLIENT", \
+    "MAIN_CLOUDPROFILE", \
+    "MAIN_CLOUDPROVIDER", \
+    "MAIN_CLOUDPROVIDERMANAGER", \
     "MAIN_CONSOLE", \
     "MAIN_CPUCHANGEDEVENT", \
     "MAIN_CPUEXECUTIONCAPCHANGEDEVENT", \
+    "MAIN_CURSORPOSITIONCHANGEDEVENT", \
+    "MAIN_DATAMODEL", \
+    "MAIN_DATASTREASTREAM", \
     "MAIN_DHCPSERVER", \
     "MAIN_DIRECTORY", \
     "MAIN_DISPLAY", \
@@ -1059,6 +1096,7 @@ typedef enum LOGGROUP
     "MAIN_MEDIUMCHANGEDEVENT", \
     "MAIN_MEDIUMCONFIGCHANGEDEVENT", \
     "MAIN_MEDIUMFORMAT", \
+    "MAIN_MEDIUMIO", \
     "MAIN_MEDIUMREGISTEREDEVENT", \
     "MAIN_MOUSE",   \
     "MAIN_MOUSECAPABILITYCHANGEDEVENT", \
@@ -1086,6 +1124,9 @@ typedef enum LOGGROUP
     "MAIN_PROGRESSEVENT", \
     "MAIN_PROGRESSPERCENTAGECHANGEDEVENT", \
     "MAIN_PROGRESSTASKCOMPLETEDEVENT", \
+    "MAIN_RECORDINGCHANGEDEVENT", \
+    "MAIN_RECORDINGSETTINGS", \
+    "MAIN_RECORDINGSCREENSETTINGS", \
     "MAIN_REUSABLEEVENT", \
     "MAIN_RUNTIMEERROREVENT", \
     "MAIN_SERIALPORT", \
@@ -1106,6 +1147,7 @@ typedef enum LOGGROUP
     "MAIN_STORAGECONTROLLERCHANGEDEVENT", \
     "MAIN_STORAGEDEVICECHANGEDEVENT", \
     "MAIN_SYSTEMPROPERTIES", \
+    "MAIN_THREAD_TASK", \
     "MAIN_TOKEN", \
     "MAIN_UNATTENDED", \
     "MAIN_USBCONTROLLER", \
@@ -1119,7 +1161,6 @@ typedef enum LOGGROUP
     "MAIN_VBOXSVCAVAILABILITYCHANGEDEVENT", \
     "MAIN_VETOEVENT", \
     "MAIN_VFSEXPLORER", \
-    "MAIN_VIDEOCAPTURECHANGEDEVENT", \
     "MAIN_VIRTUALBOX", \
     "MAIN_VIRTUALBOXCLIENT", \
     "MAIN_VIRTUALBOXSDS", \
@@ -1137,6 +1178,7 @@ typedef enum LOGGROUP
     "MM_PHYS",      \
     "MM_POOL",      \
     "NAT_SERVICE",  \
+    "NEM",          \
     "NET_ADP_DRV",  \
     "NET_FLT_DRV",  \
     "NET_SERVICE",  \
@@ -1205,4 +1247,4 @@ typedef enum LOGGROUP
 }
 
 /** @} */
-#endif
+#endif /* !VBOX_INCLUDED_log_h */

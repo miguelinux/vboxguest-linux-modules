@@ -1,6 +1,6 @@
-/* $Id: hgsmi_defs.h 118629 2017-10-25 13:46:45Z bird $ */
+/* $Id: hgsmi_defs.h 127888 2019-01-01 06:31:29Z bird $ */
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,9 +24,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-#ifndef ___VBox_Graphics_HGSMIDefs_h
-#define ___VBox_Graphics_HGSMIDefs_h
+#ifndef VBOX_INCLUDED_Graphics_HGSMIDefs_h
+#define VBOX_INCLUDED_Graphics_HGSMIDefs_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include "vbox_err.h"
 
@@ -34,16 +36,16 @@
 
 #define HGSMIOFFSET_VOID ((u32)~0)
 
-/* Describes a shared memory area buffer.
+/**
+ * Describes a shared memory area buffer.
+ *
  * Used for calculations with offsets and for buffers verification.
  */
 typedef struct HGSMIAREA {
-	u8     *pu8Base; /* The starting address of the area. Corresponds to offset 'offBase'. */
-	u32  offBase; /* The starting offset of the area. */
-	u32  offLast; /* The last valid offset:
-						* offBase + cbArea - 1 - (sizeof(header) + sizeof(tail)).
-						*/
-	u32    cbArea;  /* Size of the area. */
+	u8     *pu8Base; /**< The starting address of the area. Corresponds to offset 'offBase'. */
+	u32  offBase; /**< The starting offset of the area. */
+	u32  offLast; /**< The last valid offset:  offBase + cbArea - 1 - (sizeof(header) + sizeof(tail)). */
+	u32    cbArea;  /**< Size of the area. */
 } HGSMIAREA;
 
 
@@ -109,5 +111,5 @@ typedef struct HGSMIENV {
 	void (*pfnFree)(void *pvEnv, void *pv);
 } HGSMIENV;
 
-#endif /* !___VBox_Graphics_HGSMIDefs_h */
+#endif /* !VBOX_INCLUDED_Graphics_HGSMIDefs_h */
 

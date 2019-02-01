@@ -1,6 +1,6 @@
-/* $Id: vbox_drv.h 119148 2017-11-18 20:56:56Z michael $ */
+/* $Id: vbox_drv.h 127865 2019-01-01 03:53:56Z bird $ */
 /*
- * Copyright (C) 2013-2017 Oracle Corporation
+ * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_drv.h
  * Copyright 2012 Red Hat Inc.
  *
@@ -28,13 +28,14 @@
  *          Michael Thayer <michael.thayer@oracle.com,
  *          Hans de Goede <hdegoede@redhat.com>
  */
-#ifndef __VBOX_DRV_H__
-#define __VBOX_DRV_H__
 
-#define LOG_GROUP LOG_GROUP_DEV_VGA
+#ifndef GA_INCLUDED_SRC_linux_drm_vbox_drv_h
+#define GA_INCLUDED_SRC_linux_drm_vbox_drv_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 #include <linux/version.h>
-
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0)
 # include <linux/types.h>
 # include <linux/spinlock_types.h>
@@ -45,21 +46,51 @@
 #include <linux/string.h>
 
 #if defined(RHEL_MAJOR) && defined(RHEL_MINOR)
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 6
+#  define RHEL_76
+# endif
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 5
+#  define RHEL_75
+# endif
 # if RHEL_MAJOR == 7 && RHEL_MINOR >= 4
-#  define RHEL_73
 #  define RHEL_74
-# elif RHEL_MAJOR == 7 && RHEL_MINOR >= 3
+# endif
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 3
 #  define RHEL_73
+# endif
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 2
+#  define RHEL_72
+# endif
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 1
+#  define RHEL_71
+# endif
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 0
+#  define RHEL_70
 # endif
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0) || defined(RHEL_71)
+#define U8_MAX          ((u8)~0U)
+#define S8_MAX          ((s8)(U8_MAX>>1))
+#define S8_MIN          ((s8)(-S8_MAX - 1))
+#define U16_MAX         ((u16)~0U)
+#define S16_MAX         ((s16)(U16_MAX>>1))
+#define S16_MIN         ((s16)(-S16_MAX - 1))
+#define U32_MAX         ((u32)~0U)
+#define S32_MAX         ((s32)(U32_MAX>>1))
+#define S32_MIN         ((s32)(-S32_MAX - 1))
+#define U64_MAX         ((u64)~0ULL)
+#define S64_MAX         ((s64)(U64_MAX>>1))
+#define S64_MIN         ((s64)(-S64_MAX - 1))
+#endif
+
 #include <drm/drmP.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_73)
-#include <drm/drm_gem.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
+#include <drm/drm_encoder.h>
 #endif
 #include <drm/drm_fb_helper.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
-#include <drm/drm_encoder.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72)
+#include <drm/drm_gem.h>
 #endif
 
 #include <drm/ttm/ttm_bo_api.h>
@@ -73,6 +104,13 @@
 #include "hgsmi_ch_setup.h"
 
 #include "product-generated.h"
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0) && !defined(RHEL_75)
+static inline void drm_gem_object_put_unlocked(struct drm_gem_object *obj)
+{
+	drm_gem_object_unreference_unlocked(obj);
+}
+#endif
 
 #define DRIVER_AUTHOR       VBOX_VENDOR
 
@@ -98,6 +136,17 @@
 				sizeof(struct hgsmi_host_flags))
 #define HOST_FLAGS_OFFSET GUEST_HEAP_USABLE_SIZE
 
+/** How frequently we refresh if the guest is not providing dirty rectangles. */
+#define VBOX_REFRESH_PERIOD (HZ / 2)
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 13, 0) && !defined(RHEL_72)
+static inline void *devm_kcalloc(struct device *dev, size_t n, size_t size,
+				 gfp_t flags)
+{
+	return devm_kzalloc(dev, n * size, flags);
+}
+#endif
+
 struct vbox_fbdev;
 
 struct vbox_private {
@@ -108,7 +157,7 @@ struct vbox_private {
 	struct gen_pool *guest_pool;
 	struct vbva_buf_context *vbva_info;
 	bool any_pitch;
-	unsigned int num_crtcs;
+	u32 num_crtcs;
 	/** Amount of available VRAM, including space used for buffers. */
 	u32 full_vram_size;
 	/** Amount of available VRAM, not including space used for buffers. */
@@ -128,13 +177,22 @@ struct vbox_private {
 	} ttm;
 
 	struct mutex hw_mutex; /* protects modeset and accel/vbva accesses */
-	bool isr_installed;
 	/**
 	 * We decide whether or not user-space supports display hot-plug
 	 * depending on whether they react to a hot-plug event after the initial
 	 * mode query.
 	 */
 	bool initial_mode_queried;
+	/**
+	 * Do we know that the current user can send us dirty rectangle information?
+	 * If not, do periodic refreshes until we do know.
+	 */
+	bool need_refresh_timer;
+	/**
+	 * As long as the user is not sending us dirty rectangle information,
+	 * refresh the whole screen at regular intervals.
+	 */
+	struct delayed_work refresh_work;
 	struct work_struct hotplug_work;
 	u32 input_mapping_width;
 	u32 input_mapping_height;
@@ -155,7 +213,7 @@ struct vbox_private {
 #undef CURSOR_DATA_SIZE
 
 int vbox_driver_load(struct drm_device *dev, unsigned long flags);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 void vbox_driver_unload(struct drm_device *dev);
 #else
 int vbox_driver_unload(struct drm_device *dev);
@@ -174,8 +232,8 @@ struct vbox_connector {
 	char name[32];
 	struct vbox_crtc *vbox_crtc;
 	struct {
-		u32 width;
-		u32 height;
+		u16 width;
+		u16 height;
 		bool disconnected;
 	} mode_hint;
 };
@@ -223,7 +281,7 @@ void vbox_mode_fini(struct drm_device *dev);
 #define DRM_MODE_FB_CMD drm_mode_fb_cmd2
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0) && !defined(RHEL_73)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0) && !defined(RHEL_71)
 #define CRTC_FB(crtc) ((crtc)->fb)
 #else
 #define CRTC_FB(crtc) ((crtc)->primary->fb)
@@ -240,21 +298,22 @@ void vbox_framebuffer_dirty_rectangles(struct drm_framebuffer *fb,
 int vbox_framebuffer_init(struct drm_device *dev,
 			  struct vbox_framebuffer *vbox_fb,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0) || defined(RHEL_73)
-			  const
-#endif
+			  const struct DRM_MODE_FB_CMD *mode_cmd,
+#else
 			  struct DRM_MODE_FB_CMD *mode_cmd,
+#endif
 			  struct drm_gem_object *obj);
 
 int vbox_fbdev_init(struct drm_device *dev);
 void vbox_fbdev_fini(struct drm_device *dev);
-void vbox_fbdev_set_suspend(struct drm_device *dev, int state);
+void vbox_fbdev_set_base(struct vbox_private *vbox, unsigned long gpu_addr);
 
 struct vbox_bo {
 	struct ttm_buffer_object bo;
 	struct ttm_placement placement;
 	struct ttm_bo_kmap_obj kmap;
 	struct drm_gem_object gem;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0) && !defined(RHEL_73)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0) && !defined(RHEL_72)
 	u32 placements[3];
 #else
 	struct ttm_place placements[3];
@@ -328,14 +387,14 @@ int vbox_mmap(struct file *filp, struct vm_area_struct *vma);
 int vbox_gem_prime_pin(struct drm_gem_object *obj);
 void vbox_gem_prime_unpin(struct drm_gem_object *obj);
 struct sg_table *vbox_gem_prime_get_sg_table(struct drm_gem_object *obj);
-struct drm_gem_object *vbox_gem_prime_import_sg_table(struct drm_device *dev,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0) && !defined(RHEL_73)
-						      size_t size,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0) && !defined(RHEL_72)
+struct drm_gem_object *vbox_gem_prime_import_sg_table(
+	struct drm_device *dev, size_t size, struct sg_table *table);
 #else
-						      struct dma_buf_attachment
-						      *attach,
+struct drm_gem_object *vbox_gem_prime_import_sg_table(
+	struct drm_device *dev, struct dma_buf_attachment *attach,
+	struct sg_table *table);
 #endif
-						      struct sg_table *table);
 void *vbox_gem_prime_vmap(struct drm_gem_object *obj);
 void vbox_gem_prime_vunmap(struct drm_gem_object *obj, void *vaddr);
 int vbox_gem_prime_mmap(struct drm_gem_object *obj,
@@ -349,14 +408,14 @@ irqreturn_t vbox_irq_handler(int irq, void *arg);
 
 /* vbox_hgsmi.c */
 void *hgsmi_buffer_alloc(struct gen_pool *guest_pool, size_t size,
-						u8 channel, u16 channel_info);
+			 u8 channel, u16 channel_info);
 void hgsmi_buffer_free(struct gen_pool *guest_pool, void *buf);
 int hgsmi_buffer_submit(struct gen_pool *guest_pool, void *buf);
 
 static inline void vbox_write_ioport(u16 index, u16 data)
 {
-		outw(index, VBE_DISPI_IOPORT_INDEX);
-		outw(data, VBE_DISPI_IOPORT_DATA);
+	outw(index, VBE_DISPI_IOPORT_INDEX);
+	outw(data, VBE_DISPI_IOPORT_DATA);
 }
 
-#endif
+#endif /* !GA_INCLUDED_SRC_linux_drm_vbox_drv_h */

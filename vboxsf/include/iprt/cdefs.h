@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2017 Oracle Corporation
+ * Copyright (C) 2006-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -23,8 +23,11 @@
  * terms and conditions of either the GPL or the CDDL or both.
  */
 
-#ifndef ___iprt_cdefs_h
-#define ___iprt_cdefs_h
+#ifndef IPRT_INCLUDED_cdefs_h
+#define IPRT_INCLUDED_cdefs_h
+#ifndef RT_WITHOUT_PRAGMA_ONCE
+# pragma once
+#endif
 
 
 /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
@@ -296,7 +299,7 @@
  * Used to indicate that we're compiling code which is running
  * in the Raw-mode Context (implies R0).
  */
-#if !defined(IN_RING3) && !defined(IN_RING0) && !defined(IN_RC) && !defined(IN_RC)
+#if !defined(IN_RING3) && !defined(IN_RING0) && !defined(IN_RC)
 # error "You must define which context the compiled code should run in; IN_RING3, IN_RING0 or IN_RC"
 #endif
 #if (defined(IN_RING3) && (defined(IN_RING0) || defined(IN_RC)) ) \
@@ -1109,6 +1112,56 @@
 #endif
 
 
+/** @def RT_OVERRIDE
+ * Wrapper for the C++11 override keyword.
+ *
+ * @remarks Recognized by g++ starting 4.7, however causes pedantic warnings
+ *          when used without officially enabling the C++11 features.
+ */
+#ifdef __cplusplus
+# if RT_MSC_PREREQ_EX(RT_MSC_VER_VS2012, 0)
+#  define RT_OVERRIDE           override
+# elif RT_GNUC_PREREQ(4, 7)
+#  if __cplusplus >= 201100
+#   define RT_OVERRIDE          override
+#  else
+#   define RT_OVERRIDE
+#  endif
+# else
+#  define RT_OVERRIDE
+# endif
+#else
+# define RT_OVERRIDE
+#endif
+
+/** @def RT_NOEXCEPT
+ * Wrapper for the C++11 noexcept keyword (only true form).
+ */
+/** @def RT_NOEXCEPT_EX
+ * Wrapper for the C++11 noexcept keyword with expression.
+ */
+#ifdef __cplusplus
+# if RT_MSC_PREREQ_EX(RT_MSC_VER_VS2015, 0)
+#  define RT_NOEXCEPT           noexcept
+#  define RT_NOEXCEPT_EX(expr)  noexcept(expr)
+# elif RT_GNUC_PREREQ(7, 0)
+#  if __cplusplus >= 201100
+#   define RT_NOEXCEPT          noexcept
+#   define RT_NOEXCEPT_EX(expr) noexcept(expr)
+#  else
+#   define RT_NOEXCEPT
+#   define RT_NOEXCEPT_EX(expr)
+#  endif
+# else
+#  define RT_NOEXCEPT
+#  define RT_NOEXCEPT_EX(expr)
+# endif
+#else
+# define RT_NOEXCEPT
+# define RT_NOEXCEPT_EX(expr)
+#endif
+
+
 /** @def RT_FALL_THROUGH
  * Tell the compiler that we're falling through to the next case in a switch.
  * @sa RT_FALL_THRU  */
@@ -1166,6 +1219,8 @@
 # if __GNUC__ >= 3 /* not entirely sure when this was added */
 #  define RT_COMPILER_SUPPORTS_VA_ARGS
 # endif
+#elif defined(__WATCOMC__)
+# define RT_COMPILER_SUPPORTS_VA_ARGS
 #endif
 
 
@@ -1259,6 +1314,26 @@
  * @param   type    The return type of the function.
  */
 #define DECLASMTYPE(type)       type RTCALL
+
+/** @def RT_ASM_DECL_PRAGMA_WATCOM
+ * How to declare a assembly method prototype with watcom \#pragma aux definition.  */
+/** @def RT_ASM_DECL_PRAGMA_WATCOM_386
+ * Same as RT_ASM_DECL_PRAGMA_WATCOM, but there is no 16-bit version when
+ * 8086, 80186 or 80286 is selected as the target CPU. */
+#if defined(__WATCOMC__) && ARCH_BITS == 16 && defined(RT_ARCH_X86)
+# define RT_ASM_DECL_PRAGMA_WATCOM(type) type
+# if defined(__SW_0) || defined(__SW_1) || defined(__SW_2)
+#  define RT_ASM_DECL_PRAGMA_WATCOM_386(type)   DECLASM(type)
+# else
+#  define RT_ASM_DECL_PRAGMA_WATCOM_386(type)   type
+# endif
+#elif defined(__WATCOMC__) && ARCH_BITS == 32 && defined(RT_ARCH_X86)
+# define RT_ASM_DECL_PRAGMA_WATCOM(type)        type
+# define RT_ASM_DECL_PRAGMA_WATCOM_386(type)    type
+#else
+# define RT_ASM_DECL_PRAGMA_WATCOM(type)        DECLASM(type)
+# define RT_ASM_DECL_PRAGMA_WATCOM_386(type)    DECLASM(type)
+#endif
 
 /** @def DECL_NO_RETURN
  * How to declare a function which does not return.
@@ -1571,6 +1646,67 @@
 # define RT_NOCRT_STR(name) #name
 #endif
 
+
+/** @name Untrusted data classifications.
+ * @{ */
+/** @def RT_UNTRUSTED_USER
+ * For marking non-volatile (race free) data from user mode as untrusted.
+ * This is just for visible documentation. */
+#define RT_UNTRUSTED_USER
+/** @def RT_UNTRUSTED_VOLATILE_USER
+ * For marking volatile data shared with user mode as untrusted.
+ * This is more than just documentation as it specifies the 'volatile' keyword,
+ * because the guest could modify the data at any time. */
+#define RT_UNTRUSTED_VOLATILE_USER              volatile
+
+/** @def RT_UNTRUSTED_GUEST
+ * For marking non-volatile (race free) data from the guest as untrusted.
+ * This is just for visible documentation. */
+#define RT_UNTRUSTED_GUEST
+/** @def RT_UNTRUSTED_VOLATILE_GUEST
+ * For marking volatile data shared with the guest as untrusted.
+ * This is more than just documentation as it specifies the 'volatile' keyword,
+ * because the guest could modify the data at any time. */
+#define RT_UNTRUSTED_VOLATILE_GUEST             volatile
+
+/** @def RT_UNTRUSTED_HOST
+ * For marking non-volatile (race free) data from the host as untrusted.
+ * This is just for visible documentation. */
+#define RT_UNTRUSTED_HOST
+/** @def RT_UNTRUSTED_VOLATILE_HOST
+ * For marking volatile data shared with the host as untrusted.
+ * This is more than just documentation as it specifies the 'volatile' keyword,
+ * because the host could modify the data at any time. */
+#define RT_UNTRUSTED_VOLATILE_HOST              volatile
+
+/** @def RT_UNTRUSTED_HSTGST
+ * For marking non-volatile (race free) data from the host/gust as untrusted.
+ * This is just for visible documentation. */
+#define RT_UNTRUSTED_HSTGST
+/** @def RT_UNTRUSTED_VOLATILE_HSTGST
+ * For marking volatile data shared with the host/guest as untrusted.
+ * This is more than just documentation as it specifies the 'volatile' keyword,
+ * because the host could modify the data at any time. */
+#define RT_UNTRUSTED_VOLATILE_HSTGST            volatile
+/** @} */
+
+/** @name Fences for use when handling untrusted data.
+ * @{ */
+/** For use after copying untruated volatile data to a non-volatile location.
+ * This translates to a compiler memory barrier and will help ensure that the
+ * compiler uses the non-volatile copy of the data. */
+#define RT_UNTRUSTED_NONVOLATILE_COPY_FENCE()   ASMCompilerBarrier()
+/** For use after finished validating guest input.
+ * What this translates to is architecture dependent.  On intel it will
+ * translate to a CPU load+store fence as well as a compiler memory barrier. */
+#if defined(RT_ARCH_AMD64) || (defined(RT_ARCH_X86) && !defined(RT_WITH_OLD_CPU_SUPPORT))
+# define RT_UNTRUSTED_VALIDATED_FENCE()         do { ASMCompilerBarrier(); ASMReadFence(); } while (0)
+#elif defined(RT_ARCH_X86)
+# define RT_UNTRUSTED_VALIDATED_FENCE()         do { ASMCompilerBarrier(); ASMMemoryFence(); } while (0)
+#else
+# define RT_UNTRUSTED_VALIDATED_FENCE()         do { ASMCompilerBarrier(); } while (0)
+#endif
+/** @} */
 
 
 /** @def RT_LIKELY
@@ -2203,35 +2339,34 @@
 /** @def RT_OFFSETOF
  * Our own special offsetof() variant, returns a signed result.
  *
- * This differs from the usual offsetof() in that it's not relying on builtin
- * compiler stuff and thus can use variables in arrays the structure may
- * contain. This is useful to determine the sizes of structures ending
- * with a variable length field. For gcc >= 4.4 see @bugref{7775}.
- *
  * @returns offset into the structure of the specified member. signed.
  * @param   type    Structure type.
  * @param   member  Member.
+ *
+ * @remarks Only use this for static offset calculations. Please
+ *          use RT_UOFFSETOF_DYN for dynamic ones (i.e. involves
+ *          non-constant array indexing).
+ *
  */
-#if defined(__cplusplus) && RT_GNUC_PREREQ(4, 4)
-# define RT_OFFSETOF(type, member)              ( (int)(uintptr_t)&( ((type *)(void *)0x1000)->member) - 0x1000 )
+#if RT_GNUC_PREREQ(4, 0)
+# define RT_OFFSETOF(type, member)              ( (int)__builtin_offsetof(type, member) )
 #else
-# define RT_OFFSETOF(type, member)              ( (int)(uintptr_t)&( ((type *)(void *)0)->member) )
+# define RT_OFFSETOF(type, member)              ( (int)(intptr_t)&( ((type *)(void *)0)->member) )
 #endif
 
 /** @def RT_UOFFSETOF
- * Our own special offsetof() variant, returns an unsigned result.
- *
- * This differs from the usual offsetof() in that it's not relying on builtin
- * compiler stuff and thus can use variables in arrays the structure may
- * contain. This is useful to determine the sizes of structures ending
- * with a variable length field. For gcc >= 4.4 see @bugref{7775}.
+ * Our own offsetof() variant, returns an unsigned result.
  *
  * @returns offset into the structure of the specified member. unsigned.
  * @param   type    Structure type.
  * @param   member  Member.
+ *
+ * @remarks Only use this for static offset calculations. Please
+ *          use RT_UOFFSETOF_DYN for dynamic ones (i.e. involves
+ *          non-constant array indexing).
  */
-#if defined(__cplusplus) && RT_GNUC_PREREQ(4, 4)
-# define RT_UOFFSETOF(type, member)             ( (uintptr_t)&( ((type *)(void *)0x1000)->member) - 0x1000 )
+#if RT_GNUC_PREREQ(4, 0)
+# define RT_UOFFSETOF(type, member)             ( (uintptr_t)__builtin_offsetof(type, member) )
 #else
 # define RT_UOFFSETOF(type, member)             ( (uintptr_t)&( ((type *)(void *)0)->member) )
 #endif
@@ -2243,6 +2378,8 @@
  * @param   type    Structure type.
  * @param   member  Member.
  * @param   addend  The addend to add to the offset.
+ *
+ * @remarks Only use this for static offset calculations.
  */
 #define RT_OFFSETOF_ADD(type, member, addend)   ( (int)RT_UOFFSETOF_ADD(type, member, addend) )
 
@@ -2253,8 +2390,29 @@
  * @param   type    Structure type.
  * @param   member  Member.
  * @param   addend  The addend to add to the offset.
+ *
+ * @remarks Only use this for static offset calculations.
  */
-#define RT_UOFFSETOF_ADD(type, member, addend)  ( (uintptr_t)&( ((type *)(void *)(uintptr_t)(addend))->member) )
+#if RT_GNUC_PREREQ(4, 0)
+# define RT_UOFFSETOF_ADD(type, member, addend)  ( (uintptr_t)(__builtin_offsetof(type, member) + (addend)))
+#else
+# define RT_UOFFSETOF_ADD(type, member, addend)  ( (uintptr_t)&( ((type *)(void *)(uintptr_t)(addend))->member) )
+#endif
+
+/** @def RT_UOFFSETOF_DYN
+ * Dynamic (runtime) structure offset calculations, involving
+ * indexing of array members via variable.
+ *
+ * @returns offset into the structure of the specified member. signed.
+ * @param   type        Structure type.
+ * @param   memberarray Member.
+ */
+#if defined(__cplusplus) && RT_GNUC_PREREQ(4, 4)
+# define RT_UOFFSETOF_DYN(type, memberarray)    ( (uintptr_t)&( ((type *)(void *)0x1000)->memberarray) - 0x1000 )
+#else
+# define RT_UOFFSETOF_DYN(type, memberarray)    ( (uintptr_t)&( ((type *)(void *)0)->memberarray) )
+#endif
+
 
 /** @def RT_SIZEOFMEMB
  * Get the size of a structure member.
@@ -2301,6 +2459,17 @@
 #else
 # define RT_FROM_CPP_MEMBER(pMem, Type, Member) RT_FROM_MEMBER(pMem, Type, Member)
 #endif
+
+/** @def RT_FROM_MEMBER_DYN
+ * Convert a pointer to a structure member into a pointer to the structure.
+ *
+ * @returns pointer to the structure.
+ * @param   pMem    Pointer to the member.
+ * @param   Type    Structure type.
+ * @param   Member  Member name dynamic size (some array is index by
+ *                  non-constant value).
+ */
+#define RT_FROM_MEMBER_DYN(pMem, Type, Member)  ( (Type *) ((uint8_t *)(void *)(pMem) - RT_UOFFSETOF_DYN(Type, Member)) )
 
 /** @def RT_ELEMENTS
  * Calculates the number of elements in a statically sized array.
@@ -3013,7 +3182,7 @@
 /** @def RT_NOREF11
  * RT_NOREF_PV shorthand taking eleven parameters.  */
 #define RT_NOREF11(var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11) \
-    RT_NOREF_PV(var1); RT_NOREF10(var2, var3, var4, var5, var6, var7, var8, var9, var10)
+    RT_NOREF_PV(var1); RT_NOREF10(var2, var3, var4, var5, var6, var7, var8, var9, var10, var11)
 /** @def RT_NOREF12
  * RT_NOREF_PV shorthand taking twelve parameters.  */
 #define RT_NOREF12(var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11, var12) \
@@ -3863,5 +4032,5 @@
 
 /** @} */
 
-#endif
+#endif /* !IPRT_INCLUDED_cdefs_h */
 

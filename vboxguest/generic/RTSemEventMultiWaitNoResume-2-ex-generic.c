@@ -1,11 +1,11 @@
-/* $Id: RTSemEventMultiWaitNoResume-2-ex-generic.cpp 118412 2017-10-17 14:26:02Z bird $ */
+/* $Id: RTSemEventMultiWaitNoResume-2-ex-generic.cpp 127855 2019-01-01 01:45:53Z bird $ */
 /** @file
  * IPRT - RTSemEventMultiWaitNoResume, generic implementation based
  *        on RTSemEventMultiWaitEx.
  */
 
 /*
- * Copyright (C) 2010-2017 Oracle Corporation
+ * Copyright (C) 2010-2019 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -34,7 +34,7 @@
 #include <iprt/semaphore.h>
 #include "internal/iprt.h"
 
-#include <iprt/err.h>
+#include <iprt/errcore.h>
 #include <iprt/assert.h>
 
 
