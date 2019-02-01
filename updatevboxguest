@@ -21,6 +21,7 @@
 IS_DIALOG=0
 VBOX_URL=http://download.virtualbox.org/virtualbox
 VBOX_VERSION=0
+VBOX_LATEST=http://download.virtualbox.org/virtualbox/LATEST.TXT
 KDIR=""
 
 die ()
