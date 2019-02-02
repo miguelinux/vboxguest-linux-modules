@@ -33,7 +33,7 @@ done
 
 for f in ${VBOX_MFILES}
 do
-    sed -i '/Makefile.include.header/a KBUILD_EXTMOD=\$(obj)' ${f}
+    sed -i '/Makefile.include.header/a ifneq (\$(KBUILD_SRC),)\nKBUILD_EXTMOD=\$(KBUILD_SRC)\/\$(obj)\nelse\nKBUILD_EXTMOD=\$(obj)\nendif' ${f}
 done
 
 for f in ${VBOX_IFILES}
