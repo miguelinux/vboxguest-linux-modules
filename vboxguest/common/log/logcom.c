@@ -1,4 +1,4 @@
-/* $Id: logcom.cpp 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: logcom.cpp 128605 2019-02-02 12:23:23Z aeichner $ */
 /** @file
  * IPRT - Logging to Serial Port.
  */
@@ -120,8 +120,8 @@ RTDECL(void) RTLogWriteCom(const char *pach, size_t cb)
     const uint8_t *pu8;
     for (pu8 = (const uint8_t *)pach; cb-- > 0; pu8++)
     {
-        register unsigned cMaxWait;
-        register uint8_t  u8;
+        unsigned cMaxWait;
+        uint8_t  u8;
 
         /* expand \n -> \r\n */
         if (*pu8 == '\n')

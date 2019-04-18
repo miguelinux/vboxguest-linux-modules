@@ -1,4 +1,4 @@
-/* $Id: alloc-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: alloc-r0drv-linux.c 129718 2019-04-01 10:39:12Z bird $ */
 /** @file
  * IPRT - Memory Allocation, Ring-0 Driver, Linux.
  */
@@ -61,6 +61,8 @@
 # include <iprt/spinlock.h>
 # include <iprt/errcore.h>
 #endif
+
+#include "internal/initterm.h"
 
 
 /*********************************************************************************************************************************

@@ -1,4 +1,4 @@
-/* $Id: initterm-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: initterm-r0drv-linux.c 129718 2019-04-01 10:39:12Z bird $ */
 /** @file
  * IPRT - Initialization & Termination, R0 Driver, Linux.
  */
@@ -44,13 +44,6 @@ static struct workqueue_struct *g_prtR0LnxWorkQueue;
 #else
 static DECLARE_TASK_QUEUE(g_rtR0LnxWorkQueue);
 #endif
-
-
-/*********************************************************************************************************************************
-*   Internal Functions                                                                                                           *
-*********************************************************************************************************************************/
-/* in alloc-r0drv0-linux.c */
-DECLHIDDEN(void) rtR0MemExecCleanup(void);
 
 
 /**

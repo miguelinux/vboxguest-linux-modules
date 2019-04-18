@@ -1,4 +1,4 @@
-/* $Id: timer-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: timer-r0drv-linux.c 129718 2019-04-01 10:39:12Z bird $ */
 /** @file
  * IPRT - Timers, Ring-0 Driver, Linux.
  */
@@ -544,7 +544,7 @@ static void rtTimerLnxCallbackHandleMigration(PRTTIMER pTimer, PRTTIMERLNXSUBTIM
                 break;
 
             default:
-                AssertMsgFailed(("%d\n", enmState));
+                AssertMsgFailed(("%d\n", enmState)); RT_FALL_THRU();
             case RTTIMERLNXSTATE_STARTING:
             case RTTIMERLNXSTATE_MP_STARTING:
             case RTTIMERLNXSTATE_ACTIVE:
@@ -596,7 +596,7 @@ static bool rtTimerLnxChangeToCallbackStateSlow(PRTTIMERLNXSUBTIMER pSubTimer)
             case RTTIMERLNXSTATE_CB_STOPPING:
             case RTTIMERLNXSTATE_CB_RESTARTING:
             case RTTIMERLNXSTATE_CB_DESTROYING:
-                AssertMsgFailed(("%d\n", enmState));
+                AssertMsgFailed(("%d\n", enmState)); RT_FALL_THRU();
             default:
                 return false;
         }

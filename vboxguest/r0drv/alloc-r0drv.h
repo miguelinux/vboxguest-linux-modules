@@ -1,4 +1,4 @@
-/* $Id: alloc-r0drv.h 127888 2019-01-01 06:31:29Z bird $ */
+/* $Id: alloc-r0drv.h 128657 2019-02-06 11:39:12Z bird $ */
 /** @file
  * IPRT - Memory Allocation, Ring-0 Driver.
  */
@@ -74,6 +74,9 @@ typedef struct RTMEMHDR
 # define RTMEMHDR_FLAG_EXEC_HEAP    RT_BIT(30)
 /** Linux: Allocated by kmalloc() instead of vmalloc(). */
 # define RTMEMHDR_FLAG_KMALLOC      RT_BIT(31)
+#elif defined(RT_OS_WINDOWS)
+/** Windows: Untagged allocation by ExAllocatePool, freed using ExFreePool. */
+# define RTMEMHDR_FLAG_UNTAGGED     RT_BIT(31)
 #endif
 /** @} */
 

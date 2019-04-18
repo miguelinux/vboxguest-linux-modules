@@ -1,4 +1,4 @@
-/* $Id: vbox_drv.h 127865 2019-01-01 03:53:56Z bird $ */
+/* $Id: vbox_drv.h 129561 2019-03-25 16:55:13Z michael $ */
 /*
  * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_drv.h
@@ -112,6 +112,13 @@ static inline void drm_gem_object_put_unlocked(struct drm_gem_object *obj)
 }
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0) && !defined(RHEL_75)
+static inline void drm_gem_object_put(struct drm_gem_object *obj)
+{
+	drm_gem_object_unreference(obj);
+}
+#endif
+
 #define DRIVER_AUTHOR       VBOX_VENDOR
 
 #define DRIVER_NAME         "vboxvideo"
@@ -170,8 +177,10 @@ struct vbox_private {
 	int fb_mtrr;
 
 	struct {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
 		struct drm_global_reference mem_global_ref;
 		struct ttm_bo_global_ref bo_global_ref;
+#endif
 		struct ttm_bo_device bdev;
 		bool mm_initialised;
 	} ttm;

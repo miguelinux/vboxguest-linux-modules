@@ -1,4 +1,4 @@
-/* $Id: vbox_mode.c 128006 2019-01-08 09:53:32Z michael $ */
+/* $Id: vbox_mode.c 129923 2019-04-10 06:48:45Z michael $ */
 /*
  * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_mode.c
@@ -37,6 +37,9 @@
 #include <drm/drm_crtc_helper.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72)
 #include <drm/drm_plane_helper.h>
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+#include <drm/drm_probe_helper.h>
 #endif
 
 #include "vboxvideo.h"
@@ -170,6 +173,8 @@ static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 			if (to_vbox_crtc(crtci)->crtc_id != 0)
 				continue;
 
+			if (!CRTC_FB(crtci))
+				break;
 			vbox->single_framebuffer = true;
 			vbox->input_mapping_width = CRTC_FB(crtci)->width;
 			vbox->input_mapping_height = CRTC_FB(crtci)->height;

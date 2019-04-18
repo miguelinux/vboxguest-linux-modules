@@ -1,4 +1,4 @@
-/* $Id: vbox_irq.c 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: vbox_irq.c 129561 2019-03-25 16:55:13Z michael $ */
 /*
  * Copyright (C) 2016-2019 Oracle Corporation
  * This file is based on qxl_irq.c
@@ -29,7 +29,11 @@
  */
 #include "vbox_drv.h"
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
 #include <drm/drm_crtc_helper.h>
+#else
+#include <drm/drm_probe_helper.h>
+#endif
 #include "vboxvideo.h"
 
 static void vbox_clear_irq(void)
