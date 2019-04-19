@@ -22,9 +22,9 @@ VBOX_MFILES="vboxguest/Makefile \
              vboxsf/Makefile \
              vboxvideo/Makefile"
 
-VBOX_IFILES="vboxguest/Makefile.include.header \
-             vboxsf/Makefile.include.header \
-             vboxvideo/Makefile.include.header"
+VBOX_IFILES="vboxguest/Makefile-header.gmk \
+             vboxsf/Makefile-header.gmk \
+             vboxvideo/Makefile-header.gmk"
 
 for f in ${VBOX_MFILES} ${VBOX_IFILES}
 do
@@ -33,7 +33,7 @@ done
 
 for f in ${VBOX_MFILES}
 do
-    sed -i '/Makefile.include.header/a ifneq (\$(KBUILD_SRC),)\nKBUILD_EXTMOD=\$(KBUILD_SRC)\/\$(obj)\nelse\nKBUILD_EXTMOD=\$(obj)\nendif' ${f}
+    sed -i '/Makefile.header.gmk/a ifneq (\$(KBUILD_SRC),)\nKBUILD_EXTMOD=\$(KBUILD_SRC)\/\$(obj)\nelse\nKBUILD_EXTMOD=\$(obj)\nendif' ${f}
 done
 
 for f in ${VBOX_IFILES}
