@@ -1,4 +1,4 @@
-/* $Id: VBoxGuestLibSharedFoldersInline.h 129704 2019-04-01 00:40:17Z bird $ */
+/* $Id: VBoxGuestLibSharedFoldersInline.h 130824 2019-05-24 22:35:59Z bird $ */
 /** @file
  * VBoxGuestLib - Shared Folders Host Request Helpers (ring-0).
  */
@@ -192,6 +192,50 @@ DECLINLINE(int) VbglR0SfHostReqSetSymlinks(VBOXSFNOPARMS *pReq)
 DECLINLINE(int) VbglR0SfHostReqSetSymlinksSimple(void)
 {
     return VbglR0SfHostReqNoParmsSimple(SHFL_FN_SET_SYMLINKS, SHFL_CPARMS_SET_SYMLINKS);
+}
+
+
+/** Request structure for VbglR0SfHostReqSetErrorStyle.  */
+typedef struct VBOXSFSETERRORSTYLE
+{
+    VBGLIOCIDCHGCMFASTCALL  Hdr;
+    VMMDevHGCMCall          Call;
+    VBoxSFParmSetErrorStyle Parms;
+} VBOXSFSETERRORSTYLE;
+
+/**
+ * SHFL_FN_QUERY_FEATURES request.
+ */
+DECLINLINE(int) VbglR0SfHostReqSetErrorStyle(VBOXSFSETERRORSTYLE *pReq, SHFLERRORSTYLE enmStyle)
+{
+    VBGLIOCIDCHGCMFASTCALL_INIT(&pReq->Hdr, VbglR0PhysHeapGetPhysAddr(pReq), &pReq->Call, g_SfClient.idClient,
+                                SHFL_FN_SET_ERROR_STYLE, SHFL_CPARMS_SET_ERROR_STYLE, sizeof(*pReq));
+
+    pReq->Parms.u32Style.type           = VMMDevHGCMParmType_32bit;
+    pReq->Parms.u32Style.u.value32      = (uint32_t)enmStyle;
+
+    pReq->Parms.u32Reserved.type        = VMMDevHGCMParmType_32bit;
+    pReq->Parms.u32Reserved.u.value32   = 0;
+
+    int vrc = VbglR0HGCMFastCall(g_SfClient.handle, &pReq->Hdr, sizeof(*pReq));
+    if (RT_SUCCESS(vrc))
+        vrc = pReq->Call.header.result;
+    return vrc;
+}
+
+/**
+ * SHFL_FN_QUERY_FEATURES request, simplified version.
+ */
+DECLINLINE(int) VbglR0SfHostReqSetErrorStyleSimple(SHFLERRORSTYLE enmStyle)
+{
+    VBOXSFSETERRORSTYLE *pReq = (VBOXSFSETERRORSTYLE *)VbglR0PhysHeapAlloc(sizeof(*pReq));
+    if (pReq)
+    {
+        int rc = VbglR0SfHostReqSetErrorStyle(pReq, enmStyle);
+        VbglR0PhysHeapFree(pReq);
+        return rc;
+    }
+    return VERR_NO_MEMORY;
 }
 
 
@@ -692,6 +736,55 @@ DECLINLINE(int) VbglR0SfHostReqRemove(SHFLROOT idRoot, VBOXSFREMOVEREQ *pReq, ui
 
     pReq->Parms.f32Flags.type                   = VMMDevHGCMParmType_32bit;
     pReq->Parms.f32Flags.u.value32              = fFlags;
+
+    int vrc = VbglR0HGCMFastCall(g_SfClient.handle, &pReq->Hdr, cbReq);
+    if (RT_SUCCESS(vrc))
+        vrc = pReq->Call.header.result;
+    return vrc;
+}
+
+
+/** Request structure for VbglR0SfHostReqCloseAndRemove.  */
+typedef struct VBOXSFCLOSEANDREMOVEREQ
+{
+    VBGLIOCIDCHGCMFASTCALL      Hdr;
+    VMMDevHGCMCall              Call;
+    VBoxSFParmCloseAndRemove    Parms;
+    SHFLSTRING                  StrPath;
+} VBOXSFCLOSEANDREMOVEREQ;
+
+/**
+ * SHFL_FN_CLOSE_AND_REMOVE request.
+ */
+DECLINLINE(int) VbglR0SfHostReqCloseAndRemove(SHFLROOT idRoot, VBOXSFCLOSEANDREMOVEREQ *pReq, uint32_t fFlags, SHFLHANDLE hToClose)
+{
+    uint32_t const cbReq = RT_UOFFSETOF(VBOXSFCLOSEANDREMOVEREQ, StrPath.String)
+                         + (g_fHostFeatures & VMMDEV_HVF_HGCM_EMBEDDED_BUFFERS ? pReq->StrPath.u16Size : 0);
+    VBGLIOCIDCHGCMFASTCALL_INIT(&pReq->Hdr, VbglR0PhysHeapGetPhysAddr(pReq), &pReq->Call, g_SfClient.idClient,
+                                SHFL_FN_CLOSE_AND_REMOVE, SHFL_CPARMS_CLOSE_AND_REMOVE, cbReq);
+
+    pReq->Parms.id32Root.type                   = VMMDevHGCMParmType_32bit;
+    pReq->Parms.id32Root.u.value32              = idRoot;
+
+    if (g_fHostFeatures & VMMDEV_HVF_HGCM_EMBEDDED_BUFFERS)
+    {
+        pReq->Parms.pStrPath.type               = VMMDevHGCMParmType_Embedded;
+        pReq->Parms.pStrPath.u.Embedded.cbData  = SHFLSTRING_HEADER_SIZE + pReq->StrPath.u16Size;
+        pReq->Parms.pStrPath.u.Embedded.offData = RT_UOFFSETOF(VBOXSFCLOSEANDREMOVEREQ, StrPath) - sizeof(VBGLIOCIDCHGCMFASTCALL);
+        pReq->Parms.pStrPath.u.Embedded.fFlags  = VBOX_HGCM_F_PARM_DIRECTION_TO_HOST;
+    }
+    else
+    {
+        pReq->Parms.pStrPath.type               = VMMDevHGCMParmType_LinAddr_In;
+        pReq->Parms.pStrPath.u.LinAddr.cb       = SHFLSTRING_HEADER_SIZE + pReq->StrPath.u16Size;
+        pReq->Parms.pStrPath.u.LinAddr.uAddr    = (uintptr_t)&pReq->StrPath;
+    }
+
+    pReq->Parms.f32Flags.type                   = VMMDevHGCMParmType_32bit;
+    pReq->Parms.f32Flags.u.value32              = fFlags;
+
+    pReq->Parms.u64Handle.type                  = VMMDevHGCMParmType_64bit;
+    pReq->Parms.u64Handle.u.value64             = hToClose;
 
     int vrc = VbglR0HGCMFastCall(g_SfClient.handle, &pReq->Hdr, cbReq);
     if (RT_SUCCESS(vrc))

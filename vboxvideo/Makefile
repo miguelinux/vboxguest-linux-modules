@@ -1,4 +1,4 @@
-# $Id: Makefile.module.kms 129703 2019-04-01 00:03:23Z bird $
+# $Id: Makefile.module.kms 130485 2019-05-10 12:23:02Z bird $
 ## @file
 # VirtualBox Guest Additions Module Makefile.
 #
@@ -24,7 +24,7 @@ VBOXDRM_DIR = $(VBOX_MODULE_SRC_DIR)
 
 # We want to build on Linux 3.11 and later and on all EL 7 kernels.
 VBOX_BUILD =
-ifneq ($(filter-out 1.% 2.% 3.0.% 3.1.% 3.2.% 3.3.% 3.4.% 3.5.% 3.6.% 3.7.% 3.8.% 3.9.% 3.10.%,$(KERN_VER)),)
+ifneq ($(filter-out 1.% 2.% 3.0 3.0.% 3.1 3.1.% 3.2 3.2.% 3.3 3.3.% 3.4 3.4.% 3.5 3.5.% 3.6 3.6.% 3.7 3.7.% 3.8 3.8.% 3.9 3.9.% 3.10 3.10.%,$(KERN_VER)),)
  VBOX_BUILD = 1
 endif
 ifeq ($(filter-out %.el7.x86_64,$(KERN_VER)),)

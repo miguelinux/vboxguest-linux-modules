@@ -1,1 +1,1 @@
-#define VBOX_SVN_REV 130049
+#define VBOX_SVN_REV 132072

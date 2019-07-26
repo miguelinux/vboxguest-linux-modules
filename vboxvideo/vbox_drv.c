@@ -1,4 +1,4 @@
-/*  $Id: vbox_drv.c 129561 2019-03-25 16:55:13Z michael $ */
+/*  $Id: vbox_drv.c 132026 2019-07-11 12:02:37Z michael $ */
 /*
  * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_drv.c
@@ -278,8 +278,9 @@ static struct drm_driver driver = {
 	.lastclose = vbox_driver_lastclose,
 	.master_set = vbox_master_set,
 	.master_drop = vbox_master_drop,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_73)
-# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0) && !defined(RHEL_75)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72)
+# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0) && !defined(RHEL_75) \
+  && !defined(OPENSUSE_151)
 	.set_busid = drm_pci_set_busid,
 # endif
 #endif
@@ -324,12 +325,20 @@ static int __init vbox_init(void)
 	if (vbox_modeset == 0)
 		return -EINVAL;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_73)
 	return pci_register_driver(&vbox_pci_driver);
+#else
+	return drm_pci_init(&driver, &vbox_pci_driver);
+#endif
 }
 
 static void __exit vbox_exit(void)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_73)
 	pci_unregister_driver(&vbox_pci_driver);
+#else
+	drm_pci_exit(&driver, &vbox_pci_driver);
+#endif
 }
 
 module_init(vbox_init);

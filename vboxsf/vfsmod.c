@@ -1,4 +1,4 @@
-/* $Id: vfsmod.c 130048 2019-04-16 09:24:54Z michael $ */
+/* $Id: vfsmod.c 131009 2019-05-31 09:44:13Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, module init/term, super block management.
  */
@@ -70,7 +70,7 @@ VBGLSFCLIENT g_SfClient;
 uint32_t     g_fHostFeatures = 0;
 /** Last valid shared folders function number. */
 uint32_t     g_uSfLastFunction = SHFL_FN_SET_FILE_SIZE;
-/** Shared folders features. */
+/** Shared folders features (SHFL_FEATURE_XXX). */
 uint64_t     g_fSfFeatures = 0;
 
 /** Protects all the vbsf_inode_info::HandleList lists. */
@@ -210,6 +210,7 @@ static int vbsf_super_info_alloc_and_map_it(struct vbsf_mount_info_new *info, st
     struct vbsf_super_info *pSuperInfo;
 
     TRACE();
+    *sf_gp = NULL; /* (old gcc maybe used initialized) */
 
     /*
      * Validate info.
@@ -422,7 +423,7 @@ static int vbsf_init_backing_dev(struct super_block *sb, struct vbsf_super_info 
  */
 static void vbsf_done_backing_dev(struct super_block *sb, struct vbsf_super_info *pSuperInfo)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 24) && LINUX_VERSION_CODE <= KERNEL_VERSION(3, 19, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 24) && LINUX_VERSION_CODE <= KERNEL_VERSION(4, 12, 0)
     bdi_destroy(&pSuperInfo->bdi);    /* includes bdi_unregister() */
 #endif
 }

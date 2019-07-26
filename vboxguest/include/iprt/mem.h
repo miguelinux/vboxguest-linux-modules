@@ -429,7 +429,7 @@ RTR0DECL(int) RTR0MemExecDonate(void *pvMemory, size_t cb) RT_NO_THROW_PROTO;
  *
  * @returns Pointer to the allocated memory.
  * @returns NULL if we're out of memory.
- * @param   cb  Size of the memory block. Will be rounded up to page size.
+ * @param   cb      Size of the memory block. Will be rounded up to page size.
  */
 #define RTMemPageAlloc(cb)              RTMemPageAllocTag((cb), RTMEM_TAG)
 
@@ -438,7 +438,7 @@ RTR0DECL(int) RTR0MemExecDonate(void *pvMemory, size_t cb) RT_NO_THROW_PROTO;
  *
  * @returns Pointer to the allocated memory.
  * @returns NULL if we're out of memory.
- * @param   cb  Size of the memory block. Will be rounded up to page size.
+ * @param   cb      Size of the memory block. Will be rounded up to page size.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
 RTDECL(void *) RTMemPageAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
@@ -448,7 +448,7 @@ RTDECL(void *) RTMemPageAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROT
  *
  * @returns Pointer to the allocated memory.
  * @returns NULL if we're out of memory.
- * @param   cb  Size of the memory block. Will be rounded up to page size.
+ * @param   cb      Size of the memory block. Will be rounded up to page size.
  */
 #define RTMemPageAllocZ(cb)             RTMemPageAllocZTag((cb), RTMEM_TAG)
 
@@ -457,10 +457,43 @@ RTDECL(void *) RTMemPageAllocTag(size_t cb, const char *pszTag) RT_NO_THROW_PROT
  *
  * @returns Pointer to the allocated memory.
  * @returns NULL if we're out of memory.
- * @param   cb  Size of the memory block. Will be rounded up to page size.
+ * @param   cb      Size of the memory block. Will be rounded up to page size.
  * @param   pszTag  Allocation tag used for statistics and such.
  */
 RTDECL(void *) RTMemPageAllocZTag(size_t cb, const char *pszTag) RT_NO_THROW_PROTO;
+
+/**
+ * Allocate page aligned memory with default tag, extended version.
+ *
+ * @returns Pointer to the allocated memory.
+ * @returns NULL if we're out of memory.
+ * @param   cb      Size of the memory block. Will be rounded up to page size.
+ * @param   fFlags  RTMEMPAGEALLOC_F_XXX.
+ */
+#define RTMemPageAllocEx(cb, fFlags)    RTMemPageAllocExTag((cb), (fFlags), RTMEM_TAG)
+
+/**
+ * Allocate page aligned memory with custom tag, extended version.
+ *
+ * @returns Pointer to the allocated memory.
+ * @returns NULL if we're out of memory.
+ * @param   cb      Size of the memory block. Will be rounded up to page size.
+ * @param   fFlags  RTMEMPAGEALLOC_F_XXX.
+ * @param   pszTag  Allocation tag used for statistics and such.
+ */
+RTDECL(void *) RTMemPageAllocExTag(size_t cb, uint32_t fFlags, const char *pszTag) RT_NO_THROW_PROTO;
+
+/** @name RTMEMPAGEALLOC_F_XXX - flags for RTMemPageAllocEx() and RTMemPageAllocExTag()
+ * @{ */
+/** Zero the allocation. */
+#define RTMEMPAGEALLOC_F_ZERO           RT_BIT_32(0)
+/** Try lock the allocation (failure ignored). */
+#define RTMEMPAGEALLOC_F_ADVISE_LOCKED  RT_BIT_32(1)
+/** Try prevent the memory from ending up in a dump/core. */
+#define RTMEMPAGEALLOC_F_ADVISE_NO_DUMP RT_BIT_32(2)
+/** Valid bit mask. */
+#define RTMEMPAGEALLOC_F_VALID_MASK     UINT32_C(0x00000007)
+/** @} */
 
 /**
  * Free a memory block allocated with RTMemPageAlloc() or RTMemPageAllocZ().
@@ -527,6 +560,115 @@ RTDECL(void) RTMemWipeThoroughly(void *pv, size_t cb, size_t cMinPasses) RT_NO_T
 # define RTMEM_WILL_LEAK(a_pv)   do { } while (0)
 # define RTMEM_MAY_LEAK(a_pv)    do { } while (0)
 #endif
+
+
+/** @def RTMEM_IMPLEMENT_NEW_AND_DELETE
+ * Provides a new and delete implementation to a class using IPRT's RTMem
+ * allocator.
+ */
+#if !defined(RTMEM_WRAP_SOME_NEW_AND_DELETE_TO_EF) || defined(RTMEM_NO_WRAP_SOME_NEW_AND_DELETE_TO_EF)
+# ifdef RT_EXCEPTIONS_ENABLED
+#  define RTMEM_IMPLEMENT_NEW_AND_DELETE() \
+        void *operator new(size_t cb) RT_THROW(std::bad_alloc) \
+        { \
+            void *pv = RTMemAlloc(cb); \
+            if (RT_LIKELY(pv)) \
+                return pv; \
+            throw std::bad_alloc(); \
+        } \
+        void *operator new(size_t cb, const std::nothrow_t &nothrow_constant) RT_NO_THROW_DEF \
+        { \
+            NOREF(nothrow_constant); \
+            return RTMemAlloc(cb); \
+        } \
+        void *operator new(size_t cb, void *pvBuf) RT_NO_THROW_DEF \
+        { \
+            NOREF(cb); \
+            return pvBuf; \
+        } \
+        void *operator new[](size_t cb) RT_THROW(std::bad_alloc) \
+        { \
+            void *pv = RTMemAlloc(cb); \
+            if (RT_LIKELY(pv)) \
+                return pv; \
+            throw std::bad_alloc(); \
+        } \
+        void *operator new[](size_t cb, const std::nothrow_t &nothrow_constant) RT_NO_THROW_DEF \
+        { \
+            NOREF(nothrow_constant); \
+            return RTMemAlloc(cb); \
+        } \
+        \
+        void operator delete(void *pv) RT_NO_THROW_DEF \
+        { \
+            RTMemFree(pv); \
+        } \
+        void operator delete(void *pv, const std::nothrow_t &nothrow_constant) RT_NO_THROW_DEF \
+        { \
+            NOREF(nothrow_constant); \
+            RTMemFree(pv); \
+        } \
+        void operator delete[](void *pv) RT_NO_THROW_DEF \
+        { \
+            RTMemFree(pv); \
+        } \
+        void operator delete[](void *pv, const std::nothrow_t &nothrow_constant) RT_NO_THROW_DEF \
+        { \
+            NOREF(nothrow_constant); \
+            RTMemFree(pv); \
+        } \
+        \
+        typedef int UsingIprtNewAndDeleteOperators
+# else  /* !RT_EXCEPTIONS_ENABLED */
+#  define RTMEM_IMPLEMENT_NEW_AND_DELETE() \
+        void *operator new(size_t cb) \
+        { \
+            return RTMemAlloc(cb); \
+        } \
+        void *operator new(size_t cb, const std::nothrow_t &nothrow_constant) \
+        { \
+            NOREF(nothrow_constant); \
+            return RTMemAlloc(cb); \
+        } \
+        void *operator new(size_t cb, void *pvBuf) RT_NO_THROW_DEF \
+        { \
+            NOREF(cb); \
+            return pvBuf; \
+        } \
+        void *operator new[](size_t cb) \
+        { \
+            return RTMemAlloc(cb); \
+        } \
+        void *operator new[](size_t cb, const std::nothrow_t &nothrow_constant) \
+        { \
+            NOREF(nothrow_constant); \
+            return RTMemAlloc(cb); \
+        } \
+        \
+        void operator delete(void *pv) \
+        { \
+            RTMemFree(pv); \
+        } \
+        void operator delete(void *pv, const std::nothrow_t &nothrow_constant) \
+        { \
+            NOREF(nothrow_constant); \
+            RTMemFree(pv); \
+        } \
+        void operator delete[](void *pv) \
+        { \
+            RTMemFree(pv); \
+        } \
+        void operator delete[](void *pv, const std::nothrow_t &nothrow_constant) \
+        { \
+            NOREF(nothrow_constant); \
+            RTMemFree(pv); \
+        } \
+        \
+        typedef int UsingIprtNewAndDeleteOperators
+# endif /* !RT_EXCEPTIONS_ENABLED */
+#else  /* defined(RTMEM_WRAP_SOME_NEW_AND_DELETE_TO_EF) && !defined(RTMEM_NO_WRAP_SOME_NEW_AND_DELETE_TO_EF) */
+# define RTMEM_IMPLEMENT_NEW_AND_DELETE() RTMEMEF_NEW_AND_DELETE_OPERATORS()
+#endif /* defined(RTMEM_WRAP_SOME_NEW_AND_DELETE_TO_EF) && !defined(RTMEM_NO_WRAP_SOME_NEW_AND_DELETE_TO_EF) */
 
 
 #ifdef IN_RING0
@@ -814,6 +956,11 @@ RTDECL(void *) RTMemEfDupEx(const void *pvSrc, size_t cbSrc, size_t cbExtra, con
             NOREF(nothrow_constant); \
             return RTMemEfAlloc(cb, RTMEM_TAG, RT_SRC_POS); \
         } \
+        void *operator new(size_t cb, void *pvBuf) RT_NO_THROW_DEF \
+        { \
+            NOREF(cb); \
+            return pvBuf; \
+        } \
         void *operator new[](size_t cb) RT_THROW(std::bad_alloc) \
         { \
             void *pv = RTMemEfAlloc(cb, RTMEM_TAG, RT_SRC_POS); \
@@ -858,6 +1005,11 @@ RTDECL(void *) RTMemEfDupEx(const void *pvSrc, size_t cbSrc, size_t cbExtra, con
             NOREF(nothrow_constant); \
             return RTMemEfAlloc(cb, RTMEM_TAG, RT_SRC_POS); \
         } \
+        void *operator new(size_t cb, void *pvBuf) RT_NO_THROW_DEF \
+        { \
+            NOREF(cb); \
+            return pvBuf; \
+        } \
         void *operator new[](size_t cb) \
         { \
             return RTMemEfAlloc(cb, RTMEM_TAG, RT_SRC_POS); \
@@ -890,25 +1042,25 @@ RTDECL(void *) RTMemEfDupEx(const void *pvSrc, size_t cbSrc, size_t cbExtra, con
         typedef int UsingElectricNewAndDeleteOperators
 # endif
 # define RTR0MEMEF_NEW_AND_DELETE_OPERATORS_IOKIT() \
-    void *operator new(size_t cb) \
-    { \
-        return RTMemEfAllocZ(cb, RTMEM_TAG, RT_SRC_POS); \
-    } \
-    void *operator new[](size_t cb) \
-    { \
-        return RTMemEfAllocZ(cb, RTMEM_TAG, RT_SRC_POS); \
-    } \
-    \
-    void operator delete(void *pv) \
-    { \
-        RTMemEfFree(pv, RT_SRC_POS); \
-    } \
-    void operator delete[](void *pv) \
-    { \
-        RTMemEfFree(pv, RT_SRC_POS); \
-    } \
-    \
-    typedef int UsingElectricNewAndDeleteOperators
+        void *operator new(size_t cb) \
+        { \
+            return RTMemEfAllocZ(cb, RTMEM_TAG, RT_SRC_POS); \
+        } \
+        void *operator new[](size_t cb) \
+        { \
+            return RTMemEfAllocZ(cb, RTMEM_TAG, RT_SRC_POS); \
+        } \
+        \
+        void operator delete(void *pv) \
+        { \
+            RTMemEfFree(pv, RT_SRC_POS); \
+        } \
+        void operator delete[](void *pv) \
+        { \
+            RTMemEfFree(pv, RT_SRC_POS); \
+        } \
+        \
+        typedef int UsingElectricNewAndDeleteOperators
 #else
 # define RTMEMEF_NEW_AND_DELETE_OPERATORS() \
         typedef int UsingDefaultNewAndDeleteOperators

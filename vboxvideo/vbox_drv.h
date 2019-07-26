@@ -1,4 +1,4 @@
-/* $Id: vbox_drv.h 129561 2019-03-25 16:55:13Z michael $ */
+/* $Id: vbox_drv.h 131181 2019-06-06 15:07:16Z michael $ */
 /*
  * Copyright (C) 2013-2019 Oracle Corporation
  * This file is based on ast_drv.h
@@ -66,6 +66,12 @@
 # endif
 # if RHEL_MAJOR == 7 && RHEL_MINOR >= 0
 #  define RHEL_70
+# endif
+#endif
+
+#if defined(CONFIG_SUSE_VERSION)
+# if CONFIG_SUSE_VERSION == 15 && CONFIG_SUSE_PATCHLEVEL == 1
+#  define OPENSUSE_151
 # endif
 #endif
 
