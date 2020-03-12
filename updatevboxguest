@@ -107,11 +107,6 @@ update_repo ()
     git tag -a -m "vboxguest-${VBOX_VERSION}" v${VBOX_VERSION}
 }
 
-copy_to_kernel ()
-{
-    cp -r vboxguest vboxsf vboxvideo ${KDIR}/drivers/misc
-}
-
 ####################  main  ####################
 
 check_dialog
@@ -120,4 +115,3 @@ get_and_mount_iso
 extract_files
 umount_and_delete_iso
 update_repo
-#copy_to_kernel
