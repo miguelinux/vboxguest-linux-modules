@@ -1,10 +1,10 @@
-/* $Id: VBoxGuestR0LibVMMDev.cpp 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: VBoxGuestR0LibVMMDev.cpp 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * VBoxGuestLibR0 - VMMDev device related functions.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -372,8 +372,8 @@ AssertCompileSize(HGCMFunctionParameter32, 4+8);
 /**
  * HGCM function parameter, 64-bit client.
  */
-#  pragma pack(4)/* We force structure dword packing here for hysterical raisins.  Saves us 4 bytes, at the cost of
-                    misaligning the value64, physAddr and linearAddr members of every other parameter structure. */
+#  pragma pack(4)/* We force structure dword packing here for hysterical raisins.  Saves us 4 bytes,
+                    at the cost of misaligning the value64 members. */
 typedef struct
 {
     HGCMFunctionParameterType type;

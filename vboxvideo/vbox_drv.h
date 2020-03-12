@@ -1,6 +1,6 @@
-/* $Id: vbox_drv.h 131181 2019-06-06 15:07:16Z michael $ */
+/* $Id: vbox_drv.h 136116 2020-02-14 11:35:05Z fbatschu $ */
 /*
- * Copyright (C) 2013-2019 Oracle Corporation
+ * Copyright (C) 2013-2020 Oracle Corporation
  * This file is based on ast_drv.h
  * Copyright 2012 Red Hat Inc.
  *
@@ -44,8 +44,18 @@
 #include <linux/genalloc.h>
 #include <linux/io.h>
 #include <linux/string.h>
+#include <linux/pci.h>
 
 #if defined(RHEL_MAJOR) && defined(RHEL_MINOR)
+# if RHEL_MAJOR == 8 && RHEL_MINOR >= 1
+#  define RHEL_81
+# endif
+# if RHEL_MAJOR == 8 && RHEL_MINOR >= 0
+#  define RHEL_80
+# endif
+# if RHEL_MAJOR == 7 && RHEL_MINOR >= 7
+#  define RHEL_77
+# endif
 # if RHEL_MAJOR == 7 && RHEL_MINOR >= 6
 #  define RHEL_76
 # endif
@@ -90,7 +100,17 @@
 #define S64_MIN         ((s64)(-S64_MAX - 1))
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0)
 #include <drm/drmP.h>
+#else /* >= KERNEL_VERSION(5, 5, 0) */
+#include <drm/drm_file.h>
+#include <drm/drm_drv.h>
+#include <drm/drm_device.h>
+#include <drm/drm_ioctl.h>
+#include <drm/drm_fourcc.h>
+#include <drm/drm_irq.h>
+#include <drm/drm_vblank.h>
+#endif /* >= KERNEL_VERSION(5, 5, 0) */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 #include <drm/drm_encoder.h>
 #endif
@@ -183,7 +203,7 @@ struct vbox_private {
 	int fb_mtrr;
 
 	struct {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 		struct drm_global_reference mem_global_ref;
 		struct ttm_bo_global_ref bo_global_ref;
 #endif
@@ -227,7 +247,11 @@ struct vbox_private {
 #undef CURSOR_PIXEL_COUNT
 #undef CURSOR_DATA_SIZE
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 int vbox_driver_load(struct drm_device *dev, unsigned long flags);
+#else
+int vbox_driver_load(struct drm_device *dev);
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0) || defined(RHEL_75)
 void vbox_driver_unload(struct drm_device *dev);
 #else
@@ -247,8 +271,8 @@ struct vbox_connector {
 	char name[32];
 	struct vbox_crtc *vbox_crtc;
 	struct {
-		u16 width;
-		u16 height;
+		u32 width;
+		u32 height;
 		bool disconnected;
 	} mode_hint;
 };

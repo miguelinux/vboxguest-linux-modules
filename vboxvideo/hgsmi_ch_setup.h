@@ -1,6 +1,6 @@
-/* $Id: hgsmi_ch_setup.h 127888 2019-01-01 06:31:29Z bird $ */
+/* $Id: hgsmi_ch_setup.h 135976 2020-02-04 10:35:17Z bird $ */
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -54,8 +54,6 @@ assert_compile_size(struct hgsmi_buffer_location, 8);
 #ifdef VBOX_WITH_WDDM
 /* one or more guest commands is completed, should be accessed under FIFO lock only */
 # define HGSMIHOSTFLAGS_GCOMMAND_COMPLETED 0x04u
-/* watchdog timer interrupt flag (used for debugging), should be accessed under VGAState::lock only */
-# define HGSMIHOSTFLAGS_WATCHDOG           0x08u
 #endif
 /* vsync interrupt flag, should be accessed under VGAState::lock only */
 #define HGSMIHOSTFLAGS_VSYNC               0x10u

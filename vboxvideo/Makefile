@@ -1,4 +1,4 @@
-# $Id: Makefile.module.kms 130485 2019-05-10 12:23:02Z bird $
+# $Id: Makefile.module.kms 135976 2020-02-04 10:35:17Z bird $
 ## @file
 # VirtualBox Guest Additions Module Makefile.
 #
@@ -6,7 +6,7 @@
 #
 
 #
-# Copyright (C) 2006-2019 Oracle Corporation
+# Copyright (C) 2006-2020 Oracle Corporation
 #
 # This file is part of VirtualBox Open Source Edition (OSE), as
 # available from http://www.virtualbox.org. This file is free software;
@@ -48,8 +48,7 @@ VBOXMOD_OBJS = \
 	vbox_hgsmi.o
 VBOXMOD_INCL = \
 	$(VBOXDRM_DIR) \
-	include/drm
-## @todo r=bird: -Iinclude/drm is ambigious.
+	$(KERN_INCL)/drm
 
 include $(obj)/Makefile-footer.gmk
 

@@ -1,6 +1,6 @@
-/* $Id: vbox_fb.c 132026 2019-07-11 12:02:37Z michael $ */
+/* $Id: vbox_fb.c 136170 2020-02-18 15:31:10Z fbatschu $ */
 /*
- * Copyright (C) 2013-2019 Oracle Corporation
+ * Copyright (C) 2013-2020 Oracle Corporation
  * This file is based on ast_fb.c
  * Copyright 2012 Red Hat Inc.
  *
@@ -38,12 +38,12 @@
 #include <linux/fb.h>
 #include <linux/init.h>
 
-#include <drm/drmP.h>
+#include "vbox_drv.h"
+
 #include <drm/drm_crtc.h>
 #include <drm/drm_fb_helper.h>
 #include <drm/drm_crtc_helper.h>
 
-#include "vbox_drv.h"
 #include "vboxvideo.h"
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0) && !defined(RHEL_74)
@@ -343,7 +343,7 @@ static int vboxfb_create(struct drm_fb_helper *helper,
 			       sizes->fb_height);
 #endif
 
-	info->screen_base = bo->kmap.virtual;
+	info->screen_base = (char __iomem *)bo->kmap.virtual;
 	info->screen_size = size;
 
 #ifdef CONFIG_FB_DEFERRED_IO
@@ -375,6 +375,11 @@ void vbox_fbdev_fini(struct drm_device *dev)
 	struct vbox_private *vbox = dev->dev_private;
 	struct vbox_fbdev *fbdev = vbox->fbdev;
 	struct vbox_framebuffer *afb = &fbdev->afb;
+
+#ifdef CONFIG_FB_DEFERRED_IO
+	if (fbdev->helper.fbdev && fbdev->helper.fbdev->fbdefio)
+		fb_deferred_io_cleanup(fbdev->helper.fbdev);
+#endif
 
 	drm_fb_helper_unregister_fbi(&fbdev->helper);
 

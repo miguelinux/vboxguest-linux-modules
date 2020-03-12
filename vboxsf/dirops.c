@@ -1,10 +1,10 @@
-/* $Id: dirops.c 130048 2019-04-16 09:24:54Z michael $ */
+/* $Id: dirops.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, directory inode and file operations.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -803,6 +803,8 @@ static int vbsf_create_worker(struct inode *parent, struct dentry *dentry, umode
     PSHFLSTRING             path;
     int                     rc;
 
+    if (pfCreated)
+        *pfCreated = false;
     AssertReturn(sf_parent_i, -EINVAL);
     AssertReturn(pSuperInfo, -EINVAL);
 
@@ -861,6 +863,8 @@ static int vbsf_create_worker(struct inode *parent, struct dentry *dentry, umode
                             sf_new_i->handle = pReq->Create.CreateParms.Handle;
                             pReq->Create.CreateParms.Handle = SHFL_HANDLE_NIL;
                         }
+                        if (pfCreated)
+                            *pfCreated = pReq->Create.CreateParms.Result == SHFL_FILE_CREATED;
                         if (fDoLookup)
                             vbsf_d_add_inode(dentry, pNewInode);
                         path = NULL;

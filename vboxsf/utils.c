@@ -1,4 +1,4 @@
-/* $Id: utils.c 131953 2019-07-09 19:47:30Z paulson $ */
+/* $Id: utils.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, utility functions.
  *
@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -806,7 +806,7 @@ int vbsf_inode_setattr(struct dentry *dentry, struct iattr *iattr)
      * from futimes() when asked to preserve times, see ticketref:18569.
      */
     iattr->ia_valid |= ATTR_FORCE;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 39) && LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)) || LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 39) && LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)) || LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0) || (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 37) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0))
     rc = setattr_prepare(dentry, iattr);
 #else
     rc = inode_change_ok(pInode, iattr);

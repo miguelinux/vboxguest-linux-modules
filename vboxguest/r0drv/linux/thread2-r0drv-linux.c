@@ -1,10 +1,10 @@
-/* $Id: thread2-r0drv-linux.c 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: thread2-r0drv-linux.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * IPRT - Threads (Part 2), Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -36,6 +36,9 @@
 #include <iprt/errcore.h>
 #include "internal/thread.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+    #include <uapi/linux/sched/types.h>
+#endif /* >= KERNEL_VERSION(4, 11, 0) */
 
 RTDECL(RTTHREAD) RTThreadSelf(void)
 {

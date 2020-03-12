@@ -1,10 +1,10 @@
-/* $Id: waitqueue-r0drv-linux.h 131181 2019-06-06 15:07:16Z michael $ */
+/* $Id: waitqueue-r0drv-linux.h 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * IPRT - Linux Ring-0 Driver Helpers for Abstracting Wait Queues,
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -49,6 +49,7 @@ typedef struct RTR0SEMLNXWAIT
 {
     /** The wait queue entry. */
 #if LINUX_VERSION_CODE > KERNEL_VERSION(4, 13, 0) \
+  || defined(CONFIG_SUSE_VERSION) && CONFIG_SUSE_VERSION == 12 && CONFIG_SUSE_PATCHLEVEL == 4 \
   || defined(CONFIG_SUSE_VERSION) && CONFIG_SUSE_VERSION == 15
     wait_queue_entry_t WaitQE;
 #else

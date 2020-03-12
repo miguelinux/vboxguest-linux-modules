@@ -1,10 +1,10 @@
-/* $Id: vbsfmount.h 129704 2019-04-01 00:40:17Z bird $ */
+/* $Id: vbsfmount.h 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, mount(2) parameter structure.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

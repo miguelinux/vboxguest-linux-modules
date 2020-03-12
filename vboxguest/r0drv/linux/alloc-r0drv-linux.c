@@ -1,10 +1,10 @@
-/* $Id: alloc-r0drv-linux.c 129718 2019-04-01 10:39:12Z bird $ */
+/* $Id: alloc-r0drv-linux.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * IPRT - Memory Allocation, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -443,9 +443,6 @@ RTR0DECL(void *) RTMemContAlloc(PRTCCPHYS pPhys, size_t cb)
             }
 
             SetPageReserved(&paPages[iPage]);
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 20) /** @todo find the exact kernel where change_page_attr was introduced. */
-            MY_SET_PAGES_EXEC(&paPages[iPage], 1);
-#endif
         }
         *pPhys = page_to_phys(paPages);
         pvRet = phys_to_virt(page_to_phys(paPages));
@@ -491,9 +488,6 @@ RTR0DECL(void) RTMemContFree(void *pv, size_t cb)
         for (iPage = 0; iPage < cPages; iPage++)
         {
             ClearPageReserved(&paPages[iPage]);
-#if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 20) /** @todo find the exact kernel where change_page_attr was introduced. */
-            MY_SET_PAGES_NOEXEC(&paPages[iPage], 1);
-#endif
         }
         __free_pages(paPages, cOrder);
         IPRT_LINUX_RESTORE_EFL_AC();

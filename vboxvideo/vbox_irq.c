@@ -1,6 +1,6 @@
-/* $Id: vbox_irq.c 129561 2019-03-25 16:55:13Z michael $ */
+/* $Id: vbox_irq.c 135976 2020-02-04 10:35:17Z bird $ */
 /*
- * Copyright (C) 2016-2019 Oracle Corporation
+ * Copyright (C) 2016-2020 Oracle Corporation
  * This file is based on qxl_irq.c
  * Copyright 2013 Red Hat Inc.
  *
@@ -31,6 +31,9 @@
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
 #include <drm/drm_crtc_helper.h>
+# if defined(RHEL_81)
+#  include <drm/drm_probe_helper.h>
+# endif
 #else
 #include <drm/drm_probe_helper.h>
 #endif
@@ -158,8 +161,8 @@ static void vbox_update_mode_hints(struct vbox_private *vbox)
 
 		disconnected = !(hints->fEnabled);
 		crtc_id = vbox_conn->vbox_crtc->crtc_id;
-		vbox_conn->mode_hint.width = hints->cx & 0x8fff;
-		vbox_conn->mode_hint.height = hints->cy & 0x8fff;
+		vbox_conn->mode_hint.width = hints->cx;
+		vbox_conn->mode_hint.height = hints->cy;
 		vbox_conn->vbox_crtc->x_hint = hints->dx;
 		vbox_conn->vbox_crtc->y_hint = hints->dy;
 		vbox_conn->mode_hint.disconnected = disconnected;

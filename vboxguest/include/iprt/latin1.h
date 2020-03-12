@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -389,8 +389,6 @@ RTDECL(int) RTLatin1ToUtf16ExTag(const char *pszLatin1, size_t cchLatin1,
 /** @} */
 
 RT_C_DECLS_END
-
-/** @} */
 
 #endif /* !IPRT_INCLUDED_latin1_h */
 

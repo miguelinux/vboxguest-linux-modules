@@ -1,10 +1,10 @@
-/* $Id: vfsmod.h 130732 2019-05-22 13:33:39Z michael $ */
+/* $Id: vfsmod.h 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * vboxsf - Linux Shared Folders VFS, internal header.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -159,6 +159,11 @@ struct vbsf_super_info {
     int32_t                 msDirCacheTTL;
     /** The time to live for inode information in milliseconds, for /proc/mounts. */
     int32_t                 msInodeTTL;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
+    /** 4.0 and 4.1 are missing noop_backing_dev_info export, so take down the
+     *  initial value so we can restore it in vbsf_done_backing_dev(). (paranoia) */
+    struct backing_dev_info *bdi_org;
+#endif
 };
 
 /* Following casts are here to prevent assignment of void * to

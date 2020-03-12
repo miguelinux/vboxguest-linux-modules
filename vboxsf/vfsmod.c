@@ -1,10 +1,10 @@
-/* $Id: vfsmod.c 131009 2019-05-31 09:44:13Z bird $ */
+/* $Id: vfsmod.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, module init/term, super block management.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -52,6 +52,9 @@
 #endif
 #include <linux/seq_file.h>
 #include <linux/vfs.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 5, 62)
+# include <linux/vermagic.h>
+#endif
 #include <VBox/err.h>
 #include <iprt/path.h>
 
@@ -361,15 +364,19 @@ static int vbsf_init_backing_dev(struct super_block *sb, struct vbsf_super_info 
 # endif
     struct backing_dev_info *bdi;
 
-#  if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
+    pSuperInfo->bdi_org = sb->s_bdi;
+# endif
+
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
     rc = super_setup_bdi_name(sb, "vboxsf-%llu", (unsigned long long)idSeqMine);
     if (!rc)
         bdi = sb->s_bdi;
     else
         return rc;
-#  else
+# else
     bdi = &pSuperInfo->bdi;
-#  endif
+# endif
 
     bdi->ra_pages = 0;                      /* No readahead */
 
@@ -413,6 +420,12 @@ static int vbsf_init_backing_dev(struct super_block *sb, struct vbsf_super_info 
         rc = bdi_register(&pSuperInfo->bdi, NULL, "vboxsf-%llu", (unsigned long long)idSeqMine);
 #  endif /* >= 2.6.26 */
 # endif  /* 4.11.0 > version >= 2.6.24 */
+
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
+    if (!rc)
+        sb->s_bdi = bdi;
+# endif
+
 #endif   /* >= 2.6.0 */
     return rc;
 }
@@ -425,6 +438,14 @@ static void vbsf_done_backing_dev(struct super_block *sb, struct vbsf_super_info
 {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 24) && LINUX_VERSION_CODE <= KERNEL_VERSION(4, 12, 0)
     bdi_destroy(&pSuperInfo->bdi);    /* includes bdi_unregister() */
+
+    /* Paranoia: Make sb->s_bdi not point at pSuperInfo->bdi, in case someone
+                 trouches it after this point (we may screw up something).  */
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
+    sb->s_bdi = pSuperInfo->bdi_org; /* (noop_backing_dev_info is not exported) */
+# elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
+    sb->s_bdi = &noop_backing_dev_info;
+# endif
 #endif
 }
 
@@ -982,6 +1003,15 @@ static int __init init(void)
                 rc = register_filesystem(&g_vboxsf_fs_type);
                 if (rc == 0) {
                     printk(KERN_INFO "vboxsf: Successfully loaded version " VBOX_VERSION_STRING "\n");
+#ifdef VERMAGIC_STRING
+                    LogRel(("vboxsf: Successfully loaded version " VBOX_VERSION_STRING " on %s (LINUX_VERSION_CODE=%#x)\n",
+                            VERMAGIC_STRING, LINUX_VERSION_CODE));
+#elif defined(UTS_RELEASE)
+                    LogRel(("vboxsf: Successfully loaded version " VBOX_VERSION_STRING " on %s (LINUX_VERSION_CODE=%#x)\n",
+                            UTS_RELEASE, LINUX_VERSION_CODE));
+#else
+                    LogRel(("vboxsf: Successfully loaded version " VBOX_VERSION_STRING " (LINUX_VERSION_CODE=%#x)\n", LINUX_VERSION_CODE));
+#endif
                     return 0;
                 }
 

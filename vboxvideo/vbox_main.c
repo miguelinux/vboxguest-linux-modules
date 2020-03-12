@@ -1,6 +1,6 @@
-/* $Id: vbox_main.c 131181 2019-06-06 15:07:16Z michael $ */
+/* $Id: vbox_main.c 135976 2020-02-04 10:35:17Z bird $ */
 /*
- * Copyright (C) 2013-2019 Oracle Corporation
+ * Copyright (C) 2013-2020 Oracle Corporation
  * This file is based on ast_main.c
  * Copyright 2012 Red Hat Inc.
  *
@@ -63,7 +63,8 @@ void vbox_enable_accel(struct vbox_private *vbox)
 		if (vbox->vbva_info[i].vbva)
 			continue;
 
-		vbva = (void *)vbox->vbva_buffers + i * VBVA_MIN_BUFFER_SIZE;
+		vbva = (void __force *)vbox->vbva_buffers +
+			i * VBVA_MIN_BUFFER_SIZE;
 		if (!vbva_enable(&vbox->vbva_info[i],
 				 vbox->guest_pool, vbva, i)) {
 			/* very old host or driver error. */
@@ -442,7 +443,11 @@ static void vbox_hw_fini(struct vbox_private *vbox)
 	pci_iounmap(vbox->dev->pdev, vbox->guest_heap);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 int vbox_driver_load(struct drm_device *dev, unsigned long flags)
+#else
+int vbox_driver_load(struct drm_device *dev)
+#endif
 {
 	struct vbox_private *vbox;
 	int ret = 0;
@@ -596,7 +601,7 @@ int vbox_dumb_destroy(struct drm_file *file,
 }
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0) && !defined(OPENSUSE_151)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0) && !defined(OPENSUSE_151) && !defined(RHEL_77) && !defined(RHEL_81)
 static void ttm_bo_put(struct ttm_buffer_object *bo)
 {
 	ttm_bo_unref(&bo);
@@ -612,11 +617,13 @@ void vbox_gem_free_object(struct drm_gem_object *obj)
 
 static inline u64 vbox_bo_mmap_offset(struct vbox_bo *bo)
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && !defined(RHEL_70)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
+		return drm_vma_node_offset_addr(&bo->bo.base.vma_node);
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && !defined(RHEL_70)
 	return bo->bo.addr_space_offset;
 #else
 	return drm_vma_node_offset_addr(&bo->bo.vma_node);
-#endif
+#endif /* >= KERNEL_VERSION(5, 4, 0) */
 }
 
 int

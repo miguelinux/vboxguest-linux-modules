@@ -1,6 +1,6 @@
-/*  $Id: vbox_drv.c 132026 2019-07-11 12:02:37Z michael $ */
+/*  $Id: vbox_drv.c 136170 2020-02-18 15:31:10Z fbatschu $ */
 /*
- * Copyright (C) 2013-2019 Oracle Corporation
+ * Copyright (C) 2013-2020 Oracle Corporation
  * This file is based on ast_drv.c
  * Copyright 2012 Red Hat Inc.
  *
@@ -32,12 +32,11 @@
 #include <linux/console.h>
 #include <linux/vt_kern.h>
 
-#include <drm/drmP.h>
-#include <drm/drm_crtc_helper.h>
-
 #include "vbox_drv.h"
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+#include <drm/drm_crtc_helper.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(RHEL_81)
 #include <drm/drm_probe_helper.h>
 #endif
 
@@ -58,14 +57,49 @@ MODULE_DEVICE_TABLE(pci, pciidlist);
 
 static int vbox_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 	return drm_get_pci_dev(pdev, ent, &driver);
+#else
+	struct drm_device *dev = NULL;
+	int ret = 0;
+
+	dev = drm_dev_alloc(&driver, &pdev->dev);
+	if (IS_ERR(dev)) {
+		ret = PTR_ERR(dev);
+		goto err_drv_alloc;
+	}
+	dev->pdev = pdev;
+	pci_set_drvdata(pdev, dev);
+
+	ret = vbox_driver_load(dev);
+	if (ret)
+		goto err_vbox_driver_load;
+
+	ret = drm_dev_register(dev, 0);
+	if (ret)
+		goto err_drv_dev_register;
+	return ret;
+
+err_drv_dev_register:
+	vbox_driver_unload(dev);
+err_vbox_driver_load:
+	drm_dev_put(dev);
+err_drv_alloc:
+	return ret;
+#endif
 }
 
 static void vbox_pci_remove(struct pci_dev *pdev)
 {
 	struct drm_device *dev = pci_get_drvdata(pdev);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 	drm_put_dev(dev);
+#else
+	drm_dev_unregister(dev);
+	vbox_driver_unload(dev);
+	drm_dev_put(dev);
+#endif
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0) && !defined(RHEL_74)
@@ -265,16 +299,23 @@ static void vbox_master_drop(struct drm_device *dev, struct drm_file *file_priv)
 }
 
 static struct drm_driver driver = {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0)
 	.driver_features =
 	    DRIVER_MODESET | DRIVER_GEM | DRIVER_HAVE_IRQ |
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
+# if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0) && !defined(RHEL_81)
 	    DRIVER_IRQ_SHARED |
-#endif
+# endif /* < KERNEL_VERSION(5, 1, 0) && !defined(RHEL_81) */
 	    DRIVER_PRIME,
+#else /* >= KERNEL_VERSION(5, 4, 0) */
+		.driver_features = DRIVER_MODESET | DRIVER_GEM | DRIVER_HAVE_IRQ,
+#endif /* < KERNEL_VERSION(5, 4, 0) */
 	.dev_priv_size = 0,
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
+	/* Legacy hooks, but still supported. */
 	.load = vbox_driver_load,
 	.unload = vbox_driver_unload,
+#endif
 	.lastclose = vbox_driver_lastclose,
 	.master_set = vbox_master_set,
 	.master_drop = vbox_master_drop,
@@ -294,7 +335,11 @@ static struct drm_driver driver = {
 	.minor = DRIVER_MINOR,
 	.patchlevel = DRIVER_PATCHLEVEL,
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0)
 	.gem_free_object = vbox_gem_free_object,
+#else
+	.gem_free_object_unlocked = vbox_gem_free_object,
+#endif
 	.dumb_create = vbox_dumb_create,
 	.dumb_map_offset = vbox_dumb_mmap_offset,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && !defined(RHEL_73)

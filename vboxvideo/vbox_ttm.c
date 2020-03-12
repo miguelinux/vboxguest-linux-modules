@@ -1,6 +1,6 @@
-/* $Id: vbox_ttm.c 131182 2019-06-06 15:14:34Z michael $ */
+/* $Id: vbox_ttm.c 136116 2020-02-14 11:35:05Z fbatschu $ */
 /*
- * Copyright (C) 2013-2019 Oracle Corporation
+ * Copyright (C) 2013-2020 Oracle Corporation
  * This file is based on ast_ttm.c
  * Copyright 2012 Red Hat Inc.
  *
@@ -29,7 +29,7 @@
  *          Michael Thayer <michael.thayer@oracle.com>
  */
 #include "vbox_drv.h"
-#include <ttm/ttm_page_alloc.h>
+#include <drm/ttm/ttm_page_alloc.h>
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0) && !defined(RHEL_72)
 #define PLACEMENT_FLAGS(placement) (placement)
@@ -42,7 +42,7 @@ static inline struct vbox_private *vbox_bdev(struct ttm_bo_device *bd)
 	return container_of(bd, struct vbox_private, ttm.bdev);
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 static int vbox_ttm_mem_global_init(struct drm_global_reference *ref)
 {
 	return ttm_mem_global_init(ref->object);
@@ -293,27 +293,28 @@ int vbox_mm_init(struct vbox_private *vbox)
 	struct drm_device *dev = vbox->dev;
 	struct ttm_bo_device *bdev = &vbox->ttm.bdev;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 	ret = vbox_ttm_global_init(vbox);
 	if (ret)
 		return ret;
 #endif
 	ret = ttm_bo_device_init(&vbox->ttm.bdev,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 				 vbox->ttm.bo_global_ref.ref.object,
 #endif
 				 &vbox_bo_driver,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0) || defined(RHEL_71)
 				 dev->anon_inode->i_mapping,
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
-				 DRM_FILE_PAGE_OFFSET, true);
-#else
-				 true);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
+						dev->vma_offset_manager,
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
+				 DRM_FILE_PAGE_OFFSET,
 #endif
+				 true);
 	if (ret) {
 		DRM_ERROR("Error initialising bo driver; %d\n", ret);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 		goto err_ttm_global_release;
 #else
 		return ret;
@@ -339,7 +340,7 @@ int vbox_mm_init(struct vbox_private *vbox)
 
 err_device_release:
 	ttm_bo_device_release(&vbox->ttm.bdev);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 err_ttm_global_release:
 	vbox_ttm_global_release(vbox);
 #endif
@@ -356,7 +357,7 @@ void vbox_mm_fini(struct vbox_private *vbox)
 	arch_phys_wc_del(vbox->fb_mtrr);
 #endif
 	ttm_bo_device_release(&vbox->ttm.bdev);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0) && !defined(RHEL_77) && !defined(RHEL_81)
 	vbox_ttm_global_release(vbox);
 #endif
 }

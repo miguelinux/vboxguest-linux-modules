@@ -1,10 +1,10 @@
-/* $Id: the-linux-kernel.h 129703 2019-04-01 00:03:23Z bird $ */
+/* $Id: the-linux-kernel.h 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * IPRT - Include all necessary headers for the Linux kernel.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -337,8 +337,10 @@ DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)
-# define MY_SET_PAGES_EXEC(pPages, cPages)    set_pages_x(pPages, cPages)
-# define MY_SET_PAGES_NOEXEC(pPages, cPages)  set_pages_nx(pPages, cPages)
+# if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0) /* The interface was removed, but we only need it for < 2.4.22, so who cares. */
+#  define MY_SET_PAGES_EXEC(pPages, cPages)     set_pages_x(pPages, cPages)
+#  define MY_SET_PAGES_NOEXEC(pPages, cPages)   set_pages_nx(pPages, cPages)
+# endif
 #else
 # define MY_SET_PAGES_EXEC(pPages, cPages) \
     do { \
@@ -417,7 +419,8 @@ DECLINLINE(unsigned long) msecs_to_jiffies(unsigned int cMillies)
  * The AMD 64 switch_to in macro in arch/x86/include/asm/switch_to.h stopped
  * restoring flags.
  * @{ */
-#if defined(CONFIG_X86_SMAP) || defined(RT_STRICT) || defined(IPRT_WITH_EFLAGS_AC_PRESERVING)
+#if (defined(CONFIG_X86_SMAP) || defined(RT_STRICT) || defined(IPRT_WITH_EFLAGS_AC_PRESERVING)) \
+  && !defined(IPRT_WITHOUT_EFLAGS_AC_PRESERVING)
 # include <iprt/asm-amd64-x86.h>
 # define IPRT_X86_EFL_AC                    RT_BIT(18)
 # define IPRT_LINUX_SAVE_EFL_AC()           RTCCUINTREG fSavedEfl = ASMGetFlags()
@@ -465,5 +468,13 @@ DECLHIDDEN(void) rtR0LnxWorkqueueFlush(void);
  */
 RTDECL(struct page *) rtR0MemObjLinuxVirtToPage(void *pv);
 
+/*
+ * Guest Additions changes specific to Red Hat 8.1 and later.
+ */
+#ifdef RHEL_RELEASE_CODE
+# if RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8, 1)
+#  define RHEL_81
+# endif
+#endif
 
 #endif /* !IPRT_INCLUDED_SRC_r0drv_linux_the_linux_kernel_h */

@@ -1,10 +1,10 @@
-/* $Id: VBoxGuestLibSharedFolders.h 127888 2019-01-01 06:31:29Z bird $ */
+/* $Id: VBoxGuestLibSharedFolders.h 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * VBoxGuestLib - Central calls header.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

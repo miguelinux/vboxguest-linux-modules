@@ -1,10 +1,10 @@
-/* $Id: lnkops.c 129713 2019-04-01 10:18:06Z bird $ */
+/* $Id: lnkops.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, operations for symbolic links.
  */
 
 /*
- * Copyright (C) 2010-2019 Oracle Corporation
+ * Copyright (C) 2010-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

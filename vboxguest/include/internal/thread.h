@@ -1,10 +1,10 @@
-/* $Id: thread.h 127888 2019-01-01 06:31:29Z bird $ */
+/* $Id: thread.h 136162 2020-02-17 19:46:52Z bird $ */
 /** @file
  * IPRT - Internal RTThread header.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -136,6 +136,9 @@ typedef RTTHREADINT *PRTTHREADINT;
 #define RTTHREADINT_FLAGS_MAIN       RT_BIT(3)
 /** @} */
 
+/** Counters for each thread type. */
+extern DECLHIDDEN(uint32_t volatile)   g_acRTThreadTypeStats[RTTHREADTYPE_END];
+
 
 /**
  * Initialize the native part of the thread management.
@@ -259,6 +262,20 @@ DECLHIDDEN(int)          rtThreadDoSetProcPriority(RTPROCPRIORITY enmPriority);
 #ifdef IPRT_WITH_GENERIC_TLS
 DECLHIDDEN(void)         rtThreadClearTlsEntry(RTTLS iTls);
 DECLHIDDEN(void)         rtThreadTlsDestruction(PRTTHREADINT pThread); /* in tls-generic.cpp */
+#endif
+#ifdef RT_OS_WINDOWS
+DECLHIDDEN(void)         rtTlsWinDetachThread(void); /* in tls-dllmain-win.cpp */
+#endif
+
+/* thread-posix.cpp */
+#ifdef IN_RING3
+# if !defined(RT_OS_WINDOWS) && !defined(RT_OS_OS2) && !defined(RT_OS_DARWIN)
+#  define RTTHREAD_POSIX_WITH_CREATE_PRIORITY_PROXY
+# endif
+# ifdef RTTHREAD_POSIX_WITH_CREATE_PRIORITY_PROXY
+DECLHIDDEN(bool) rtThreadPosixPriorityProxyStart(void);
+DECLHIDDEN(int)  rtThreadPosixPriorityProxyCall(PRTTHREADINT pTargetThread, PFNRT pfnFunction, int cArgs, ...);
+# endif
 #endif
 
 #ifdef IPRT_INCLUDED_asm_h

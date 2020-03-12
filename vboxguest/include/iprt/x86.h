@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -400,6 +400,10 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CPUID_VENDOR_SHANGHAI_EBX   0x68532020      /*   Sh */
 #define X86_CPUID_VENDOR_SHANGHAI_ECX   0x20206961      /* ai   */
 #define X86_CPUID_VENDOR_SHANGHAI_EDX   0x68676e61      /* angh */
+
+#define X86_CPUID_VENDOR_HYGON_EBX      0x6f677948      /* Hygo */
+#define X86_CPUID_VENDOR_HYGON_ECX      0x656e6975      /* uine */
+#define X86_CPUID_VENDOR_HYGON_EDX      0x6e65476e      /* nGen */
 /** @} */
 
 
@@ -783,6 +787,10 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CPUID_AMD_EFEID_EBX_IRPERF       RT_BIT_32(1)
 /** Bit 2 - XSaveErPtr - Always XSAVE* and XRSTR* error pointers. */
 #define X86_CPUID_AMD_EFEID_EBX_XSAVE_ER_PTR RT_BIT_32(2)
+/** Bit 4 - RDPRU - Supports the RDPRU instruction. */
+#define X86_CPUID_AMD_EFEID_EBX_RDPRU        RT_BIT_32(4)
+/** Bit 8 - MCOMMIT - Supports the MCOMMIT instruction. */
+#define X86_CPUID_AMD_EFEID_EBX_MCOMMIT      RT_BIT_32(8)
 /* AMD pipeline length: 9 feature bits ;-) */
 /** Bit 12 - IBPB - Supports the IBPB command in IA32_PRED_CMD. */
 #define X86_CPUID_AMD_EFEID_EBX_IBPB         RT_BIT_32(12)
@@ -817,10 +825,13 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CPUID_SVM_FEATURE_EDX_PAUSE_FILTER_THRESHOLD    RT_BIT(12)
 /** Bit 13 - AVIC - Advanced Virtual Interrupt Controller. */
 #define X86_CPUID_SVM_FEATURE_EDX_AVIC                      RT_BIT(13)
-/** Bit 15 - V_VMSAVE_VMLOAD - Supports virtualized VMSAVE/VMLOAD. */
+/** Bit 15 - VMSAVEvirt - Supports virtualized VMSAVE/VMLOAD. */
 #define X86_CPUID_SVM_FEATURE_EDX_VIRT_VMSAVE_VMLOAD        RT_BIT(15)
-/** Bit 16 - V_VMSAVE_VMLOAD - Supports virtualized GIF. */
+/** Bit 16 - VGIF - Supports virtualized GIF. */
 #define X86_CPUID_SVM_FEATURE_EDX_VGIF                      RT_BIT(16)
+/** Bit 17 - GMET - Supports Guest Mode Execute Trap Extensions. */
+#define X86_CPUID_SVM_FEATURE_EDX_GMET                      RT_BIT(17)
+
 /** @} */
 
 
@@ -904,6 +915,8 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CR4_OSFXSR                      RT_BIT_32(9)
 /** Bit 10 - OSXMMEEXCPT - Operating System Support for Unmasked SIMD Floating-Point Exceptions. */
 #define X86_CR4_OSXMMEEXCPT                 RT_BIT_32(10)
+/** Bit 11 - UMIP - User-Mode Instruction Prevention. */
+#define X86_CR4_UMIP                        RT_BIT_32(11)
 /** Bit 13 - VMXE - VMX mode is enabled. */
 #define X86_CR4_VMXE                        RT_BIT_32(13)
 /** Bit 14 - SMXE - Safer Mode Extensions Enabled. */
@@ -921,6 +934,8 @@ typedef const X86CPUIDFEATEDX *PCX86CPUIDFEATEDX;
 #define X86_CR4_SMAP                        RT_BIT_32(21)
 /** Bit 22 - PKE - Protection Key Enable. */
 #define X86_CR4_PKE                         RT_BIT_32(22)
+/** Bit 23 - CET - Control-flow Enhancement Technology enabled. */
+#define X86_CR4_CET                         RT_BIT_32(23)
 /** @} */
 
 
@@ -1230,6 +1245,14 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define MSR_IA32_PMC2                       0xC3
 /** General performance counter no. 3. */
 #define MSR_IA32_PMC3                       0xC4
+/** General performance counter no. 4. */
+#define MSR_IA32_PMC4                       0xC5
+/** General performance counter no. 5. */
+#define MSR_IA32_PMC5                       0xC6
+/** General performance counter no. 6. */
+#define MSR_IA32_PMC6                       0xC7
+/** General performance counter no. 7. */
+#define MSR_IA32_PMC7                       0xC8
 
 /** Nehalem power control. */
 #define MSR_IA32_PLATFORM_INFO              0xCE
@@ -1296,9 +1319,12 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
  *  "Programming the PAT", AMD spec. 7.8.2 "PAT Indexing") */
 #define MSR_IA32_CR_PAT_INIT_VAL            UINT64_C(0x0007040600070406)
 
-/** Performance counter MSRs. (Intel only) */
+/** Performance event select MSRs. (Intel only) */
 #define MSR_IA32_PERFEVTSEL0                0x186
 #define MSR_IA32_PERFEVTSEL1                0x187
+#define MSR_IA32_PERFEVTSEL2                0x188
+#define MSR_IA32_PERFEVTSEL3                0x189
+
 /** Flexible ratio, seems to be undocumented, used by XNU (tsc.c).
  * The 16th bit whether flex ratio is being used, in which case bits 15:8
  * holds a ratio that Apple takes for TSC granularity.
@@ -1310,6 +1336,10 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define MSR_IA32_PERF_STATUS                0x198
 #define MSR_IA32_PERF_CTL                   0x199
 #define MSR_IA32_THERM_STATUS               0x19c
+
+/** Offcore response event select registers. */
+#define MSR_OFFCORE_RSP_0                   0x1a6
+#define MSR_OFFCORE_RSP_1                   0x1a7
 
 /** Enable misc. processor features (R/W). */
 #define MSR_IA32_MISC_ENABLE                   0x1A0
@@ -1370,53 +1400,146 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
                                              | MSR_IA32_DEBUGCTL_FREEZE_PERFMON_ON_PMI | MSR_IA32_DEBUGCTL_FREEZE_WHILE_SMM_EM \
                                              | MSR_IA32_DEBUGCTL_RTM)
 
-/** The number (0..3 or 0..15) of the last branch record register on P4 and
- * related Xeons. */
-#define MSR_P4_LASTBRANCH_TOS               UINT32_C(0x000001da)
 /** @name Last branch registers for P4 and Xeon, models 0 thru 2.
  * @{ */
-#define MSR_P4_LASTBRANCH_0                 UINT32_C(0x000001db)
-#define MSR_P4_LASTBRANCH_1                 UINT32_C(0x000001dc)
-#define MSR_P4_LASTBRANCH_2                 UINT32_C(0x000001dd)
-#define MSR_P4_LASTBRANCH_3                 UINT32_C(0x000001de)
+#define MSR_P4_LASTBRANCH_0                 0x1db
+#define MSR_P4_LASTBRANCH_1                 0x1dc
+#define MSR_P4_LASTBRANCH_2                 0x1dd
+#define MSR_P4_LASTBRANCH_3                 0x1de
+
+/** LBR Top-of-stack MSR (index to most recent record). */
+#define MSR_P4_LASTBRANCH_TOS               0x1da
 /** @} */
 
+/** @name Last branch registers for Core 2 and related Xeons.
+ * @{ */
+#define MSR_CORE2_LASTBRANCH_0_FROM_IP      0x40
+#define MSR_CORE2_LASTBRANCH_1_FROM_IP      0x41
+#define MSR_CORE2_LASTBRANCH_2_FROM_IP      0x42
+#define MSR_CORE2_LASTBRANCH_3_FROM_IP      0x43
 
-#define IA32_MTRR_PHYSBASE0                 0x200
-#define IA32_MTRR_PHYSMASK0                 0x201
-#define IA32_MTRR_PHYSBASE1                 0x202
-#define IA32_MTRR_PHYSMASK1                 0x203
-#define IA32_MTRR_PHYSBASE2                 0x204
-#define IA32_MTRR_PHYSMASK2                 0x205
-#define IA32_MTRR_PHYSBASE3                 0x206
-#define IA32_MTRR_PHYSMASK3                 0x207
-#define IA32_MTRR_PHYSBASE4                 0x208
-#define IA32_MTRR_PHYSMASK4                 0x209
-#define IA32_MTRR_PHYSBASE5                 0x20a
-#define IA32_MTRR_PHYSMASK5                 0x20b
-#define IA32_MTRR_PHYSBASE6                 0x20c
-#define IA32_MTRR_PHYSMASK6                 0x20d
-#define IA32_MTRR_PHYSBASE7                 0x20e
-#define IA32_MTRR_PHYSMASK7                 0x20f
-#define IA32_MTRR_PHYSBASE8                 0x210
-#define IA32_MTRR_PHYSMASK8                 0x211
-#define IA32_MTRR_PHYSBASE9                 0x212
-#define IA32_MTRR_PHYSMASK9                 0x213
+#define MSR_CORE2_LASTBRANCH_0_TO_IP        0x60
+#define MSR_CORE2_LASTBRANCH_1_TO_IP        0x61
+#define MSR_CORE2_LASTBRANCH_2_TO_IP        0x62
+#define MSR_CORE2_LASTBRANCH_3_TO_IP        0x63
+
+/** LBR Top-of-stack MSR (index to most recent record). */
+#define MSR_CORE2_LASTBRANCH_TOS            0x1c9
+/** @} */
+
+/** @name Last branch registers.
+ * @{ */
+#define MSR_LASTBRANCH_0_FROM_IP            0x680
+#define MSR_LASTBRANCH_1_FROM_IP            0x681
+#define MSR_LASTBRANCH_2_FROM_IP            0x682
+#define MSR_LASTBRANCH_3_FROM_IP            0x683
+#define MSR_LASTBRANCH_4_FROM_IP            0x684
+#define MSR_LASTBRANCH_5_FROM_IP            0x685
+#define MSR_LASTBRANCH_6_FROM_IP            0x686
+#define MSR_LASTBRANCH_7_FROM_IP            0x687
+#define MSR_LASTBRANCH_8_FROM_IP            0x688
+#define MSR_LASTBRANCH_9_FROM_IP            0x689
+#define MSR_LASTBRANCH_10_FROM_IP           0x68a
+#define MSR_LASTBRANCH_11_FROM_IP           0x68b
+#define MSR_LASTBRANCH_12_FROM_IP           0x68c
+#define MSR_LASTBRANCH_13_FROM_IP           0x68d
+#define MSR_LASTBRANCH_14_FROM_IP           0x68e
+#define MSR_LASTBRANCH_15_FROM_IP           0x68f
+#define MSR_LASTBRANCH_16_FROM_IP           0x690
+#define MSR_LASTBRANCH_17_FROM_IP           0x691
+#define MSR_LASTBRANCH_18_FROM_IP           0x692
+#define MSR_LASTBRANCH_19_FROM_IP           0x693
+#define MSR_LASTBRANCH_20_FROM_IP           0x694
+#define MSR_LASTBRANCH_21_FROM_IP           0x695
+#define MSR_LASTBRANCH_22_FROM_IP           0x696
+#define MSR_LASTBRANCH_23_FROM_IP           0x697
+#define MSR_LASTBRANCH_24_FROM_IP           0x698
+#define MSR_LASTBRANCH_25_FROM_IP           0x699
+#define MSR_LASTBRANCH_26_FROM_IP           0x69a
+#define MSR_LASTBRANCH_27_FROM_IP           0x69b
+#define MSR_LASTBRANCH_28_FROM_IP           0x69c
+#define MSR_LASTBRANCH_29_FROM_IP           0x69d
+#define MSR_LASTBRANCH_30_FROM_IP           0x69e
+#define MSR_LASTBRANCH_31_FROM_IP           0x69f
+
+#define MSR_LASTBRANCH_0_TO_IP              0x6c0
+#define MSR_LASTBRANCH_1_TO_IP              0x6c1
+#define MSR_LASTBRANCH_2_TO_IP              0x6c2
+#define MSR_LASTBRANCH_3_TO_IP              0x6c3
+#define MSR_LASTBRANCH_4_TO_IP              0x6c4
+#define MSR_LASTBRANCH_5_TO_IP              0x6c5
+#define MSR_LASTBRANCH_6_TO_IP              0x6c6
+#define MSR_LASTBRANCH_7_TO_IP              0x6c7
+#define MSR_LASTBRANCH_8_TO_IP              0x6c8
+#define MSR_LASTBRANCH_9_TO_IP              0x6c9
+#define MSR_LASTBRANCH_10_TO_IP             0x6ca
+#define MSR_LASTBRANCH_11_TO_IP             0x6cb
+#define MSR_LASTBRANCH_12_TO_IP             0x6cc
+#define MSR_LASTBRANCH_13_TO_IP             0x6cd
+#define MSR_LASTBRANCH_14_TO_IP             0x6ce
+#define MSR_LASTBRANCH_15_TO_IP             0x6cf
+#define MSR_LASTBRANCH_16_TO_IP             0x6d0
+#define MSR_LASTBRANCH_17_TO_IP             0x6d1
+#define MSR_LASTBRANCH_18_TO_IP             0x6d2
+#define MSR_LASTBRANCH_19_TO_IP             0x6d3
+#define MSR_LASTBRANCH_20_TO_IP             0x6d4
+#define MSR_LASTBRANCH_21_TO_IP             0x6d5
+#define MSR_LASTBRANCH_22_TO_IP             0x6d6
+#define MSR_LASTBRANCH_23_TO_IP             0x6d7
+#define MSR_LASTBRANCH_24_TO_IP             0x6d8
+#define MSR_LASTBRANCH_25_TO_IP             0x6d9
+#define MSR_LASTBRANCH_26_TO_IP             0x6da
+#define MSR_LASTBRANCH_27_TO_IP             0x6db
+#define MSR_LASTBRANCH_28_TO_IP             0x6dc
+#define MSR_LASTBRANCH_29_TO_IP             0x6dd
+#define MSR_LASTBRANCH_30_TO_IP             0x6de
+#define MSR_LASTBRANCH_31_TO_IP             0x6df
+
+/** LBR Top-of-stack MSR (index to most recent record). */
+#define MSR_LASTBRANCH_TOS                  0x1c9
+/** @} */
+
+/** Intel TSX (Transactional Synchronization Extensions) control MSR. */
+#define MSR_IA32_TSX_CTRL                   0x122
+
+/** Variable range MTRRs.
+ * @{ */
+#define MSR_IA32_MTRR_PHYSBASE0             0x200
+#define MSR_IA32_MTRR_PHYSMASK0             0x201
+#define MSR_IA32_MTRR_PHYSBASE1             0x202
+#define MSR_IA32_MTRR_PHYSMASK1             0x203
+#define MSR_IA32_MTRR_PHYSBASE2             0x204
+#define MSR_IA32_MTRR_PHYSMASK2             0x205
+#define MSR_IA32_MTRR_PHYSBASE3             0x206
+#define MSR_IA32_MTRR_PHYSMASK3             0x207
+#define MSR_IA32_MTRR_PHYSBASE4             0x208
+#define MSR_IA32_MTRR_PHYSMASK4             0x209
+#define MSR_IA32_MTRR_PHYSBASE5             0x20a
+#define MSR_IA32_MTRR_PHYSMASK5             0x20b
+#define MSR_IA32_MTRR_PHYSBASE6             0x20c
+#define MSR_IA32_MTRR_PHYSMASK6             0x20d
+#define MSR_IA32_MTRR_PHYSBASE7             0x20e
+#define MSR_IA32_MTRR_PHYSMASK7             0x20f
+#define MSR_IA32_MTRR_PHYSBASE8             0x210
+#define MSR_IA32_MTRR_PHYSMASK8             0x211
+#define MSR_IA32_MTRR_PHYSBASE9             0x212
+#define MSR_IA32_MTRR_PHYSMASK9             0x213
+/** @} */
 
 /** Fixed range MTRRs.
- * @{  */
-#define IA32_MTRR_FIX64K_00000              0x250
-#define IA32_MTRR_FIX16K_80000              0x258
-#define IA32_MTRR_FIX16K_A0000              0x259
-#define IA32_MTRR_FIX4K_C0000               0x268
-#define IA32_MTRR_FIX4K_C8000               0x269
-#define IA32_MTRR_FIX4K_D0000               0x26a
-#define IA32_MTRR_FIX4K_D8000               0x26b
-#define IA32_MTRR_FIX4K_E0000               0x26c
-#define IA32_MTRR_FIX4K_E8000               0x26d
-#define IA32_MTRR_FIX4K_F0000               0x26e
-#define IA32_MTRR_FIX4K_F8000               0x26f
-/** @}  */
+ * @{ */
+#define MSR_IA32_MTRR_FIX64K_00000          0x250
+#define MSR_IA32_MTRR_FIX16K_80000          0x258
+#define MSR_IA32_MTRR_FIX16K_A0000          0x259
+#define MSR_IA32_MTRR_FIX4K_C0000           0x268
+#define MSR_IA32_MTRR_FIX4K_C8000           0x269
+#define MSR_IA32_MTRR_FIX4K_D0000           0x26a
+#define MSR_IA32_MTRR_FIX4K_D8000           0x26b
+#define MSR_IA32_MTRR_FIX4K_E0000           0x26c
+#define MSR_IA32_MTRR_FIX4K_E8000           0x26d
+#define MSR_IA32_MTRR_FIX4K_F0000           0x26e
+#define MSR_IA32_MTRR_FIX4K_F8000           0x26f
+/** @} */
 
 /** MTRR Default Range. */
 #define MSR_IA32_MTRR_DEF_TYPE              0x2FF
@@ -1476,6 +1599,40 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define MSR_IA32_DS_AREA                    0x600
 /** Running Average Power Limit (RAPL) power units. */
 #define MSR_RAPL_POWER_UNIT                 0x606
+/** Package C3 Interrupt Response Limit. */
+#define MSR_PKGC3_IRTL                      0x60a
+/** Package C6/C7S Interrupt Response Limit 1. */
+#define MSR_PKGC_IRTL1                      0x60b
+/** Package C6/C7S Interrupt Response Limit 2. */
+#define MSR_PKGC_IRTL2                      0x60c
+/** Package C2 Residency Counter. */
+#define MSR_PKG_C2_RESIDENCY                0x60d
+/** PKG RAPL Power Limit Control. */
+#define MSR_PKG_POWER_LIMIT                 0x610
+/** PKG Energy Status. */
+#define MSR_PKG_ENERGY_STATUS               0x611
+/** PKG Perf Status. */
+#define MSR_PKG_PERF_STATUS                 0x613
+/** PKG RAPL Parameters. */
+#define MSR_PKG_POWER_INFO                  0x614
+/** DRAM RAPL Power Limit Control. */
+#define MSR_DRAM_POWER_LIMIT                0x618
+/** DRAM Energy Status. */
+#define MSR_DRAM_ENERGY_STATUS              0x619
+/** DRAM Performance Throttling Status. */
+#define MSR_DRAM_PERF_STATUS                0x61b
+/** DRAM RAPL Parameters. */
+#define MSR_DRAM_POWER_INFO                 0x61c
+/** Package C10 Residency Counter. */
+#define MSR_PKG_C10_RESIDENCY               0x632
+/** PP0 Energy Status. */
+#define MSR_PP0_ENERGY_STATUS               0x639
+/** PP1 Energy Status. */
+#define MSR_PP1_ENERGY_STATUS               0x641
+/** Turbo Activation Ratio. */
+#define MSR_TURBO_ACTIVATION_RATIO          0x64c
+/** Core Performance Limit Reasons. */
+#define MSR_CORE_PERF_LIMIT_REASONS         0x64f
 
 /** X2APIC MSR range start. */
 #define MSR_IA32_X2APIC_START               0x800
@@ -1568,7 +1725,7 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 /** X2APIC MSR - Self IPI. */
 #define MSR_IA32_X2APIC_SELF_IPI            0x83F
 /** X2APIC MSR range end. */
-#define MSR_IA32_X2APIC_END                 0xBFF
+#define MSR_IA32_X2APIC_END                 0x8FF
 /** X2APIC MSR - LVT start range. */
 #define MSR_IA32_X2APIC_LVT_START           MSR_IA32_X2APIC_LVT_TIMER
 /** X2APIC MSR - LVT end range (inclusive). */
@@ -1596,6 +1753,9 @@ AssertCompile(X86_DR7_ANY_RW_IO(UINT32_C(0x00040000)) == 0);
 #define  MSR_K6_EFER_FFXSR                   RT_BIT_32(14)
 /** Bit 15 - TCE - Translation Cache Extension. (R/W) */
 #define  MSR_K6_EFER_TCE                     RT_BIT_32(15)
+/** Bit 17 - MCOMMIT - Commit Stores to memory. (R/W) */
+#define  MSR_K6_EFER_MCOMMIT                 RT_BIT_32(17)
+
 /** K6 STAR - SYSCALL/RET targets. */
 #define MSR_K6_STAR                         UINT32_C(0xc0000081)
 /** Shift value for getting the SYSRET CS and SS value. */
@@ -4219,11 +4379,15 @@ typedef enum X86XCPT
     X86_XCPT_AC = 0x11,
     /** \#MC - Machine check. */
     X86_XCPT_MC = 0x12,
-    /** \#XF - SIMD Floating-Pointer Exception. */
+    /** \#XF - SIMD Floating-Point Exception. */
     X86_XCPT_XF = 0x13,
-    /** \#VE - Virtualization Exception. */
+    /** \#VE - Virtualization Exception (Intel only). */
     X86_XCPT_VE = 0x14,
-    /** \#SX - Security Exception. */
+    /** \#CP - Control Protection Exception (Intel only). */
+    X86_XCPT_CP = 0x15,
+    /** \#VC - VMM Communication Exception (AMD only). */
+    X86_XCPT_VC = 0x1d,
+    /** \#SX - Security Exception (AMD only). */
     X86_XCPT_SX = 0x1e
 } X86XCPT;
 /** Pointer to a x86 exception code. */

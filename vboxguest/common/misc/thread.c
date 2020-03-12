@@ -1,10 +1,10 @@
-/* $Id: thread.cpp 127855 2019-01-01 01:45:53Z bird $ */
+/* $Id: thread.cpp 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * IPRT - Threads, common routines.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -72,19 +72,21 @@
 /*********************************************************************************************************************************
 *   Global Variables                                                                                                             *
 *********************************************************************************************************************************/
-/** The AVL thread containing the threads. */
-static PAVLPVNODECORE       g_ThreadTree;
-/** The number of threads in the tree (for ring-0 termination kludge). */
-static uint32_t volatile    g_cThreadInTree;
+/** Indicates whether we've been initialized or not. */
+static bool                     g_frtThreadInitialized;
 #ifdef IN_RING3
 /** The RW lock protecting the tree. */
-static RTSEMRW          g_ThreadRWSem = NIL_RTSEMRW;
+static RTSEMRW                  g_ThreadRWSem = NIL_RTSEMRW;
 #else
 /** The spinlocks protecting the tree. */
-static RTSPINLOCK       g_ThreadSpinlock = NIL_RTSPINLOCK;
+static RTSPINLOCK               g_ThreadSpinlock = NIL_RTSPINLOCK;
 #endif
-/** Indicates whether we've been initialized or not. */
-static bool             g_frtThreadInitialized;
+/** The AVL thread containing the threads. */
+static PAVLPVNODECORE           g_ThreadTree;
+/** The number of threads in the tree (for ring-0 termination kludge). */
+static uint32_t volatile        g_cThreadInTree;
+/** Counters for each thread type. */
+DECLHIDDEN(uint32_t volatile)   g_acRTThreadTypeStats[RTTHREADTYPE_END];
 
 
 /*********************************************************************************************************************************
@@ -459,7 +461,10 @@ DECLHIDDEN(void) rtThreadInsert(PRTTHREADINT pThread, RTNATIVETHREAD NativeThrea
                 fRc = RTAvlPVInsert(&g_ThreadTree, &pThread->Core);
                 ASMAtomicOrU32(&pThread->fIntFlags, RTTHREADINT_FLAG_IN_TREE);
                 if (fRc)
+                {
                     ASMAtomicIncU32(&g_cThreadInTree);
+                    ASMAtomicIncU32(&g_acRTThreadTypeStats[pThread->enmType]);
+                }
 
                 AssertReleaseMsg(fRc, ("Lock problem? %p (%RTnthrd) %s\n", pThread, NativeThread, pThread->szName));
                 NOREF(fRc);
@@ -480,12 +485,13 @@ DECLHIDDEN(void) rtThreadInsert(PRTTHREADINT pThread, RTNATIVETHREAD NativeThrea
 static void rtThreadRemoveLocked(PRTTHREADINT pThread)
 {
     PRTTHREADINT pThread2 = (PRTTHREADINT)RTAvlPVRemove(&g_ThreadTree, pThread->Core.Key);
-#if !defined(RT_OS_OS2) /** @todo this asserts for threads created by NSPR */
     AssertMsg(pThread2 == pThread, ("%p(%s) != %p (%p/%s)\n", pThread2, pThread2  ? pThread2->szName : "<null>",
                                     pThread, pThread->Core.Key, pThread->szName));
-#endif
     if (pThread2)
+    {
         ASMAtomicDecU32(&g_cThreadInTree);
+        ASMAtomicDecU32(&g_acRTThreadTypeStats[pThread->enmType]);
+    }
 }
 
 

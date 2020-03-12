@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2008-2019 Oracle Corporation
+ * Copyright (C) 2008-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -654,6 +654,13 @@ typedef RTNETDHCPOPT const *PCRTNETDHCPOPT;
 
 /** Marks the end of the DHCP options, this has no dhcp_len field. */
 #define RTNET_DHCP_OPT_END                  255
+/** @} */
+
+/** @name DHCP Option overload flags (option 52)
+ * @{ */
+#define RTNET_DHCP_OPTION_OVERLOAD_FILE     1
+#define RTNET_DHCP_OPTION_OVERLOAD_SNAME    2
+#define RTNET_DHCP_OPTION_OVERLOAD_MASK     3
 /** @} */
 
 /** @name DHCP Message Types (option 53)

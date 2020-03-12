@@ -1,10 +1,10 @@
-/* $Id: memuserkernel-r0drv-linux.c 128219 2019-01-17 13:53:59Z michael $ */
+/* $Id: memuserkernel-r0drv-linux.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * IPRT - User & Kernel Memory, Ring-0 Driver, Linux.
  */
 
 /*
- * Copyright (C) 2009-2019 Oracle Corporation
+ * Copyright (C) 2009-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -66,7 +66,7 @@ RT_EXPORT_SYMBOL(RTR0MemUserCopyTo);
 RTR0DECL(bool) RTR0MemUserIsValidAddr(RTR3PTR R3Ptr)
 {
     IPRT_LINUX_SAVE_EFL_AC();
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0) || defined(RHEL_81)
     bool fRc = access_ok((void *)R3Ptr, 1);
 #else
     bool fRc = access_ok(VERIFY_READ, (void *)R3Ptr, 1);
@@ -86,7 +86,7 @@ RTR0DECL(bool) RTR0MemKernelIsValidAddr(void *pv)
     return (uintptr_t)pv >= PAGE_OFFSET;
 #else
 # error "PORT ME"
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0) || defined(RHEL_81)
     return !access_ok(pv, 1);
 #else
     return !access_ok(VERIFY_READ, pv, 1);

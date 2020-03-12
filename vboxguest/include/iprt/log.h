@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * This file is part of VirtualBox Open Source Edition (OSE), as
  * available from http://www.virtualbox.org. This file is free software;
@@ -61,7 +61,9 @@ typedef enum RTLOGGROUP
     RTLOGGROUP_DIR,
     RTLOGGROUP_FILE,
     RTLOGGROUP_FS,
+    RTLOGGROUP_FTP,
     RTLOGGROUP_HTTP,
+    RTLOGGROUP_IOQUEUE,
     RTLOGGROUP_LDR,
     RTLOGGROUP_LOCALIPC,
     RTLOGGROUP_PATH,
@@ -88,6 +90,9 @@ typedef enum RTLOGGROUP
  *
  *         If anyone might be wondering what the alphabet looks like:
  *              a b c d e f g h i j k l m n o p q r s t u v w x y z
+ *
+ * The RT_XX log group names are placeholders for new modules being added,
+ * to make sure that there always is a total of 32 log group entries.
  */
 #define RT_LOGGROUP_NAMES \
     "DEFAULT", \
@@ -97,7 +102,9 @@ typedef enum RTLOGGROUP
     "RT_DIR", \
     "RT_FILE", \
     "RT_FS", \
+    "RT_FTP", \
     "RT_HTTP", \
+    "RT_IOQUEUE", \
     "RT_LDR", \
     "RT_LOCALIPC", \
     "RT_PATH", \
@@ -108,8 +115,6 @@ typedef enum RTLOGGROUP
     "RT_TIME", \
     "RT_TIMER", \
     "RT_VFS", \
-    "RT_18", \
-    "RT_19", \
     "RT_20", \
     "RT_21", \
     "RT_22", \
@@ -121,7 +126,7 @@ typedef enum RTLOGGROUP
     "RT_28", \
     "RT_29", \
     "RT_30", \
-    "RT_ZIP"  \
+    "RT_ZIP"
 
 
 /** @def LOG_GROUP
@@ -147,7 +152,7 @@ typedef enum RTLOGGROUP
 #endif
 
 /** Logger structure. */
-#ifdef IN_RC
+#if defined(IN_RC) && !defined(DOXYGEN_RUNNING)
 typedef struct RTLOGGERRC RTLOGGER;
 #else
 typedef struct RTLOGGER RTLOGGER;
@@ -292,7 +297,7 @@ struct RTLOGGERRC
 
 
 
-#ifndef IN_RC
+#if !defined(IN_RC) || defined(DOXYGEN_RUNNING)
 
 /** Pointer to internal logger bits. */
 typedef struct RTLOGGERINTERNAL *PRTLOGGERINTERNAL;
@@ -335,7 +340,7 @@ struct RTLOGGER
 /** RTLOGGER::u32Magic value. (Avram Noam Chomsky) */
 # define RTLOGGER_MAGIC     UINT32_C(0x19281207)
 
-#endif /* !IN_RC */
+#endif /* !IN_RC || DOXYGEN_RUNNING */
 
 
 /**
@@ -489,7 +494,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 /** @def LOG_ENABLED
  * Use this compile time define to enable logging when not in debug mode
  * or LOG_DISABLED is set.
- * This will enabled Log() only.
+ * This will enable Log() only.
  */
 
 /** @def LOG_ENABLE_FLOW
@@ -1225,7 +1230,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 
 
 
-/** @name Release Logging
+/** @defgroup grp_rt_log_rel    Release Logging
  * @{
  */
 
@@ -1702,7 +1707,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
 /** @} */
 
 
-#ifndef IN_RC
+#if !defined(IN_RC) || defined(DOXYGEN_RUNNING)
 /**
  * Sets the default release logger instance.
  *
@@ -1710,7 +1715,7 @@ RTDECL(void) RTLogPrintfEx(void *pvInstance, unsigned fFlags, unsigned iGroup,
  * @param   pLogger     The new default release logger instance.
  */
 RTDECL(PRTLOGGER) RTLogRelSetDefaultInstance(PRTLOGGER pLogger);
-#endif /* !IN_RC */
+#endif
 
 /**
  * Gets the default release logger instance.
@@ -1798,7 +1803,7 @@ RTDECL(bool) RTLogRelSetBuffering(bool fBuffered);
 
 
 /** @name COM port logging
- * {
+ * @{
  */
 
 #ifdef DOXYGEN_RUNNING
@@ -1937,7 +1942,7 @@ RTDECL(PRTLOGGER)   RTLogGetDefaultInstance(void);
  */
 RTDECL(PRTLOGGER)   RTLogGetDefaultInstanceEx(uint32_t fFlagsAndGroup);
 
-#ifndef IN_RC
+#if !defined(IN_RC) || defined(DOXYGEN_RUNNING)
 /**
  * Sets the default logger instance.
  *
@@ -1945,7 +1950,7 @@ RTDECL(PRTLOGGER)   RTLogGetDefaultInstanceEx(uint32_t fFlagsAndGroup);
  * @param   pLogger     The new default logger instance.
  */
 RTDECL(PRTLOGGER)   RTLogSetDefaultInstance(PRTLOGGER pLogger);
-#endif /* !IN_RC */
+#endif
 
 #ifdef IN_RING0
 /**
@@ -1962,7 +1967,8 @@ RTDECL(int)         RTLogSetDefaultInstanceThread(PRTLOGGER pLogger, uintptr_t u
 #endif /* IN_RING0 */
 
 
-#ifndef IN_RC
+#if !defined(IN_RC) || defined(DOXYGEN_RUNNING)
+
 /**
  * Creates the default logger instance for a iprt users.
  *
@@ -2219,7 +2225,8 @@ RTDECL(int) RTLogGetGroupSettings(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf
  * @param   pszValue    Value to parse.
  */
 RTDECL(int) RTLogGroupSettings(PRTLOGGER pLogger, const char *pszValue);
-#endif /* !IN_RC */
+
+#endif /* !IN_RC || DOXYGEN_RUNNING */
 
 /**
  * Updates the flags for the logger instance using the specified
@@ -2258,7 +2265,8 @@ RTDECL(bool) RTLogSetBuffering(PRTLOGGER pLogger, bool fBuffered);
  */
 RTDECL(uint32_t) RTLogSetGroupLimit(PRTLOGGER pLogger, uint32_t cMaxEntriesPerGroup);
 
-#ifndef IN_RC
+#if !defined(IN_RC) || defined(DOXYGEN_RUNNING)
+
 /**
  * Get the current log flags as a string.
  *
@@ -2284,7 +2292,6 @@ RTDECL(int) RTLogDestinations(PRTLOGGER pLogger, char const *pszValue);
  *
  * @returns IPRT status code.
  * @param   pLogger             Logger instance (NULL for default logger).
- * @param   pszValue            The value to parse.
  * @param   pErrInfo            Where to return extended error info.  Optional.
  */
 RTDECL(int) RTLogClearFileDelayFlag(PRTLOGGER pLogger, PRTERRINFO pErrInfo);
@@ -2299,7 +2306,8 @@ RTDECL(int) RTLogClearFileDelayFlag(PRTLOGGER pLogger, PRTERRINFO pErrInfo);
  *                              than 0.
  */
 RTDECL(int) RTLogGetDestinations(PRTLOGGER pLogger, char *pszBuf, size_t cchBuf);
-#endif /* !IN_RC */
+
+#endif /* !IN_RC || DOXYGEN_RUNNING */
 
 /**
  * Flushes the specified logger.

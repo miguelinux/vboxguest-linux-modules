@@ -1,10 +1,10 @@
-/* $Id: VBoxGuestR0LibSharedFolders.c 130769 2019-05-23 11:58:46Z bird $ */
+/* $Id: VBoxGuestR0LibSharedFolders.c 135976 2020-02-04 10:35:17Z bird $ */
 /** @file
  * VBoxGuestR0LibSharedFolders - Ring 0 Shared Folders calls.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

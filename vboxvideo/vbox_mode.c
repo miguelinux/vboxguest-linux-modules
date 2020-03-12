@@ -1,6 +1,6 @@
-/* $Id: vbox_mode.c 131181 2019-06-06 15:07:16Z michael $ */
+/* $Id: vbox_mode.c 136116 2020-02-14 11:35:05Z fbatschu $ */
 /*
- * Copyright (C) 2013-2019 Oracle Corporation
+ * Copyright (C) 2013-2020 Oracle Corporation
  * This file is based on ast_mode.c
  * Copyright 2012 Red Hat Inc.
  * Parts based on xf86-video-ast
@@ -38,7 +38,7 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72)
 #include <drm/drm_plane_helper.h>
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(RHEL_81)
 #include <drm/drm_probe_helper.h>
 #endif
 
@@ -203,7 +203,9 @@ static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 }
 
 static int vbox_crtc_set_base(struct drm_crtc *crtc,
-				 struct drm_framebuffer *old_fb, int x, int y)
+				 struct drm_framebuffer *old_fb,
+				 struct drm_framebuffer *new_fb,
+				 int x, int y)
 {
 	struct vbox_private *vbox = crtc->dev->dev_private;
 	struct vbox_crtc *vbox_crtc = to_vbox_crtc(crtc);
@@ -213,7 +215,7 @@ static int vbox_crtc_set_base(struct drm_crtc *crtc,
 	int ret;
 	u64 gpu_addr;
 
-	vbox_fb = to_vbox_framebuffer(CRTC_FB(crtc));
+	vbox_fb = to_vbox_framebuffer(new_fb);
 	obj = vbox_fb->obj;
 	bo = gem_to_vbox_bo(obj);
 
@@ -263,7 +265,7 @@ static int vbox_crtc_mode_set(struct drm_crtc *crtc,
 			      int x, int y, struct drm_framebuffer *old_fb)
 {
 	struct vbox_private *vbox = crtc->dev->dev_private;
-	int ret = vbox_crtc_set_base(crtc, old_fb, x, y);
+	int ret = vbox_crtc_set_base(crtc, old_fb, CRTC_FB(crtc), x, y);
 	if (ret)
 		return ret;
 	mutex_lock(&vbox->hw_mutex);
@@ -274,6 +276,45 @@ static int vbox_crtc_mode_set(struct drm_crtc *crtc,
 	mutex_unlock(&vbox->hw_mutex);
 
 	return ret;
+}
+
+static int vbox_crtc_page_flip(struct drm_crtc *crtc,
+			       struct drm_framebuffer *fb,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0) || defined(RHEL_75)
+			       struct drm_pending_vblank_event *event,
+			       u32 page_flip_flags,
+			       struct drm_modeset_acquire_ctx *ctx)
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0) || defined(RHEL_70)
+			       struct drm_pending_vblank_event *event,
+			       u32 page_flip_flags)
+#else
+			       struct drm_pending_vblank_event *event)
+#endif
+{
+	struct vbox_private *vbox = crtc->dev->dev_private;
+	struct drm_device *drm = vbox->dev;
+	unsigned long flags;
+	int rc;
+
+	rc = vbox_crtc_set_base(crtc, CRTC_FB(crtc), fb, 0, 0);
+	if (rc)
+		return rc;
+
+	vbox_do_modeset(crtc, &crtc->mode);
+	mutex_unlock(&vbox->hw_mutex);
+
+	spin_lock_irqsave(&drm->event_lock, flags);
+
+	if (event)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0) || defined(RHEL_72)
+		drm_crtc_send_vblank_event(crtc, event);
+#else
+		drm_send_vblank_event(drm, -1, event);
+#endif
+
+	spin_unlock_irqrestore(&drm->event_lock, flags);
+
+	return 0;
 }
 
 static void vbox_crtc_disable(struct drm_crtc *crtc)
@@ -313,6 +354,7 @@ static const struct drm_crtc_funcs vbox_crtc_funcs = {
 	.reset = vbox_crtc_reset,
 	.set_config = drm_crtc_helper_set_config,
 	/* .gamma_set = vbox_crtc_gamma_set, */
+	.page_flip = vbox_crtc_page_flip,
 	.destroy = vbox_crtc_destroy,
 };
 
@@ -352,19 +394,26 @@ static struct drm_encoder *drm_encoder_find(struct drm_device *dev, u32 id)
 static struct drm_encoder *vbox_best_single_encoder(struct drm_connector
 						    *connector)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
+		struct drm_encoder *encoder;
+
+		/* There is only one encoder per connector */
+		drm_connector_for_each_possible_encoder(connector, encoder)
+			return encoder;
+#else /* KERNEL_VERSION < 5.5 */
 	int enc_id = connector->encoder_ids[0];
 
 	/* pick the encoder ids */
 	if (enc_id)
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0) || \
-	(defined(CONFIG_SUSE_VERSION) && \
-		LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)) || \
-	defined(RHEL_76)
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0) || \
+	 (defined(CONFIG_SUSE_VERSION) && \
+		 LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)) || \
+	 defined(RHEL_76)
 		return drm_encoder_find(connector->dev, NULL, enc_id);
-#else
+# else
 		return drm_encoder_find(connector->dev, enc_id);
-#endif
-
+# endif
+#endif /* KERNEL_VERSION < 5.5 */
 	return NULL;
 }
 
@@ -494,7 +543,7 @@ static void vbox_set_edid(struct drm_connector *connector, int width,
 	for (i = 0; i < EDID_SIZE - 1; ++i)
 		sum += edid[i];
 	edid[EDID_SIZE - 1] = (0x100 - (sum & 0xFF)) & 0xFF;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) || defined(OPENSUSE_151)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) || defined(OPENSUSE_151) || defined(RHEL_77) || defined(RHEL_81)
 	drm_connector_update_edid_property(connector, (struct edid *)edid);
 #else
 	drm_mode_connector_update_edid_property(connector, (struct edid *)edid);
@@ -573,7 +622,11 @@ static int vbox_get_modes(struct drm_connector *connector)
 	return num_modes;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0) && !defined(RHEL_71)
 static int vbox_mode_valid(struct drm_connector *connector,
+#else
+static enum drm_mode_status vbox_mode_valid(struct drm_connector *connector,
+#endif
 			   struct drm_display_mode *mode)
 {
 	return MODE_OK;
@@ -665,7 +718,7 @@ static int vbox_connector_init(struct drm_device *dev,
 	drm_connector_register(connector);
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) || defined(OPENSUSE_151)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0) || defined(OPENSUSE_151) || defined(RHEL_77) || defined(RHEL_81)
 	drm_connector_attach_encoder(connector, encoder);
 #else
 	drm_mode_connector_attach_encoder(connector, encoder);

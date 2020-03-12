@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: build_in_tmp 127855 2019-01-01 01:45:53Z bird $
+# $Id: build_in_tmp 135976 2020-02-04 10:35:17Z bird $
 ## @file
 # Script to build a kernel module in /tmp.
 #
@@ -7,7 +7,7 @@
 #
 
 #
-# Copyright (C) 2007-2019 Oracle Corporation
+# Copyright (C) 2007-2020 Oracle Corporation
 #
 # This file is part of VirtualBox Open Source Edition (OSE), as
 # available from http://www.virtualbox.org. This file is free software;
@@ -72,11 +72,12 @@ else
 fi
 if [ -n "$USE_MOD_SYMVERS" ]; then
   cp $USE_MOD_SYMVERS $tmpdir/Module.symvers
+  MAKE_EXTRAOPTS="KBUILD_EXTRA_SYMBOLS=$tmpdir/Module.symvers"
 fi
 
 # make, cleanup if success
 cd "$tmpdir"
-if make "-j`echo ${MAKE_JOBS}`" "$@"; then  # strip leading space from "MAKE_JOBS"
+if make "-j`echo ${MAKE_JOBS}`" "$@" ${MAKE_EXTRAOPTS}; then  # strip leading space from "MAKE_JOBS"
   if [ -n "$SAVE_MOD_SYMVERS" ]; then
     if [ -f Module.symvers ]; then
       cp -f Module.symvers $SAVE_MOD_SYMVERS

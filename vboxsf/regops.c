@@ -1,10 +1,10 @@
-/* $Id: regops.c 130485 2019-05-10 12:23:02Z bird $ */
+/* $Id: regops.c 136079 2020-02-11 15:17:18Z bird $ */
 /** @file
  * vboxsf - VBox Linux Shared Folders VFS, regular file inode and file operations.
  */
 
 /*
- * Copyright (C) 2006-2019 Oracle Corporation
+ * Copyright (C) 2006-2020 Oracle Corporation
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -347,7 +347,7 @@ static size_t copy_from_iter(uint8_t *pbDst, size_t cbToCopy, struct iov_iter *p
                     cbThisCopy = cbToCopy;
                 if (pSrcIter->type & ITER_KVEC)
                     memcpy(pbDst, (void *)pSrcIter->iov->iov_base + pSrcIter->iov_offset, cbThisCopy);
-                else if (!copy_from_user(pbDst, pSrcIter->iov->iov_base + pSrcIter->iov_offset, cbThisCopy))
+                else if (copy_from_user(pbDst, pSrcIter->iov->iov_base + pSrcIter->iov_offset, cbThisCopy) != 0)
                     break;
                 pbDst    += cbThisCopy;
                 cbToCopy -= cbThisCopy;
@@ -386,7 +386,7 @@ static size_t copy_to_iter(uint8_t const *pbSrc, size_t cbToCopy, struct iov_ite
                     cbThisCopy = cbToCopy;
                 if (pDstIter->type & ITER_KVEC)
                     memcpy((void *)pDstIter->iov->iov_base + pDstIter->iov_offset, pbSrc, cbThisCopy);
-                else if (!copy_to_user(pDstIter->iov->iov_base + pDstIter->iov_offset, pbSrc, cbThisCopy)) {
+                else if (copy_to_user(pDstIter->iov->iov_base + pDstIter->iov_offset, pbSrc, cbThisCopy) != 0) {
                     break;
                 }
                 pbSrc    += cbThisCopy;
@@ -1408,7 +1408,7 @@ static int vbsf_lock_user_pages_failed_check_kernel(uintptr_t uPtrFrom, size_t c
     /*
      * Check that this is valid user memory that is actually in the kernel range.
      */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0) || defined(RHEL_81)
     if (   access_ok((void *)uPtrFrom, cPages << PAGE_SHIFT)
         && uPtrFrom >= USER_DS.seg)
 #else
@@ -2082,8 +2082,8 @@ static ssize_t vbsf_reg_write(struct file *file, const char *buf, size_t size, l
  */
 DECLINLINE(void) vbsf_iter_unlock_pages(struct iov_iter *iter, struct page **papPages, size_t cPages, bool fSetDirty)
 {
-    /* We don't mark kernel pages dirty: */
-    if (iter->type & ITER_KVEC)
+    /* We don't mark kernel pages dirty (KVECs, BVECs, PIPEs): */
+    if (!iter_is_iovec(iter))
         fSetDirty = false;
 
     while (cPages-- > 0)
