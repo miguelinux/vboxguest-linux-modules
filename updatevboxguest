@@ -22,7 +22,6 @@ IS_DIALOG=0
 VBOX_URL=http://download.virtualbox.org/virtualbox
 VBOX_VERSION=0
 VBOX_LATEST=http://download.virtualbox.org/virtualbox/LATEST.TXT
-KDIR=""
 
 die ()
 {
@@ -45,16 +44,9 @@ check_dialog ()
     fi
 }
 
-check_params ()
+check_lates_version ()
 {
-    if [ $# -lt 2 ] ; then
-        die "PARAMETER MISSING" "You should provide a virtualbox version and kernel directory"
-    fi
-    VBOX_VERSION=$1
-    KDIR=$2
-    if [ ! -f ${KDIR}/scripts/Lindent ] ; then
-        die "KERNEL DIRECTORY MISSING" "You should provide a valid kernel directory"
-    fi
+    VBOX_VERSION=$(curl -L ${VBOX_LATEST})
 }
 
 get_and_mount_iso ()
@@ -110,7 +102,7 @@ update_repo ()
 ####################  main  ####################
 
 check_dialog
-check_params $*
+check_lates_version
 get_and_mount_iso
 extract_files
 umount_and_delete_iso
