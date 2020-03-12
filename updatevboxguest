@@ -112,23 +112,6 @@ copy_to_kernel ()
     cp -r vboxguest vboxsf vboxvideo ${KDIR}/drivers/misc
 }
 
-fix_coding_style ()
-{
-    TMPDIR=/tmp/vblga-bz2/src/vboxguest-${VBOX_VERSION}
-    find ${TMPDIR}/vboxguest -type f -exec dos2unix {} \;
-    find ${TMPDIR}/vboxsf    -type f -exec dos2unix {} \;
-    find ${TMPDIR}/vboxvideo -type f -exec dos2unix {} \;
-
-    LIN=${KDIR}/scripts/Lindent
-    find ${TMPDIR}/vboxguest -type f -not -name "Makefile*" -exec ${LIN} {} \;
-    find ${TMPDIR}/vboxsf    -type f -not -name "Makefile*" -exec ${LIN} {} \;
-    find ${TMPDIR}/vboxvideo -type f -not -name "Makefile*" -exec ${LIN} {} \;
-
-    find ${TMPDIR}/vboxguest -type f -name "*~" -exec rm {} \;
-    find ${TMPDIR}/vboxsf    -type f -name "*~" -exec rm {} \;
-    find ${TMPDIR}/vboxvideo -type f -name "*~" -exec rm {} \;
-
-}
 ####################  main  ####################
 
 check_dialog
@@ -136,7 +119,5 @@ check_params $*
 get_and_mount_iso
 extract_files
 umount_and_delete_iso
-# Keep as is do not fix coding style
-#fix_coding_style
 update_repo
 #copy_to_kernel
