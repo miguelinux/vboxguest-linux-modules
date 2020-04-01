@@ -1,0 +1,56 @@
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index c55b637..2f69915 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -466,6 +466,37 @@ config PVPANIC
+ 	  a paravirtualized device provided by QEMU; it lets a virtual machine
+ 	  (guest) communicate panic events to the host.
+ 
++config ORACLE_VBOXGUEST
++	tristate "VirtualBox Guest Addition driver"
++	depends on X86
++	default m
++	help
++	  This is the main driver from VirtualBox Guest Additions.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vboxguest.
++
++config ORACLE_VBOXSF
++	tristate "VirtualBox Share Folder driver"
++	depends on X86 && ORACLE_VBOXGUEST
++	default m
++	help
++	  This is the driver to share folders between guest and
++	  host.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vboxsf.
++
++config ORACLE_VBOXVIDEO
++	tristate "VirtualBox Video driver"
++	depends on X86 && ORACLE_VBOXGUEST
++	default m
++	help
++	  This is the video driver for VirtualBox VM.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vboxvideo.
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index c1860d3..e7220f5 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -51,6 +51,9 @@ obj-$(CONFIG_GENWQE)		+= genwqe/
+ obj-$(CONFIG_ECHO)		+= echo/
+ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
+ obj-$(CONFIG_CXL_BASE)		+= cxl/
++obj-$(CONFIG_ORACLE_VBOXGUEST)	+= vboxguest/
++obj-$(CONFIG_ORACLE_VBOXSF)	+= vboxsf/
++obj-$(CONFIG_ORACLE_VBOXVIDEO)	+= vboxvideo/
+ obj-$(CONFIG_PCI_ENDPOINT_TEST)	+= pci_endpoint_test.o
+ obj-$(CONFIG_OCXL)		+= ocxl/
+ obj-y				+= cardreader/
