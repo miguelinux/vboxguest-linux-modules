@@ -1,4 +1,4 @@
-/* $Id: VBoxGuestR0LibGenericRequest.cpp 135976 2020-02-04 10:35:17Z bird $ */
+/* $Id: VBoxGuestR0LibGenericRequest.cpp 136490 2020-03-18 10:54:03Z sbayrakt $ */
 /** @file
  * VBoxGuestLibR0 - Generic VMMDev request management.
  */
@@ -95,7 +95,8 @@ DECLR0VBGL(int) VbglGR0Verify(const VMMDevRequestHeader *pReq, size_t cbReq)
         || pReq->requestType == VMMDevReq_ReportGuestUserState
         || pReq->requestType == VMMDevReq_LogString
         || pReq->requestType == VMMDevReq_SetPointerShape
-        || pReq->requestType == VMMDevReq_VideoSetVisibleRegion)
+        || pReq->requestType == VMMDevReq_VideoSetVisibleRegion
+        || pReq->requestType == VMMDevReq_VideoUpdateMonitorPositions)
     {
         if (RT_UNLIKELY(cbReq > VMMDEV_MAX_VMMDEVREQ_SIZE))
         {
@@ -180,4 +181,3 @@ DECLR0VBGL(void) VbglR0GRFree(VMMDevRequestHeader *pReq)
     if (RT_SUCCESS(rc))
         VbglR0PhysHeapFree(pReq);
 }
-

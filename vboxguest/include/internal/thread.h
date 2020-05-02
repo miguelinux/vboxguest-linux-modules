@@ -1,4 +1,4 @@
-/* $Id: thread.h 136162 2020-02-17 19:46:52Z bird $ */
+/* $Id: thread.h 136258 2020-02-21 22:58:42Z bird $ */
 /** @file
  * IPRT - Internal RTThread header.
  */
@@ -264,7 +264,7 @@ DECLHIDDEN(void)         rtThreadClearTlsEntry(RTTLS iTls);
 DECLHIDDEN(void)         rtThreadTlsDestruction(PRTTHREADINT pThread); /* in tls-generic.cpp */
 #endif
 #ifdef RT_OS_WINDOWS
-DECLHIDDEN(void)         rtTlsWinDetachThread(void); /* in tls-dllmain-win.cpp */
+DECLHIDDEN(void)         rtThreadWinTlsDestruction(void); /* in tls-win.cpp */
 #endif
 
 /* thread-posix.cpp */
