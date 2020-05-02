@@ -64,9 +64,9 @@ get_and_mount_iso ()
     set -e
     if [ ! -f VBoxGuestAdditions_${VBOX_VERSION}.iso ] ; then
         URL="${VBOX_URL}/${VBOX_VERSION}/VBoxGuestAdditions_${VBOX_VERSION}.iso"
-        curl -O ${URL}
+        curl -s -O ${URL}
         URL="${VBOX_URL}/${VBOX_VERSION}/SHA256SUMS"
-        curl -O ${URL}
+        curl -s -O ${URL}
     fi
     set +e
     if ! sha256sum --ignore-missing --status -c SHA256SUMS ; then 
@@ -101,7 +101,7 @@ extract_files ()
 
 update_repo ()
 {
-    git rm -r vbox* Make* build_*
+    git rm -q -r vbox* Make* build_*
     cp -r /tmp/vblga-bz2/src/vboxguest-${VBOX_VERSION}/* .
     cp /tmp/vblga-bz2/LICENSE .
     echo ${VBOX_VERSION} > version.txt
