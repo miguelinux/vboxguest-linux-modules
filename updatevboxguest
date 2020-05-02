@@ -46,7 +46,17 @@ check_dialog ()
 
 check_lates_version ()
 {
-    VBOX_VERSION=$(curl -L ${VBOX_LATEST})
+    local cur_ver
+
+    VBOX_VERSION=$(curl -s -L ${VBOX_LATEST})
+
+    cur_ver=$(< version.txt)
+
+    if [ "${VBOX_VERSION}" == "${cur_ver}" ]
+    then
+        echo "No updates"
+        exit 0
+    fi
 }
 
 get_and_mount_iso ()
@@ -94,6 +104,7 @@ update_repo ()
     git rm -r vbox* Make* build_*
     cp -r /tmp/vblga-bz2/src/vboxguest-${VBOX_VERSION}/* .
     cp /tmp/vblga-bz2/LICENSE .
+    echo ${VBOX_VERSION} > version.txt
     git add -A
     git commit -m "src/vboxguest-${VBOX_VERSION}"
     git tag -a -m "vboxguest-${VBOX_VERSION}" v${VBOX_VERSION}
